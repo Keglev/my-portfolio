@@ -1,13 +1,8 @@
-// src/App.js
-import React from 'react';
-// import Navbar from './components/Navbar';
 import styled from 'styled-components';
-// import Hero from './components/Hero';
 import Projects from './components/Projects';
-import Footer from './components/Footer';
 import About from './components/About';
-import Experience from './components/Experience'; // Import Experience section
-import Sidebar from './components/Sidebar'; // Add a new Sidebar component
+import Experience from './components/Experience';
+import Sidebar from './components/Sidebar';
 import { GlobalStyles } from './styles/GlobalStyles';
 
 function App() {
@@ -16,11 +11,17 @@ function App() {
       <GlobalStyles />
       <Container>
         <Sidebar />
+        {/* Ensure this ID is correctly referenced in the sidebar for scrolling */}
         <MainContent id="scroll-container">
-          <About />
-          <Experience />
-          <Projects />
-          <Footer />
+          <Section id="About">
+            <About />
+          </Section>
+          <Section id="Experience">
+            <Experience />
+          </Section>
+          <Section id="Projects">
+            <Projects />
+          </Section>
         </MainContent>
       </Container>
     </>
@@ -30,18 +31,21 @@ function App() {
 export default App;
 
 // Styled Components
-
-
 const Container = styled.div`
   display: flex;
-  height: 100vh; /* Ensures the layout covers the full viewport height */
+  height: 100vh;
 `;
 
 const MainContent = styled.div`
-  flex: 1; /* The right side takes up the remaining width */
-  overflow-y: auto; /* Enables scrolling on the right side */
+  flex: 1;
+  overflow-y: auto; /* Ensure scrolling is active here */
   padding: 2rem;
-  margin-left: 300px; /* Offset to accommodate the fixed sidebar */
+  margin-left: 350px; /* Leave space for the fixed sidebar */
   background-color: #0a192f;
   color: #ccd6f6;
+`;
+
+const Section = styled.div`
+  padding: 4rem 0;
+  min-height: 100vh;
 `;
