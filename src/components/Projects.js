@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { fetchPinnedRepositories } from '../utils/githubApi';
@@ -116,12 +118,20 @@ const ProjectContainer = styled.div`
     margin-bottom: 2rem;
     color: #64ffda;
   }
+
+   @media (max-width: 768px) {
+    padding: 2rem;
+  }
 `;
 
 const ProjectGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr; /* Single column layout for mobile */
+  }
 `;
 
 const ProjectCard = styled.div`
@@ -194,4 +204,4 @@ const ProjectLink = styled.a`
   }
 `;
 
-export default Projects;
+export default Projects; 

@@ -17,4 +17,9 @@ const FooterContainer = styled.footer`
   background-color: #0a192f;
   color: #ccd6f6;
   text-align: center;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
 `;

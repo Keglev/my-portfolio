@@ -55,6 +55,10 @@ const ExperienceContainer = styled.div`
     margin-bottom: 2rem;
     text-align: center;
   }
+
+   @media (max-width: 768px) {
+    padding: 2rem 1rem;
+  }
 `;
 
 const ExperienceList = styled.div`
@@ -87,5 +91,14 @@ const ExperienceCard = styled.div`
 
   p {
     color: #ccd6f6;
+  }
+     @media (max-width: 768px) {
+    padding: 1rem;
+    h3 {
+      font-size: 1.2rem;
+    }
+    p, .date {
+      font-size: 0.9rem;
+    }
   }
 `;

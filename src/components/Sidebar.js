@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-scroll'; // For smooth scrolling and spy
-import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa'; // Import icons
+import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 
 const Sidebar = () => {
-  const [activeLink, setActiveLink] = useState('About'); // Default to 'About'
-
   return (
     <SidebarContainer>
       <NameTitle>
@@ -18,10 +16,9 @@ const Sidebar = () => {
           smooth={true}
           duration={500}
           spy={true} // Track scrolling
-          activeClass="active" // Assign the "active" class when scrolling
-          containerId="scroll-container" // Reference the scrollable container
-          offset={-100} // Adjust for any header offset
-          onSetActive={() => setActiveLink('About')} // Track active link
+          activeClass="active"
+          containerId="scroll-container"
+          offset={70} // Increase the offset value for proper scroll positioning
         >
           About
         </StyledLink>
@@ -29,11 +26,10 @@ const Sidebar = () => {
           to="Experience"
           smooth={true}
           duration={500}
-          spy={true} // Track scrolling
-          activeClass="active" // Assign the "active" class when scrolling
-          containerId="scroll-container" // Reference the scrollable container
-          offset={-100} // Adjust for any header offset
-          onSetActive={() => setActiveLink('Experience')} // Track active link
+          spy={true}
+          activeClass="active"
+          containerId="scroll-container"
+          offset={70}
         >
           Experience
         </StyledLink>
@@ -41,11 +37,10 @@ const Sidebar = () => {
           to="Projects"
           smooth={true}
           duration={500}
-          spy={true} // Track scrolling
-          activeClass="active" // Assign the "active" class when scrolling
-          containerId="scroll-container" // Reference the scrollable container
-          offset={-100} // Adjust for any header offset
-          onSetActive={() => setActiveLink('Projects')} // Track active link
+          spy={true}
+          activeClass="active"
+          containerId="scroll-container"
+          offset={70}
         >
           Projects
         </StyledLink>
@@ -87,6 +82,12 @@ const SidebarContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
 `;
 
 const NameTitle = styled.div`
@@ -102,6 +103,16 @@ const NameTitle = styled.div`
     font-size: 1.4rem;
     color: #8892b0;
   }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+    }
+  }
 `;
 
 const Menu = styled.div`
@@ -109,6 +120,10 @@ const Menu = styled.div`
   display: flex;
   flex-direction: column;
   gap: 2rem;
+
+  @media (max-width: 768px) {
+    display: none; /* Hide menu on smaller screens */
+  }
 `;
 
 const StyledLink = styled(Link)`
@@ -122,13 +137,12 @@ const StyledLink = styled(Link)`
 
   &:hover {
     color: #64ffda;
-    font-size: 1.6rem; /* Slight increase in size */
+    font-size: 1.6rem;
   }
 
   &.active {
     color: #64ffda;
-    font-size: 1.8rem; /* Increase size and brightness when active */
-    font-weight: bold;
+    font-size: 1.6rem;
   }
 `;
 
@@ -151,7 +165,15 @@ const SocialLinks = styled.div`
 
     &:hover {
       color: #64ffda;
-      transform: scale(1.2); /* Slightly increase the size */
+      transform: scale(1.2);
+    }
+  }
+
+  @media (max-width: 768px) {
+    gap: 1rem;
+
+    a {
+      font-size: 1.5rem;
     }
   }
 `;
@@ -165,4 +187,9 @@ const FooterMessage = styled.div`
   p {
     margin: 0;
   }
+
+  @media (max-width: 768px) {
+    font-size: 0.8rem;
+  }
 `;
+
