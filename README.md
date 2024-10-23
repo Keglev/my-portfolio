@@ -1,6 +1,76 @@
-# Getting Started with Create React App
+# About
+This is a Portfolio Website. It showcases my skills and projects. 
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# 💼 My Portfolio
+
+Welcome to my personal portfolio website, showcasing my skills, projects, and experiences as a software engineer. This responsive web application is designed to provide visitors with an insight into my work, technical expertise, and professional journey.
+
+## Table of Contents
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Available Scripts](#available-scripts)
+- [Technologies](#technologies)
+- [API Integration](#API-Integration)
+- [Contributing](#contributing)
+
+## Features
+✨ **Interactive Portfolio**: Browse through my projects, professional experience, and skills in a clean and interactive layout.
+
+🖥️ **Responsive Design**: Optimized for various screen sizes including mobile, tablet, and desktop.
+
+🙋 **About**: This tells me a little bit about myself.
+
+📂 **Projects Showcase**: A detailed presentation of my projects with descriptions and links to the GitHub repositories.
+
+👨‍💼 **Experience Section**: Display of my professional experience, highlighting key achievements and roles.
+
+📫 **Contact Information**: Direct links to my GitHub, LinkedIn, and email.
+
+## Screenshots
+
+# Main image 
+
+<img src="./src/assets/imgs/project-image.png" alt="Screenshot 1" width="600" height="300"/>
+
+# Image from the projects section:
+
+<img src="./src/assets/imgs/project-image2.png" alt="Screenshot 2" width="600" height="300"/>
+
+## Installation
+
+# Installation
+To run this app locally, follow these steps:
+
+1. Clone the repository:
+
+  git clone https://github.com/your-username/my-portfolio.git
+
+2. Navigate to the project directory:
+   
+  cd my-portfolio
+
+3. Install the dependencies:
+
+   npm install
+
+4. Get API keys from GitHub API and create a .env file in the project root:
+   
+   REACT_APP_GITHUB_API_TOKEN=your-GitHub-API-key
+
+6. Start the development server:
+
+   npm start
+
+## Usage
+
+This App is to showcase my portfolio. It fetches my pinned repositories here in Github. 
+It gets the images and the "About" section to show 
+on the website. 
+View Details: I already put some special characters in this read.me file, so it makes it easier for Java Script to treat this file and only get the important information to 
+show on the website
+I also added some designs to show my front-end skills in my portfolio.
 
 ## Available Scripts
 
@@ -45,27 +115,28 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 
 To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
+## Technologies
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- *React.js: Frontend framework for building user interfaces.
+- *GrapQL: To fetch important information from the GitHub API.
+- *Styled Components: CSS-in-JS library for styling components.
+- *JavaScript (ES6+): Core language used throughout the app.
+- GitHub Integration: Used for project images and other data fetching.
+- HTML5 & CSS3: Standard web technologies for structuring and styling the app.
 
-### Analyzing the Bundle Size
+## API Integration
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+This app integrates with:
 
-### Making a Progressive Web App
+GitHub API: To display the App images from pinned repositories.
+For more information, check out the GitHub API Documentation.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Contributing
 
-### Advanced Configuration
+Contributions are welcome! Here's how you can contribute:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# my-portfolio
+1. Fork the repository.
+2. Create a new branch (git checkout -b feature/YourFeatureName).
+3. Commit your changes (git commit -m 'Add some feature').
+4. Commit your changes (git commit -m 'Add some feature').
+5. Open a pull request.
