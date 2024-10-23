@@ -1,8 +1,12 @@
-// src/components/Experience/Experience.js
 import React from 'react';
-import './Experience.css'; // Importing the CSS file
+import './Experience.css'; // Importing the CSS file for styling
 
+/**
+ * The Experience component displays a list of professional experiences,
+ * including the title, date, and a brief summary of each position.
+ */
 const Experience = () => {
+  // Array containing experience data
   const experiences = [
     {
       title: 'Full Stack Developer Course - Dio (online)',
@@ -28,7 +32,10 @@ const Experience = () => {
 
   return (
     <div className="experience-container" id="Experience">
+      {/* Heading for the experience section */}
       <h2>My Experience</h2>
+      
+      {/* Mapping through the experiences array and displaying each one */}
       <div className="experience-list">
         {experiences.map((exp, index) => (
           <div className="experience-card" key={index}>

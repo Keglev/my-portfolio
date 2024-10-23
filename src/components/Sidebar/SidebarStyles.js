@@ -1,6 +1,9 @@
 import styled from 'styled-components';
-import { Link } from 'react-scroll';
+import { Link } from 'react-scroll'; // Importing Link from react-scroll for smooth scrolling
 
+/**
+ * Styled container for the sidebar
+ */
 export const SidebarContainer = styled.div`
   width: 350px;
   height: 100vh;
@@ -21,6 +24,9 @@ export const SidebarContainer = styled.div`
   }
 `;
 
+/**
+ * Styled link component for navigation, includes hover and active state
+ */
 export const StyledLink = styled(Link)`
   display: flex;
   align-items: center;
@@ -32,11 +38,14 @@ export const StyledLink = styled(Link)`
 
   &:hover,
   &.active {
-    transform: translateX(10px); /* Shift to the right on hover or when active */
-    color: #64ffda;
+    transform: translateX(10px); /* Shift to the right when hovered or active */
+    color: #64ffda; /* Highlight color */
   }
 `;
 
+/**
+ * Name and title section styling
+ */
 export const NameTitle = styled.div`
   text-align: center;
 
@@ -62,6 +71,9 @@ export const NameTitle = styled.div`
   }
 `;
 
+/**
+ * Menu wrapper for the links
+ */
 export const Menu = styled.div`
   margin-top: 2rem;
   display: flex;
@@ -73,6 +85,9 @@ export const Menu = styled.div`
   }
 `;
 
+/**
+ * Wrapper for social links like GitHub, LinkedIn, and Email
+ */
 export const SocialLinksWrapper = styled.div`
   margin-top: auto;
   margin-bottom: auto;
@@ -81,6 +96,9 @@ export const SocialLinksWrapper = styled.div`
   align-items: center;
 `;
 
+/**
+ * Social links container with hover effects
+ */
 export const SocialLinks = styled.div`
   display: flex;
   gap: 1.5rem;
@@ -91,8 +109,8 @@ export const SocialLinks = styled.div`
     transition: color 0.3s ease, transform 0.3s ease;
 
     &:hover {
-      color: #64ffda;
-      transform: scale(1.2);
+      color: #64ffda; /* Change color on hover */
+      transform: scale(1.2); /* Slight zoom effect */
     }
   }
 
@@ -105,6 +123,9 @@ export const SocialLinks = styled.div`
   }
 `;
 
+/**
+ * Footer message at the bottom of the sidebar
+ */
 export const FooterMessage = styled.div`
   margin-bottom: 2rem;
   text-align: center;

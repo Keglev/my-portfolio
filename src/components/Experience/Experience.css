@@ -1,67 +1,73 @@
-/* src/components/Experience/Experience.css */
+/* Container for the experience section */
 .experience-container {
-    padding: 5rem 2rem;
-    background-color: #0a192f;
-    color: #ccd6f6;
+  padding: 5rem 2rem;
+  background-color: #0a192f; /* Dark background */
+  color: #ccd6f6; /* Light text color */
+}
+
+/* Styling for the section heading */
+.experience-container h2 {
+  font-size: 2rem;
+  color: #64ffda; /* Accent color */
+  margin-bottom: 2rem;
+  text-align: center; /* Center the heading */
+}
+
+/* List of experience cards */
+.experience-list {
+  display: flex;
+  flex-direction: column; /* Stack experience cards vertically */
+  gap: 1.5rem; /* Space between cards */
+}
+
+/* Individual experience card styling */
+.experience-card {
+  background-color: #112240; /* Darker card background */
+  padding: 1.5rem;
+  border-radius: 8px; /* Rounded corners */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth hover effects */
+}
+
+/* Hover effect for experience cards */
+.experience-card:hover {
+  background-color: #1f4068; /* Lighter background on hover */
+  box-shadow: 0px 8px 15px rgba(0, 255, 150, 0.5); /* Green shadow effect */
+}
+
+/* Experience card heading (job title) */
+.experience-card h3 {
+  color: #64ffda; /* Accent color for job titles */
+  margin-bottom: 0.5rem;
+}
+
+/* Date styling in the experience card */
+.experience-card .date {
+  color: #8892b0; /* Muted text color */
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Paragraph styling in the experience card */
+.experience-card p {
+  color: #ccd6f6; /* Main text color */
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 768px) {
+  .experience-container {
+      padding: 2rem 1rem; /* Reduce padding on smaller screens */
   }
-  
-  .experience-container h2 {
-    font-size: 2rem;
-    color: #64ffda;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-  
-  .experience-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
+
   .experience-card {
-    background-color: #112240;
-    padding: 1.5rem;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      padding: 1rem; /* Reduce padding inside cards */
   }
-  
-  .experience-card:hover {
-    background-color: #1f4068;
-    box-shadow: 0px 8px 15px rgba(0, 255, 150, 0.5);
-  }
-  
+
   .experience-card h3 {
-    color: #64ffda;
-    margin-bottom: 0.5rem;
+      font-size: 1.2rem; /* Reduce font size for job titles */
   }
-  
+
+  .experience-card p,
   .experience-card .date {
-    color: #8892b0;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
+      font-size: 0.9rem; /* Adjust font size for paragraphs and dates */
   }
-  
-  .experience-card p {
-    color: #ccd6f6;
-  }
-  
-  /* Responsive styles */
-  @media (max-width: 768px) {
-    .experience-container {
-      padding: 2rem 1rem;
-    }
-  
-    .experience-card {
-      padding: 1rem;
-    }
-  
-    .experience-card h3 {
-      font-size: 1.2rem;
-    }
-  
-    .experience-card p,
-    .experience-card .date {
-      font-size: 0.9rem;
-    }
-  }
-  
+}

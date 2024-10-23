@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from 'axios'; // Import Axios for making HTTP requests
 
 // GitHub GraphQL API endpoint
 const GITHUB_API_URL = 'https://api.github.com/graphql';
@@ -8,9 +8,13 @@ const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
 
 /**
  * Fetch pinned repositories from GitHub using GraphQL.
- * @returns {Promise<Array>} Array of pinned repositories with their description and README content.
+ * This function sends a POST request to the GitHub API using a GraphQL query
+ * to retrieve the user's pinned repositories, their descriptions, and their README content.
+ *
+ * @returns {Promise<Array>} Array of pinned repositories with their name, description, URL, and README content.
  */
 export const fetchPinnedRepositories = async () => {
+  // GraphQL query to get the first 6 pinned repositories for the user 'keglev'
   const query = `
     {
       user(login: "keglev") {
@@ -33,22 +37,24 @@ export const fetchPinnedRepositories = async () => {
   `;
 
   try {
+    // Send a POST request to the GitHub API with the GraphQL query
     const response = await axios.post(
       GITHUB_API_URL,
       { query },
       {
         headers: {
-          Authorization: `Bearer ${GITHUB_TOKEN}`,  // Using the token to authenticate
+          Authorization: `Bearer ${GITHUB_TOKEN}`, // Use the GitHub token for authentication
         },
       }
     );
     
-    console.log("GitHub API Response:", response.data);  // Log the full response
+    console.log("GitHub API Response:", response.data); // Log the API response for debugging
 
-    // Return the pinned repositories data
+    // Return the array of pinned repositories data from the API response
     return response.data.data.user.pinnedItems.nodes;
   } catch (error) {
+    // Handle errors during the API request and log relevant error information
     console.error('Error fetching pinned repositories:', error.response ? error.response.data : error);
-    return [];
+    return []; // Return an empty array in case of an error
   }
 };

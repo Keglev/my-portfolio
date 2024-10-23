@@ -1,34 +1,35 @@
-/* Container for Sidebar and Main Content */
+/* Container that holds both the sidebar and the main content */
 .container {
-    display: flex;
-    height: 100vh;
+  display: flex;
+  height: 100vh; /* Full viewport height */
+}
+
+@media (max-width: 768px) {
+  /* On smaller screens, stack sidebar and main content vertically */
+  .container {
+    flex-direction: column;
   }
-  
-  @media (max-width: 768px) {
-    .container {
-      flex-direction: column; /* Stack content for small screens */
-    }
-  }
-  
-  /* Main content area */
+}
+
+/* Main content area with scrollable content */
+.main-content {
+  flex: 1; /* Take up remaining space */
+  overflow-y: auto; /* Enable vertical scrolling */
+  padding: 2rem; /* Padding around the content */
+  margin-left: 350px; /* Space for the fixed sidebar */
+}
+
+@media (max-width: 768px) {
+  /* Adjust for smaller screens */
   .main-content {
-    flex: 1;
-    overflow-y: auto; /* Make the content scrollable */
-    padding: 2rem;
-    margin-left: 350px; /* Leave space for the fixed sidebar */
+    margin-left: 0; /* Remove space for sidebar */
+    padding: 1rem; /* Reduce padding for smaller viewports */
   }
-  
-  @media (max-width: 768px) {
-    .main-content {
-      margin-left: 0;
-      padding: 1rem;
-    }
-  }
-  
-  /* Section padding and scroll margin */
-  .section {
-    padding: 2rem 0; /* Reduced padding to lessen gap between sections */
-    min-height: 90vh; /* Adjusted height to reduce any excessive gap */
-    scroll-margin-top: 70px; /* Adjust this value to fine-tune the section alignment */
-  }
-  
+}
+
+/* Section padding and scroll margin */
+.section {
+  padding: 2rem 0; /* Vertical padding for sections */
+  min-height: 90vh; /* Each section takes up most of the viewport height */
+  scroll-margin-top: 70px; /* Offset for scrolling behavior */
+}
