@@ -16,38 +16,40 @@ Welcome to my personal portfolio website, showcasing my skills, projects, and ex
 - [Contributing](#contributing)
 
 ## Features
-✨ **Interactive Portfolio**: Browse through my projects, professional experience, and skills in a clean and interactive layout.
+✨ **Interactive Portfolio**: Explore featured projects, experience, and skills through a clean and interactive layout.
 
 🖥️ **Responsive Design**: Optimized for various screen sizes including mobile, tablet, and desktop.
 
-🙋 **About**: This tells me a little bit about myself.
+🙋 **About Section**: Provides a brief introduction, background, and expertise as a software engineer."
 
 📂 **Projects Showcase**: A detailed presentation of my projects with descriptions and links to the GitHub repositories.
 
 👨‍💼 **Experience Section**: Display of my professional experience, highlighting key achievements and roles.
 
-📫 **Contact Information**: Direct links to my GitHub, LinkedIn, and email.
+📫 **Contact Information Section**: Includes direct links to GitHub, LinkedIn, and email for easy communication.
+
 
 ## Screenshots
 
-# Main image 
+# Main image: A screenshot of the homepage showing the layout and header
 
 <img src="./src/assets/imgs/project-image.png" alt="Screenshot 1" width="600" height="300"/>
 
-# Image from the projects section:
+# Image from the projects section: Displays the project cards fetched from GitHub.
 
 <img src="./src/assets/imgs/project-image2.png" alt="Screenshot 2" width="600" height="300"/>
 
 ## Installation
 
-# Installation
 To run this app locally, follow these steps:
 
-1. Clone the repository:
+1. Ensure you have Node.js and npm installed. If not, download them from Node.js.
+   
+2. Clone the repository:
 
-  git clone https://github.com/your-username/my-portfolio.git
+  git clone https://github.com/Keglev/my-portfolio.git
 
-2. Navigate to the project directory:
+3. Navigate to the project directory:
    
   cd my-portfolio
 
@@ -65,9 +67,8 @@ To run this app locally, follow these steps:
 
 ## Usage
 
-This App is to showcase my portfolio. It fetches my pinned repositories here in Github. 
-It gets the images and the "About" section to show 
-on the website. 
+This App is to showcase my portfolio. 
+It fetches pinned repositories from GitHub and displays project images and descriptions
 View Details: I already put some special characters in this read.me file, so it makes it easier for Java Script to treat this file and only get the important information to 
 show on the website
 I also added some designs to show my front-end skills in my portfolio.
@@ -104,16 +105,6 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 **Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
 If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
 
 ## Technologies
 
