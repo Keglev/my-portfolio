@@ -1,5 +1,6 @@
+// src/components/Experience/Experience.js
 import React from 'react';
-import styled from 'styled-components';
+import './Experience.css'; // Importing the CSS file
 
 const Experience = () => {
   const experiences = [
@@ -26,79 +27,19 @@ const Experience = () => {
   ];
 
   return (
-    <ExperienceContainer id="Experience">
+    <div className="experience-container" id="Experience">
       <h2>My Experience</h2>
-      <ExperienceList>
+      <div className="experience-list">
         {experiences.map((exp, index) => (
-          <ExperienceCard key={index}>
+          <div className="experience-card" key={index}>
             <h3>{exp.title}</h3>
             <p className="date">{exp.date}</p>
             <p>{exp.summary}</p>
-          </ExperienceCard>
+          </div>
         ))}
-      </ExperienceList>
-    </ExperienceContainer>
+      </div>
+    </div>
   );
 };
 
 export default Experience;
-
-// Styled Components
-const ExperienceContainer = styled.div`
-  padding: 5rem 2rem;
-  background-color: #0a192f;
-  color: #ccd6f6;
-
-  h2 {
-    font-size: 2rem;
-    color: #64ffda;
-    margin-bottom: 2rem;
-    text-align: center;
-  }
-
-   @media (max-width: 768px) {
-    padding: 2rem 1rem;
-  }
-`;
-
-const ExperienceList = styled.div`
-  display: flex;
-  flex-direction: column;  /* Aligns boxes top-down */
-  gap: 1.5rem;
-`;
-
-const ExperienceCard = styled.div`
-  background-color: #112240;
-  padding: 1.5rem;
-  border-radius: 8px;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
-
-  &:hover {
-    background-color: #1f4068;
-    box-shadow: 0px 8px 15px rgba(0, 255, 150, 0.5);
-  }
-
-  h3 {
-    color: #64ffda;
-    margin-bottom: 0.5rem;
-  }
-
-  .date {
-    color: #8892b0;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-  }
-
-  p {
-    color: #ccd6f6;
-  }
-     @media (max-width: 768px) {
-    padding: 1rem;
-    h3 {
-      font-size: 1.2rem;
-    }
-    p, .date {
-      font-size: 0.9rem;
-    }
-  }
-`;

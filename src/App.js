@@ -1,57 +1,31 @@
-import styled from 'styled-components';
-import Projects from './components/Projects';
-import About from './components/About';
-import Experience from './components/Experience';
-import Sidebar from './components/Sidebar';
+import React from 'react';
+import './App.css'; // Import the CSS file for styles
+import Projects from './components/Projects/Projects';
+import About from './components/About/About';
+import Experience from './components/Experience/Experience';
+import Sidebar from './components/Sidebar/Sidebar';
 import { GlobalStyles } from './styles/GlobalStyles';
 
 function App() {
   return (
     <>
       <GlobalStyles />
-      <Container>
+      <div className="container">
         <Sidebar />
-        <MainContent id="scroll-container">
-          <Section id="About">
+        <div className="main-content" id="scroll-container">
+          <div className="section" id="About">
             <About />
-          </Section>
-          <Section id="Experience">
+          </div>
+          <div className="section" id="Experience">
             <Experience />
-          </Section>
-          <Section id="Projects">
+          </div>
+          <div className="section" id="Projects">
             <Projects />
-          </Section>
-        </MainContent>
-      </Container>
+          </div>
+        </div>
+      </div>
     </>
   );
 }
 
 export default App;
-
-// Styled Components
-const Container = styled.div`
-  display: flex;
-  height: 100vh;
-  @media (max-width: 768px) {
-    flex-direction: column; /* Stack content for small screens */
-  }
-`;
-
-const MainContent = styled.div`
-  flex: 1;
-  overflow-y: auto; /* Make the content scrollable */
-  padding: 2rem;
-  margin-left: 350px; /* Leave space for the fixed sidebar */
-
-  @media (max-width: 768px) {
-    margin-left: 0;
-    padding: 1rem;
-  }
-`;
-
-const Section = styled.div`
-  padding: 2rem 0; /* Reduced padding to lessen gap between sections */
-  min-height: 90vh; /* Adjusted height to reduce any excessive gap */
-  scroll-margin-top: 70px; /* Adjust this value to fine-tune the section alignment */
-`;
