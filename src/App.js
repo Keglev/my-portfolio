@@ -24,14 +24,14 @@ function App() {
             <About />
           </div>
 
-          {/* Section for Experience component */}
-          <div className="section" id="Experience">
-            <Experience />
-          </div>
-
           {/* Section for Projects component */}
           <div className="section" id="Projects">
             <Projects />
+          </div>
+
+          {/* Section for Experience component */}
+          <div className="section" id="Experience">
+            <Experience />
           </div>
         </div>
       </div>

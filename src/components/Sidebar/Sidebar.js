@@ -21,16 +21,16 @@ const Sidebar = () => {
   useEffect(() => {
     const handleScroll = () => {
       const aboutSection = document.getElementById('About');
-      const experienceSection = document.getElementById('Experience');
       const projectsSection = document.getElementById('Projects');
+      const experienceSection = document.getElementById('Experience');
 
       const scrollPosition = window.scrollY + window.innerHeight / 2; // Get scroll position relative to viewport height
 
       // Set the active section based on the scroll position
       if (projectsSection && scrollPosition >= projectsSection.offsetTop) {
-        setActiveSection('Projects');
-      } else if (experienceSection && scrollPosition >= experienceSection.offsetTop) {
         setActiveSection('Experience');
+      } else if (experienceSection && scrollPosition >= experienceSection.offsetTop) {
+        setActiveSection('Projects');
       } else if (aboutSection && scrollPosition >= aboutSection.offsetTop) {
         setActiveSection('About');
       }
@@ -57,41 +57,41 @@ const Sidebar = () => {
       <Menu>
         {/* Link to "About" section, highlights when active */}
         <StyledLink
-          to="About"
-          smooth={true}
-          duration={500}
-          spy={true}
-          activeClass={activeSection === 'About' ? 'active' : ''}
-          containerId="scroll-container"
-          offset={70} // Adjust the offset value to handle fixed header
+            to="About"
+            smooth={true}
+            duration={500}
+            spy={true}
+            activeClass={activeSection === 'About' ? 'active' : ''}
+            containerId="scroll-container"
+            offset={70} // Adjust the offset value to handle fixed header
         >
-          About
+            About
+        </StyledLink>
+
+         {/* Link to "Projects" section */}
+         <StyledLink
+            to="Projects"
+            smooth={true}
+            duration={500}
+            spy={true}
+            activeClass={activeSection === 'Projects' ? 'active' : ''}
+            containerId="scroll-container"
+            offset={70}
+        >
+            Projects
         </StyledLink>
         
         {/* Link to "Experience" section */}
         <StyledLink
-          to="Experience"
-          smooth={true}
-          duration={500}
-          spy={true}
-          activeClass={activeSection === 'Experience' ? 'active' : ''}
-          containerId="scroll-container"
-          offset={70}
+            to="Experience"
+            smooth={true}
+            duration={500}
+            spy={true}
+            activeClass={activeSection === 'Experience' ? 'active' : ''}
+            containerId="scroll-container"
+            offset={70}
         >
-          Experience
-        </StyledLink>
-        
-        {/* Link to "Projects" section */}
-        <StyledLink
-          to="Projects"
-          smooth={true}
-          duration={500}
-          spy={true}
-          activeClass={activeSection === 'Projects' ? 'active' : ''}
-          containerId="scroll-container"
-          offset={70}
-        >
-          Projects
+            Experience
         </StyledLink>
       </Menu>
 
