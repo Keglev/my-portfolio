@@ -106,21 +106,46 @@ const getAboutSection = (readmeText) => {
 const getTechnologyWords = (readmeText) => {
   if (!readmeText) return [];
 
-  // Find the "Technologies" section in the README
-  const techIndex = readmeText.toLowerCase().indexOf('## technologies');
-  if (techIndex === -1) return [];
+  console.log("Processing README for Tech Stack:", readmeText);
+
+  // Match "## Technologies" with or without spaces and emojis
+  const techMatch = readmeText.match(/##+\s*Technologies/i);
+
+  if (!techMatch) {
+    console.log("Technologies section NOT found in README.");
+    return [];
+  }
+
+  console.log("Technologies section FOUND in README!");
 
   // Extract content after "Technologies"
-  const contentAfterTech = readmeText.substring(techIndex).split('\n').slice(1);
+  const contentAfterTech = readmeText.substring(techMatch.index).split('\n').slice(1);
+  console.log("Extracted Tech Section Content:", contentAfterTech);
   const techWords = [];
+
   for (let line of contentAfterTech) {
     if (line.trim().startsWith('#')) break; // Stop at the next section
-    const words = line.match(/\*\w+/g); // Match words starting with *
+
+    // Skip empty lines, links, and unrelated sections
+    if (!line.trim() || line.toLowerCase().includes("contributing") || line.startsWith("[")) {
+      continue;
+    }
+    console.log("Processing Line:", line);
+
+    // Extract technologies that start with "*Tech" or "**Tech"
+    const words = line.match(/\*\s*([\w\s()-]+)/g);
     if (words) {
-      techWords.push(...words.map(word => word.replace('*', ''))); // Remove asterisks
+      words.forEach(word => {
+        const extractedWord = word.replace(/^\*\s*/, '').trim(); // Remove leading "*"
+        console.log("Extracted Technology:", extractedWord);
+        techWords.push(extractedWord);
+      });
     }
   }
+
+  console.log("Extracted Tech Stack:", techWords);
   return techWords;
 };
+
 
 export default Projects;

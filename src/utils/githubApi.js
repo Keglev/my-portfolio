@@ -48,7 +48,10 @@ export const fetchPinnedRepositories = async () => {
       }
     );
     
-    console.log("GitHub API Response:", response.data); // Log the API response for debugging
+    console.log("GitHub API Response:", response.data.data.user.pinnedItems.nodes.map(repo => ({
+      name: repo.name,
+      readme: repo.object ? repo.object.text : "No README found"
+    }))); // Log the API response for debugging
 
     // Return the array of pinned repositories data from the API response
     return response.data.data.user.pinnedItems.nodes;
