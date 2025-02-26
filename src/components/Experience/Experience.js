@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next'; // Importing translation hook
 import './Experience.css'; // Importing the CSS file for styling
 
 /**
@@ -7,33 +8,39 @@ import './Experience.css'; // Importing the CSS file for styling
  */
 const Experience = () => {
   // Array containing experience data
+  const { t } = useTranslation(); // Initialize translation hook
   const experiences = [
     {
-      title: 'Full Stack Developer Course - Dio (online)',
-      date: '10.2023 – Present',
-      summary: 'Developed personal projects including a portfolio website, BuzzFeed app, and restaurant finder app, integrating React, Angular, GraphQL, and Google APIs.',
+      title: t('experienceSection.experience1.title'),
+      date: t('experienceSection.experience1.date'),
+      summary: t('experienceSection.experience1.summary'),
     },
     {
-      title: 'Duagon GmbH, Electronics Factory',
-      date: '04.2023 - Present',
-      summary: 'Ensured high-quality production standards, improved processes, and reduced quality issues by 25% through analysis and task management.',
+      title: t('experienceSection.experience2.title'),
+      date: t('experienceSection.experience2.date'),
+      summary: t('experienceSection.experience2.summary'),
     },
     {
-      title: 'Buyer, K&K Brands',
-      date: '03.2019 – 09.2021',
-      summary: 'Increased profits by 18% through research-driven pricing decisions and procurement strategies.',
+      title: t('experienceSection.experience3.title'),
+      date: t('experienceSection.experience3.date'),
+      summary: t('experienceSection.experience3.summary'),
     },
     {
-      title: 'Production Worker, Alcon-Novartis',
-      date: '02.2018 – 12.2018',
-      summary: 'Improved production output by 45% through process analysis and implementing new strategies.',
+      title: t('experienceSection.experience4.title'),
+      date: t('experienceSection.experience4.date'),
+      summary: t('experienceSection.experience4.summary'),
+    },
+    {
+      title: t('experienceSection.experience5.title'),
+      date: t('experienceSection.experience5.date'),
+      summary: t('experienceSection.experience5.summary'),
     },
   ];
 
   return (
     <div className="experience-container" id="Experience">
       {/* Heading for the experience section */}
-      <h2>My Experience</h2>
+      <h2>{t('experience')}</h2>
       
       {/* Mapping through the experiences array and displaying each one */}
       <div className="experience-list">

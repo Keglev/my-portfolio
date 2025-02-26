@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 import { fetchPinnedRepositories } from '../../utils/githubApi';
 import './Projects.css'; // Importing the CSS file for styling
 
@@ -8,6 +9,7 @@ import './Projects.css'; // Importing the CSS file for styling
  */
 const Projects = () => {
   // State to store the list of projects
+  const { t } = useTranslation(); // Initialize translation hook
   const [projects, setProjects] = useState([]);
 
   // Fetch pinned repositories on component mount
@@ -23,7 +25,7 @@ const Projects = () => {
   return (
     <div className="project-container" id="Projects">
       {/* Heading for the projects section */}
-      <h2>Projects</h2>
+      <h2>{t('projects')}</h2>
       
       {/* Displaying each project as a card */}
       <div className="project-grid">
@@ -56,7 +58,7 @@ const Projects = () => {
               
               {/* Link to view the project on GitHub */}
               <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-link">
-                View on GitHub
+              {t('viewOnGithub')} {/* Translate button text */}
               </a>
             </div>
           </div>

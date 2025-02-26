@@ -1,0 +1,48 @@
+{
+  "name": "Carlos Keglevich",
+  "title": "Software Engineer",
+  "about": "Über mich",
+  "projects": "Projekte",
+  "experience": "Erfahrung",
+  "footerMessage": "Entworfen & entwickelt von Carlos Keglevich",
+  "language": {
+    "english": "Englisch",
+    "german": "Deutsch"
+  },
+  "aboutSection": {
+    "heading": "Über mich",
+    "description1": "Hallo! Ich bin Carlos Keglevich, ein Backend-Entwickler mit Sitz in Deutschland.",
+    "description2": "Ich spezialisiere mich auf Java Spring Boot und PostgreSQL und konzentriere mich auf skalierbare und sichere REST-APIs.",
+    "description3": "Wenn ich nicht programmiere, genieße ich Kaffee, Technologie und neue Frameworks."
+  },
+  "experienceSection": {
+    "experience1": {
+      "title": "Backend-Entwickler | Persönliches Projekt",
+      "date": "11.2024 - heute",
+      "summary": "Entwickelte einen Backend-Dienst zur Bestandsverwaltung mit Java Spring Boot."
+    },
+    "experience2": {
+      "title": "Full Stack Developer Kurs - Dio (online)",
+      "date": "10.2023 – Heute",
+      "summary": "Entwickelte Projekte wie eine Portfolio-Website, BuzzFeed-App und Restaurant-Finder-App."
+    },
+    "experience3": {
+      "title": "Duagon GmbH, Elektronikfabrik | Maschinenbediener",
+      "date": "04.2023 - Heute",
+      "summary": "Bediente Maschinen und analysierte Software für PCB-Lötprozesse."
+    },
+    "experience4": {
+      "title": "K&K Brands, Atlanta USA | Einkäufer",
+      "date": "03.2019 – 09.2021",
+      "summary": "Optimierte Einkaufsentscheidungen und entwickelte Preisstrategien."
+    },
+    "experience5": {
+      "title": "Alcon-Novartis | Produktionsmitarbeiter",
+      "date": "02.2018 – 12.2018",
+      "summary": "Steigerte die Produktionsleistung um 45% durch Prozessoptimierung."
+    }
+  },
+  "viewOnGithub": "Auf GitHub ansehen"
+}
+
+  

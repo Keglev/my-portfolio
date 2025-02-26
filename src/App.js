@@ -5,6 +5,7 @@ import About from './components/About/About'; // Import About component
 import Experience from './components/Experience/Experience'; // Import Experience component
 import Sidebar from './components/Sidebar/Sidebar'; // Import Sidebar component
 import { GlobalStyles } from './styles/GlobalStyles'; // Import global styles
+import "./i18n"; // Import the i18n configuration
 
 function App() {
   return (

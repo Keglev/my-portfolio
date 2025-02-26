@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 import {
   SidebarContainer,
@@ -9,12 +10,16 @@ import {
   SocialLinks,
   FooterMessage,
 } from './SidebarStyles'; // Importing styled components from a separate file
+import LanguageButtons from '../LanguageButtons/LanguageButtons'; // Import LanguageButtons component
+
+import i18n from '../../i18n'; // Import i18n configuration
 
 /**
  * Sidebar component that displays navigation links, social media icons, and contact information.
  * Tracks the active section based on the user's scroll position and highlights the corresponding link.
  */
 const Sidebar = () => {
+  const { t } = useTranslation(); // Translation function to translate text
   const [activeSection, setActiveSection] = useState('About'); // State to track the active section
 
   // Hook to update the active section based on the user's scroll position
@@ -45,12 +50,16 @@ const Sidebar = () => {
     };
   }, []);
 
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
+
   return (
     <SidebarContainer>
       {/* Display name and title */}
       <NameTitle>
-        <h1>Carlos Keglevich</h1>
-        <h2>Software Engineer</h2>
+        <h1>{t('name')}</h1>
+        <h2>{t('title')}</h2>
       </NameTitle>
 
       {/* Navigation menu */}
@@ -65,7 +74,7 @@ const Sidebar = () => {
             containerId="scroll-container"
             offset={70} // Adjust the offset value to handle fixed header
         >
-            About
+            {t('about')}
         </StyledLink>
 
          {/* Link to "Projects" section */}
@@ -78,7 +87,7 @@ const Sidebar = () => {
             containerId="scroll-container"
             offset={70}
         >
-            Projects
+            {t('projects')}
         </StyledLink>
         
         {/* Link to "Experience" section */}
@@ -91,7 +100,7 @@ const Sidebar = () => {
             containerId="scroll-container"
             offset={70}
         >
-            Experience
+            {t('experience')}
         </StyledLink>
       </Menu>
 
@@ -109,6 +118,14 @@ const Sidebar = () => {
           </a>
         </SocialLinks>
       </SocialLinksWrapper>
+
+       {/* Language Switch Buttons */}
+       <div style={{ marginBottom: '2rem' }}>
+        <LanguageButtons>
+          <button onClick={() => changeLanguage('en')}>{t('language.english')}</button>
+          <button onClick={() => changeLanguage('de')}>{t('language.german')}</button>
+        </LanguageButtons>
+      </div>
 
       {/* Footer message */}
       <FooterMessage>

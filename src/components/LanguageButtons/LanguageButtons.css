@@ -1,0 +1,55 @@
+/* Container for the language buttons */
+.language-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem; /* Extra space below the buttons */
+    justify-content: center;
+  }
+  
+  /* Styling for each language button */
+  .language-buttons button {
+    background-color: transparent;
+    border: 2px solid #64ffda;
+    color: #64ffda;
+    font-size: 1rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  /* Hover effect: Similar to Sidebar links */
+  .language-buttons button:hover {
+    background-color: #64ffda;
+    color: #0a192f;
+    transform: scale(1.1); /* Slight zoom effect */
+  }
+  
+  /* Active button style */
+  .language-buttons button.active {
+    background-color: #64ffda;
+    color: #0a192f;
+    font-weight: bold;
+    border: 3px solid #52e0c4;
+  }
+  
+  /* Press-down effect */
+  .language-buttons button:active {
+    transform: scale(0.95); /* Slight press-down effect */
+    border: 3px solid #52e0c4; /* Slightly thicker border */
+  }
+  
+  /* Responsive Design: Adjust button size on small screens */
+  @media (max-width: 768px) {
+    .language-buttons {
+      gap: 0.5rem;
+    }
+  
+    .language-buttons button {
+      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+    }
+  }
+  

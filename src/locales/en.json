@@ -1,0 +1,48 @@
+{
+  "name": "Carlos Keglevich",
+  "title": "Software Engineer",
+  "about": "About",
+  "projects": "Projects",
+  "experience": "Experience",
+  "footerMessage": "Designed & Built by Carlos Keglevich",
+  "language": {
+    "english": "English",
+    "german": "Deutsch"
+  },
+  "aboutSection": {
+    "heading": "About Me",
+    "description1": "Hi! I'm Carlos Keglevich, a Backend Developer based in Germany.",
+    "description2": "I specialize in Java Spring Boot and PostgreSQL, focusing on scalable and secure REST APIs.",
+    "description3": "When not coding, I enjoy coffee, tech, and exploring new frameworks."
+  },
+  "experienceSection": {
+    "experience1": {
+      "title": "Backend Developer | Personal Project",
+      "date": "11.2024 - present",
+      "summary": "Developed a backend service for stock management using Java Spring Boot."
+    },
+    "experience2": {
+      "title": "Full Stack Developer Course - Dio (online)",
+      "date": "10.2023 – Present",
+      "summary": "Developed projects including a portfolio website, BuzzFeed app, and restaurant finder app."
+    },
+    "experience3": {
+      "title": "Duagon GmbH, Electronics Factory | Machine Operator",
+      "date": "04.2023 - Present",
+      "summary": "Operated machines and analyzed software for PCB soldering processes."
+    },
+    "experience4": {
+      "title": "K&K Brands, Atlanta USA | Buyer",
+      "date": "03.2019 – 09.2021",
+      "summary": "Optimized purchasing decisions and developed pricing models."
+    },
+    "experience5": {
+      "title": "Alcon-Novartis | Production Worker",
+      "date": "02.2018 – 12.2018",
+      "summary": "Improved production output by 45% through process optimization."
+    }
+  },
+  "viewOnGithub": "View on GitHub"
+}
+
+  
