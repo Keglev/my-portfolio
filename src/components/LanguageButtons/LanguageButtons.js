@@ -10,7 +10,7 @@ const LanguageButtons = () => {
       i18n.changeLanguage(language);
       setActiveLang(language); // Update active language state
     };
-  
+    // Return the language buttons with the active language highlighted
     return (
       <div className="language-buttons">
         <button
