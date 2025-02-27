@@ -15,6 +15,7 @@ const About = () => {
   return (
     <div className="about-container" id="About">
       {/* Content section */}
+      {/* Display the heading and description of the about section from the locales directory, according to the selected language*/}
       <div className="content">
         <h2>{t('aboutSection.heading')}</h2>
         <p>{t('aboutSection.description1')}</p>
