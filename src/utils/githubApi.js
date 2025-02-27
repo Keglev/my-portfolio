@@ -44,20 +44,18 @@ export const fetchPinnedRepositories = async () => {
       {
         headers: {
           Authorization: `Bearer ${GITHUB_TOKEN}`, // Use the GitHub token for authentication
+          "X-GitHub-Api-Version": "2022-11-28", // Specify the API version
         },
       }
     );
-    
-    console.log("GitHub API Response:", response.data.data.user.pinnedItems.nodes.map(repo => ({
-      name: repo.name,
-      readme: repo.object ? repo.object.text : "No README found"
-    }))); // Log the API response for debugging
-
     // Return the array of pinned repositories data from the API response
     return response.data.data.user.pinnedItems.nodes;
   } catch (error) {
-    // Handle errors during the API request and log relevant error information
-    console.error('Error fetching pinned repositories:', error.response ? error.response.data : error);
-    return []; // Return an empty array in case of an error
+    if (error.response && error.response.status === 401) {
+      console.error("GitHub token is expired or invalid.");
+    } else {
+      console.error('Error fetching pinned repositories:', error);
+    }
+    return []; // Return an empty array so Projects.js can show an error message
   }
 };

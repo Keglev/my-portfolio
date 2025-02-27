@@ -11,13 +11,23 @@ const Projects = () => {
   // State to store the list of projects
   const { t } = useTranslation(); // Initialize translation hook
   const [projects, setProjects] = useState([]);
+  const [error, setError] = useState(false); // Track errors
 
   // Fetch pinned repositories on component mount
   useEffect(() => {
     const getProjects = async () => {
-      const projectData = await fetchPinnedRepositories(); // Fetch pinned projects from GitHub
-      console.log('Fetched Projects:', projectData); // Debugging: log fetched data
-      setProjects(projectData); // Update state with fetched projects
+      try {
+        const projectData = await fetchPinnedRepositories();
+        
+        if (projectData.length === 0) {
+          setError(true); // If the API returns an empty array, assume an error (expired token)
+        } else {
+          setProjects(projectData);
+          setError(false); // Reset error if projects are fetched successfully
+        }
+      } catch (err) {
+        setError(true);
+      }
     };
     getProjects();
   }, []);
@@ -28,6 +38,10 @@ const Projects = () => {
       <h2>{t('projects')}</h2>
       
       {/* Displaying each project as a card */}
+      {error ? (
+        // Error message if the API fails to fetch projects
+        <p className="error-message"> Your GitHub token is probably expired. Please renew it to display your projects.</p>
+      ) : (
       <div className="project-grid">
         {projects.map((project, index) => (
           <div className="project-card" key={index}>
@@ -41,7 +55,6 @@ const Projects = () => {
               alt={`${project.name} project`}  // Alt text without the word "image"
               className="project-image"
             />
-
             <div className="project-content">
               {/* Project name */}
               <h3>{project.name}</h3>
@@ -64,6 +77,7 @@ const Projects = () => {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 };
