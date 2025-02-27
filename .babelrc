@@ -1,0 +1,15 @@
+{
+    "presets": ["react-app"],
+    "ignore": [],
+    "plugins": [
+      "@babel/plugin-proposal-optional-chaining",
+      "@babel/plugin-proposal-nullish-coalescing-operator"
+    ],
+    "overrides": [
+      {
+        "test": ["./node_modules/react-i18next"],
+        "presets": ["@babel/preset-env"]
+      }
+    ]
+  }
+  
