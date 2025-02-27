@@ -9,7 +9,7 @@ import './Experience.css'; // Importing the CSS file for styling
 const Experience = () => {
   // Array containing experience data
   const { t } = useTranslation(); // Initialize translation hook
-  // used text from locales according to selected language
+  // used text from locales directory according to selected language
   const experiences = [
     {
       title: t('experienceSection.experience1.title'),
