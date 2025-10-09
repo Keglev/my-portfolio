@@ -11,6 +11,9 @@
 # production
 /build
 
+# generated at build time
+/public/projects.json
+
 # misc
 .env
 .DS_Store

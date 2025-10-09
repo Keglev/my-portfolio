@@ -6,6 +6,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased; /* Smooth fonts in WebKit-based browsers */
   -moz-osx-font-smoothing: grayscale; /* Smooth fonts for Firefox on macOS */
+  background-color: #0a192f; /* Dark background */
+  color: #ccd6f6; /* Light text color */
 }
 
 /* Style for <code> elements */

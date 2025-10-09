@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="450" viewBox="0 0 800 450" fill="none">
+  <rect width="800" height="450" rx="8" fill="#0f2238" />
+  <g fill="#7aa7d9" font-family="Arial, Helvetica, sans-serif" font-weight="600">
+    <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" font-size="28">Image not available</text>
+    <text x="50%" y="60%" dominant-baseline="middle" text-anchor="middle" font-size="16" fill="#9ec7ef">I'll be added soon — or check project README</text>
+  </g>
+  <g opacity="0.06" fill="#ffffff">
+    <rect x="40" y="340" width="120" height="12" rx="6"/>
+    <rect x="170" y="340" width="120" height="12" rx="6"/>
+    <rect x="300" y="340" width="120" height="12" rx="6"/>
+  </g>
+</svg>

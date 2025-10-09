@@ -12,7 +12,8 @@ i18n
     },
     lng: 'en', // Default language
     fallbackLng: 'en',
-    interpolation: { escapeValue: false } // React already escapes values
+    interpolation: { escapeValue: false }, // React already escapes values
+    compatibilityJSON: 'v3' // For synchronous init
   });
 
 export default i18n;
