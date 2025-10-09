@@ -25,7 +25,18 @@ jobs:
       - name: Fetch GitHub pinned projects
         env:
           GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
-        run: node scripts/fetchProjects.js
+          # ensure the automatically-provided GITHUB_TOKEN is available in env for the script as a fallback
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Run a minimal presence-check (prints only 'present'/'missing' — secret values are not echoed)
+        run: |
+          if [ -n "$GH_PROJECTS_TOKEN" ]; then
+            echo "GH_PROJECTS_TOKEN present"
+          elif [ -n "$GITHUB_TOKEN" ]; then
+            echo "GITHUB_TOKEN present"
+          else
+            echo "No token provided in environment"
+          fi
+          node scripts/fetchProjects.js
 
       - name: Build
         run: npm run build
