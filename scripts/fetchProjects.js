@@ -12,10 +12,18 @@ const axios = require('axios');
 
 const OUT_PATH = path.join(__dirname, '..', 'public', 'projects.json');
 
-const TOKEN = process.env.GH_PROJECTS_TOKEN || process.env.GITHUB_TOKEN;
+const GH_TOKEN = process.env.GH_PROJECTS_TOKEN;
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+let TOKEN = null;
 
-if (!TOKEN) {
-  console.error('Missing GH_PROJECTS_TOKEN or GITHUB_TOKEN environment variable. Abort.');
+if (GH_TOKEN) {
+  console.log('Using GH_PROJECTS_TOKEN from environment');
+  TOKEN = GH_TOKEN;
+} else if (GITHUB_TOKEN) {
+  console.log('Using GITHUB_TOKEN from environment (workflow token)');
+  TOKEN = GITHUB_TOKEN;
+} else {
+  console.error('No GitHub token found in environment. Ensure GH_PROJECTS_TOKEN (recommended) or GITHUB_TOKEN is set in Actions secrets. Abort.');
   process.exit(2);
 }
 
