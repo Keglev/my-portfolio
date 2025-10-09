@@ -12,21 +12,30 @@ const Projects = () => {
   const { t } = useTranslation(); // Initialize translation hook
   const [projects, setProjects] = useState([]);
   const [error, setError] = useState(false); // Track errors
+  const [noProjects, setNoProjects] = useState(false); // Track if no pinned projects
+  const [loading, setLoading] = useState(true); // Track loading state
 
   // Fetch pinned repositories on component mount
   useEffect(() => {
     const getProjects = async () => {
       try {
         const projectData = await fetchPinnedRepositories();
+        console.log('Fetched project data:', projectData);
         
         if (projectData.length === 0) {
-          setError(true); // If the API returns an empty array, assume an error (expired token)
+          console.log('No projects found');
+          setNoProjects(true);
         } else {
           setProjects(projectData);
-          setError(false); // Reset error if projects are fetched successfully
+          setNoProjects(false);
         }
+        setError(false);
       } catch (err) {
+        console.error('Error fetching projects:', err);
         setError(true);
+        setNoProjects(false);
+      } finally {
+        setLoading(false);
       }
     };
     getProjects();
@@ -38,9 +47,29 @@ const Projects = () => {
       <h2>{t('projects')}</h2>
       
       {/* Displaying each project as a card */}
-      {error ? (
+      {loading ? (
+        <div className="project-grid">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <div className="project-card skeleton" key={index}>
+              <div className="skeleton-image"></div>
+              <div className="project-content">
+                <div className="skeleton-title"></div>
+                <div className="skeleton-description"></div>
+                <div className="skeleton-technologies">
+                  <div className="skeleton-tech"></div>
+                  <div className="skeleton-tech"></div>
+                  <div className="skeleton-tech"></div>
+                </div>
+                <div className="skeleton-link"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : error ? (
         // Error message if the API fails to fetch projects
-        <p className="error-message"> Your GitHub token is probably expired. Please renew it to display your projects.</p>
+        <p className="error-message">Unable to load projects. Your GitHub token may be expired or invalid.</p>
+      ) : noProjects ? (
+        <p className="error-message">No pinned repositories found. Please pin some projects on your GitHub profile.</p>
       ) : (
       <div className="project-grid">
         {projects.map((project, index) => (
