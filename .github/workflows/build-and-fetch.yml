@@ -9,6 +9,84 @@ jobs:
   fetch-and-build:
     runs-on: ubuntu-latest
     steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: "Install dependencies"
+        run: npm ci --legacy-peer-deps
+
+      - name: "Diagnostic GitHub Actions context"
+        run: |
+          echo "GITHUB_EVENT_NAME=$GITHUB_EVENT_NAME"
+          echo "GITHUB_REF=$GITHUB_REF"
+          echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY"
+          echo "GITHUB_SHA=$GITHUB_SHA"
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            echo "Event is a pull_request"
+            if [ -f "$GITHUB_EVENT_PATH" ]; then
+              # Use jq to safely extract fields from the event JSON (avoids heredoc '<<' which some linters flag)
+              PR_HEAD_REPO=$(jq -r '.pull_request.head.repo.full_name // ""' "$GITHUB_EVENT_PATH" || echo "")
+              PR_BASE_REPO=$(jq -r '.pull_request.base.repo.full_name // ""' "$GITHUB_EVENT_PATH" || echo "")
+              echo "PR_HEAD_REPO=$PR_HEAD_REPO"
+              echo "PR_BASE_REPO=$PR_BASE_REPO"
+              if [ -n "$PR_HEAD_REPO" ] && [ "$PR_HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
+                echo "This pull request comes from a forked repository — secrets will NOT be available."
+              else
+                echo "This pull request is from the same repository. Secrets should be available."
+              fi
+            else
+              echo "No GITHUB_EVENT_PATH file found; cannot inspect PR details."
+            fi
+          else
+            echo "Event is not a pull_request ($GITHUB_EVENT_NAME)"
+          fi
+
+      - name: "Fetch GitHub pinned projects"
+        env :
+          GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run : |
+          if [ -n "$GH_PROJECTS_TOKEN" ]; then
+            echo "GH_PROJECTS_TOKEN present"
+          elif [ -n "$GITHUB_TOKEN" ]; then
+            echo "GITHUB_TOKEN present"
+          else
+            echo "No token provided in environment"
+          fi
+          node scripts/fetchProjects.js
+
+      - name : "Build"
+        run : npm run build
+
+      - name : "Upload build artifact"
+        uses : actions/upload-artifact@v4
+        with :
+          name : site-build
+          path : build
+
+      - name : "Deploy to Vercel"
+        uses : amondnet/vercel-action@v20
+        with :
+          vercel-token : ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id : ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id : ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args : '--prod'
+name: Build and Fetch Projects
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  fetch-and-build:
+    runs-on: ubuntu-latest
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -22,7 +100,7 @@ jobs:
         # Short-term workaround: prefer `npm ci --legacy-peer-deps` to keep deterministic install
         run: npm ci --legacy-peer-deps
 
-      - name: Diagnostic: GitHub Actions context
+      - name: Diagnostic GitHub Actions context
         run: |
           echo "GITHUB_EVENT_NAME=$GITHUB_EVENT_NAME"
           echo "GITHUB_REF=$GITHUB_REF"
