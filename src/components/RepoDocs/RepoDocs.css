@@ -1,0 +1,7 @@
+.project-container {
+  padding: 5rem 2rem;
+  background-color: #0a192f;
+  color: #ccd6f6;
+}
+.project-container h2 { color: #64ffda; }
+.summary { color: #ccd6f6; font-size: 0.95rem; margin-top: 0.25rem; }

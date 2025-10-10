@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import "./LanguageButtons.css"; // Import the CSS file for styling
 
 const LanguageButtons = () => {
-    const { i18n } = useTranslation();
-    const [activeLang, setActiveLang] = useState(i18n.language);
+  const { i18n, t } = useTranslation();
+  const [activeLang, setActiveLang] = useState(i18n.language || 'de');
   
     const changeLanguage = (language) => {
       i18n.changeLanguage(language);
@@ -17,13 +17,13 @@ const LanguageButtons = () => {
           className={activeLang === "en" ? "active" : ""}
           onClick={() => changeLanguage("en")}
         >
-          English
+          {t('language.english')}
         </button>
         <button
           className={activeLang === "de" ? "active" : ""}
           onClick={() => changeLanguage("de")}
         >
-          Deutsch
+          {t('language.german')}
         </button>
       </div>
     );

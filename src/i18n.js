@@ -10,8 +10,8 @@ i18n
       en: { translation: enTranslation },
       de: { translation: deTranslation }
     },
-    lng: 'en', // Default language
-    fallbackLng: 'en',
+  lng: 'de', // Default language: German per user's request
+  fallbackLng: 'en',
     interpolation: { escapeValue: false }, // React already escapes values
     compatibilityJSON: 'v3' // For synchronous init
   });

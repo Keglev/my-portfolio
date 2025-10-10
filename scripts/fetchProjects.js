@@ -227,13 +227,96 @@ async function fetchPinned() {
     // Add lightweight summary & mediaDownloaded flag per repo
     for (const node of nodes) {
       const readme = node.object && node.object.text;
-      node.summary = (readme && typeof readme === 'string') ? readme.replace(/\s+/g, ' ').trim().slice(0, 160) : '';
+      // Basic summary (first paragraph or first 160 chars)
+      let summary = '';
+      if (readme && typeof readme === 'string') {
+        // Prefer first paragraph after the title or first non-empty paragraph
+        const paragraphs = readme.split(/\n\s*\n/).map(p => p.replace(/\r/g, '').trim()).filter(Boolean);
+        if (paragraphs.length > 0) {
+          summary = paragraphs[0].replace(/\s+/g, ' ').trim();
+        } else {
+          summary = readme.replace(/\s+/g, ' ').trim().slice(0, 160);
+        }
+        if (summary.length > 160) summary = summary.slice(0, 160);
+      }
+      node.summary = summary || '';
       const repo = node.name;
       const mediaDir = path.join(__dirname, '..', 'public', 'projects_media', repo);
       node.mediaDownloaded = fs.existsSync(mediaDir) && fs.readdirSync(mediaDir).filter(f => f !== 'meta.json').length > 0;
     }
 
     // Write a compact json file for the client
+    // Before writing, attempt to extract a docs link/title from each README and optionally translate summary/docsTitle to German using DeepL if API key provided
+    const extractDocsInfo = (text) => {
+      if (!text) return null;
+      // look for explicit "Documentation" links or common docs filenames
+      // Markdown link pattern: [Docs](https://...)
+      const linkRegex = /\[([^\]]*docs[^\]]*)\]\((https?:\/\/[^)]+)\)/i;
+      const explicit = text.match(linkRegex);
+      if (explicit) return { docsTitle: explicit[1].trim(), docsLink: explicit[2].trim() };
+
+      // Look for a line like: Documentation: https://...
+      const docLine = text.match(/documentation[:\s]+(https?:\/\/[^\s]+)/i);
+      if (docLine) return { docsTitle: 'Documentation', docsLink: docLine[1].trim() };
+
+      // Heuristic: link to a /docs/ path or GitHub pages
+      const heuristic = text.match(/\((https?:\/\/[^)]+\/docs[^)]+)\)/i) || text.match(/\((https?:\/\/[^)]+\.github\.io[^)]+)\)/i);
+      if (heuristic) return { docsTitle: 'Docs', docsLink: heuristic[1].trim() };
+
+      return null;
+    };
+
+    // Optional DeepL translation helper (only translate summary and docsTitle)
+  const DEEPL_KEY = process.env.DEEPL_API_KEY || process.env.DEEPL_KEY || process.env.DEEPL_SECRET;
+    const translateToGerman = async (text) => {
+      if (!DEEPL_KEY || !text) return null;
+      try {
+        // Use DeepL free/official API endpoint if key provided. Keep implementation tolerant if key is invalid.
+        const params = new URLSearchParams();
+        params.append('auth_key', DEEPL_KEY);
+        params.append('text', text);
+        params.append('target_lang', 'DE');
+
+        const r = await axios.post('https://api-free.deepl.com/v2/translate', params.toString(), {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          timeout: 10_000,
+        });
+        if (r && r.data && Array.isArray(r.data.translations) && r.data.translations[0] && r.data.translations[0].text) {
+          return r.data.translations[0].text;
+        }
+      } catch (e) {
+        // don't fail the whole build for translation errors
+        console.warn('DeepL translation failed:', e.message || e);
+      }
+      return null;
+    };
+
+    // enrich nodes with docs info and optional German translations
+    for (const node of nodes) {
+      const readme = node.object && node.object.text;
+      const docsInfo = extractDocsInfo(readme);
+      if (docsInfo) {
+        node.docsLink = docsInfo.docsLink;
+        node.docsTitle = docsInfo.docsTitle;
+      } else {
+        node.docsLink = null;
+        node.docsTitle = null;
+      }
+      // if DEEPL key present, translate summary and docsTitle
+      if (DEEPL_KEY) {
+        try {
+          const [tSummary, tDocsTitle] = await Promise.all([
+            translateToGerman(node.summary || ''),
+            translateToGerman(node.docsTitle || ''),
+          ]);
+          if (tSummary) node.summary_de = tSummary;
+          if (tDocsTitle) node.docsTitle_de = tDocsTitle;
+        } catch (e) {
+          // ignore translation errors
+        }
+      }
+    }
+
     fs.writeFileSync(OUT_PATH, JSON.stringify(nodes, null, 2), 'utf8');
     console.log('Wrote', OUT_PATH);
   } catch (err) {

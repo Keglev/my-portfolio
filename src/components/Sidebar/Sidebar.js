@@ -25,13 +25,19 @@ const Sidebar = () => {
   // Hook to update the active section based on the user's scroll position
   useEffect(() => {
     const handleScroll = () => {
-      const projectsSection = document.getElementById('Projects');
-      const experienceSection = document.getElementById('Experience');
+  const projectsSection = document.getElementById('Projects');
+  const experienceSection = document.getElementById('Experience');
+  const repoDocsSection = document.getElementById('RepoDocs');
+  const legalSection = document.getElementById('Legal');
 
       const scrollPosition = window.scrollY + window.innerHeight / 2; // Get scroll position relative to viewport height
 
       // Set the active section based on the scroll position
-      if (experienceSection && scrollPosition >= experienceSection.offsetTop) {
+      if (legalSection && scrollPosition >= legalSection.offsetTop) {
+        setActiveSection('Legal');
+      } else if (repoDocsSection && scrollPosition >= repoDocsSection.offsetTop) {
+        setActiveSection('RepoDocs');
+      } else if (experienceSection && scrollPosition >= experienceSection.offsetTop) {
         setActiveSection('Experience');
       } else if (projectsSection && scrollPosition >= projectsSection.offsetTop) {
         setActiveSection('Projects');
@@ -88,6 +94,19 @@ const Sidebar = () => {
         >
             {t('projects')}
         </StyledLink>
+       
+      {/* Link to "Repo Docs" section */}
+      <StyledLink
+        to="RepoDocs"
+        smooth={true}
+        duration={500}
+        spy={true}
+        activeClass={activeSection === 'RepoDocs' ? 'active' : ''}
+        containerId="scroll-container"
+        offset={70}
+      >
+        {t('repoDocs')}
+      </StyledLink>
         
         {/* Link to "Experience" section */}
         <StyledLink
@@ -128,7 +147,19 @@ const Sidebar = () => {
 
       {/* Footer message */}
       <FooterMessage>
-        <p>Designed & Built by Carlos Keglevich</p>
+        <p>{t('footerMessage')}</p>
+        <div style={{ marginTop: '1rem' }}>
+          <button
+            type="button"
+            onClick={() => {
+              const el = document.getElementById('Legal');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}
+            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'inherit', textDecoration: 'underline' }}
+          >
+            {t('legalLink')}
+          </button>
+        </div>
       </FooterMessage>
     </SidebarContainer>
   );

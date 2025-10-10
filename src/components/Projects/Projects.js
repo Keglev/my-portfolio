@@ -10,7 +10,7 @@ import './Projects.css'; // Importing the CSS file for styling
  */
 const Projects = () => {
   // State to store the list of projects
-  const { t } = useTranslation(); // Initialize translation hook
+  const { t, i18n } = useTranslation(); // Initialize translation hook and i18n instance
   const [projects, setProjects] = useState([]);
   const [error, setError] = useState(false); // Track errors
   const [loading, setLoading] = useState(true); // Track loading state
@@ -106,7 +106,10 @@ const Projects = () => {
               </div>
               <div className="project-content">
                 <h3>{project.name}</h3>
-                <p>{getAboutSection(project.object?.text)}</p>
+                <p>{i18n.language === 'de' && project.summary_de ? project.summary_de : getAboutSection(project.object?.text) || project.summary}</p>
+                {project.docsLink && (
+                  <p><a href={project.docsLink} target="_blank" rel="noopener noreferrer">{project.docsTitle || t('repoDocs')}</a></p>
+                )}
                 <div className="technologies">
                   {getTechnologyWords(project.object?.text).map((word, idx) => (
                     <span className="tech-box" key={idx}>{word}</span>

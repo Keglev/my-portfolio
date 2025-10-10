@@ -4,6 +4,8 @@ import Projects from './components/Projects/Projects'; // Import Projects compon
 import About from './components/About/About'; // Import About component
 import Experience from './components/Experience/Experience'; // Import Experience component
 import Sidebar from './components/Sidebar/Sidebar'; // Import Sidebar component
+import RepoDocs from './components/RepoDocs/RepoDocs';
+import Legal from './components/Legal/Legal';
 import { GlobalStyles } from './styles/GlobalStyles'; // Import global styles
 import "./i18n"; // Import the i18n configuration
 
@@ -33,6 +35,16 @@ function App() {
           {/* Section for Experience component */}
           <div className="section" id="Experience">
             <Experience />
+          </div>
+
+          {/* Section for Repo Docs component */}
+          <div className="section" id="RepoDocs">
+            <RepoDocs />
+          </div>
+
+          {/* Section for Legal / Impressum and Privacy Policy */}
+          <div className="section" id="Legal">
+            <Legal />
           </div>
         </div>
       </div>

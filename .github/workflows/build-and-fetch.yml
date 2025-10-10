@@ -37,6 +37,8 @@ jobs:
         env:
           GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_SECRET }}
+          DEEPL_KEY: ${{ secrets.DEEPL_SECRET }}
         run: |
           # Keep logging minimal (no secret values). The fetch script will log its own status.
           node scripts/fetchProjects.js
