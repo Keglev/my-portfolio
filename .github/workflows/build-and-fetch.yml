@@ -29,17 +29,23 @@ jobs:
           echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY"
           echo "GITHUB_SHA=$GITHUB_SHA"
           # Print whether this run is a pull_request and, if so, whether it's from a fork (no secrets in forked PRs)
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
             echo "Event is a pull_request"
-            echo "PR_HEAD_REPO=${{ github.event.pull_request.head.repo.full_name }}"
-            echo "PR_BASE_REPO=${{ github.event.pull_request.base.repo.full_name }}"
-            if [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
-              echo "This pull request comes from a forked repository — secrets will NOT be available."
+            if [ -f "$GITHUB_EVENT_PATH" ]; then
+              PR_HEAD_REPO=$(python -c "import json,sys; j=json.load(open('$GITHUB_EVENT_PATH')); print(j.get('pull_request',{}).get('head',{}).get('repo',{}).get('full_name',''))")
+              PR_BASE_REPO=$(python -c "import json,sys; j=json.load(open('$GITHUB_EVENT_PATH')); print(j.get('pull_request',{}).get('base',{}).get('repo',{}).get('full_name',''))")
+              echo "PR_HEAD_REPO=$PR_HEAD_REPO"
+              echo "PR_BASE_REPO=$PR_BASE_REPO"
+              if [ "$PR_HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
+                echo "This pull request comes from a forked repository — secrets will NOT be available."
+              else
+                echo "This pull request is from the same repository. Secrets should be available."
+              fi
             else
-              echo "This pull request is from the same repository. Secrets should be available."
+              echo "No GITHUB_EVENT_PATH file found; cannot inspect PR details."
             fi
           else
-            echo "Event is not a pull_request (\${{ github.event_name }})"
+            echo "Event is not a pull_request ($GITHUB_EVENT_NAME)"
           fi
 
       - name: Fetch GitHub pinned projects
