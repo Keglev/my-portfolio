@@ -23,8 +23,11 @@ if (GH_TOKEN) {
   console.log('Using GITHUB_TOKEN from environment (workflow token)');
   TOKEN = GITHUB_TOKEN;
 } else {
-  console.error('No GitHub token found in environment. Ensure GH_PROJECTS_TOKEN (recommended) or GITHUB_TOKEN is set in Actions secrets. Abort.');
-  process.exit(2);
+  // Do NOT fail the build if no token is present. Some environments (like Vercel) may provide their own tokens
+  // or you might prefer to use a checked-in sample `public/projects.json` during development.
+  console.warn('No GitHub token found in environment. Skipping fetch. If you expect a fetch, set GH_PROJECTS_TOKEN in Actions secrets.');
+  // Exit 0 so the build can continue (use existing public/projects.json if present)
+  process.exit(0);
 }
 
 const query = `

@@ -22,6 +22,26 @@ jobs:
         # Short-term workaround: prefer `npm ci --legacy-peer-deps` to keep deterministic install
         run: npm ci --legacy-peer-deps
 
+      - name: Diagnostic: GitHub Actions context
+        run: |
+          echo "GITHUB_EVENT_NAME=$GITHUB_EVENT_NAME"
+          echo "GITHUB_REF=$GITHUB_REF"
+          echo "GITHUB_REPOSITORY=$GITHUB_REPOSITORY"
+          echo "GITHUB_SHA=$GITHUB_SHA"
+          # Print whether this run is a pull_request and, if so, whether it's from a fork (no secrets in forked PRs)
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "Event is a pull_request"
+            echo "PR_HEAD_REPO=${{ github.event.pull_request.head.repo.full_name }}"
+            echo "PR_BASE_REPO=${{ github.event.pull_request.base.repo.full_name }}"
+            if [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
+              echo "This pull request comes from a forked repository — secrets will NOT be available."
+            else
+              echo "This pull request is from the same repository. Secrets should be available."
+            fi
+          else
+            echo "Event is not a pull_request (\${{ github.event_name }})"
+          fi
+
       - name: Fetch GitHub pinned projects
         env:
           GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
