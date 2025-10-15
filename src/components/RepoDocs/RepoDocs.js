@@ -9,43 +9,15 @@ const RepoDocs = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        // Try runtime pinned fetch first
-        let runtime = [];
-        try {
-          const { fetchPinnedRepositories } = await import('../../utils/githubApi');
-          runtime = await fetchPinnedRepositories();
-        } catch (e) { runtime = []; }
-
-        if (!runtime || runtime.length === 0) {
-          const res = await fetch('/projects.json');
-          if (!res.ok) return setProjectsWithDocs([]);
-          const data = await res.json();
-          const enriched = data.map(p => ({
-            name: p.name,
-            docs: p.docs || null,
-            docsLink: p.docsLink || null,
-            docsTitle: p.docsTitle_de || p.docsTitle || null,
-            summary: p.summary_de || p.summary || '',
-          }));
-          setProjectsWithDocs(enriched);
-          return;
-        }
-
-        // Enrich runtime results by fetching README to parse docs links if missing
-        const enriched = await Promise.all(runtime.map(async (p) => {
-          const repo = { name: p.name, docs: p.docs || null, docsLink: p.docsLink || null, docsTitle: p.docsTitle_de || p.docsTitle || null, summary: p.summary_de || p.summary || '' };
-          try {
-            const r = await fetch(`https://raw.githubusercontent.com/keglev/${p.name}/main/README.md`);
-            if (r.ok) {
-              const txt = await r.text();
-              if (!repo.docsLink) {
-                const m = txt.match(/\[([^\]]*doc[^\]]*)\]\((https?:\/\/[^)\s]+)\)/i);
-                if (m) { repo.docsTitle = m[1]; repo.docsLink = m[2]; }
-              }
-              repo.summary = repo.summary || (txt.split(/\n\s*\n/).map(s=>s.trim()).filter(Boolean)[0] || '');
-            }
-          } catch (e) {}
-          return repo;
+        const res = await fetch('/projects.json');
+        if (!res.ok) return setProjectsWithDocs([]);
+        const data = await res.json();
+        const enriched = data.map(p => ({
+          name: p.name,
+          docs: p.docs || null,
+          docsLink: p.docsLink || null,
+          docsTitle: p.docsTitle_de || p.docsTitle || null,
+          summary: p.summary_de || p.summary || '',
         }));
         setProjectsWithDocs(enriched);
       } catch (e) {

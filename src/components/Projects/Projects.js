@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next'; // Import translation hook
-import { fetchPinnedRepositories } from '../../utils/githubApi';
+// fetchPinnedRepositories intentionally not used in production; we force build-time /projects.json
 import './Projects.css'; // Importing the CSS file for styling
 // placeholder SVG will be generated on the fly when an image fails to load
 
@@ -23,51 +23,16 @@ const Projects = () => {
   useEffect(() => {
     const getProjects = async () => {
       try {
-        let projectData = [];
-        try {
-          projectData = await fetchPinnedRepositories();
-        } catch (e) {
-          console.warn('Runtime pinned fetch failed, will fallback to static /projects.json', e);
-          projectData = [];
-        }
-
-        if (!projectData || projectData.length === 0) {
-          // fallback to static file
-          const resp = await fetch('/projects.json');
-          if (resp.ok) {
-            const data = await resp.json();
-            setProjects(data);
-            setError(false);
-            return;
-          }
-          setError(true);
+        const resp = await fetch('/projects.json');
+        if (resp.ok) {
+          const data = await resp.json();
+          setProjects(data);
+          setError(false);
           return;
         }
-
-        // Enrich each repo by fetching README from raw.githubusercontent to extract summary, images, and docs
-        const enriched = await Promise.all(projectData.map(async (p) => {
-          const repo = { ...p };
-          let readme = '';
-          for (const br of ['main', 'master']) {
-            try {
-              const r = await fetch(`https://raw.githubusercontent.com/keglev/${repo.name}/${br}/README.md`);
-              if (r.ok) { readme = await r.text(); break; }
-            } catch (e) { /* ignore */ }
-          }
-          repo.object = repo.object || {};
-          repo.object.text = readme || '';
-          const paragraphs = (repo.object.text || '').split(/\n\s*\n/).map(p => p.replace(/\r/g, '').trim()).filter(Boolean);
-          repo.summary = paragraphs.length > 0 ? paragraphs[0].replace(/\s+/g, ' ').slice(0, 160) : '';
-          repo.technologies = (repo.object.text && getTechnologyWords(repo.object.text)) || [];
-          const docMatch = (repo.object.text || '').match(/\[([^\]]*doc[^\]]*)\]\((https?:\/\/[^)\s]+)\)/i);
-          if (docMatch) { repo.docsLink = docMatch[2]; repo.docsTitle = docMatch[1]; }
-          return repo;
-        }));
-
-        setProjects(enriched);
-        setError(false);
+        setError(true);
       } catch (err) {
-        console.error('Error loading projects:', err);
+        console.error('Error loading projects.json:', err);
         setError(true);
       } finally {
         setLoading(false);
