@@ -39,7 +39,7 @@ jobs:
           mkdir -p .vercel/output/static
           cp -r build/* .vercel/output/static/ || true
           mkdir -p .vercel/output/functions || true
-          printf '%s\n' '{' '  "version": 2,' '  "routes": [' '    { "src": "/(.*)", "dest": "/index.html" }' '  ]' '}' > .vercel/output/config.json
+            printf '%s\n' '{' '  "version": 3,' '  "routes": [' '    { "src": "/(.*)", "dest": "/index.html" }' '  ]' '}' > .vercel/output/config.json
           echo '{}' > .vercel/output/.vc-config.json || true
 
       - name: Deploy to Vercel (prebuilt)
