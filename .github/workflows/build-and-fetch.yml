@@ -29,6 +29,11 @@ jobs:
         run: |
           node scripts/fetchProjects.js
 
+      - name: Post-process fetched projects (prefer github.io docs)
+        if: github.event_name != 'pull_request'
+        run: |
+          node scripts/postprocessProjects.js
+
       - name: Build
         run: npm run build
 
