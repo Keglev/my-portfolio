@@ -591,6 +591,85 @@ async function translateToGermanDetailed(text) {
   }
 }
 
+// Extract specific repo docs pieces per user's requirements and translate descriptions to German.
+// Returns an object with found items or null when nothing found.
+async function extractRepoDocsDetailed(readmeText) {
+  if (!readmeText || !readmeText.length) return null;
+  const out = { architectureOverview: null, apiDocumentation: null, testing: null };
+  try {
+    // 1) Architecture Overview: find heading 'architecture overview' and the first link starting with 'Index' in the following lines
+    const archRe = /^\s*#{1,6}\s*.*architecture overview.*$/im;
+    const archIdx = readmeText.search(archRe);
+    if (archIdx !== -1) {
+      const snippet = readmeText.slice(archIdx);
+      // find first link that contains 'Index' in its label on the following lines
+  const linkLine = snippet.match(/-\s*\.\s*\[([^\]]*Index[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
+      if (linkLine) {
+        out.architectureOverview = { title: linkLine[1].trim(), link: linkLine[2].trim(), description: (linkLine[3] || '').trim() };
+      } else {
+        // fallback: first link after heading
+        const firstLink = snippet.match(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)\s*-?\s*(.*)/i);
+        if (firstLink) out.architectureOverview = { title: firstLink[1].trim(), link: firstLink[2].trim(), description: (firstLink[3]||'').trim() };
+      }
+    }
+
+    // 2) API Documentation Hub: find heading and pick first 'Complete API Documentation' link and its description
+    const apiRe = /^\s*#{1,6}\s*.*api documentation hub.*$/im;
+    const apiIdx = readmeText.search(apiRe);
+    if (apiIdx !== -1) {
+      const snippet = readmeText.slice(apiIdx);
+      // find first list or paragraph link that contains 'Complete API' or just the first link
+  const compLink = snippet.match(/\[([^\]]*Complete API[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
+      if (compLink) out.apiDocumentation = { title: compLink[1].trim(), link: compLink[2].trim(), description: (compLink[3]||'').trim() };
+      else {
+        const firstLink = snippet.match(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)\s*-?\s*(.*)/i);
+        if (firstLink) out.apiDocumentation = { title: firstLink[1].trim(), link: firstLink[2].trim(), description: (firstLink[3]||'').trim() };
+      }
+    }
+
+    // 3) Testing & Code Quality: find heading and extract Coverage link and Testing Architecture documentation link
+    const testRe = /^\s*#{1,6}\s*.*testing & code quality.*$/im;
+    const testIdx = readmeText.search(testRe);
+    if (testIdx !== -1) {
+      const snippet = readmeText.slice(testIdx);
+  const coverageMatch = snippet.match(/\[([^\]]*coverage[^\]]*)\]\((https?:\/\/[^)\s]+)\)\s*[–—-]?\s*(.*)/i);
+      if (coverageMatch) out.testing = out.testing || {}; out.testing.coverage = { title: coverageMatch[1].trim(), link: coverageMatch[2].trim(), description: (coverageMatch[3]||'').trim() };
+  const archTestMatch = snippet.match(/\[([^\]]*Testing Architecture Documentation[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
+      if (archTestMatch) out.testing = out.testing || {}; out.testing.testingDocs = { title: archTestMatch[1].trim(), link: archTestMatch[2].trim(), description: (archTestMatch[3]||'').trim() };
+      // fallback: try to find generic 'Testing Architecture' link
+      if (!out.testing || !out.testing.testingDocs) {
+  const fallbackTest = snippet.match(/\[([^\]]*testing architecture[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
+        if (fallbackTest) { out.testing = out.testing || {}; out.testing.testingDocs = { title: fallbackTest[1].trim(), link: fallbackTest[2].trim(), description: (fallbackTest[3]||'').trim() }; }
+      }
+    }
+
+    // Translate descriptions to German (if available)
+    if (out.architectureOverview && out.architectureOverview.description) {
+      const t = await translateToGermanDetailed(out.architectureOverview.description);
+      out.architectureOverview.description_de = t && t.text ? t.text : null;
+    }
+    if (out.apiDocumentation && out.apiDocumentation.description) {
+      const t = await translateToGermanDetailed(out.apiDocumentation.description);
+      out.apiDocumentation.description_de = t && t.text ? t.text : null;
+    }
+    if (out.testing) {
+      if (out.testing.coverage && out.testing.coverage.description) {
+        const t = await translateToGermanDetailed(out.testing.coverage.description);
+        out.testing.coverage.description_de = t && t.text ? t.text : null;
+      }
+      if (out.testing.testingDocs && out.testing.testingDocs.description) {
+        const t = await translateToGermanDetailed(out.testing.testingDocs.description);
+        out.testing.testingDocs.description_de = t && t.text ? t.text : null;
+      }
+    }
+  } catch (e) {
+    if (DEBUG_FETCH) console.log('extractRepoDocsDetailed error', e && e.message);
+  }
+  // check if any data found; if none, return null
+  const foundAny = (out.architectureOverview || out.apiDocumentation || out.testing) && ( (out.architectureOverview && out.architectureOverview.link) || (out.apiDocumentation && out.apiDocumentation.link) || (out.testing && (out.testing.coverage || out.testing.testingDocs)) );
+  return foundAny ? out : null;
+}
+
 // Normalize titles/short text: strip markdown links, emoji-like surrogate pairs, common markdown punctuation
 function normalizeTitle(t, maxLen = 120) {
   if (!t) return null;
@@ -729,11 +808,17 @@ async function fetchPinned() {
       // technologies
       node.technologies = extractTechnologiesFromAst(ast);
 
-      // docs
+      // docs (AST lightweight extraction)
   const docs = extractDocsFromAst(ast, node.name) || { documentation: null, apiDocumentation: null, legacy: { docsLink: null, docsTitle: null } };
   node.docs = { documentation: docs.documentation, apiDocumentation: docs.apiDocumentation };
   node.docsLink = (docs.legacy && docs.legacy.docsLink) || null;
   node.docsTitle = (docs.legacy && docs.legacy.docsTitle) || null;
+
+  // richer repo docs extraction & translations (user-specified rules)
+  try {
+    const detailed = await extractRepoDocsDetailed(node.object && node.object.text);
+    if (detailed) node.repoDocs = detailed;
+  } catch (e) { if (DEBUG_FETCH) console.log('extractRepoDocsDetailed failed for', node.name, e && e.message); }
 
       // persist per-repo meta readmeHash and selection/translation metadata
       try {

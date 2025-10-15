@@ -32,14 +32,14 @@ function App() {
             <Projects />
           </div>
 
+          {/* Section for Repo Docs component (moved to appear after Projects) */}
+          <div className="section" id="RepoDocs">
+            <RepoDocs />
+          </div>
+
           {/* Section for Experience component */}
           <div className="section" id="Experience">
             <Experience />
-          </div>
-
-          {/* Section for Repo Docs component */}
-          <div className="section" id="RepoDocs">
-            <RepoDocs />
           </div>
 
           {/* Section for Legal / Impressum and Privacy Policy */}
