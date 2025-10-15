@@ -81,4 +81,4 @@ jobs:
         run: |
           echo "Deploying prebuilt ./build folder to Vercel via CLI"
           # Deploy the already-built static site from the ./build directory to avoid in-cloud rebuild differences
-          npx --yes vercel --prod --token "$VERCEL_TOKEN" --confirm ./build
+          npx --yes vercel --prod --token "$VERCEL_TOKEN" --confirm --prebuilt ./build
