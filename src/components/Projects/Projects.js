@@ -147,9 +147,14 @@ const Projects = () => {
                     <span className="tech-box" key={idx}>{word}</span>
                   ))}
                 </div>
-                <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-link">
-                  {t('viewOnGithub')}
-                </a>
+                <div style={{display: 'flex', gap: '8px', marginTop: '8px'}}>
+                  <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-link">
+                    {t('viewOnGithub')}
+                  </a>
+                  {project.docsLink && (
+                    <a href={project.docsLink} target="_blank" rel="noopener noreferrer" className="project-link">{project.docsTitle || t('viewDocs')}</a>
+                  )}
+                </div>
               </div>
             </div>
           ))}
