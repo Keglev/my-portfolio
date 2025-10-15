@@ -55,48 +55,31 @@ const RepoDocs = () => {
     load();
   }, []);
 
-  // Render with same container and card styles as Projects so visuals match
+  // Render horizontally like Experience cards (compact list)
   return (
-    <div className="project-container" id="RepoDocs">
+    <div className="experience-container" id="RepoDocs">
       <h2>{t('repoDocs')}</h2>
 
-      <div className="project-grid">
+      <div className="experience-list">
         {projectsWithDocs.length === 0 ? (
-            <div className="project-card visible">
-              <div className="project-content">
-                <p>{t('noRepoDocs')}</p>
-              </div>
+          <div className="experience-card">
+            <p>{t('noRepoDocs')}</p>
+          </div>
+        ) : (
+          projectsWithDocs.map((p, idx) => (
+            <div className="experience-card" key={idx}>
+              <h3>{p.name}</h3>
+              <p className="date">{p.docs && p.docs.documentation ? p.docs.documentation.title : (p.docsLink || '')}</p>
+              <p>{p.docs && p.docs.documentation ? p.docs.documentation.description : (p.summary || '')}</p>
+              {p.docs && p.docs.documentation && (
+                <p><a href={p.docs.documentation.link} target="_blank" rel="noopener noreferrer" className="project-link">{p.docs.documentation.link}</a></p>
+              )}
+              {p.docs && p.docs.apiDocumentation && (
+                <p><strong>{p.docs.apiDocumentation.title}</strong>: <a href={p.docs.apiDocumentation.link} target="_blank" rel="noopener noreferrer" className="project-link">{p.docs.apiDocumentation.link}</a></p>
+              )}
             </div>
-          ) : (
-            projectsWithDocs.map((p, idx) => (
-              <div className="project-card visible" key={idx}>
-                <div className="image-wrap" style={{ display: 'none' }} />
-                <div className="project-content">
-                  <h3>{p.name}</h3>
-                  {/* Documentation section */}
-                  {p.docs && p.docs.documentation ? (
-                    <div className="docs-block">
-                      <h4>{p.docs.documentation.title}</h4>
-                      <p className="summary">{p.docs.documentation.description}</p>
-                      <a href={p.docs.documentation.link} target="_blank" rel="noopener noreferrer" className="project-link">{p.docs.documentation.link}</a>
-                    </div>
-                  ) : (
-                    <div className="docs-block">
-                      <p>{t('noRepoDocs')}</p>
-                    </div>
-                  )}
-                  {/* API Documentation section */}
-                  {p.docs && p.docs.apiDocumentation ? (
-                    <div className="docs-block">
-                      <h4>{p.docs.apiDocumentation.title}</h4>
-                      <p className="summary">{p.docs.apiDocumentation.description}</p>
-                      <a href={p.docs.apiDocumentation.link} target="_blank" rel="noopener noreferrer" className="project-link">{p.docs.apiDocumentation.link}</a>
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-            ))
-          )}
+          ))
+        )}
       </div>
     </div>
   );
