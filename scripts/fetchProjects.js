@@ -18,7 +18,7 @@ function buildFallbackAst(text) {
       // inline parse links [label](url) into link children
       const parts = [];
       let lastIndex = 0;
-      const linkRe = /\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g;
+  const linkRe = /\[([^\]]+)\]\((https?:\/\/[^)]+|\.?\/+[^)]+|[^)]+\.md)\)/g;
       let m;
       while ((m = linkRe.exec(text)) !== null) {
         if (m.index > lastIndex) parts.push({ type: 'text', value: text.slice(lastIndex, m.index) });
@@ -430,6 +430,13 @@ function extractTechnologiesFromAst(ast) {
 function extractDocsFromAst(ast, repo) {
   try {
     const docs = { documentation: null, apiDocumentation: null };
+    // helper: convert relative hrefs to raw.githubusercontent when repo provided
+    const toRaw = (href) => {
+      if (!href) return href;
+      if (/^https?:\/\//i.test(href)) return href;
+      const p = String(href).trim().replace(/^\.\//, '').replace(/^\//, '');
+      return repo ? `https://raw.githubusercontent.com/keglev/${repo}/main/${p}` : p;
+    };
     if (!ast || !Array.isArray(ast.children)) return docs;
     for (let i = 0; i < ast.children.length; i++) {
       const n = ast.children[i];
@@ -457,6 +464,7 @@ function extractDocsFromAst(ast, repo) {
                 const link = linkNode.url;
                 const desc = nn.children.filter(c => c.type === 'text').map(c => c.value).join(' ').trim();
                 docs.documentation = { title: (linkNode.children && linkNode.children[0] && linkNode.children[0].value) || 'Documentation', link, description: desc };
+                docs.documentation = { title: (linkNode.children && linkNode.children[0] && linkNode.children[0].value) || 'Documentation', link: toRaw(link), description: desc };
                 break;
               }
             }
@@ -467,6 +475,7 @@ function extractDocsFromAst(ast, repo) {
                   const link = linkChild.url;
                   const desc = (li.children||[]).flatMap(ch => (ch.children||[])).filter(c=>c.type==='text').map(c => c.value).join(' ').trim();
                   docs.documentation = { title: (linkChild.children && linkChild.children[0] && linkChild.children[0].value) || 'Documentation', link, description: desc };
+                  docs.documentation = { title: (linkChild.children && linkChild.children[0] && linkChild.children[0].value) || 'Documentation', link: toRaw(link), description: desc };
                   break;
                 }
               }
@@ -489,6 +498,7 @@ function extractDocsFromAst(ast, repo) {
                 const link = linkNode.url;
                 const desc = nn.children.filter(c => c.type === 'text').map(c => c.value).join(' ').trim();
                 docs.apiDocumentation = { title: (linkNode.children && linkNode.children[0] && linkNode.children[0].value) || 'API Documentation', link, description: desc };
+                docs.apiDocumentation = { title: (linkNode.children && linkNode.children[0] && linkNode.children[0].value) || 'API Documentation', link: toRaw(link), description: desc };
                 break;
               }
             }
@@ -498,8 +508,19 @@ function extractDocsFromAst(ast, repo) {
                 if (linkChild) {
                   const link = linkChild.url;
                   const desc = (li.children||[]).flatMap(ch => (ch.children||[])).filter(c=>c.type==='text').map(c => c.value).join(' ').trim();
-                  docs.apiDocumentation = { title: (linkChild.children && linkChild.children[0] && linkChild.children[0].value) || 'API Documentation', link, description: desc };
+                  docs.apiDocumentation = { title: (linkChild.children && linkChild.children[0] && linkChild.children[0].value) || 'API Documentation', link: toRaw(link), description: desc };
                   break;
+                }
+                // fallback: scan for any absolute URL inside the list item and use it
+                const flat = JSON.stringify(li);
+                const m = flat.match(/https?:\/\/[^"']+/i);
+                if (m) {
+                  const u = m[0];
+                  if (/api|openapi|swagger|docs?/i.test(u) || /api/i.test(flat)) {
+                    docs.apiDocumentation = { title: 'API Documentation', link: toRaw(u), description: '' };
+                    break;
+                  }
+                  if (!docs.apiDocumentation) docs.apiDocumentation = { title: 'API Documentation', link: toRaw(u), description: '' };
                 }
               }
               if (docs.apiDocumentation) break;
@@ -593,54 +614,212 @@ async function translateToGermanDetailed(text) {
 
 // Extract specific repo docs pieces per user's requirements and translate descriptions to German.
 // Returns an object with found items or null when nothing found.
-async function extractRepoDocsDetailed(readmeText) {
+async function extractRepoDocsDetailed(readmeText, repoName) {
   if (!readmeText || !readmeText.length) return null;
   const out = { architectureOverview: null, apiDocumentation: null, testing: null };
   try {
-    // 1) Architecture Overview: find heading 'architecture overview' and the first link starting with 'Index' in the following lines
-    const archRe = /^\s*#{1,6}\s*.*architecture overview.*$/im;
-    const archIdx = readmeText.search(archRe);
-    if (archIdx !== -1) {
-      const snippet = readmeText.slice(archIdx);
-      // find first link that contains 'Index' in its label on the following lines
-  const linkLine = snippet.match(/-\s*\.\s*\[([^\]]*Index[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
-      if (linkLine) {
-        out.architectureOverview = { title: linkLine[1].trim(), link: linkLine[2].trim(), description: (linkLine[3] || '').trim() };
-      } else {
-        // fallback: first link after heading
-        const firstLink = snippet.match(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)\s*-?\s*(.*)/i);
-        if (firstLink) out.architectureOverview = { title: firstLink[1].trim(), link: firstLink[2].trim(), description: (firstLink[3]||'').trim() };
+    // helper to convert relative repo paths to raw.githubusercontent URLs
+    const toRawGithub = (href) => {
+      if (!href) return href;
+      // absolute URLs -> return as-is
+      if (/^https?:\/\//i.test(href)) return href;
+      // strip surrounding <> or whitespace
+      let p = String(href).trim().replace(/^<|>$/g, '');
+      // remove leading ./ or leading /
+      p = p.replace(/^\.\//, '').replace(/^\//, '');
+      // if repoName not provided, return original href
+      if (!repoName) return p;
+      // build raw.githubusercontent URL (prefer main branch)
+      return `https://raw.githubusercontent.com/keglev/${repoName}/main/${p}`;
+    };
+    // 1) Architecture Overview: prefer AST-like extraction by searching for a heading and then a link with 'Index' or '/docs' in the href or label.
+    try {
+      const ast = parseMarkdown(readmeText);
+      if (ast && Array.isArray(ast.children)) {
+        for (let i = 0; i < ast.children.length; i++) {
+          const n = ast.children[i];
+          if (n.type === 'heading' && /architecture overview/i.test((n.children||[]).map(c=>c.value||'').join(''))) {
+            // scan following nodes for link nodes
+            let j = i+1;
+            while (j < ast.children.length && ast.children[j].type !== 'heading') {
+              const nn = ast.children[j];
+              // paragraph with link
+              if (nn.type === 'paragraph' && Array.isArray(nn.children)) {
+                for (const ch of nn.children) {
+                  if (ch.type === 'link' && ch.url) {
+                    const u = ch.url;
+                    const label = (ch.children||[]).map(c=>c.value||'').join('');
+                    if (/index/i.test(label) || /docs?/.test(u) || /index/.test(u)) {
+                      out.architectureOverview = { title: label || 'Architecture Overview', link: toRawGithub(u), description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
+                      break;
+                    }
+                    // keep the first link as fallback
+                    if (!out.architectureOverview) out.architectureOverview = { title: label || 'Architecture Overview', link: toRawGithub(u), description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
+                  }
+                }
+              }
+              // list items with links
+              if (nn.type === 'list' && Array.isArray(nn.children)) {
+                for (const li of nn.children) {
+                  const flatLinks = JSON.stringify(li);
+                  const m = flatLinks.match(/https?:\/\/[^"']+/i);
+                  if (m) {
+                    const u = m[0];
+                    if (/docs?|index|architecture/i.test(u) || /docs?/i.test(flatLinks)) {
+                      out.architectureOverview = { title: 'Architecture Overview', link: toRawGithub(u), description: '' };
+                      break;
+                    }
+                    if (!out.architectureOverview) out.architectureOverview = { title: 'Architecture Overview', link: toRawGithub(u), description: '' };
+                  }
+                }
+              }
+              j++;
+            }
+            if (out.architectureOverview) break;
+          }
+        }
       }
+      // fallback to text regex if AST didn't yield
+      if (!out.architectureOverview) {
+        const archRe = /^\s*#{1,6}\s*.*architecture overview.*$/im;
+        const archIdx = readmeText.search(archRe);
+        if (archIdx !== -1) {
+          const snippet = readmeText.slice(archIdx);
+          const linkLine = snippet.match(/-\s*\.\s*\[([^\]]*Index[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
+          if (linkLine) out.architectureOverview = { title: linkLine[1].trim(), link: toRawGithub(linkLine[2].trim()), description: (linkLine[3] || '').trim() };
+          else {
+            const firstLink = snippet.match(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\.?\/?[^)\s]+|[^)]+\.md)\)\s*-?\s*(.*)/i);
+            if (firstLink) out.architectureOverview = { title: firstLink[1].trim(), link: toRawGithub(firstLink[2].trim()), description: (firstLink[3]||'').trim() };
+          }
+        }
+      }
+    } catch (e) {
+      if (DEBUG_FETCH) console.log('extractRepoDocsDetailed arch AST error', e && e.message);
     }
 
     // 2) API Documentation Hub: find heading and pick first 'Complete API Documentation' link and its description
-    const apiRe = /^\s*#{1,6}\s*.*api documentation hub.*$/im;
-    const apiIdx = readmeText.search(apiRe);
-    if (apiIdx !== -1) {
-      const snippet = readmeText.slice(apiIdx);
-      // find first list or paragraph link that contains 'Complete API' or just the first link
-  const compLink = snippet.match(/\[([^\]]*Complete API[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
-      if (compLink) out.apiDocumentation = { title: compLink[1].trim(), link: compLink[2].trim(), description: (compLink[3]||'').trim() };
-      else {
-        const firstLink = snippet.match(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)\s*-?\s*(.*)/i);
-        if (firstLink) out.apiDocumentation = { title: firstLink[1].trim(), link: firstLink[2].trim(), description: (firstLink[3]||'').trim() };
+    try {
+      // prefer AST extraction for api documentation hub
+      const ast = parseMarkdown(readmeText);
+      if (ast && Array.isArray(ast.children)) {
+        for (let i = 0; i < ast.children.length; i++) {
+          const n = ast.children[i];
+          if (n.type === 'heading' && /api documentation hub|api docs|api documentation/i.test((n.children||[]).map(c=>c.value||'').join(''))) {
+            let j = i+1;
+            while (j < ast.children.length && ast.children[j].type !== 'heading') {
+              const nn = ast.children[j];
+              if (nn.type === 'paragraph' && Array.isArray(nn.children)) {
+                for (const ch of nn.children) {
+                  if (ch.type === 'link' && ch.url) {
+                    const u = ch.url;
+                    const label = (ch.children||[]).map(c=>c.value||'').join('');
+                    if (/complete api|api docs|swagger|openapi|docs?/i.test(label + ' ' + u)) {
+                      out.apiDocumentation = { title: label || 'API Documentation', link: u, description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
+                      break;
+                    }
+                    if (!out.apiDocumentation) out.apiDocumentation = { title: label || 'API Documentation', link: u, description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
+                  }
+                }
+              }
+              if (nn.type === 'list' && Array.isArray(nn.children)) {
+                for (const li of nn.children) {
+                  const flat = JSON.stringify(li);
+                  const m = flat.match(/https?:\/\/[^"']+/i);
+                  if (m) {
+                    const u = m[0];
+                    if (/api|openapi|swagger|docs?/i.test(u) || /api/i.test(flat)) {
+                      out.apiDocumentation = { title: 'API Documentation', link: u, description: '' };
+                      break;
+                    }
+                    if (!out.apiDocumentation) out.apiDocumentation = { title: 'API Documentation', link: u, description: '' };
+                  }
+                }
+              }
+              j++;
+            }
+            if (out.apiDocumentation) break;
+          }
+        }
       }
+      if (!out.apiDocumentation) {
+        const apiRe = /^\s*#{1,6}\s*.*api documentation hub.*$/im;
+        const apiIdx = readmeText.search(apiRe);
+        if (apiIdx !== -1) {
+          const snippet = readmeText.slice(apiIdx);
+          const compLink = snippet.match(/\[([^\]]*Complete API[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
+          if (compLink) out.apiDocumentation = { title: compLink[1].trim(), link: compLink[2].trim(), description: (compLink[3]||'').trim() };
+          else {
+            const firstLink = snippet.match(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\.?\/?[^)\s]+|[^)]+\.md)\)\s*-?\s*(.*)/i);
+            if (firstLink) out.apiDocumentation = { title: firstLink[1].trim(), link: firstLink[2].trim(), description: (firstLink[3]||'').trim() };
+          }
+        }
+      }
+    } catch (e) {
+      if (DEBUG_FETCH) console.log('extractRepoDocsDetailed api AST error', e && e.message);
     }
 
     // 3) Testing & Code Quality: find heading and extract Coverage link and Testing Architecture documentation link
-    const testRe = /^\s*#{1,6}\s*.*testing & code quality.*$/im;
-    const testIdx = readmeText.search(testRe);
-    if (testIdx !== -1) {
-      const snippet = readmeText.slice(testIdx);
-  const coverageMatch = snippet.match(/\[([^\]]*coverage[^\]]*)\]\((https?:\/\/[^)\s]+)\)\s*[–—-]?\s*(.*)/i);
-      if (coverageMatch) out.testing = out.testing || {}; out.testing.coverage = { title: coverageMatch[1].trim(), link: coverageMatch[2].trim(), description: (coverageMatch[3]||'').trim() };
-  const archTestMatch = snippet.match(/\[([^\]]*Testing Architecture Documentation[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
-      if (archTestMatch) out.testing = out.testing || {}; out.testing.testingDocs = { title: archTestMatch[1].trim(), link: archTestMatch[2].trim(), description: (archTestMatch[3]||'').trim() };
-      // fallback: try to find generic 'Testing Architecture' link
-      if (!out.testing || !out.testing.testingDocs) {
-  const fallbackTest = snippet.match(/\[([^\]]*testing architecture[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
-        if (fallbackTest) { out.testing = out.testing || {}; out.testing.testingDocs = { title: fallbackTest[1].trim(), link: fallbackTest[2].trim(), description: (fallbackTest[3]||'').trim() }; }
+    try {
+      const ast = parseMarkdown(readmeText);
+      if (ast && Array.isArray(ast.children)) {
+        for (let i = 0; i < ast.children.length; i++) {
+          const n = ast.children[i];
+          if (n.type === 'heading' && /testing & code quality|testing/i.test((n.children||[]).map(c=>c.value||'').join(''))) {
+            let j = i+1;
+            while (j < ast.children.length && ast.children[j].type !== 'heading') {
+              const nn = ast.children[j];
+              if (nn.type === 'paragraph' && Array.isArray(nn.children)) {
+                for (const ch of nn.children) {
+                  if (ch.type === 'link' && ch.url) {
+                    const u = ch.url; const label = (ch.children||[]).map(c=>c.value||'').join('');
+                    if (/coverage|coverage badge|coveralls|codecov|coverage report/i.test(label + ' ' + u)) {
+                      out.testing = out.testing || {}; out.testing.coverage = { title: label || 'Coverage', link: u, description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
+                    }
+                    if (/testing architecture|testing docs|test architecture/i.test(label + ' ' + u)) {
+                      out.testing = out.testing || {}; out.testing.testingDocs = { title: label || 'Testing Architecture', link: u, description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
+                    }
+                    if (out.testing && out.testing.coverage && out.testing.testingDocs) break;
+                    if (!out.testing) out.testing = out.testing || {};
+                  }
+                }
+              }
+              if (nn.type === 'list' && Array.isArray(nn.children)) {
+                for (const li of nn.children) {
+                  const flat = JSON.stringify(li);
+                  const m = flat.match(/https?:\/\/[^"']+/i);
+                  if (m) {
+                    const u = m[0];
+                    if (/coverage|codecov|coveralls/i.test(u)) {
+                      out.testing = out.testing || {};
+                      out.testing.coverage = out.testing.coverage || { title: 'Coverage', link: u, description: '' };
+                    }
+                    if (/testing|test|architecture/i.test(u)) {
+                      out.testing = out.testing || {};
+                      out.testing.testingDocs = out.testing.testingDocs || { title: 'Testing Architecture', link: u, description: '' };
+                    }
+                  }
+                }
+              }
+              j++;
+            }
+            if (out.testing && (out.testing.coverage || out.testing.testingDocs)) break;
+          }
+        }
       }
+      // fallback: original regex approach
+      if (!out.testing) {
+        const testRe = /^\s*#{1,6}\s*.*testing & code quality.*$/im;
+        const testIdx = readmeText.search(testRe);
+        if (testIdx !== -1) {
+          const snippet = readmeText.slice(testIdx);
+          const coverageMatch = snippet.match(/\[([^\]]*coverage[^\]]*)\]\((https?:\/\/[^)\s]+)\)\s*[–—-]?\s*(.*)/i);
+          if (coverageMatch) { out.testing = out.testing || {}; out.testing.coverage = { title: coverageMatch[1].trim(), link: coverageMatch[2].trim(), description: (coverageMatch[3]||'').trim() }; }
+          const archTestMatch = snippet.match(/\[([^\]]*Testing Architecture Documentation[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
+          if (archTestMatch) { out.testing = out.testing || {}; out.testing.testingDocs = { title: archTestMatch[1].trim(), link: archTestMatch[2].trim(), description: (archTestMatch[3]||'').trim() }; }
+        }
+      }
+    } catch (e) {
+      if (DEBUG_FETCH) console.log('extractRepoDocsDetailed testing AST error', e && e.message);
     }
 
     // Translate descriptions to German (if available)
@@ -816,8 +995,22 @@ async function fetchPinned() {
 
   // richer repo docs extraction & translations (user-specified rules)
   try {
-    const detailed = await extractRepoDocsDetailed(node.object && node.object.text);
-    if (detailed) node.repoDocs = detailed;
+    const detailed = await extractRepoDocsDetailed(node.object && node.object.text, node.name);
+    if (detailed) {
+      node.repoDocs = detailed;
+      // Backfill legacy docsLink/docsTitle for older consumers: prefer API docs, then architecture overview
+      try {
+        if (!node.docsLink || /github\.com\/.+\/(issues|pulls?)\b/i.test(node.docsLink)) {
+          if (detailed.apiDocumentation && detailed.apiDocumentation.link) {
+            node.docsLink = detailed.apiDocumentation.link;
+            node.docsTitle = node.docsTitle || detailed.apiDocumentation.title || node.docsTitle;
+          } else if (detailed.architectureOverview && detailed.architectureOverview.link) {
+            node.docsLink = detailed.architectureOverview.link;
+            node.docsTitle = node.docsTitle || detailed.architectureOverview.title || node.docsTitle;
+          }
+        }
+      } catch (e) { if (DEBUG_FETCH) console.log('backfill docsLink failed for', node.name, e && e.message); }
+    }
   } catch (e) { if (DEBUG_FETCH) console.log('extractRepoDocsDetailed failed for', node.name, e && e.message); }
 
       // persist per-repo meta readmeHash and selection/translation metadata
@@ -886,6 +1079,48 @@ async function fetchPinned() {
           }
         }
       }
+      // If the found docs link looks like a GitHub issues/pull link, try to prefer a better docs-like link
+      try {
+  const txt = (node.object && node.object.text) || '';
+        const looksLikeIssue = (u) => !!(u && /github\.com\/.+\/(issues|pulls?)\b/i.test(u));
+        const isDocsCandidate = (u) => !!(u && /(?:\/docs\b|\bdocs\/|redoc|openapi|swagger|\/api\/|\.md\b|api\b|documentation)/i.test(u));
+        if (node.docsLink && looksLikeIssue(node.docsLink)) {
+          // prefer detailed extraction results if available
+          if (node.repoDocs) {
+            if (node.repoDocs.apiDocumentation && node.repoDocs.apiDocumentation.link && !looksLikeIssue(node.repoDocs.apiDocumentation.link)) {
+              node.docsTitle = node.repoDocs.apiDocumentation.title || node.docsTitle;
+              node.docsLink = node.repoDocs.apiDocumentation.link;
+            } else if (node.repoDocs.architectureOverview && node.repoDocs.architectureOverview.link && !looksLikeIssue(node.repoDocs.architectureOverview.link)) {
+              node.docsTitle = node.repoDocs.architectureOverview.title || node.docsTitle;
+              node.docsLink = node.repoDocs.architectureOverview.link;
+            }
+          }
+          // fallback to docs-like links in lightweight AST docs or raw README
+          if ((!node.docsLink || looksLikeIssue(node.docsLink)) && node.docs && node.docs.documentation && node.docs.documentation.link && !looksLikeIssue(node.docs.documentation.link)) {
+            node.docsTitle = node.docs.documentation.title || node.docsTitle;
+            node.docsLink = node.docs.documentation.link;
+          }
+          if ((!node.docsLink || looksLikeIssue(node.docsLink)) && txt) {
+            // find first markdown link whose href or label looks docs-like and is not an issues link
+            const linkRe = /\[([^\]]+)\]\((https?:\/\/[^)]+|\/.+?|\.\/[^)]+)\)/ig;
+            let lm;
+            while ((lm = linkRe.exec(txt)) !== null) {
+              const label = lm[1] || '';
+              const href = lm[2] || '';
+              if (looksLikeIssue(href)) continue;
+              if (isDocsCandidate(href) || isDocsCandidate(label)) {
+                node.docsTitle = node.docsTitle || label.trim();
+                // normalize relative links to repository raw if necessary
+                if (/^\//.test(href) || /^\.\/?/.test(href)) {
+                  const cleaned = href.replace(/^\.\//,'').replace(/^\//,'');
+                  node.docsLink = `https://raw.githubusercontent.com/keglev/${node.name}/main/${cleaned}`;
+                } else node.docsLink = href;
+                break;
+              }
+            }
+          }
+        }
+      } catch (e) { if (DEBUG_FETCH) console.log('post-docsLink heuristics failed', e && e.message); }
       if (DEEPL_KEY) {
         node._translation = node._translation || {};
         node._translation.debug = node._translation.debug || {};
@@ -938,4 +1173,6 @@ if (typeof module !== 'undefined' && module.exports) {
     extractTechnologiesFromAst,
     extractDocsFromAst
   };
+  // Also export the detailed extractor for debugging/runnable checks
+  try { module.exports.extractRepoDocsDetailed = extractRepoDocsDetailed; } catch (e) { /* ignore in some environments */ }
 }
