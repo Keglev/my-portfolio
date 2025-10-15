@@ -17,27 +17,8 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
-
-      - name: Run security audit (fail on high/critical)
-        run: npm run audit:ci
-
-      - name: Ensure GitHub token is present (fail-fast)
-        if: github.event_name != 'pull_request'
-        run: |
-          if [ -z "${{ secrets.GH_PROJECTS_TOKEN }}" ] && [ -z "${{ secrets.GITHUB_TOKEN }}" ]; then
-            echo "ERROR: Missing GH_PROJECTS_TOKEN and GITHUB_TOKEN secrets. Aborting build.";
-            exit 1;
-          fi
 
       - name: Fetch GitHub pinned projects
         if: github.event_name != 'pull_request'
@@ -48,150 +29,26 @@ jobs:
         run: |
           node scripts/fetchProjects.js
 
-      - name: Verify fetched projects artifact
-        if: github.event_name != 'pull_request'
-        run: |
-          echo "Checking for public/projects.json"
-          if [ -f public/projects.json ]; then
-            echo "public/projects.json exists"
-            echo "Size:" && ls -l public/projects.json
-            echo "SHA256:" && sha256sum public/projects.json || true
-            echo "Sample output (first 200 chars):" && head -c 200 public/projects.json || true
-            echo "Parsed sample via nodejs:" && node -e "const j=require('./public/projects.json'); console.log(j.slice(0,5).map(p=>({name:p.name,docsLink:p.docsLink, primaryImage:p.primaryImage})))"
-          else
-            echo "public/projects.json NOT FOUND"
-            exit 1
-          fi
-
       - name: Build
         run: npm run build
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: site-build
-          path: build
-
       - name: Prepare Vercel prebuilt output
         run: |
-          echo "Preparing .vercel/output with static build files for vercel --prebuilt"
+          echo "Preparing .vercel/output"
           rm -rf .vercel/output || true
           mkdir -p .vercel/output/static
           cp -r build/* .vercel/output/static/ || true
           mkdir -p .vercel/output/functions || true
-          # Write minimal config.json
           printf '%s\n' '{' '  "version": 2,' '  "routes": [' '    { "src": "/(.*)", "dest": "/index.html" }' '  ]' '}' > .vercel/output/config.json
           echo '{}' > .vercel/output/.vc-config.json || true
 
-      - name: Deploy to Vercel (CLI) - deploy prebuilt
+      - name: Deploy to Vercel (prebuilt)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          echo "Listing prepared .vercel/output before deploying"
+          echo "Listing .vercel/output before deploy"
           ls -la .vercel || true
           ls -la .vercel/output || true
-          echo "Deploying prebuilt .vercel/output to Vercel via CLI"
-          npx --yes vercel --prod --token "$VERCEL_TOKEN" --yes --prebuilt .
-name: "Build and Fetch Projects"
-
-on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
-
-jobs:
-  fetch-and-build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Checkout"
-        uses: actions/checkout@v4
-
-      - name: "Use Node.js"
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Cache npm
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: "Install dependencies"
-        run: npm ci --legacy-peer-deps
-
-      - name: "Run security audit (fail on high/critical)"
-        run: npm run audit:ci
-
-      - name: "Ensure GitHub token is present (fail-fast)"
-        if: github.event_name != 'pull_request'
-        run: |
-          if [ -z "${{ secrets.GH_PROJECTS_TOKEN }}" ] && [ -z "${{ secrets.GITHUB_TOKEN }}" ]; then
-            echo "ERROR: Missing GH_PROJECTS_TOKEN and GITHUB_TOKEN secrets. Aborting build.";
-            exit 1;
-          fi
-
-      - name: "Fetch GitHub pinned projects"
-        if: github.event_name != 'pull_request'
-        env:
-          GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
-        run: |
-          # Keep logging minimal (no secret values). The fetch script will log its own status.
-          node scripts/fetchProjects.js
-
-      - name: "Verify fetched projects artifact"
-        if: github.event_name != 'pull_request'
-        run: |
-          echo "Checking for public/projects.json"
-          if [ -f public/projects.json ]; then
-            echo "public/projects.json exists"
-            echo "Size:" && ls -l public/projects.json
-            echo "SHA256:" && sha256sum public/projects.json || true
-            echo "Sample output (first 200 chars):" && head -c 200 public/projects.json || true
-            echo "Parsed sample via nodejs:" && node -e "const j=require('./public/projects.json'); console.log(j.slice(0,5).map(p=>({name:p.name,docsLink:p.docsLink, primaryImage:p.primaryImage})))"
-          else
-            echo "public/projects.json NOT FOUND"
-            exit 1
-          fi
-
-      - name: "Build"
-        run: npm run build
-
-      - name: "Upload build artifact"
-        uses: actions/upload-artifact@v4
-        with:
-          name: site-build
-          path: build
-
-      - name: "Prepare Vercel prebuilt output"
-        run: |
-          echo "Preparing .vercel/output with static build files for vercel --prebuilt"
-          rm -rf .vercel/output || true
-          mkdir -p .vercel/output/static
-          # Copy build contents into the expected static output folder
-          cp -r build/* .vercel/output/static/
-          # Create a minimal config.json for Vercel Build Output API v2
-          mkdir -p .vercel/output
-          printf '%s\n' '{' '  "version": 2,' '  "routes": [' '    { "src": "/(.*)", "dest": "/index.html" }' '  ]' '}' > .vercel/output/config.json
-          # Write a minimal metadata file so Vercel recognizes the output
-          mkdir -p .vercel/output/functions || true
-          echo '{}' > .vercel/output/.vc-config.json || true
-
-      - name: "Deploy to Vercel (CLI) - deploy prebuilt build folder"
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          echo "Listing prepared .vercel/output before deploying"
-          ls -la .vercel || true
-          ls -la .vercel/output || true
-          echo "Deploying prebuilt .vercel/output to Vercel via CLI"
-          # Deploy the already-built static site from the local .vercel/output (prebuilt) to avoid in-cloud rebuild differences
           npx --yes vercel --prod --token "$VERCEL_TOKEN" --yes --prebuilt .
