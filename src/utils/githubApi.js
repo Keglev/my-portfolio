@@ -28,25 +28,11 @@ const GITHUB_TOKEN = process.env.REACT_APP_GITHUB_TOKEN;
  */
 export const fetchPinnedRepositories = async () => {
   // GraphQL query to get the first 6 pinned repositories for the user 'keglev'
+  // NOTE: We purposely do NOT request the README blob via GraphQL here. The client will
+  // fetch README content from raw.githubusercontent.com per-repo when needed to avoid
+  // exposing tokens or triggering GraphQL blob parsing edge-cases.
   const query = `
-    {
-      user(login: "keglev") {
-        pinnedItems(first: 6, types: [REPOSITORY]) {
-          nodes {
-            ... on Repository {
-              name
-              description
-              url
-              object(expression: "HEAD:README.md") {
-                ... on Blob {
-                  text
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+    query getPinned { user(login: "keglev") { pinnedItems(first: 6, types: [REPOSITORY]) { nodes { __typename ... on Repository { name description url } } } } }
   `;
 
   try {

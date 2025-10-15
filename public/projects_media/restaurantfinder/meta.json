@@ -1,0 +1,48 @@
+{
+  "readmeHash": "ab5ff37b51bb6c3bd460233c6bc943c3",
+  "files": [
+    "project-image-666fed1e.png"
+  ],
+  "imageSelection": {
+    "original": "src/assets/imgs/project-image.png",
+    "chosenUrl": "https://raw.githubusercontent.com/keglev/restaurantfinder/master/src/assets/imgs/project-image.png",
+    "reason": "explicit-project-image",
+    "filename": "project-image-666fed1e.png"
+  },
+  "primaryImage": "/projects_media/restaurantfinder/project-image-666fed1e.png",
+  "summarySource": "heading",
+  "translation": {
+    "debug": {
+      "summaryInput": "This App is about a Restaurant find based on the user's location.",
+      "docsTitleInput": "Create React App documentation",
+      "requestMs": 182
+    },
+    "summary": {
+      "text": "Bei dieser App geht es darum, ein Restaurant anhand des Standortes des Benutzers zu finden.",
+      "status": 200,
+      "raw": {
+        "translations": [
+          {
+            "detected_source_language": "EN",
+            "text": "Bei dieser App geht es darum, ein Restaurant anhand des Standortes des Benutzers zu finden."
+          }
+        ]
+      }
+    },
+    "docsTitle": {
+      "text": "React App Dokumentation erstellen",
+      "status": 200,
+      "raw": {
+        "translations": [
+          {
+            "detected_source_language": "EN",
+            "text": "React App Dokumentation erstellen"
+          }
+        ]
+      }
+    }
+  },
+  "docsTitle_de": "React App Dokumentation erstellen",
+  "docsTitle": "Create React App documentation",
+  "summary_de": "Bei dieser App geht es darum, ein Restaurant anhand des Standortes des Benutzers zu finden."
+}

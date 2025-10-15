@@ -1,0 +1,38 @@
+{
+  "readmeHash": "355295434d8703e490a416b7567b9e70",
+  "files": [
+    "project-image-8a3255c0.png"
+  ],
+  "imageSelection": {
+    "original": "src/assets/imgs/project-image.png",
+    "chosenUrl": "https://raw.githubusercontent.com/keglev/inventory-service/main/src/assets/imgs/project-image.png",
+    "reason": "explicit-project-image",
+    "filename": "project-image-8a3255c0.png"
+  },
+  "primaryImage": "/projects_media/inventory-service/project-image-8a3255c0.png",
+  "summarySource": "heading",
+  "translation": {
+    "debug": {
+      "summaryInput": "Complete enterprise-style full-stack application for Inventory & Supplier Management with comprehensive documentation, security architecture, and CI/CD integration.",
+      "docsTitleInput": "",
+      "requestMs": 254
+    },
+    "summary": {
+      "text": "Komplette Unternehmensanwendung für das Bestands- und Lieferantenmanagement mit umfassender Dokumentation, Sicherheitsarchitektur und CI/CD-Integration.",
+      "status": 200,
+      "raw": {
+        "translations": [
+          {
+            "detected_source_language": "EN",
+            "text": "Komplette Unternehmensanwendung für das Bestands- und Lieferantenmanagement mit umfassender Dokumentation, Sicherheitsarchitektur und CI/CD-Integration."
+          }
+        ]
+      }
+    },
+    "docsTitle": {
+      "text": null,
+      "status": "no-key-or-text"
+    }
+  },
+  "summary_de": "Komplette Unternehmensanwendung für das Bestands- und Lieferantenmanagement mit umfassender Dokumentation, Sicherheitsarchitektur und CI/CD-Integration."
+}

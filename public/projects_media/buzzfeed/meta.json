@@ -1,0 +1,38 @@
+{
+  "readmeHash": "7548c84d7c61617f08f756cf42b18b2f",
+  "files": [
+    "project-image-47d986d6.png"
+  ],
+  "imageSelection": {
+    "original": "src/assets/imgs/project-image.png",
+    "chosenUrl": "https://raw.githubusercontent.com/keglev/buzzfeed/main/src/assets/imgs/project-image.png",
+    "reason": "explicit-project-image",
+    "filename": "project-image-47d986d6.png"
+  },
+  "primaryImage": "/projects_media/buzzfeed/project-image-47d986d6.png",
+  "summarySource": "heading",
+  "translation": {
+    "debug": {
+      "summaryInput": "An application to mimic Buzzfeed to answer questions. Available in English, German, and Portuguese",
+      "docsTitleInput": "",
+      "requestMs": 108
+    },
+    "summary": {
+      "text": "Eine Anwendung zur Nachahmung von Buzzfeed, um Fragen zu beantworten. Verfügbar in Englisch, Deutsch und Portugiesisch",
+      "status": 200,
+      "raw": {
+        "translations": [
+          {
+            "detected_source_language": "EN",
+            "text": "Eine Anwendung zur Nachahmung von Buzzfeed, um Fragen zu beantworten. Verfügbar in Englisch, Deutsch und Portugiesisch"
+          }
+        ]
+      }
+    },
+    "docsTitle": {
+      "text": null,
+      "status": "no-key-or-text"
+    }
+  },
+  "summary_de": "Eine Anwendung zur Nachahmung von Buzzfeed, um Fragen zu beantworten. Verfügbar in Englisch, Deutsch und Portugiesisch"
+}

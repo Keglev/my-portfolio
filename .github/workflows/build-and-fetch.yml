@@ -17,19 +17,26 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Cache npm
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
       - name: "Install dependencies"
         run: npm ci --legacy-peer-deps
 
       - name: "Run security audit (fail on high/critical)"
         run: npm run audit:ci
 
-      # Minimal runtime check: don't print event or repo details to avoid accidental disclosure.
-      - name: "Runtime token presence check"
+      - name: "Ensure GitHub token is present (fail-fast)"
+        if: github.event_name != 'pull_request'
         run: |
-          if [ -n "$GH_PROJECTS_TOKEN" ] || [ -n "$GITHUB_TOKEN" ]; then
-            echo "Token environment: OK"
-          else
-            echo "Token environment: MISSING"
+          if [ -z "${{ secrets.GH_PROJECTS_TOKEN }}" ] && [ -z "${{ secrets.GITHUB_TOKEN }}" ]; then
+            echo "ERROR: Missing GH_PROJECTS_TOKEN and GITHUB_TOKEN secrets. Aborting build.";
+            exit 1;
           fi
 
       - name: "Fetch GitHub pinned projects"
@@ -37,8 +44,7 @@ jobs:
         env:
           GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEEPL_API_KEY: ${{ secrets.DEEPL_SECRET }}
-          DEEPL_KEY: ${{ secrets.DEEPL_SECRET }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
         run: |
           # Keep logging minimal (no secret values). The fetch script will log its own status.
           node scripts/fetchProjects.js

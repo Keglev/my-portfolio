@@ -18,26 +18,54 @@ const Projects = () => {
   const [loadedImages, setLoadedImages] = useState({});
 
   // Fetch pinned repositories on component mount.
-  // Prefer a build-time generated /projects.json (no client secret), fall back to runtime GitHub fetch during dev.
+  // Runtime-first: try fetching live pinned repos via GitHub (so we detect token/permission issues),
+  // then fall back to static /projects.json created at build-time.
   useEffect(() => {
     const getProjects = async () => {
       try {
-        // Try build-generated file first
-        const resp = await fetch('/projects.json');
-        if (resp.ok) {
-          const data = await resp.json();
-          setProjects(data);
-          setError(false);
+        let projectData = [];
+        try {
+          projectData = await fetchPinnedRepositories();
+        } catch (e) {
+          console.warn('Runtime pinned fetch failed, will fallback to static /projects.json', e);
+          projectData = [];
+        }
+
+        if (!projectData || projectData.length === 0) {
+          // fallback to static file
+          const resp = await fetch('/projects.json');
+          if (resp.ok) {
+            const data = await resp.json();
+            setProjects(data);
+            setError(false);
+            return;
+          }
+          setError(true);
           return;
         }
-        // If not present, fall back to runtime GitHub fetch (dev)
-        const projectData = await fetchPinnedRepositories();
-        if (projectData.length === 0) {
-          setError(true);
-        } else {
-          setProjects(projectData);
-          setError(false);
-        }
+
+        // Enrich each repo by fetching README from raw.githubusercontent to extract summary, images, and docs
+        const enriched = await Promise.all(projectData.map(async (p) => {
+          const repo = { ...p };
+          let readme = '';
+          for (const br of ['main', 'master']) {
+            try {
+              const r = await fetch(`https://raw.githubusercontent.com/keglev/${repo.name}/${br}/README.md`);
+              if (r.ok) { readme = await r.text(); break; }
+            } catch (e) { /* ignore */ }
+          }
+          repo.object = repo.object || {};
+          repo.object.text = readme || '';
+          const paragraphs = (repo.object.text || '').split(/\n\s*\n/).map(p => p.replace(/\r/g, '').trim()).filter(Boolean);
+          repo.summary = paragraphs.length > 0 ? paragraphs[0].replace(/\s+/g, ' ').slice(0, 160) : '';
+          repo.technologies = (repo.object.text && getTechnologyWords(repo.object.text)) || [];
+          const docMatch = (repo.object.text || '').match(/\[([^\]]*doc[^\]]*)\]\((https?:\/\/[^)\s]+)\)/i);
+          if (docMatch) { repo.docsLink = docMatch[2]; repo.docsTitle = docMatch[1]; }
+          return repo;
+        }));
+
+        setProjects(enriched);
+        setError(false);
       } catch (err) {
         console.error('Error loading projects:', err);
         setError(true);
@@ -81,7 +109,7 @@ const Projects = () => {
             <div className={'project-card ' + (loadedImages[index] ? 'visible' : '')} key={index}>
               <div className="image-wrap">
                 <img
-                  src={getProjectImageUrl(project.name)}
+                  src={getPrimaryImage(project)}
                   alt={project.name + ' project'}
                   className={'project-image ' + (loadedImages[index] ? 'loaded' : '')}
                   loading="lazy"
@@ -106,12 +134,16 @@ const Projects = () => {
               </div>
               <div className="project-content">
                 <h3>{project.name}</h3>
-                <p>{i18n.language === 'de' && project.summary_de ? project.summary_de : getAboutSection(project.object?.text) || project.summary}</p>
-                {project.docsLink && (
-                  <p><a href={project.docsLink} target="_blank" rel="noopener noreferrer">{project.docsTitle || t('repoDocs')}</a></p>
-                )}
+                {/* Prefer translated summary, then About section (if present), then generated summary; show skeleton when missing to avoid flicker */}
+                {(() => {
+                  const about = getAboutSection(project.object?.text);
+                  const displaySummary = (i18n.language === 'de' && project.summary_de) ? project.summary_de : (about || project.summary);
+                  if (displaySummary && displaySummary.trim()) return <p>{displaySummary}</p>;
+                  // short skeleton placeholder when summary isn't available yet
+                  return <div className="skeleton-description short skeleton" style={{width: '60%'}} />;
+                })()}
                 <div className="technologies">
-                  {getTechnologyWords(project.object?.text).map((word, idx) => (
+                  {(project.technologies && project.technologies.length > 0 ? project.technologies : getTechnologyWords(project.object?.text)).map((word, idx) => (
                     <span className="tech-box" key={idx}>{word}</span>
                   ))}
                 </div>
@@ -137,6 +169,24 @@ const getProjectImageUrl = (repoName, branch = 'main') => {
   return `https://raw.githubusercontent.com/keglev/${repoName}/${branch}/src/assets/imgs/project-image.png`;
 };
 
+// Try to find a rewritten /projects_media/<repo>/... URL inside the README body (preferred), otherwise fall back to default path.
+const getPrimaryImage = (project) => {
+  try {
+    // if fetch script rewrote and stored primaryImage, prefer it
+    if (project && project.primaryImage) return project.primaryImage;
+    const readme = project.object && project.object.text;
+    if (readme) {
+      // exclude space, double-quote, single-quote and closing paren
+  const re = new RegExp(`/projects_media/${project.name}/[^ "')]+`,'i');
+      const m = readme.match(re);
+      if (m && m[0]) return m[0];
+    }
+  } catch (e) {
+    // ignore
+  }
+  return getProjectImageUrl(project.name);
+};
+
 // Generate a small inline SVG data URL with repository name (professional placeholder)
 const generatePlaceholderSVGDataUrl = (title) => {
   const safe = (title || 'Project').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -150,21 +200,32 @@ const generatePlaceholderSVGDataUrl = (title) => {
  * @returns {string} - Extracted "About" section
  */
 const getAboutSection = (readmeText) => {
-  if (!readmeText) return 'No description available';
+  if (!readmeText) return null;
 
-  // Find the "About" section in the README
-  const aboutIndex = readmeText.toLowerCase().indexOf('## about');
-  if (aboutIndex === -1) return 'No "About" section found.';
+  // Find a heading that mentions "about" (any level: #, ##, ###)
+  const match = readmeText.match(/(^|\n)#{1,6}\s*about\b/i);
+  if (!match) return null;
 
-  // Extract content after "About"
-  const contentAfterAbout = readmeText.substring(aboutIndex).split('\n').slice(1);
-  const aboutSection = [];
-  for (let line of contentAfterAbout) {
-    if (line.trim().startsWith('#')) break; // Stop at the next section
-    if (line.trim()) aboutSection.push(line);
+  const start = match.index + match[0].length;
+  // Get content after the About heading and stop at the next heading of any level
+  const after = readmeText.slice(start);
+  const lines = after.split('\n');
+  const aboutLines = [];
+  for (const line of lines) {
+    if (/^#{1,6}\s+/.test(line)) break;
+    if (line.trim()) aboutLines.push(line.trim());
   }
-  const about = aboutSection.join(' ').trim() || 'No description available';
-  // Shorten the description to avoid very long text in the UI
+  if (aboutLines.length === 0) return null;
+  let about = aboutLines.join(' ');
+  // strip common markdown formatting (headings, emphasis, code, links)
+  about = about.replace(/^#+\s*/, '')
+               .replace(/\*\*(.*?)\*\*/g, '$1')
+               .replace(/\*(.*?)\*/g, '$1')
+               .replace(/`([^`]*)`/g, '$1')
+               .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+               .replace(/<[^>]+>/g, '')
+               .replace(/\s+/g, ' ')
+               .trim();
   const MAX = 240;
   return about.length > MAX ? about.slice(0, MAX).trim() + '...' : about;
 };
