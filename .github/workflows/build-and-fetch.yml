@@ -58,10 +58,13 @@ jobs:
           name: site-build
           path: build
 
-      - name: "Deploy to Vercel"
-        uses: amondnet/vercel-action@v20
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
+      - name: "Deploy to Vercel (CLI)"
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          # Use the Vercel CLI directly to avoid third-party GH Action set-output deprecation issues.
+          # npx will download/run the CLI without installing globally.
+          echo "Deploying to Vercel via CLI"
+          npx --yes vercel --prod --token "$VERCEL_TOKEN" --confirm --org "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID"
