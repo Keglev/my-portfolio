@@ -13,6 +13,7 @@
 
 # generated at build time
 /public/projects.json
+/public/projects_media/
 
 # misc
 .env
