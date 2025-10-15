@@ -823,6 +823,22 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
     }
 
     // Translate descriptions to German (if available)
+    // normalize relative links to raw GitHub when repoName provided
+    const normalizeIfRelative = (href) => {
+      if (!href) return href;
+      if (/^https?:\/\//i.test(href)) return href;
+      return toRawGithub(href);
+    };
+    if (out.architectureOverview && out.architectureOverview.link) {
+      out.architectureOverview.link = normalizeIfRelative(out.architectureOverview.link);
+    }
+    if (out.apiDocumentation && out.apiDocumentation.link) {
+      out.apiDocumentation.link = normalizeIfRelative(out.apiDocumentation.link);
+    }
+    if (out.testing && out.testing.testingDocs && out.testing.testingDocs.link) {
+      out.testing.testingDocs.link = normalizeIfRelative(out.testing.testingDocs.link);
+    }
+
     if (out.architectureOverview && out.architectureOverview.description) {
       const t = await translateToGermanDetailed(out.architectureOverview.description);
       out.architectureOverview.description_de = t && t.text ? t.text : null;
@@ -1146,6 +1162,41 @@ async function fetchPinned() {
         try { persistMetaForNode(node); } catch (e) { if (DEBUG_FETCH) console.log('persist meta post-translation failed', e && e.message); }
       }
     }
+
+    // Final normalization pass: ensure repoDocs links are absolute raw.githubusercontent URLs
+    try {
+      for (const node of nodes) {
+        try {
+          const toRaw = (href) => {
+            if (!href) return href;
+            if (/^https?:\/\//i.test(href)) return href;
+            const p = String(href).trim().replace(/^\.\//, '').replace(/^\//, '');
+            return `https://raw.githubusercontent.com/keglev/${node.name}/main/${p}`;
+          };
+          if (node.repoDocs) {
+            if (node.repoDocs.architectureOverview && node.repoDocs.architectureOverview.link) {
+              node.repoDocs.architectureOverview.link = toRaw(node.repoDocs.architectureOverview.link);
+            }
+            if (node.repoDocs.apiDocumentation && node.repoDocs.apiDocumentation.link) {
+              node.repoDocs.apiDocumentation.link = toRaw(node.repoDocs.apiDocumentation.link);
+            }
+            if (node.repoDocs.testing && node.repoDocs.testing.testingDocs && node.repoDocs.testing.testingDocs.link) {
+              node.repoDocs.testing.testingDocs.link = toRaw(node.repoDocs.testing.testingDocs.link);
+            }
+            // backfill legacy docsLink/docsTitle with preference for API docs then architecture overview
+            if (!node.docsLink || /github\.com\/.+\/(issues|pulls?)\b/i.test(node.docsLink)) {
+              if (node.repoDocs.apiDocumentation && node.repoDocs.apiDocumentation.link) {
+                node.docsLink = node.repoDocs.apiDocumentation.link;
+                node.docsTitle = node.docsTitle || node.repoDocs.apiDocumentation.title || node.docsTitle;
+              } else if (node.repoDocs.architectureOverview && node.repoDocs.architectureOverview.link) {
+                node.docsLink = node.repoDocs.architectureOverview.link;
+                node.docsTitle = node.docsTitle || node.repoDocs.architectureOverview.title || node.docsTitle;
+              }
+            }
+          }
+        } catch (e) { if (DEBUG_FETCH) console.log('final normalize failed for', node.name, e && e.message); }
+      }
+    } catch (e) { if (DEBUG_FETCH) console.log('final normalization pass error', e && e.message); }
 
     // write output
     fs.writeFileSync(OUT_PATH, JSON.stringify(nodes, null, 2), 'utf8');
