@@ -67,4 +67,5 @@ jobs:
           # Use the Vercel CLI directly to avoid third-party GH Action set-output deprecation issues.
           # npx will download/run the CLI without installing globally.
           echo "Deploying to Vercel via CLI"
-          npx --yes vercel --prod --token "$VERCEL_TOKEN" --confirm --org "$VERCEL_ORG_ID" --project "$VERCEL_PROJECT_ID"
+          # rely on Vercel CLI project autodetection (vercel.json or project settings)
+          npx --yes vercel --prod --token "$VERCEL_TOKEN" --confirm
