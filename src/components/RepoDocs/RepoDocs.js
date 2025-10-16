@@ -32,9 +32,17 @@ const RepoDocs = () => {
           docsLink: p.docsLink || null,
           docsTitle: safeTitle(p),
           summary: p.summary_de || p.summary || '',
+          // mark if this repo actually has docs we should surface
+          hasDocs: !!(
+            (p.repoDocs && ((p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.link) || (p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.link))) ||
+            (p.docs && ((p.docs.apiDocumentation && p.docs.apiDocumentation.link) || (p.docs.documentation && p.docs.documentation.link))) ||
+            p.docsLink
+          ),
         }));
-        try { console.debug('RepoDocs: enriched projectsWithDocs', enriched.map(e => ({ name: e.name, docsTitle: e.docsTitle }))); } catch (e) {}
-        setProjectsWithDocs(enriched);
+        // only keep entries that actually have docs (do not show about/summary-only repos)
+        const filtered = enriched.filter(e => e.hasDocs);
+  try { console.debug('RepoDocs: enriched projectsWithDocs', filtered.map(e => ({ name: e.name, docsTitle: e.docsTitle }))); } catch (e) {}
+  setProjectsWithDocs(filtered);
       } catch (e) {
         setProjectsWithDocs([]);
       }
@@ -57,45 +65,62 @@ const RepoDocs = () => {
             <div className="experience-card" key={idx}>
               <h3>{p.name}</h3>
               <p className="date">{p.docsTitle || ''}</p>
+              {/* Prefer structured docs descriptions; do not fall back to README 'about' summaries here */}
               {(() => {
                 const isGeneric = (s) => {
                   if (!s) return true;
                   const clean = String(s).toLowerCase();
-                  // generic contribution/help placeholders or empty link text
                   return /for questions or contributions|open an issue|for questions|contribut/i.test(clean) || clean.trim().length < 20;
                 };
-
-                // prefer translated descriptions when available
-                const pickDesc = () => {
-                  try {
-                    if (i18n && i18n.language === 'de') {
-                      if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.description_de && !isGeneric(p.repoDocs.apiDocumentation.description_de)) return p.repoDocs.apiDocumentation.description_de;
-                      if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.description_de && !isGeneric(p.repoDocs.architectureOverview.description_de)) return p.repoDocs.architectureOverview.description_de;
-                      if (p.docs && p.docs.documentation && p.docs.documentation.description_de && !isGeneric(p.docs.documentation.description_de)) return p.docs.documentation.description_de;
-                    }
-
-                    if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.description && !isGeneric(p.repoDocs.apiDocumentation.description)) return p.repoDocs.apiDocumentation.description;
-                    if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.description && !isGeneric(p.repoDocs.architectureOverview.description)) return p.repoDocs.architectureOverview.description;
-                    if (p.docs && p.docs.documentation && p.docs.documentation.description && !isGeneric(p.docs.documentation.description)) return p.docs.documentation.description;
-                  } catch (e) { /* ignore */ }
-                  return null;
-                };
-
-                const desc = pickDesc();
-                return <p>{desc || (p.summary || '')}</p>;
+                try {
+                  if (i18n && i18n.language === 'de') {
+                    if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.description_de && !isGeneric(p.repoDocs.apiDocumentation.description_de)) return <p>{p.repoDocs.apiDocumentation.description_de}</p>;
+                    if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.description_de && !isGeneric(p.repoDocs.architectureOverview.description_de)) return <p>{p.repoDocs.architectureOverview.description_de}</p>;
+                    if (p.docs && p.docs.documentation && p.docs.documentation.description_de && !isGeneric(p.docs.documentation.description_de)) return <p>{p.docs.documentation.description_de}</p>;
+                  }
+                  if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.description && !isGeneric(p.repoDocs.apiDocumentation.description)) return <p>{p.repoDocs.apiDocumentation.description}</p>;
+                  if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.description && !isGeneric(p.repoDocs.architectureOverview.description)) return <p>{p.repoDocs.architectureOverview.description}</p>;
+                  if (p.docs && p.docs.documentation && p.docs.documentation.description && !isGeneric(p.docs.documentation.description)) return <p>{p.docs.documentation.description}</p>;
+                } catch (e) { /* ignore */ }
+                return null;
               })()}
 
               {/* Prefer structured repoDocs links when available */}
-              {p.repoDocs && p.repoDocs.apiDocumentation && (
-                <p><strong>{p.repoDocs.apiDocumentation.title}</strong>: <a href={p.repoDocs.apiDocumentation.link} target="_blank" rel="noopener noreferrer" className="project-link">{p.repoDocs.apiDocumentation.link}</a></p>
-              )}
-              {p.repoDocs && p.repoDocs.architectureOverview && (
-                <p><strong>{p.repoDocs.architectureOverview.title}</strong>: <a href={p.repoDocs.architectureOverview.link} target="_blank" rel="noopener noreferrer" className="project-link">{p.repoDocs.architectureOverview.link}</a></p>
-              )}
+              {(() => {
+                const convertRawToBlob = (link) => {
+                  if (!link) return link;
+                  try {
+                    const m = link.match(/^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/i);
+                    if (m) {
+                      const user = m[1];
+                      const repo = m[2];
+                      const branch = m[3];
+                      const path = m[4];
+                      return `https://github.com/${user}/${repo}/blob/${branch}/${path}`;
+                    }
+                  } catch (e) { /* ignore */ }
+                  return link;
+                };
+
+                const linkLabel = (i18n && i18n.language === 'de') ? 'Hier öffnen' : t('viewDocs');
+
+                const nodes = [];
+                if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.link) {
+                  nodes.push(
+                    <p key="api"><strong>{p.repoDocs.apiDocumentation.title}</strong>: <a href={convertRawToBlob(p.repoDocs.apiDocumentation.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
+                  );
+                }
+                if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.link) {
+                  nodes.push(
+                    <p key="arch"><strong>{p.repoDocs.architectureOverview.title}</strong>: <a href={convertRawToBlob(p.repoDocs.architectureOverview.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
+                  );
+                }
+                return nodes;
+              })()}
 
               {/* Legacy fallback: render legacy docsLink if nothing structured exists */}
               {!((p.repoDocs && (p.repoDocs.apiDocumentation || p.repoDocs.architectureOverview)) || (p.docs && p.docs.documentation)) && p.docsLink && (
-                <p><a href={p.docsLink} target="_blank" rel="noopener noreferrer" className="project-link">{p.docsTitle || p.docsLink}</a></p>
+                <p><a href={(p.docsLink && p.docsLink.includes('raw.githubusercontent.com')) ? p.docsLink.replace(/^https:\/\/raw\.githubusercontent\.com\//i, 'https://github.com/').replace(/\/([^/]+)\/([^/]+)\/(.+)$/, '/blob/$1/$2/$3') : p.docsLink} target="_blank" rel="noopener noreferrer" className="project-link">{(i18n && i18n.language === 'de') ? 'Hier öffnen' : t('viewDocs')}</a></p>
               )}
             </div>
           ))
