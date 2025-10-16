@@ -36,6 +36,11 @@ const Experience = () => {
       date: t('experienceSection.experience5.date'),
       summary: t('experienceSection.experience5.summary'),
     },
+    {
+      title: t('experienceSection.experience6.title'),
+      date: t('experienceSection.experience6.date'),
+      summary: t('experienceSection.experience6.summary'),
+    },
   ];
 
   return (

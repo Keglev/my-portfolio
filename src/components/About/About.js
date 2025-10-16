@@ -1,8 +1,8 @@
 import React from 'react';
 import './About.css'; // Import the CSS file for styling
 import ProfilePic from '../../assets/profile-pic.jpg'; // Import the profile image
-import { SiReact, SiPostgresql, SiSpringboot, SiSpringsecurity, SiGit, SiDocker, SiOpenapiinitiative, SiOracle, SiVite, SiMaterialdesign, SiTailwindcss, SiReactquery, SiReacthookform, SiAxios, SiReactrouter, SiVitest, SiGraphql, SiTypescript } from 'react-icons/si'; // Import technology icons
-import { FaJava, FaGithub, FaTools, FaGlobe, FaCode, FaDatabase } from 'react-icons/fa'; // Import Java, GitHub, Tools and other icons
+import { SiReact, SiPostgresql, SiSpringboot, SiDocker, SiTypescript, SiMaterialdesign, SiGit, SiOpenapiinitiative, SiVite } from 'react-icons/si'; // Import technology icons
+import { FaJava, FaGithub, FaLock, FaGlobe } from 'react-icons/fa'; // Import Java, GitHub, Lock and Globe icons
 import { TbTestPipe } from 'react-icons/tb'; // test pipe icon for JUnit/Mockito
 import { useTranslation } from 'react-i18next'; // Translation function to translate text
 
@@ -22,43 +22,29 @@ const About = () => {
         <p>{t('aboutSection.description2')}</p>
         <p>{t('aboutSection.description3')}</p>
       
-        {/* List of technologies the developer is skilled in */}
+        {/* Shorter tech lists — grouped */}
         <p>🔧 <strong>Tech Stack:</strong></p>
         <ul className="tech-list">
-          {/* Backend */}
-          <li><FaJava /> Java 17+</li>
-          <li><SiSpringboot /> Spring Boot 3.5+</li>
-          <li><SiSpringsecurity /> Spring Security (OAuth2, JWT)</li>
-          <li><FaTools /> Maven</li>
-          <li><TbTestPipe /> JUnit & Mockito</li>
-          <li><SiOpenapiinitiative /> OpenAPI (API Docs)</li>
-
-          {/* Database */}
-          <li><SiPostgresql /> PostgreSQL</li>
-          <li><SiOracle /> Oracle Autonomous DB</li>
-
-          {/* DevOps */}
+          <li><FaJava /> Java 17</li>
+          <li><SiSpringboot /> Spring Boot 3</li>
+          <li><SiPostgresql /> PostgreSQL & Oracle DB</li>
           <li><SiDocker /> Docker & Docker Compose</li>
-          <li><FaGithub /> GitHub Actions (CI/CD)</li>
-          <li><SiGit /> Git</li>
-
-          {/* Frontend / React / TypeScript */}
-          <li><SiReact /> React 19</li>
+          <li><TbTestPipe /> JUnit & Mockito</li>
           <li><SiTypescript /> TypeScript</li>
-          <li><SiVite /> Vite</li>
-          <li><SiMaterialdesign /> Material UI (MUI)</li>
-          <li><SiTailwindcss /> Tailwind CSS</li>
-          <li><SiReactquery /> React Query</li>
-          <li><SiReacthookform /> React Hook Form</li>
-          <li><SiAxios /> Axios</li>
-          <li><SiReactrouter /> React Router</li>
-          <li><SiVitest /> Vitest & React Testing Library</li>
-          <li><FaGlobe /> i18next (Internationalization)</li>
+          <li><SiReact /> React.js</li>
+        </ul>
 
-          {/* Other Tools */}
-          <li><FaCode /> Lombok</li>
-          <li><FaDatabase /> Hibernate / JPA</li>
-          <li><SiGraphql /> GraphQL (GitHub API)</li>
+        <ul className="tech-list">
+          <li><SiMaterialdesign /> Material-UI (MUI)</li>
+          <li><SiGit /> Git</li>
+          <li><FaGithub /> GitHub Actions</li>
+          <li><FaLock /> Security / Auth (JWT)</li>
+        </ul>
+
+        <ul className="tech-list">
+          <li><SiOpenapiinitiative /> OpenAPI / ReDoc</li>
+          <li><SiVite /> Vite</li>
+          <li><FaGlobe /> i18next (Internationalization)</li>
         </ul>
       </div>
       {/* Profile image section */}
