@@ -12,13 +12,27 @@ const RepoDocs = () => {
         const res = await fetch('/projects.json');
         if (!res.ok) return setProjectsWithDocs([]);
         const data = await res.json();
+        // Debug: log the fetched projects for runtime inspection
+        try { console.debug('RepoDocs: fetched /projects.json', data); } catch (e) {}
+        const safeTitle = (p) => {
+          const bad = (s) => !s || /open an issue|question|contribut/i.test(String(s).toLowerCase());
+          // prefer de title if present
+          if (p.docsTitle_de && !bad(p.docsTitle_de)) return p.docsTitle_de;
+          // prefer structured repoDocs api title
+          if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.title && !bad(p.repoDocs.apiDocumentation.title)) return p.repoDocs.apiDocumentation.title;
+          if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.title && !bad(p.repoDocs.architectureOverview.title)) return p.repoDocs.architectureOverview.title;
+          if (p.docs && p.docs.documentation && p.docs.documentation.title && !bad(p.docs.documentation.title)) return p.docs.documentation.title;
+          if (p.docsTitle && !bad(p.docsTitle)) return p.docsTitle;
+          return null;
+        };
         const enriched = data.map(p => ({
           name: p.name,
           docs: p.docs || null,
           docsLink: p.docsLink || null,
-          docsTitle: p.docsTitle_de || p.docsTitle || null,
+          docsTitle: safeTitle(p),
           summary: p.summary_de || p.summary || '',
         }));
+        try { console.debug('RepoDocs: enriched projectsWithDocs', enriched.map(e => ({ name: e.name, docsTitle: e.docsTitle }))); } catch (e) {}
         setProjectsWithDocs(enriched);
       } catch (e) {
         setProjectsWithDocs([]);

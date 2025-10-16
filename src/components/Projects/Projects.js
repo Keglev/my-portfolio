@@ -116,9 +116,36 @@ const Projects = () => {
                   <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-link">
                     {t('viewOnGithub')}
                   </a>
-                  {project.docsLink && (
-                    <a href={project.docsLink} target="_blank" rel="noopener noreferrer" className="project-link">{project.docsTitle || t('viewDocs')}</a>
-                  )}
+                  {(() => {
+                    // Prefer structured repoDocs (apiDocumentation -> architectureOverview), fall back to legacy fields
+                    const isBadTitle = (s) => !s || /open an issue|question|contribut/i.test(String(s).toLowerCase());
+                    const pick = () => {
+                      try {
+                        if (project.repoDocs && project.repoDocs.apiDocumentation && project.repoDocs.apiDocumentation.link) {
+                          return { link: project.repoDocs.apiDocumentation.link, title: project.repoDocs.apiDocumentation.title };
+                        }
+                        if (project.repoDocs && project.repoDocs.architectureOverview && project.repoDocs.architectureOverview.link) {
+                          return { link: project.repoDocs.architectureOverview.link, title: project.repoDocs.architectureOverview.title };
+                        }
+                        if (project.docs && project.docs.apiDocumentation && project.docs.apiDocumentation.link) {
+                          return { link: project.docs.apiDocumentation.link, title: project.docs.apiDocumentation.title };
+                        }
+                        if (project.docs && project.docs.documentation && project.docs.documentation.link) {
+                          return { link: project.docs.documentation.link, title: project.docs.documentation.title };
+                        }
+                        if (project.docsLink) return { link: project.docsLink, title: project.docsTitle };
+                      } catch (e) { /* ignore */ }
+                      return null;
+                    };
+                    const picked = pick();
+                    // Debug: log the picked docs link/title for this project
+                    try { console.debug('Projects: picked docs for', project.name, picked); } catch (e) {}
+                    if (picked && picked.link && !isBadTitle(picked.title)) {
+                      return <a href={picked.link} target="_blank" rel="noopener noreferrer" className="project-link">{(i18n.language === 'de' && project.docsTitle_de) ? project.docsTitle_de : (picked.title || t('viewDocs'))}</a>;
+                    }
+                    // no good docs link
+                    return null;
+                  })()}
                 </div>
               </div>
             </div>
