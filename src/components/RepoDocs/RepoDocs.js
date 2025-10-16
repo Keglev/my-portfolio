@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import './RepoDocs.css';
 
 const RepoDocs = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [projectsWithDocs, setProjectsWithDocs] = useState([]);
 
   useEffect(() => {
@@ -57,7 +57,33 @@ const RepoDocs = () => {
             <div className="experience-card" key={idx}>
               <h3>{p.name}</h3>
               <p className="date">{p.docsTitle || ''}</p>
-              <p>{(p.docs && p.docs.documentation && p.docs.documentation.description) ? p.docs.documentation.description : (p.summary || '')}</p>
+              {(() => {
+                const isGeneric = (s) => {
+                  if (!s) return true;
+                  const clean = String(s).toLowerCase();
+                  // generic contribution/help placeholders or empty link text
+                  return /for questions or contributions|open an issue|for questions|contribut/i.test(clean) || clean.trim().length < 20;
+                };
+
+                // prefer translated descriptions when available
+                const pickDesc = () => {
+                  try {
+                    if (i18n && i18n.language === 'de') {
+                      if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.description_de && !isGeneric(p.repoDocs.apiDocumentation.description_de)) return p.repoDocs.apiDocumentation.description_de;
+                      if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.description_de && !isGeneric(p.repoDocs.architectureOverview.description_de)) return p.repoDocs.architectureOverview.description_de;
+                      if (p.docs && p.docs.documentation && p.docs.documentation.description_de && !isGeneric(p.docs.documentation.description_de)) return p.docs.documentation.description_de;
+                    }
+
+                    if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.description && !isGeneric(p.repoDocs.apiDocumentation.description)) return p.repoDocs.apiDocumentation.description;
+                    if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.description && !isGeneric(p.repoDocs.architectureOverview.description)) return p.repoDocs.architectureOverview.description;
+                    if (p.docs && p.docs.documentation && p.docs.documentation.description && !isGeneric(p.docs.documentation.description)) return p.docs.documentation.description;
+                  } catch (e) { /* ignore */ }
+                  return null;
+                };
+
+                const desc = pickDesc();
+                return <p>{desc || (p.summary || '')}</p>;
+              })()}
 
               {/* Prefer structured repoDocs links when available */}
               {p.repoDocs && p.repoDocs.apiDocumentation && (
