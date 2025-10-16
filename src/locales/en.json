@@ -11,9 +11,9 @@
   },
   "aboutSection": {
     "heading": "About Me",
-    "description1": "Hi! I'm Carlos Keglevich, a Backend Developer based in Germany.",
-    "description2": "I specialize in Java Spring Boot and PostgreSQL, focusing on scalable and secure REST APIs.",
-    "description3": "When not coding, I enjoy coffee, tech, and exploring new frameworks."
+    "description1": "Hi! I'm Carlos Keglevich, a Backend-oriented Full-Stack Developer based in Germany, focused on building secure and scalable enterprise applications.",
+    "description2": "I specialize in Java Spring Boot and React/TypeScript, developing robust REST APIs with strong architecture, CI/CD pipelines, and end-to-end testing.",
+    "description3": "Outside of coding, I enjoy long walks in nature, playing chess, staying active, and reading about technology and innovation."
   },
   "experienceSection": {
     "experience1": {
