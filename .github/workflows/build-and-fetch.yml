@@ -34,6 +34,11 @@ jobs:
         run: |
           node scripts/postprocessProjects.js
 
+      - name: Fallback README doc-scan (backfill relative docs)
+        if: github.event_name != 'pull_request'
+        run: |
+          node scripts/applyFallbackDocScan.js
+
       - name: Verify projects.json contents
         if: github.event_name != 'pull_request'
         run: |
@@ -48,10 +53,26 @@ jobs:
           echo "Preparing .vercel/output"
           rm -rf .vercel/output || true
           mkdir -p .vercel/output/static
+          # Copy the CRA build output
           cp -r build/* .vercel/output/static/ || true
+          # Ensure generated public artifacts are included
+          cp -f public/projects.json .vercel/output/static/projects.json || true
+          cp -r public/projects_media .vercel/output/static/projects_media || true
           mkdir -p .vercel/output/functions || true
-            printf '%s\n' '{' '  "version": 3,' '  "routes": [' '    { "handle": "filesystem" },' '    { "src": "/(.*)", "dest": "/index.html" }' '  ]' '}' > .vercel/output/config.json
+          # Vercel Output API v3 config: serve filesystem first then SPA fallback
+          printf '%s\n' '{' '  "version": 3,' '  "routes": [' '    { "handle": "filesystem" },' '    { "src": "\/(.*)", "dest": "/index.html" }' '  ]' '}' > .vercel/output/config.json
           echo '{}' > .vercel/output/.vc-config.json || true
+
+      - name: Verify prebuilt static artifacts
+        run: |
+          echo "Listing .vercel/output/static contents"
+          ls -la .vercel/output/static || true
+          if [ -f .vercel/output/static/projects.json ]; then
+            echo "projects.json size:" $(stat -c%s .vercel/output/static/projects.json)
+            node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('.vercel/output/static/projects.json','utf8')||'[]');console.log('repos:',p.length);for(const r of p){const api=(r.repoDocs&&r.repoDocs.apiDocumentation&&r.repoDocs.apiDocumentation.link)||null;const arch=(r.repoDocs&&r.repoDocs.architectureOverview&&r.repoDocs.architectureOverview.link)||null;console.log(r.name,'docsLink->',r.docsLink||null,'api->',api,'arch->',arch)}"
+          else
+            echo "ERROR: .vercel/output/static/projects.json not found"; exit 1;
+          fi
 
       - name: Deploy to Vercel (prebuilt)
         env:

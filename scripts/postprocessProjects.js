@@ -62,6 +62,39 @@ const tryGithubIo = async (node, href) => {
       }
     } catch (e) { if (DEBUG) console.log('postproc failed', node.name, e && e.message); }
   }
+  // Backfill legacy docsLink/docsTitle from repoDocs when missing
+  for (const node of nodes) {
+    try {
+      if ((!node.docsLink || node.docsLink === null) && node.repoDocs) {
+        if (node.repoDocs.apiDocumentation && node.repoDocs.apiDocumentation.link) {
+          node.docsLink = node.repoDocs.apiDocumentation.link;
+          node.docsTitle = node.docsTitle || (node.repoDocs.apiDocumentation.title || 'API Documentation');
+        } else if (node.repoDocs.architectureOverview && node.repoDocs.architectureOverview.link) {
+          node.docsLink = node.repoDocs.architectureOverview.link;
+          node.docsTitle = node.docsTitle || (node.repoDocs.architectureOverview.title || 'Documentation');
+        }
+      }
+    } catch (e) { if (DEBUG) console.log('backfill postprocess failed', node.name, e && e.message); }
+  }
+
+  // Ensure docsTitle is sensible and not the generic "open an issue" text
+  const isBadTitle = t => !t || /open an issue/i.test(String(t).trim());
+  for (const node of nodes) {
+    try {
+      if (isBadTitle(node.docsTitle)) {
+        // prefer apiDocumentation title, then documentation, then a safe default
+        const tryTitle = (p) => (p && p.title && !isBadTitle(p.title)) ? p.title : null;
+        const candidates = [
+          tryTitle(node && node.repoDocs && node.repoDocs.apiDocumentation),
+          tryTitle(node && node.repoDocs && node.repoDocs.documentation),
+          tryTitle(node && node.docs && node.docs.apiDocumentation),
+          tryTitle(node && node.docs && node.docs.documentation),
+        ];
+        const found = candidates.find(x => x);
+        node.docsTitle = found || (node.docsLink ? 'Documentation' : node.docsTitle || null);
+      }
+    } catch (e) { if (DEBUG) console.log('docsTitle fix failed', node.name, e && e.message); }
+  }
   fs.writeFileSync(FILE, JSON.stringify(nodes, null, 2), 'utf8');
   console.log('Wrote', FILE);
 })();

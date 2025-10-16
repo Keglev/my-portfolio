@@ -134,10 +134,8 @@ const MEDIA_ROOT = path.join(__dirname, '..', 'public', 'projects_media');
 
 const TOKEN = process.env.GH_PROJECTS_TOKEN || process.env.GITHUB_TOKEN;
 const DEBUG_FETCH = process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true';
-if (!TOKEN) {
-  console.warn('No GitHub token found in environment. Skipping fetch.');
-  process.exit(0);
-}
+// NOTE: do not exit at require-time so helper functions can be imported by other scripts.
+// The token presence will be checked when running as a script (see bottom guard).
 
 const MAX = 2 * 1024 * 1024; // 2 MB max image download
 // Use a named query that declares a $login variable and fetches the user's pinned repositories; README content will be fetched via raw.githubusercontent per-repo.
@@ -1029,6 +1027,30 @@ async function fetchPinned() {
     }
   } catch (e) { if (DEBUG_FETCH) console.log('extractRepoDocsDetailed failed for', node.name, e && e.message); }
 
+      // Fallback: if detailed extraction found nothing, scan README for any doc-like link patterns
+      if (!node.repoDocs) {
+        try {
+          const txt = (node.object && node.object.text) || '';
+          const linkRe = /\[([^\]]+)\]\((https?:\/\/[^)\s]+|\.\/[^)\s]+|\/[^)\s]+|[^)]+\.md)\)/ig;
+          let m;
+          while ((m = linkRe.exec(txt)) !== null) {
+            const label = (m[1]||'').trim();
+            let href = (m[2]||'').trim();
+            // ignore obvious non-doc links
+            if (/localhost|127\.0\.0\.1|docker|:/i.test(href)) continue;
+            if (/docs?|api|redoc|openapi|swagger|reDoc|documentation|api docs/i.test(label + ' ' + href)) {
+              // normalize relative to raw.githubusercontent
+              if (!/^https?:\/\//i.test(href)) href = href.replace(/^\.?\//,'').replace(/^\//,'');
+              const absolute = /^https?:\/\//i.test(href) ? href : `https://raw.githubusercontent.com/keglev/${node.name}/main/${href}`;
+              node.repoDocs = node.repoDocs || {};
+              node.repoDocs.apiDocumentation = node.repoDocs.apiDocumentation || { title: label || 'API Documentation', link: absolute, description: '' };
+              node.docsLink = node.docsLink || absolute;
+              node.docsTitle = node.docsTitle || normalizeTitle(label) || 'Documentation';
+              break;
+            }
+          }
+        } catch (e) { if (DEBUG_FETCH) console.log('fallback README doc-scan failed for', node.name, e && e.message); }
+      }
       // persist per-repo meta readmeHash and selection/translation metadata
       try {
         const mediaDir = path.join(MEDIA_ROOT, node.name);
@@ -1198,6 +1220,63 @@ async function fetchPinned() {
       }
     } catch (e) { if (DEBUG_FETCH) console.log('final normalization pass error', e && e.message); }
 
+    // Post-process: prefer github.io hosted docs pages when raw.githubusercontent links are found
+    try {
+      const tryGithubIo = async (node, href) => {
+        try {
+          if (!href) return null;
+          const m = href.match(new RegExp('https?:\\/\\/raw\\.githubusercontent\\.com\\/(?:[^\\/]+)\\/(?:[^\\/]+)\\/(?:main|master)\\/docs\\/(.+)$', 'i'));
+          if (!m || !m[1]) return null;
+          const afterDocs = m[1].replace(/index\.html$/i, '').replace(/(^\/|\/$)/g, '');
+          const candidates = [];
+          // candidate 1: folder-style
+          candidates.push(`https://keglev.github.io/${node.name}/${afterDocs}`);
+          // candidate 2: explicit index.html
+          candidates.push(`https://keglev.github.io/${node.name}/${afterDocs}/index.html`);
+          // candidate 3: root of repo if afterDocs empty
+          if (!afterDocs) candidates.unshift(`https://keglev.github.io/${node.name}/`);
+          for (const c of candidates) {
+            try {
+              const h = await axios.head(c, { maxRedirects: 5, timeout: 5000 });
+              const ct = (h && h.headers && h.headers['content-type']) || '';
+              const xfo = (h && h.headers && (h.headers['x-frame-options'] || h.headers['X-Frame-Options'])) || '';
+              if (h && h.status === 200 && /html/i.test(ct) && !/deny/i.test(xfo)) {
+                if (DEBUG_FETCH) console.log('Prefer github.io for', node.name, href, '->', c, 'headers:', { status: h.status, ct, xfo });
+                return c;
+              }
+            } catch (e) {
+              if (DEBUG_FETCH) console.log('github.io candidate failed', c, e && e.message);
+            }
+          }
+        } catch (e) { if (DEBUG_FETCH) console.log('tryGithubIo error', e && e.message); }
+        return null;
+      };
+
+      for (const node of nodes) {
+        try {
+          // check main docsLink and repoDocs entries
+          if (node.docsLink && /raw\.githubusercontent\.com/i.test(node.docsLink)) {
+            const prefer = await tryGithubIo(node, node.docsLink);
+            if (prefer) node.docsLink = prefer;
+          }
+          if (node.repoDocs) {
+            if (node.repoDocs.apiDocumentation && node.repoDocs.apiDocumentation.link && /raw\.githubusercontent\.com/i.test(node.repoDocs.apiDocumentation.link)) {
+              const prefer = await tryGithubIo(node, node.repoDocs.apiDocumentation.link);
+              if (prefer) node.repoDocs.apiDocumentation.link = prefer;
+            }
+            if (node.repoDocs.architectureOverview && node.repoDocs.architectureOverview.link && /raw\.githubusercontent\.com/i.test(node.repoDocs.architectureOverview.link)) {
+              const prefer = await tryGithubIo(node, node.repoDocs.architectureOverview.link);
+              if (prefer) node.repoDocs.architectureOverview.link = prefer;
+            }
+            if (node.repoDocs.testing && node.repoDocs.testing.testingDocs && node.repoDocs.testing.testingDocs.link && /raw\.githubusercontent\.com/i.test(node.repoDocs.testing.testingDocs.link)) {
+              const prefer = await tryGithubIo(node, node.repoDocs.testing.testingDocs.link);
+              if (prefer) node.repoDocs.testing.testingDocs.link = prefer;
+            }
+          }
+        } catch (e) { if (DEBUG_FETCH) console.log('post-process github.io pref failed for', node.name, e && e.message); }
+      }
+    } catch (e) { if (DEBUG_FETCH) console.log('github.io post-process error', e && e.message); }
+
     // write output
     fs.writeFileSync(OUT_PATH, JSON.stringify(nodes, null, 2), 'utf8');
     console.log('Wrote', OUT_PATH);
@@ -1209,6 +1288,10 @@ async function fetchPinned() {
 
 // Only run fetchPinned when the script is executed directly (not when required by tests)
 if (require.main === module) {
+  if (!TOKEN) {
+    console.warn('No GitHub token found in environment. Skipping fetch.');
+    process.exit(0);
+  }
   fetchPinned().catch(e=>{ console.error('Unhandled error', (e && e.message) || e); process.exit(4); });
 }
 
