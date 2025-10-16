@@ -28,6 +28,7 @@ const RepoDocs = () => {
         const enriched = data.map(p => ({
           name: p.name,
           docs: p.docs || null,
+          repoDocs: p.repoDocs || null,
           docsLink: p.docsLink || null,
           docsTitle: safeTitle(p),
           summary: p.summary_de || p.summary || '',
@@ -55,17 +56,20 @@ const RepoDocs = () => {
           projectsWithDocs.map((p, idx) => (
             <div className="experience-card" key={idx}>
               <h3>{p.name}</h3>
-              <p className="date">{p.docs && p.docs.documentation ? p.docs.documentation.title : (p.docsLink || '')}</p>
-              <p>{p.docs && p.docs.documentation ? p.docs.documentation.description : (p.summary || '')}</p>
-              {p.docs && p.docs.documentation && (
-                <p><a href={p.docs.documentation.link} target="_blank" rel="noopener noreferrer" className="project-link">{p.docs.documentation.link}</a></p>
+              <p className="date">{p.docsTitle || ''}</p>
+              <p>{(p.docs && p.docs.documentation && p.docs.documentation.description) ? p.docs.documentation.description : (p.summary || '')}</p>
+
+              {/* Prefer structured repoDocs links when available */}
+              {p.repoDocs && p.repoDocs.apiDocumentation && (
+                <p><strong>{p.repoDocs.apiDocumentation.title}</strong>: <a href={p.repoDocs.apiDocumentation.link} target="_blank" rel="noopener noreferrer" className="project-link">{p.repoDocs.apiDocumentation.link}</a></p>
               )}
-              {/* Fallback: if we only have a legacy docsLink (from projects.json) render it as a clickable link */}
-              {(!p.docs || !p.docs.documentation) && p.docsLink && (
+              {p.repoDocs && p.repoDocs.architectureOverview && (
+                <p><strong>{p.repoDocs.architectureOverview.title}</strong>: <a href={p.repoDocs.architectureOverview.link} target="_blank" rel="noopener noreferrer" className="project-link">{p.repoDocs.architectureOverview.link}</a></p>
+              )}
+
+              {/* Legacy fallback: render legacy docsLink if nothing structured exists */}
+              {!((p.repoDocs && (p.repoDocs.apiDocumentation || p.repoDocs.architectureOverview)) || (p.docs && p.docs.documentation)) && p.docsLink && (
                 <p><a href={p.docsLink} target="_blank" rel="noopener noreferrer" className="project-link">{p.docsTitle || p.docsLink}</a></p>
-              )}
-              {p.docs && p.docs.apiDocumentation && (
-                <p><strong>{p.docs.apiDocumentation.title}</strong>: <a href={p.docs.apiDocumentation.link} target="_blank" rel="noopener noreferrer" className="project-link">{p.docs.apiDocumentation.link}</a></p>
               )}
             </div>
           ))
