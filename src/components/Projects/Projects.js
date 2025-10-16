@@ -102,6 +102,8 @@ const Projects = () => {
                 {/* Prefer translated summary, then About section (if present), then generated summary; show skeleton when missing to avoid flicker */}
                 {(() => {
                   const about = getAboutSection(project.object?.text);
+                  // Debug: log i18n language and available summaries to diagnose translation issues
+                  try { console.debug('Projects: i18n.language', i18n.language, 'project', project.name, 'summary_de', project.summary_de, 'summary', project.summary, 'about', about); } catch (e) {}
                   const displaySummary = (i18n.language === 'de' && project.summary_de) ? project.summary_de : (about || project.summary);
                   if (displaySummary && displaySummary.trim()) return <p>{displaySummary}</p>;
                   // short skeleton placeholder when summary isn't available yet
