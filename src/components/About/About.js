@@ -2,7 +2,7 @@ import React from 'react';
 import './About.css'; // Import the CSS file for styling
 import ProfilePic from '../../assets/profile-pic.jpg'; // Import the profile image
 import { SiReact, SiPostgresql, SiSpringboot, SiDocker, SiTypescript, SiMaterialdesign, SiGit, SiOpenapiinitiative, SiVite } from 'react-icons/si'; // Import technology icons
-import { FaJava, FaGithub, FaLock, FaGlobe } from 'react-icons/fa'; // Import Java, GitHub, Lock and Globe icons
+import { FaJava, FaGithub, FaShieldAlt } from 'react-icons/fa'; // Import Java, GitHub and Shield icons
 import { TbTestPipe } from 'react-icons/tb'; // test pipe icon for JUnit/Mockito
 import { useTranslation } from 'react-i18next'; // Translation function to translate text
 
@@ -38,13 +38,12 @@ const About = () => {
           <li><SiMaterialdesign /> Material-UI (MUI)</li>
           <li><SiGit /> Git</li>
           <li><FaGithub /> GitHub Actions</li>
-          <li><FaLock /> Security / Auth (JWT)</li>
+          <li><FaShieldAlt /> Security / Auth</li>
         </ul>
 
         <ul className="tech-list">
           <li><SiOpenapiinitiative /> OpenAPI / ReDoc</li>
           <li><SiVite /> Vite</li>
-          <li><FaGlobe /> i18next (Internationalization)</li>
         </ul>
       </div>
       {/* Profile image section */}
