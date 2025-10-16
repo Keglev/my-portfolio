@@ -152,7 +152,22 @@ const Projects = () => {
                     // Debug: log the picked docs link/title for this project
                     try { console.debug('Projects: picked docs for', project.name, picked); } catch (e) {}
                     if (picked && picked.link && !isBadTitle(picked.title)) {
-                      return <a href={picked.link} target="_blank" rel="noopener noreferrer" className="project-link">{(i18n.language === 'de' && project.docsTitle_de) ? project.docsTitle_de : (picked.title || t('viewDocs'))}</a>;
+                      // Use a short localized label for links and append a small badge describing the doc type (API / ReDoc / Architecture)
+                      const linkLabel = t('viewDocs') || 'View docs';
+                      const titleLower = String(picked.title || '').toLowerCase();
+                      const linkLower = String(picked.link || '').toLowerCase();
+                      let docType = null;
+                      if (/redoc|redocly/.test(titleLower) || /redoc/.test(linkLower)) docType = 'ReDoc';
+                      else if (/architecture/.test(titleLower) || /architecture/.test(linkLower)) docType = 'Architecture';
+                      else if (/api|openapi|swagger/.test(titleLower) || /api|openapi|swagger/.test(linkLower)) docType = 'API';
+
+                      const badgeText = docType ? (i18n.language === 'de' ? (docType === 'Architecture' ? 'Architektur' : docType) : docType) : null;
+                      return (
+                        <a href={picked.link} target="_blank" rel="noopener noreferrer" className="project-link">
+                          {linkLabel}
+                          {badgeText && <span style={{marginLeft: '8px', fontSize: '0.85em', color: '#666'}}>{badgeText}</span>}
+                        </a>
+                      );
                     }
                     // no good docs link
                     return null;

@@ -43,6 +43,8 @@
     }
   },
   "viewOnGithub": "View on GitHub",
+  "viewDocs": "View docs",
+  "translationMissing": "Translation missing",
   "repoDocs": "Repo Docs",
   "noRepoDocs": "No repository documentation links found.",
   "legalLink": "Impressum & Privacy",
