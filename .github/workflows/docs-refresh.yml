@@ -1,16 +1,16 @@
-name: Build and Fetch Projects
+name: Docs refresh
 
 on:
   push:
     branches: [ main ]
-    # Do not trigger this full code build on README/docs updates — those are handled by docs-refresh.yml
-    paths-ignore:
+    # only trigger when repository-local docs change
+    paths:
       - 'README.md'
       - 'docs/**'
   workflow_dispatch:
 
 jobs:
-  fetch-and-build:
+  refresh-docs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,52 +24,32 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Fetch GitHub pinned projects
-        if: github.event_name != 'pull_request'
+      - name: Fetch projects (docs-only run)
         env:
-          GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Support multiple secret names: DEEPL_API_KEY or DEEPL_SECRET. Prefer DEEPL_SECRET if you set it in your repo or Vercel.
-          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
           DEEPL_SECRET: ${{ secrets.DEEPL_SECRET }}
+          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
         run: |
-          echo "Running fetchProjects.js (DeepL will be used only if DEEPL_SECRET or DEEPL_API_KEY is set in the environment)"
-          node -e "console.log('DeepL present?', !!process.env.DEEPL_SECRET || !!process.env.DEEPL_API_KEY)"
+          echo "Docs refresh: running fetchProjects.js (DeepL used only if secret present)"
           node scripts/fetchProjects.js
 
-      - name: Post-process fetched projects (prefer github.io docs)
-        if: github.event_name != 'pull_request'
+      - name: Post-process & fallback scan
         run: |
           node scripts/postprocessProjects.js
-
-      - name: Fallback README doc-scan (backfill relative docs)
-        if: github.event_name != 'pull_request'
-        run: |
           node scripts/applyFallbackDocScan.js
-
-      - name: Verify projects.json contents
-        if: github.event_name != 'pull_request'
-        run: |
-          echo "projects.json summary"
-          node -e "const fs=require('fs');const p='public/projects.json';if(!fs.existsSync(p)){console.log('missing',p);process.exit(0);}const j=JSON.parse(fs.readFileSync(p,'utf8')||'[]');console.log('repos:',j.length);for(const r of j){const api=(r.repoDocs&&r.repoDocs.apiDocumentation&&r.repoDocs.apiDocumentation.link)||null;const arch=(r.repoDocs&&r.repoDocs.architectureOverview&&r.repoDocs.architectureOverview.link)||null;console.log(r.name,'docsLink->',r.docsLink||null,'api->',api,'arch->',arch)}"
 
       - name: Build
         run: npm run build
 
       - name: Prepare Vercel prebuilt output
         run: |
-          echo "Preparing .vercel/output"
           rm -rf .vercel/output || true
           mkdir -p .vercel/output/static
-          # Copy the CRA build output
           cp -r build/* .vercel/output/static/ || true
-          # Ensure generated public artifacts are included
           cp -f public/projects.json .vercel/output/static/projects.json || true
           cp -r public/projects_media .vercel/output/static/projects_media || true
-          mkdir -p .vercel/output/functions || true
-          # Vercel Output API v3 config: serve filesystem first then SPA fallback
-          printf '%s\n' '{' '  "version": 3,' '  "routes": [' '    { "handle": "filesystem" },' '    { "src": "\/(.*)", "dest": "/index.html" }' '  ]' '}' > .vercel/output/config.json
-          echo '{}' > .vercel/output/.vc-config.json || true
+          printf '%s\n' '{' '  "version": 3,' '  "routes": [' '    { "handle": "filesystem" },' '    { "src": "/(.*)", "dest": "/index.html" }' '  ]' '}' > .vercel/output/config.json
 
       - name: Verify prebuilt static artifacts
         run: |
