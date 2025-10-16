@@ -17,29 +17,34 @@
   },
   "experienceSection": {
     "experience1": {
-      "title": "Backend-Entwickler | Persönliches Projekt",
-      "date": "11.2024 - heute",
-      "summary": "Entwickelte einen Backend-Dienst zur Bestandsverwaltung mit Java Spring Boot."
+      "title": "Backend-orientierter Full-Stack-Entwickler | Eigenes Projekt",
+      "date": "11.2024 – heute",
+      "summary": "Entwicklung eines Enterprise-Systems für Inventar- und Lieferantenmanagement mit Java Spring Boot, React und CI/CD-Automatisierung."
     },
     "experience2": {
-      "title": "Full Stack Developer Kurs - Dio (online)",
-      "date": "10.2023 – Heute",
-      "summary": "Entwickelte Projekte wie eine Portfolio-Website, BuzzFeed-App und Restaurant-Finder-App."
+      "title": "Duagon GmbH, Elektronikfabrik | Maschinenbediener & Softwareanalyst",
+      "date": "04.2023 – 08.2025",
+      "summary": "Bedienung von Produktionsmaschinen und Analyse von Software für PCB-Lötprozesse zur Sicherung von Qualität und Prozessoptimierung."
     },
     "experience3": {
-      "title": "Duagon GmbH, Elektronikfabrik | Maschinenbediener",
-      "date": "04.2023 - Heute",
-      "summary": "Bediente Maschinen und analysierte Software für PCB-Lötprozesse."
+      "title": "K&K Brands, Atlanta (USA/Brasilien) | Einkäufer & Datenanalyst",
+      "date": "03.2019 – 09.2021",
+      "summary": "Analysierte Preistrends und entwickelte datenbasierte Einkaufsstrategien zur Steigerung von Effizienz und Gewinn."
     },
     "experience4": {
-      "title": "K&K Brands, Atlanta USA | Einkäufer",
-      "date": "03.2019 – 09.2021",
-      "summary": "Optimierte Einkaufsentscheidungen und entwickelte Preisstrategien."
+      "title": "Alcon-Novartis, Atlanta USA | Produktionsmitarbeiter",
+      "date": "02.2018 – 12.2018",
+      "summary": "Überwachte Produktionsqualität und entwickelte Strategien zur Prozessoptimierung – steigerte die Effizienz um 45 %."
     },
     "experience5": {
-      "title": "Alcon-Novartis | Produktionsmitarbeiter",
-      "date": "02.2018 – 12.2018",
-      "summary": "Steigerte die Produktionsleistung um 45% durch Prozessoptimierung."
+      "title": "Thriftshopper Stores & Warehouse | Logistikmitarbeiter",
+      "date": "05.2015 – 11.2017",
+      "summary": "Optimierte Lagerorganisation und Preisprozesse zur Steigerung von Effizienz und Produktverfügbarkeit."
+    },
+    "experience6": {
+      "title": "Polícia Civil – Goiânia, Brasilien | Ermittler",
+      "date": "10.2005 – 03.2015",
+      "summary": "Leitete Ermittlungen und Konfliktlösungen in komplexen Fällen – mit Fokus auf Analyse, Kommunikation und Verantwortung."
     }
   },
   "viewOnGithub": "Auf GitHub ansehen",

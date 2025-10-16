@@ -1,9 +1,9 @@
 import React from 'react';
 import './About.css'; // Import the CSS file for styling
 import ProfilePic from '../../assets/profile-pic.jpg'; // Import the profile image
-import { SiJavascript, SiReact, SiNodedotjs, SiPostgresql, SiSpringboot, SiGit, SiDocker } from 'react-icons/si'; // Import technology icons
-import { TbTestPipe } from 'react-icons/tb'; // Import test pipe icon
-import { FaJava, FaGithub } from 'react-icons/fa'; // Import Java and GitHub icons
+import { SiReact, SiPostgresql, SiSpringboot, SiSpringsecurity, SiGit, SiDocker, SiOpenapiinitiative, SiOracle, SiVite, SiMaterialdesign, SiTailwindcss, SiReactquery, SiReacthookform, SiAxios, SiReactrouter, SiVitest, SiGraphql, SiTypescript } from 'react-icons/si'; // Import technology icons
+import { FaJava, FaGithub, FaTools, FaGlobe, FaCode, FaDatabase } from 'react-icons/fa'; // Import Java, GitHub, Tools and other icons
+import { TbTestPipe } from 'react-icons/tb'; // test pipe icon for JUnit/Mockito
 import { useTranslation } from 'react-i18next'; // Translation function to translate text
 
 /**
@@ -25,16 +25,40 @@ const About = () => {
         {/* List of technologies the developer is skilled in */}
         <p>🔧 <strong>Tech Stack:</strong></p>
         <ul className="tech-list">
-          <li><FaJava /> Java</li>
-          <li><SiSpringboot /> Spring Boot</li>
-          <li><SiNodedotjs /> REST APIs</li>
+          {/* Backend */}
+          <li><FaJava /> Java 17+</li>
+          <li><SiSpringboot /> Spring Boot 3.5+</li>
+          <li><SiSpringsecurity /> Spring Security (OAuth2, JWT)</li>
+          <li><FaTools /> Maven</li>
+          <li><TbTestPipe /> JUnit & Mockito</li>
+          <li><SiOpenapiinitiative /> OpenAPI (API Docs)</li>
+
+          {/* Database */}
           <li><SiPostgresql /> PostgreSQL</li>
-          <li><SiReact /> React</li>
-          <li><SiJavascript /> TypeScript</li>
+          <li><SiOracle /> Oracle Autonomous DB</li>
+
+          {/* DevOps */}
+          <li><SiDocker /> Docker & Docker Compose</li>
+          <li><FaGithub /> GitHub Actions (CI/CD)</li>
           <li><SiGit /> Git</li>
-          <li><FaGithub /> GitHub</li>
-          <li><SiDocker /> Docker (Basic Knowledge)</li>
-          <li><TbTestPipe /> Mockito & JUnit</li>
+
+          {/* Frontend / React / TypeScript */}
+          <li><SiReact /> React 19</li>
+          <li><SiTypescript /> TypeScript</li>
+          <li><SiVite /> Vite</li>
+          <li><SiMaterialdesign /> Material UI (MUI)</li>
+          <li><SiTailwindcss /> Tailwind CSS</li>
+          <li><SiReactquery /> React Query</li>
+          <li><SiReacthookform /> React Hook Form</li>
+          <li><SiAxios /> Axios</li>
+          <li><SiReactrouter /> React Router</li>
+          <li><SiVitest /> Vitest & React Testing Library</li>
+          <li><FaGlobe /> i18next (Internationalization)</li>
+
+          {/* Other Tools */}
+          <li><FaCode /> Lombok</li>
+          <li><FaDatabase /> Hibernate / JPA</li>
+          <li><SiGraphql /> GraphQL (GitHub API)</li>
         </ul>
       </div>
       {/* Profile image section */}

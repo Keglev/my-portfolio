@@ -17,29 +17,34 @@
   },
   "experienceSection": {
     "experience1": {
-      "title": "Backend Developer | Personal Project",
-      "date": "11.2024 - present",
-      "summary": "Developed a backend service for stock management using Java Spring Boot."
+      "title": "Backend-oriented Full-Stack Developer | Personal Project",
+      "date": "11.2024 – present",
+      "summary": "Built an enterprise inventory and supplier management system using Java Spring Boot, React, and automated CI/CD."
     },
     "experience2": {
-      "title": "Full Stack Developer Course - Dio (online)",
-      "date": "10.2023 – Present",
-      "summary": "Developed projects including a portfolio website, BuzzFeed app, and restaurant finder app."
+      "title": "Duagon GmbH, Electronics Factory | Machine Operator & Software Analyst",
+      "date": "04.2023 – 08.2025",
+      "summary": "Operated production machinery and analyzed software for PCB soldering processes to ensure quality and optimize processes."
     },
     "experience3": {
-      "title": "Duagon GmbH, Electronics Factory | Machine Operator",
-      "date": "04.2023 - Present",
-      "summary": "Operated machines and analyzed software for PCB soldering processes."
+      "title": "K&K Brands, Atlanta (USA/Brazil) | Buyer & Data Analyst",
+      "date": "03.2019 – 09.2021",
+      "summary": "Analyzed pricing trends and developed data-driven purchasing strategies to improve efficiency and profitability."
     },
     "experience4": {
-      "title": "K&K Brands, Atlanta USA | Buyer",
-      "date": "03.2019 – 09.2021",
-      "summary": "Optimized purchasing decisions and developed pricing models."
+      "title": "Alcon-Novartis, Atlanta USA | Production Worker",
+      "date": "02.2018 – 12.2018",
+      "summary": "Monitored production quality and implemented process improvements — increased efficiency by 45%."
     },
     "experience5": {
-      "title": "Alcon-Novartis | Production Worker",
-      "date": "02.2018 – 12.2018",
-      "summary": "Improved production output by 45% through process optimization."
+      "title": "Thriftshopper Stores & Warehouse | Logistics Associate",
+      "date": "05.2015 – 11.2017",
+      "summary": "Optimized warehouse organization and pricing workflows to increase efficiency and product availability."
+    },
+    "experience6": {
+      "title": "Polícia Civil – Goiânia, Brazil | Investigator",
+      "date": "10.2005 – 03.2015",
+      "summary": "Led investigations and conflict resolutions in complex cases — focused on analysis, communication, and accountability."
     }
   },
   "viewOnGithub": "View on GitHub",
