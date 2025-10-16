@@ -34,6 +34,12 @@ jobs:
         run: |
           node scripts/postprocessProjects.js
 
+      - name: Verify projects.json contents
+        if: github.event_name != 'pull_request'
+        run: |
+          echo "projects.json summary"
+          node -e "const fs=require('fs');const p='public/projects.json';if(!fs.existsSync(p)){console.log('missing',p);process.exit(0);}const j=JSON.parse(fs.readFileSync(p,'utf8')||'[]');console.log('repos:',j.length);for(const r of j){const api=(r.repoDocs&&r.repoDocs.apiDocumentation&&r.repoDocs.apiDocumentation.link)||null;const arch=(r.repoDocs&&r.repoDocs.architectureOverview&&r.repoDocs.architectureOverview.link)||null;console.log(r.name,'docsLink->',r.docsLink||null,'api->',api,'arch->',arch)}"
+
       - name: Build
         run: npm run build
 
