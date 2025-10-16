@@ -127,51 +127,6 @@ const Projects = () => {
                   <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-link">
                     {t('viewOnGithub')}
                   </a>
-                  {(() => {
-                    // Prefer structured repoDocs (apiDocumentation -> architectureOverview), fall back to legacy fields
-                    const isBadTitle = (s) => !s || /open an issue|question|contribut/i.test(String(s).toLowerCase());
-                    const pick = () => {
-                      try {
-                        if (project.repoDocs && project.repoDocs.apiDocumentation && project.repoDocs.apiDocumentation.link) {
-                          return { link: project.repoDocs.apiDocumentation.link, title: project.repoDocs.apiDocumentation.title };
-                        }
-                        if (project.repoDocs && project.repoDocs.architectureOverview && project.repoDocs.architectureOverview.link) {
-                          return { link: project.repoDocs.architectureOverview.link, title: project.repoDocs.architectureOverview.title };
-                        }
-                        if (project.docs && project.docs.apiDocumentation && project.docs.apiDocumentation.link) {
-                          return { link: project.docs.apiDocumentation.link, title: project.docs.apiDocumentation.title };
-                        }
-                        if (project.docs && project.docs.documentation && project.docs.documentation.link) {
-                          return { link: project.docs.documentation.link, title: project.docs.documentation.title };
-                        }
-                        if (project.docsLink) return { link: project.docsLink, title: project.docsTitle };
-                      } catch (e) { /* ignore */ }
-                      return null;
-                    };
-                    const picked = pick();
-                    // Debug: log the picked docs link/title for this project
-                    try { console.debug('Projects: picked docs for', project.name, picked); } catch (e) {}
-                    if (picked && picked.link && !isBadTitle(picked.title)) {
-                      // Use a short localized label for links and append a small badge describing the doc type (API / ReDoc / Architecture)
-                      const linkLabel = t('viewDocs') || 'View docs';
-                      const titleLower = String(picked.title || '').toLowerCase();
-                      const linkLower = String(picked.link || '').toLowerCase();
-                      let docType = null;
-                      if (/redoc|redocly/.test(titleLower) || /redoc/.test(linkLower)) docType = 'ReDoc';
-                      else if (/architecture/.test(titleLower) || /architecture/.test(linkLower)) docType = 'Architecture';
-                      else if (/api|openapi|swagger/.test(titleLower) || /api|openapi|swagger/.test(linkLower)) docType = 'API';
-
-                      const badgeText = docType ? (i18n.language === 'de' ? (docType === 'Architecture' ? 'Architektur' : docType) : docType) : null;
-                      return (
-                        <a href={picked.link} target="_blank" rel="noopener noreferrer" className="project-link">
-                          {linkLabel}
-                          {badgeText && <span style={{marginLeft: '8px', fontSize: '0.85em', color: '#666'}}>{badgeText}</span>}
-                        </a>
-                      );
-                    }
-                    // no good docs link
-                    return null;
-                  })()}
                 </div>
               </div>
             </div>

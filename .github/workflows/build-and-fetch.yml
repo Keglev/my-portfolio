@@ -25,8 +25,12 @@ jobs:
         env:
           GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Support multiple secret names: DEEPL_API_KEY or DEEPL_SECRET. Prefer DEEPL_SECRET if you set it in your repo or Vercel.
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
+          DEEPL_SECRET: ${{ secrets.DEEPL_SECRET }}
         run: |
+          echo "Running fetchProjects.js (DeepL will be used only if DEEPL_SECRET or DEEPL_API_KEY is set in the environment)"
+          node -e "console.log('DeepL present?', !!process.env.DEEPL_SECRET || !!process.env.DEEPL_API_KEY)"
           node scripts/fetchProjects.js
 
       - name: Post-process fetched projects (prefer github.io docs)
