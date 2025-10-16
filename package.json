@@ -23,10 +23,11 @@
     "start": "react-scripts start",
     "prebuild": "node scripts/fetchProjects.js",
     "build": "react-scripts build",
-  "test": "react-scripts test",
-  "test:helpers": "react-scripts test --testPathPattern=src/__tests__/fetchHelpers --watchAll=false",
+    "test": "react-scripts test",
+    "test:helpers": "react-scripts test --testPathPattern=src/__tests__/fetchHelpers --watchAll=false",
     "audit:ci": "node scripts/audit-check.js",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "docs:jsdoc": "jsdoc -c jsdoc.json"
   },
   "eslintConfig": {
     "extends": [
@@ -63,5 +64,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "remark": "^14.0.3",
     "remark-parse": "^10.0.1"
+    ,
+    "jsdoc": "^4.0.2"
   }
 }
