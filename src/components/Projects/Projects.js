@@ -105,7 +105,16 @@ const Projects = () => {
                   // Debug: log i18n language and available summaries to diagnose translation issues
                   try { console.debug('Projects: i18n.language', i18n.language, 'project', project.name, 'summary_de', project.summary_de, 'summary', project.summary, 'about', about); } catch (e) {}
                   const displaySummary = (i18n.language === 'de' && project.summary_de) ? project.summary_de : (about || project.summary);
-                  if (displaySummary && displaySummary.trim()) return <p>{displaySummary}</p>;
+                  if (displaySummary && displaySummary.trim()) {
+                    return (
+                      <p>
+                        {displaySummary}
+                        {(i18n.language === 'de' && !project.summary_de) && (
+                          <span style={{fontStyle: 'italic', marginLeft: '8px', color: '#666', fontSize: '0.9em'}}>({t('translationMissing') || 'Übersetzung fehlt'})</span>
+                        )}
+                      </p>
+                    );
+                  }
                   // short skeleton placeholder when summary isn't available yet
                   return <div className="skeleton-description short skeleton" style={{width: '60%'}} />;
                 })()}
