@@ -25,6 +25,18 @@ const DEBUG_FETCH = process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH =
 // NOTE: do not exit at require-time so helper functions can be imported by other scripts.
 // The token presence will be checked when running as a script (see bottom guard).
 
+// Small sanitizer to remove accidental embedded AST/JSON fragments from extracted text
+function stripAstJsonFragments(s) {
+  try {
+    if (!s || typeof s !== 'string') return s;
+    // remove simple JSON-like AST fragments that include a "type" key
+    let t = s.replace(/\{\s*"type"\s*:\s*"[a-z]+"[\s\S]*?\}/gi, '');
+    // collapse whitespace
+    t = t.replace(/\s+/g, ' ').trim();
+    return t === '' ? null : t;
+  } catch (e) { return s; }
+}
+
 // Use a named query that declares a $login variable and fetches the user's pinned repositories; README content will be fetched via raw.githubusercontent per-repo.
 // We request __typename and use a minimal inline fragment for Repository fields.
 const QUERY = `query getPinned($login: String!) { user(login: $login) { pinnedItems(first: 12, types: [REPOSITORY]) { nodes { __typename ... on Repository { name description url } } } } }`;
@@ -140,10 +152,10 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
         if (archIdx !== -1) {
           const snippet = readmeText.slice(archIdx);
           const linkLine = snippet.match(/-\s*\.\s*\[([^\]]*Index[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
-          if (linkLine) out.architectureOverview = { title: linkLine[1].trim(), link: toRawGithub(linkLine[2].trim()), description: (linkLine[3] || '').trim() };
+          if (linkLine) out.architectureOverview = { title: linkLine[1].trim(), link: toRawGithub(linkLine[2].trim()), description: stripAstJsonFragments((linkLine[3] || '').trim()) };
           else {
             const firstLink = snippet.match(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\.?\/?[^)\s]+|[^)]+\.md)\)\s*-?\s*(.*)/i);
-            if (firstLink) out.architectureOverview = { title: firstLink[1].trim(), link: toRawGithub(firstLink[2].trim()), description: (firstLink[3]||'').trim() };
+            if (firstLink) out.architectureOverview = { title: firstLink[1].trim(), link: toRawGithub(firstLink[2].trim()), description: stripAstJsonFragments((firstLink[3]||'').trim()) };
           }
         }
       }
@@ -168,10 +180,10 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
                     const u = ch.url;
                     const label = (ch.children||[]).map(c=>c.value||'').join('');
                     if (/complete api|api docs|swagger|openapi|docs?/i.test(label + ' ' + u)) {
-                      out.apiDocumentation = { title: label || 'API Documentation', link: u, description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
+                      out.apiDocumentation = { title: label || 'API Documentation', link: u, description: stripAstJsonFragments((nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim()) };
                       break;
                     }
-                    if (!out.apiDocumentation) out.apiDocumentation = { title: label || 'API Documentation', link: u, description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
+                    if (!out.apiDocumentation) out.apiDocumentation = { title: label || 'API Documentation', link: u, description: stripAstJsonFragments((nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim()) };
                   }
                 }
               }
@@ -201,10 +213,10 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
         if (apiIdx !== -1) {
           const snippet = readmeText.slice(apiIdx);
           const compLink = snippet.match(/\[([^\]]*Complete API[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
-          if (compLink) out.apiDocumentation = { title: compLink[1].trim(), link: compLink[2].trim(), description: (compLink[3]||'').trim() };
+          if (compLink) out.apiDocumentation = { title: compLink[1].trim(), link: compLink[2].trim(), description: stripAstJsonFragments((compLink[3]||'').trim()) };
           else {
             const firstLink = snippet.match(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\.?\/?[^)\s]+|[^)]+\.md)\)\s*-?\s*(.*)/i);
-            if (firstLink) out.apiDocumentation = { title: firstLink[1].trim(), link: firstLink[2].trim(), description: (firstLink[3]||'').trim() };
+            if (firstLink) out.apiDocumentation = { title: firstLink[1].trim(), link: firstLink[2].trim(), description: stripAstJsonFragments((firstLink[3]||'').trim()) };
           }
         }
       }
@@ -227,10 +239,10 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
                   if (ch.type === 'link' && ch.url) {
                     const u = ch.url; const label = (ch.children||[]).map(c=>c.value||'').join('');
                     if (/coverage|coverage badge|coveralls|codecov|coverage report/i.test(label + ' ' + u)) {
-                      out.testing = out.testing || {}; out.testing.coverage = { title: label || 'Coverage', link: u, description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
+                      out.testing = out.testing || {}; out.testing.coverage = { title: label || 'Coverage', link: u, description: stripAstJsonFragments((nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim()) };
                     }
                     if (/testing architecture|testing docs|test architecture/i.test(label + ' ' + u)) {
-                      out.testing = out.testing || {}; out.testing.testingDocs = { title: label || 'Testing Architecture', link: u, description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
+                      out.testing = out.testing || {}; out.testing.testingDocs = { title: label || 'Testing Architecture', link: u, description: stripAstJsonFragments((nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim()) };
                     }
                     if (out.testing && out.testing.coverage && out.testing.testingDocs) break;
                     if (!out.testing) out.testing = out.testing || {};
@@ -267,9 +279,9 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
         if (testIdx !== -1) {
           const snippet = readmeText.slice(testIdx);
           const coverageMatch = snippet.match(/\[([^\]]*coverage[^\]]*)\]\((https?:\/\/[^)\s]+)\)\s*[–—-]?\s*(.*)/i);
-          if (coverageMatch) { out.testing = out.testing || {}; out.testing.coverage = { title: coverageMatch[1].trim(), link: coverageMatch[2].trim(), description: (coverageMatch[3]||'').trim() }; }
+          if (coverageMatch) { out.testing = out.testing || {}; out.testing.coverage = { title: coverageMatch[1].trim(), link: coverageMatch[2].trim(), description: stripAstJsonFragments((coverageMatch[3]||'').trim()) }; }
           const archTestMatch = snippet.match(/\[([^\]]*Testing Architecture Documentation[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
-          if (archTestMatch) { out.testing = out.testing || {}; out.testing.testingDocs = { title: archTestMatch[1].trim(), link: archTestMatch[2].trim(), description: (archTestMatch[3]||'').trim() }; }
+          if (archTestMatch) { out.testing = out.testing || {}; out.testing.testingDocs = { title: archTestMatch[1].trim(), link: archTestMatch[2].trim(), description: stripAstJsonFragments((archTestMatch[3]||'').trim()) }; }
         }
       }
     } catch (e) {
