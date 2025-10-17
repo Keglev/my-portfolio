@@ -325,17 +325,20 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
       }
     }
     // translate titles if deepl key provided
+    // Titles may be short UI strings; translate only when a key is present. Translation of longer
+    // descriptions is performed elsewhere but will be limited globally to avoid excessive usage.
     try {
       if (DEEPL_KEY) {
-        if (out.architectureOverview && out.architectureOverview.title) {
+        const shouldTranslateUI = (s) => { try { return s && typeof s === 'string' && s.trim().length>0 && s.trim().length <= 300; } catch(e){return false;} };
+        if (out.architectureOverview && out.architectureOverview.title && shouldTranslateUI(out.architectureOverview.title)) {
           const tt = await translateToGermanDetailed(out.architectureOverview.title);
           out.architectureOverview.title_de = tt && tt.text ? tt.text : null;
         }
-        if (out.apiDocumentation && out.apiDocumentation.title) {
+        if (out.apiDocumentation && out.apiDocumentation.title && shouldTranslateUI(out.apiDocumentation.title)) {
           const tt = await translateToGermanDetailed(out.apiDocumentation.title);
           out.apiDocumentation.title_de = tt && tt.text ? tt.text : null;
         }
-        if (out.testing && out.testing.testingDocs && out.testing.testingDocs.title) {
+        if (out.testing && out.testing.testingDocs && out.testing.testingDocs.title && shouldTranslateUI(out.testing.testingDocs.title)) {
           const tt = await translateToGermanDetailed(out.testing.testingDocs.title);
           out.testing.testingDocs.title_de = tt && tt.text ? tt.text : null;
         }
@@ -592,6 +595,21 @@ async function fetchPinned() {
           }
         }
       }
+      // If we still don't have a docsLink, but the README has a documentation/api heading,
+      // create a lightweight link that opens the README on GitHub (blob) so the UI can
+      // render a docs link and we can translate the title.
+      try {
+        if ((!node.docsLink || !node.docsTitle) && node._ast && Array.isArray(node._ast.children)) {
+          const heading = node._ast.children.find(c => c && c.type === 'heading' && /doc|api|architectur/i.test((c.children||[]).map(ch=>ch.value||'').join('')));
+          if (heading) {
+            // derive a friendly title from heading text
+            const titleText = (heading.children||[]).map(ch=>ch.value||'').join(' ').trim() || 'Documentation';
+            node.docsTitle = node.docsTitle || titleText;
+            // link to README on GitHub (blob) so it opens sanely in browser
+            node.docsLink = node.docsLink || `https://github.com/keglev/${node.name}/blob/main/README.md`;
+          }
+        }
+      } catch (e) { if (DEBUG_FETCH) console.log('backfill from AST heading failed', node.name, e && e.message); }
       // If the found docs link looks like a GitHub issues/pull link, try to prefer a better docs-like link
       try {
   const txt = (node.object && node.object.text) || '';
@@ -643,15 +661,65 @@ async function fetchPinned() {
           const docsTitleForTranslation = parseReadme.normalizeTitle(node.docsTitle || '') || '';
           if (DEBUG_FETCH) { node._translation.debug.summaryInput = (summaryForTranslation||'').slice(0,400); node._translation.debug.docsTitleInput = (docsTitleForTranslation||'').slice(0,200); }
           const before = Date.now();
-          const [rSummary, rDocsTitle] = await Promise.all([translateToGermanDetailed(summaryForTranslation), translateToGermanDetailed(docsTitleForTranslation)]);
+          // First, ensure we have repoDocs.apiDocumentation when only docsLink/docsTitle exist
+          try {
+            if (!node.repoDocs && node.docsLink) {
+              node.repoDocs = node.repoDocs || {};
+              node.repoDocs.apiDocumentation = node.repoDocs.apiDocumentation || { title: node.docsTitle || 'Documentation', link: node.docsLink, description: '' };
+            }
+            // Also, if repoDocs exists but titles are missing, backfill from docsTitle
+            if (node.repoDocs) {
+              if (node.repoDocs.apiDocumentation && !node.repoDocs.apiDocumentation.title) node.repoDocs.apiDocumentation.title = node.docsTitle || 'API Documentation';
+              if (node.repoDocs.architectureOverview && !node.repoDocs.architectureOverview.title) node.repoDocs.architectureOverview.title = node.docsTitle || 'Architecture Overview';
+            }
+          } catch (e) { if (DEBUG_FETCH) console.log('backfill repoDocs from docsLink failed', e && e.message); }
+
+          // Collect short UI-visible strings to translate: summary, docsTitle, and any repoDocs.*.title
+          const shouldTranslateUI = (s) => { try { return s && typeof s === 'string' && s.trim().length>0 && s.trim().length <= 300; } catch(e){return false;} };
+          const titleTasks = [];
+          const mapToResultIndex = [];
+          if (shouldTranslateUI(summaryForTranslation)) { titleTasks.push(translateToGermanDetailed(summaryForTranslation)); mapToResultIndex.push(['summary']); }
+          if (shouldTranslateUI(docsTitleForTranslation)) { titleTasks.push(translateToGermanDetailed(docsTitleForTranslation)); mapToResultIndex.push(['docsTitle']); }
+          if (node.repoDocs) {
+            if (node.repoDocs.apiDocumentation && shouldTranslateUI(node.repoDocs.apiDocumentation.title)) { titleTasks.push(translateToGermanDetailed(node.repoDocs.apiDocumentation.title)); mapToResultIndex.push(['repoDocs','apiDocumentation','title']); }
+            if (node.repoDocs.architectureOverview && shouldTranslateUI(node.repoDocs.architectureOverview.title)) { titleTasks.push(translateToGermanDetailed(node.repoDocs.architectureOverview.title)); mapToResultIndex.push(['repoDocs','architectureOverview','title']); }
+            if (node.repoDocs.testing && node.repoDocs.testing.testingDocs && shouldTranslateUI(node.repoDocs.testing.testingDocs.title)) { titleTasks.push(translateToGermanDetailed(node.repoDocs.testing.testingDocs.title)); mapToResultIndex.push(['repoDocs','testing','testingDocs','title']); }
+          }
+          const results = await Promise.all(titleTasks);
+          // apply results according to mapToResultIndex
+          for (let ri = 0; ri < results.length; ri++) {
+            const res = results[ri] || { text: null };
+            const pathArr = mapToResultIndex[ri];
+            if (!pathArr || !Array.isArray(pathArr) || !res || !res.text) continue;
+            try {
+              if (pathArr.length === 1 && pathArr[0] === 'summary') node.summary_de = res.text;
+              else if (pathArr.length === 1 && pathArr[0] === 'docsTitle') node.docsTitle_de = res.text;
+              else if (pathArr[0] === 'repoDocs') {
+                // set nested title_de property
+                if (!node.repoDocs) node.repoDocs = {};
+                if (pathArr[1] === 'apiDocumentation') {
+                  node.repoDocs.apiDocumentation = node.repoDocs.apiDocumentation || {};
+                  node.repoDocs.apiDocumentation.title_de = res.text;
+                }
+                if (pathArr[1] === 'architectureOverview') {
+                  node.repoDocs.architectureOverview = node.repoDocs.architectureOverview || {};
+                  node.repoDocs.architectureOverview.title_de = res.text;
+                }
+                if (pathArr[1] === 'testing' && pathArr[2] === 'testingDocs') {
+                  node.repoDocs.testing = node.repoDocs.testing || {};
+                  node.repoDocs.testing.testingDocs = node.repoDocs.testing.testingDocs || {};
+                  node.repoDocs.testing.testingDocs.title_de = res.text;
+                }
+              }
+            } catch (e) { if (DEBUG_FETCH) console.log('apply translation result failed', e && e.message); }
+          }
           const took = Date.now() - before;
           node._translation.debug.requestMs = took;
           if (DEBUG_FETCH) console.log(`DEBUG: DeepL took ${took}ms for ${node.name}`);
           // attach detailed responses
-          node._translation.summary = rSummary || { text: null, status: null };
-          node._translation.docsTitle = rDocsTitle || { text: null, status: null };
-          if (rSummary && rSummary.text) node.summary_de = rSummary.text;
-          if (rDocsTitle && rDocsTitle.text) node.docsTitle_de = rDocsTitle.text;
+          // note: detailed responses are not persisted as a full debug payload to avoid using DeepL for long bodies
+          node._translation.summary = node._translation.summary || { text: null, status: null };
+          node._translation.docsTitle = node._translation.docsTitle || { text: null, status: null };
         } catch (e) {
           node._translation = node._translation || {}; node._translation.error = e && e.message; if (DEBUG_FETCH) console.log('DEBUG: DeepL error', e && e.message);
         }

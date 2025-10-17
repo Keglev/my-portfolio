@@ -23,16 +23,5 @@ jobs:
       - name: Run CI tests
         env:
           CI: true
-          DIAG_README: '1'
-          PARSE_README_TRACE: '1'
         run: npm run test:ci
-      - name: Upload debug README samples
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-readme-samples
-          path: |
-            public/projects_media/**/debug-readme-*.txt
-            public/projects_media/**/debug-readme-*.meta.json
-            public/projects_media/**/debug-raw-readme-*.md
-            public/projects_media/**/debug-raw-readme-*.meta.json
+      # Debug README artifact upload removed from CI to avoid storing raw README samples in workflow artifacts.

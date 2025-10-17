@@ -1,0 +1,41 @@
+{
+  "readmeHash": "cd14762d3b79b5e513668363b6f16834",
+  "files": [],
+  "imageSelection": {
+    "original": "src/assets/imgs/project-image.png",
+    "chosenUrl": "https://raw.githubusercontent.com/keglev/restaurant-speisekarte/master/src/assets/imgs/project-image.png",
+    "reason": "explicit-project-image",
+    "filename": "project-image.png-4d512d75.png"
+  },
+  "primaryImage": "/projects_media/restaurant-speisekarte/project-image.png-4d512d75.png",
+  "summarySource": "heading",
+  "translation": {
+    "debug": {
+      "requestMs": 97
+    },
+    "summary": {
+      "text": "Ein interaktives Restaurant-Menü.",
+      "status": 200,
+      "raw": {
+        "translations": [
+          {
+            "detected_source_language": "EN",
+            "text": "Ein interaktives Restaurant-Menü."
+          }
+        ]
+      }
+    },
+    "docsTitle": {
+      "text": "React App Dokumentation erstellen",
+      "status": 200,
+      "raw": {
+        "translations": [
+          {
+            "detected_source_language": "EN",
+            "text": "React App Dokumentation erstellen"
+          }
+        ]
+      }
+    }
+  }
+}

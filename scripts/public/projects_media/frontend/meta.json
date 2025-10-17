@@ -1,0 +1,41 @@
+{
+  "readmeHash": "2aec8c2f509821ef0735f307326ff702",
+  "files": [],
+  "imageSelection": {
+    "original": "src/assets/imgs/project-image.png",
+    "chosenUrl": "https://raw.githubusercontent.com/keglev/frontend/master/src/assets/imgs/project-image.png",
+    "reason": "explicit-project-image",
+    "filename": "project-image.png-31d63bb0.png"
+  },
+  "primaryImage": "/projects_media/frontend/project-image.png-31d63bb0.png",
+  "summarySource": "heading",
+  "translation": {
+    "debug": {
+      "requestMs": 386
+    },
+    "summary": {
+      "text": "StockEase ist eine mit React und TypeScript erstellte Frontend-Anwendung, die eine intuitive Benutzeroberfläche für die Verwaltung aktienbezogener Daten bietet. Sie integriert sich nahtlos in das **StockEase Backend** und bietet Authentifizierung, rollenbasierte Zugriffskontrolle und CRUD-Operationen für Produkte. Dieses Projekt ist Teil eines Portfolios zur Demonstration von Fähigkeiten in der Frontend-Entwicklung mit React und API-Integration.",
+      "status": 200,
+      "raw": {
+        "translations": [
+          {
+            "detected_source_language": "EN",
+            "text": "StockEase ist eine mit React und TypeScript erstellte Frontend-Anwendung, die eine intuitive Benutzeroberfläche für die Verwaltung aktienbezogener Daten bietet. Sie integriert sich nahtlos in das **StockEase Backend** und bietet Authentifizierung, rollenbasierte Zugriffskontrolle und CRUD-Operationen für Produkte. Dieses Projekt ist Teil eines Portfolios zur Demonstration von Fähigkeiten in der Frontend-Entwicklung mit React und API-Integration."
+          }
+        ]
+      }
+    },
+    "docsTitle": {
+      "text": "API-Integration",
+      "status": 200,
+      "raw": {
+        "translations": [
+          {
+            "detected_source_language": "EN",
+            "text": "API-Integration"
+          }
+        ]
+      }
+    }
+  }
+}

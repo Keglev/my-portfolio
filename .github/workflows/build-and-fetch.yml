@@ -32,9 +32,6 @@ jobs:
           # Support multiple secret names: DEEPL_API_KEY or DEEPL_SECRET. Prefer DEEPL_SECRET if you set it in your repo or Vercel.
           DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
           DEEPL_SECRET: ${{ secrets.DEEPL_SECRET }}
-          # Diagnostic flags - enable to persist raw README samples for inspection
-          DIAG_README: '1'
-          PARSE_README_TRACE: '1'
         run: |
           echo "Running fetchProjects.js (DeepL will be used only if DEEPL_SECRET or DEEPL_API_KEY is set in the environment)"
           node -e "console.log('DeepL present?', !!process.env.DEEPL_SECRET || !!process.env.DEEPL_API_KEY)"
@@ -85,16 +82,7 @@ jobs:
             echo "ERROR: .vercel/output/static/projects.json not found"; exit 1;
           fi
 
-      - name: Upload debug README samples
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-readme-samples-build
-          path: |
-            public/projects_media/**/debug-readme-*.txt
-            public/projects_media/**/debug-readme-*.meta.json
-            public/projects_media/**/debug-raw-readme-*.md
-            public/projects_media/**/debug-raw-readme-*.meta.json
+      # NOTE: debug artifact upload removed to avoid leaking README samples and reduce CI noise.
 
       - name: Deploy to Vercel (prebuilt)
         env:

@@ -16,9 +16,11 @@ const RepoDocs = () => {
         try { console.debug('RepoDocs: fetched /projects.json', data); } catch (e) {}
         const safeTitle = (p) => {
           const bad = (s) => !s || /open an issue|question|contribut/i.test(String(s).toLowerCase());
-          // prefer de title if present
+          // prefer explicit German translation fields when the parser provided them
+          if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.title_de && !bad(p.repoDocs.apiDocumentation.title_de)) return p.repoDocs.apiDocumentation.title_de;
+          if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.title_de && !bad(p.repoDocs.architectureOverview.title_de)) return p.repoDocs.architectureOverview.title_de;
           if (p.docsTitle_de && !bad(p.docsTitle_de)) return p.docsTitle_de;
-          // prefer structured repoDocs api title
+          // fall back to structured titles
           if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.title && !bad(p.repoDocs.apiDocumentation.title)) return p.repoDocs.apiDocumentation.title;
           if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.title && !bad(p.repoDocs.architectureOverview.title)) return p.repoDocs.architectureOverview.title;
           if (p.docs && p.docs.documentation && p.docs.documentation.title && !bad(p.docs.documentation.title)) return p.docs.documentation.title;
@@ -88,17 +90,17 @@ const RepoDocs = () => {
                   return link;
                 };
 
-                const linkLabel = (i18n && i18n.language === 'de') ? 'Hier öffnen' : t('viewDocs');
+                const linkLabel = t('viewDocs');
 
                 const nodes = [];
                 if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.link) {
                   nodes.push(
-                    <p key="api"><strong>{p.repoDocs.apiDocumentation.title}</strong>: <a href={convertRawToBlob(p.repoDocs.apiDocumentation.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
+                    <p key="api"><strong>{(i18n && i18n.language === 'de' && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.title_de) ? p.repoDocs.apiDocumentation.title_de : p.repoDocs.apiDocumentation.title}</strong>: <a href={convertRawToBlob(p.repoDocs.apiDocumentation.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
                   );
                 }
                 if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.link) {
                   nodes.push(
-                    <p key="arch"><strong>{p.repoDocs.architectureOverview.title}</strong>: <a href={convertRawToBlob(p.repoDocs.architectureOverview.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
+                    <p key="arch"><strong>{(i18n && i18n.language === 'de' && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.title_de) ? p.repoDocs.architectureOverview.title_de : p.repoDocs.architectureOverview.title}</strong>: <a href={convertRawToBlob(p.repoDocs.architectureOverview.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
                   );
                 }
                 return nodes;
@@ -106,7 +108,7 @@ const RepoDocs = () => {
 
               {/* Legacy fallback: render legacy docsLink if nothing structured exists */}
               {!((p.repoDocs && (p.repoDocs.apiDocumentation || p.repoDocs.architectureOverview)) || (p.docs && p.docs.documentation)) && p.docsLink && (
-                <p><a href={(p.docsLink && p.docsLink.includes('raw.githubusercontent.com')) ? p.docsLink.replace(/^https:\/\/raw\.githubusercontent\.com\//i, 'https://github.com/').replace(/\/([^/]+)\/([^/]+)\/(.+)$/, '/blob/$1/$2/$3') : p.docsLink} target="_blank" rel="noopener noreferrer" className="project-link">{(i18n && i18n.language === 'de') ? 'Hier öffnen' : t('viewDocs')}</a></p>
+                <p><a href={(p.docsLink && p.docsLink.includes('raw.githubusercontent.com')) ? p.docsLink.replace(/^https:\/\/raw\.githubusercontent\.com\//i, 'https://github.com/').replace(/\/([^/]+)\/([^/]+)\/(.+)$/, '/blob/$1/$2/$3') : p.docsLink} target="_blank" rel="noopener noreferrer" className="project-link">{t('viewDocs')}</a></p>
               )}
             </div>
           ))
