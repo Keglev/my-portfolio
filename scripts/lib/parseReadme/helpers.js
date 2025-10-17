@@ -47,9 +47,20 @@ function extractLinkFromParagraphNode(node) {
 
 function extractLinkFromListNode(li) {
   try {
-    const flat = JSON.stringify(li);
-    const mdMatch = flat.match(/\[([^\]]+)\]\(([^)]+)\)/);
+    // prefer AST-aware extraction instead of serializing the node
+    try {
+      // if this is a list item node, try to extract a link child first
+      if (li && Array.isArray(li.children)) {
+        const linkChild = (li.children||[]).flatMap(ch => (ch.children||[])).find(c => c && c.type === 'link');
+        if (linkChild && linkChild.url) {
+          const title = (linkChild.children && linkChild.children[0] && linkChild.children[0].value) || null;
+          return { title, link: linkChild.url };
+        }
+      }
+    } catch (e) { /* fall back to regex on flattened text below */ }
+    const flat = flattenNodeText(li || '').replace(/\r?\n/g,' ');
     try { if (process.env.PARSE_README_TRACE === '1' || process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true') console.log('TRACE extractLinkFromListNode flat', String(flat).slice(0,300)); } catch(e){}
+    const mdMatch = flat.match(/\[([^\]]+)\]\(([^)]+)\)/);
     if (mdMatch) return { title: mdMatch[1] || null, link: mdMatch[2] || null };
   } catch (e) { /* ignore */ }
   return null;

@@ -127,8 +127,9 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
               // list items with links
               if (nn.type === 'list' && Array.isArray(nn.children)) {
                 for (const li of nn.children) {
-                  const flatLinks = JSON.stringify(li);
-                  const m = flatLinks.match(/https?:\/\/[^"']+/i);
+                  // prefer AST-aware text extraction
+                  const flatLinks = (parseReadme.extractTextFromListItem && typeof parseReadme.extractTextFromListItem === 'function') ? parseReadme.extractTextFromListItem(li) : parseReadme.flattenNodeText(li || '').replace(/\r?\n/g,' ');
+                  const m = String(flatLinks).match(/https?:\/\/[^"']+/i);
                   if (m) {
                     const u = m[0];
                     if (/docs?|index|architecture/i.test(u) || /docs?/i.test(flatLinks)) {
@@ -189,8 +190,8 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
               }
               if (nn.type === 'list' && Array.isArray(nn.children)) {
                 for (const li of nn.children) {
-                  const flat = JSON.stringify(li);
-                  const m = flat.match(/https?:\/\/[^"']+/i);
+                  const flat = (parseReadme.extractTextFromListItem && typeof parseReadme.extractTextFromListItem === 'function') ? parseReadme.extractTextFromListItem(li) : parseReadme.flattenNodeText(li || '').replace(/\r?\n/g,' ');
+                  const m = String(flat).match(/https?:\/\/[^"']+/i);
                   if (m) {
                     const u = m[0];
                     if (/api|openapi|swagger|docs?/i.test(u) || /api/i.test(flat)) {
@@ -251,8 +252,8 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
               }
               if (nn.type === 'list' && Array.isArray(nn.children)) {
                 for (const li of nn.children) {
-                  const flat = JSON.stringify(li);
-                  const m = flat.match(/https?:\/\/[^"']+/i);
+                  const flat = (parseReadme.extractTextFromListItem && typeof parseReadme.extractTextFromListItem === 'function') ? parseReadme.extractTextFromListItem(li) : parseReadme.flattenNodeText(li || '').replace(/\r?\n/g,' ');
+                  const m = String(flat).match(/https?:\/\/[^"']+/i);
                   if (m) {
                     const u = m[0];
                     if (/coverage|codecov|coveralls/i.test(u)) {

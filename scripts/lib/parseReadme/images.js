@@ -26,7 +26,9 @@ function findImageCandidateFromAst(ast) {
               if (m && m[1]) return m[1];
             }
             if (nn.children && Array.isArray(nn.children)) {
-              const flat = JSON.stringify(nn);
+              // flatten node text instead of serializing the AST
+              const helpers = require('./helpers');
+              const flat = helpers.flattenNodeText(nn || '').replace(/\r?\n/g,' ');
               const r = flat.match(/https?:\/\/[^"']+|\/.+?\.(png|jpe?g|gif|svg)/i);
               if (r && r[0]) return r[0];
             }

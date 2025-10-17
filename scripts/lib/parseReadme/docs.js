@@ -73,7 +73,9 @@ function extractDocsFromAst(ast, repo) {
                 const extracted = extractLinkFromListNode(li);
                 if (extracted && extracted.link) {
                   const u = extracted.link;
-                  if (/api|openapi|swagger|docs?/i.test(u) || /api/i.test(JSON.stringify(li))) {
+                  // use flattened text for pattern checks instead of serializing the AST
+                  const flatLi = flattenNodeText(li || '').toLowerCase();
+                  if (/api|openapi|swagger|docs?/.test(u.toLowerCase()) || /\bapi\b/.test(flatLi)) {
                     docs.apiDocumentation = { title: extracted.title || 'API Documentation', link: toRaw(u), description: '' };
                     break;
                   }
