@@ -356,6 +356,25 @@ async function fetchPinned() {
       }
 
       const readme = node.object && node.object.text;
+      // Diagnostic: detect serialized AST/JSON fragments embedded in README and optionally persist sample
+      try {
+        const diagEnabled = (process.env.DIAG_README === '1') || DEBUG_FETCH;
+        if (diagEnabled && readme && typeof readme === 'string') {
+          const suspicious = /\{"type"\s*:\s*"[a-z]+"|"children"\s*:\s*\[/i.test(readme);
+          if (suspicious) {
+            try {
+              const mediaDir = path.join(MEDIA_ROOT, node.name);
+              mediaDownloader.ensureDir(mediaDir);
+              const ts = Date.now();
+              const samplePath = path.join(mediaDir, `debug-readme-${ts}.txt`);
+              fs.writeFileSync(samplePath, readme, 'utf8');
+              console.log(`DEBUG: wrote suspicious README sample for ${node.name} -> ${samplePath}`);
+              // also write a tiny metadata file for quick inspection
+              try { fs.writeFileSync(path.join(mediaDir, `debug-readme-${ts}.meta.json`), JSON.stringify({ repo: node.name, ts, reason: 'suspected-serialized-ast' }, null, 2), 'utf8'); } catch(e){}
+            } catch (e) { if (DEBUG_FETCH) console.log('diag write failed', node.name, e && e.message); }
+          }
+        }
+      } catch (e) { if (DEBUG_FETCH) console.log('diag detect failed', e && e.message); }
       if (!readme || typeof readme !== 'string') continue;
 
   // parse AST
