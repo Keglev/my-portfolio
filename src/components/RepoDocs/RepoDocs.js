@@ -36,7 +36,11 @@ const RepoDocs = () => {
           hasDocs: !!(
             (p.repoDocs && ((p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.link) || (p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.link))) ||
             (p.docs && ((p.docs.apiDocumentation && p.docs.apiDocumentation.link) || (p.docs.documentation && p.docs.documentation.link))) ||
-            p.docsLink
+            p.docsLink ||
+            // If parser left an AST, look for headings that indicate documentation sections
+            (p._ast && Array.isArray(p._ast.children) && p._ast.children.some(c => c && c.type === 'heading' && c.children && c.children.length && /doc|api|architectur/i.test(String((c.children[0] && c.children[0].value) || '')))) ||
+            // fallback: text contains documentation keywords
+            (p.text && /documentation|api documentation|architecture|api integration/i.test(p.text))
           ),
         }));
         // only keep entries that actually have docs (do not show about/summary-only repos)
