@@ -324,6 +324,23 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
         out.testing.testingDocs.description_de = t && t.text ? t.text : null;
       }
     }
+    // translate titles if deepl key provided
+    try {
+      if (DEEPL_KEY) {
+        if (out.architectureOverview && out.architectureOverview.title) {
+          const tt = await translateToGermanDetailed(out.architectureOverview.title);
+          out.architectureOverview.title_de = tt && tt.text ? tt.text : null;
+        }
+        if (out.apiDocumentation && out.apiDocumentation.title) {
+          const tt = await translateToGermanDetailed(out.apiDocumentation.title);
+          out.apiDocumentation.title_de = tt && tt.text ? tt.text : null;
+        }
+        if (out.testing && out.testing.testingDocs && out.testing.testingDocs.title) {
+          const tt = await translateToGermanDetailed(out.testing.testingDocs.title);
+          out.testing.testingDocs.title_de = tt && tt.text ? tt.text : null;
+        }
+      }
+    } catch (e) { if (DEBUG_FETCH) console.log('title translation failed', e && e.message); }
   } catch (e) {
     if (DEBUG_FETCH) console.log('extractRepoDocsDetailed error', e && e.message);
   }

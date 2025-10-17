@@ -65,25 +65,7 @@ const RepoDocs = () => {
             <div className="experience-card" key={idx}>
               <h3>{p.name}</h3>
               {/* legacy small title removed: we show descriptions and structured links only */}
-              {/* Prefer structured docs descriptions; do not fall back to README 'about' summaries here */}
-              {(() => {
-                const isGeneric = (s) => {
-                  if (!s) return true;
-                  const clean = String(s).toLowerCase();
-                  return /for questions or contributions|open an issue|for questions|contribut/i.test(clean) || clean.trim().length < 20;
-                };
-                try {
-                  if (i18n && i18n.language === 'de') {
-                    if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.description_de && !isGeneric(p.repoDocs.apiDocumentation.description_de)) return <p>{p.repoDocs.apiDocumentation.description_de}</p>;
-                    if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.description_de && !isGeneric(p.repoDocs.architectureOverview.description_de)) return <p>{p.repoDocs.architectureOverview.description_de}</p>;
-                    if (p.docs && p.docs.documentation && p.docs.documentation.description_de && !isGeneric(p.docs.documentation.description_de)) return <p>{p.docs.documentation.description_de}</p>;
-                  }
-                  if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.description && !isGeneric(p.repoDocs.apiDocumentation.description)) return <p>{p.repoDocs.apiDocumentation.description}</p>;
-                  if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.description && !isGeneric(p.repoDocs.architectureOverview.description)) return <p>{p.repoDocs.architectureOverview.description}</p>;
-                  if (p.docs && p.docs.documentation && p.docs.documentation.description && !isGeneric(p.docs.documentation.description)) return <p>{p.docs.documentation.description}</p>;
-                } catch (e) { /* ignore */ }
-                return null;
-              })()}
+              {/* descriptions removed per UI requirement (small line under project title) */}
 
               {/* Prefer structured repoDocs links when available */}
               {(() => {
