@@ -324,6 +324,49 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
         out.testing.testingDocs.description_de = t && t.text ? t.text : null;
       }
     }
+    // Sanitize and translate titles: avoid short/generic titles and provide title_de via DeepL when available
+    try {
+      const sanitizeTitle = (s) => {
+        if (!s || typeof s !== 'string') return null;
+        const clean = s.replace(/\s+/g,' ').trim();
+        if (clean.length < 4) return null;
+        // remove obviously generic phrases
+        if (/interactive api|api landingpage|landing page|index for backend|index for backend documentation|complete api documentation|api documentation hub/i.test(clean)) return null;
+        return clean;
+      };
+      if (DEEPL_KEY) {
+        // translate any titles we plan to keep
+        if (out.architectureOverview && out.architectureOverview.title) {
+          const st = sanitizeTitle(out.architectureOverview.title);
+          out.architectureOverview.title = st;
+          if (st) {
+            const tt = await translateToGermanDetailed(st);
+            out.architectureOverview.title_de = tt && tt.text ? tt.text : null;
+          }
+        }
+        if (out.apiDocumentation && out.apiDocumentation.title) {
+          const st = sanitizeTitle(out.apiDocumentation.title);
+          out.apiDocumentation.title = st;
+          if (st) {
+            const tt = await translateToGermanDetailed(st);
+            out.apiDocumentation.title_de = tt && tt.text ? tt.text : null;
+          }
+        }
+        if (out.testing && out.testing.testingDocs && out.testing.testingDocs.title) {
+          const st = sanitizeTitle(out.testing.testingDocs.title);
+          out.testing.testingDocs.title = st;
+          if (st) {
+            const tt = await translateToGermanDetailed(st);
+            out.testing.testingDocs.title_de = tt && tt.text ? tt.text : null;
+          }
+        }
+      } else {
+        // no DeepL key: just sanitize titles
+        if (out.architectureOverview && out.architectureOverview.title) out.architectureOverview.title = sanitizeTitle(out.architectureOverview.title);
+        if (out.apiDocumentation && out.apiDocumentation.title) out.apiDocumentation.title = sanitizeTitle(out.apiDocumentation.title);
+        if (out.testing && out.testing.testingDocs && out.testing.testingDocs.title) out.testing.testingDocs.title = sanitizeTitle(out.testing.testingDocs.title);
+      }
+    } catch (e) { if (DEBUG_FETCH) console.log('title sanitize/translate failed', e && e.message); }
   } catch (e) {
     if (DEBUG_FETCH) console.log('extractRepoDocsDetailed error', e && e.message);
   }
