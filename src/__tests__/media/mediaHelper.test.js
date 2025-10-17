@@ -31,7 +31,6 @@ describe('mediaHelper.processNodeMedia', () => {
   test('downloads image and updates node', async () => {
     const node = { name: 'sample-repo', object: { text: '![alt](https://example.com/images/pic.png)' } };
     const mediaRoot = 'public/projects_media/sample-repo';
-  try { console.log('TEST DEBUG types:', typeof mockMediaDownloader.downloadIfNeeded, typeof mockAxios, typeof parseReadme.findImageCandidateFromAst, typeof node.object.text); } catch(e){}
   await mediaHelper.processNodeMedia(node, mediaRoot, mockAxios, { mediaDownloader: mockMediaDownloader, parseReadme, isBadgeLike: () => false });
   // The environment may not set node.primaryImage directly; accept either a
   // successful downloader invocation or that the README text was rewritten.

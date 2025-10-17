@@ -2,7 +2,6 @@
 // downloading a deterministic filename via mediaDownloader and updating node
 // (primaryImage, _imageSelection, and README rewrites).
 async function processNodeMedia(node, mediaRoot, getAxios, opts = {}) {
-  const DEBUG_FETCH = process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true';
   const parseReadme = opts.parseReadme || require('../parseReadme');
   const isBadgeLike = opts.isBadgeLike || (u => false);
   const mediaDownloader = opts.mediaDownloader || require('../media/mediaDownloader');
@@ -27,12 +26,10 @@ async function processNodeMedia(node, mediaRoot, getAxios, opts = {}) {
     }
 
   if (!candidate) candidate = (parseReadme.findImageCandidateFromAst && typeof parseReadme.findImageCandidateFromAst === 'function') ? parseReadme.findImageCandidateFromAst(ast) : null;
-  if (DEBUG_FETCH) try { console.log('DEBUG processNodeMedia candidate after AST parse:', candidate); } catch(e){}
     if (!candidate) {
       const re = /!\[[^\]]*\]\(([^)]+)\)/g; const m = re.exec(readme); if (m) candidate = m && m[1] ? m[1].trim() : null;
     }
-
-  if (!candidate) { if (DEBUG_FETCH) try { console.log('DEBUG processNodeMedia no candidate found, readme snippet:', String(readme).slice(0,200)); } catch(e){}; return null; }
+    if (!candidate) return null;
 
     // sanitize candidate (remove title or angle brackets)
     let img = candidate;
@@ -40,15 +37,10 @@ async function processNodeMedia(node, mediaRoot, getAxios, opts = {}) {
     if (img.startsWith('<') && img.endsWith('>')) img = img.slice(1, -1);
 
     const absoluteCandidates = /^https?:\/\//i.test(img) ? [img] : [ `https://raw.githubusercontent.com/keglev/${node.name}/main/${img.replace(/^\.\/?/, '')}`, `https://raw.githubusercontent.com/keglev/${node.name}/master/${img.replace(/^\.\/?/, '')}` ];
-    if (DEBUG_FETCH) try { console.log('DEBUG processNodeMedia absoluteCandidates:', absoluteCandidates); } catch(e){}
     for (const u of absoluteCandidates) {
       try {
-  if (DEBUG_FETCH) try { console.log('DEBUG processNodeMedia attempting downloadIfNeeded for', u); } catch(e){}
-  if (DEBUG_FETCH) try { console.log('DEBUG type of mediaDownloader.downloadIfNeeded', typeof (mediaDownloader && mediaDownloader.downloadIfNeeded)); } catch(e){}
-  const fn = await mediaDownloader.downloadIfNeeded(node.name, u, { originalCandidate: candidate });
-  if (DEBUG_FETCH) try { console.log('DEBUG processNodeMedia raw fn returned:', fn); } catch(e){}
-  if (fn) {
-          if (DEBUG_FETCH) try { console.log('DEBUG processNodeMedia downloadIfNeeded returned', fn); } catch(e){}
+        const fn = await mediaDownloader.downloadIfNeeded(node.name, u, { originalCandidate: candidate });
+        if (fn) {
           try { node._imageSelection = node._imageSelection || {}; node._imageSelection.chosenUrl = u; node._imageSelection.filename = fn; node._imageSelection.reason = node._imageSelection.reason || 'downloaded'; } catch (e) {}
           node.primaryImage = `/projects_media/${node.name}/${fn}`;
           // Replace the specific candidate occurrence with the primaryImage in README text
