@@ -64,7 +64,7 @@ const RepoDocs = () => {
           projectsWithDocs.map((p, idx) => (
             <div className="experience-card" key={idx}>
               <h3>{p.name}</h3>
-              <p className="date">{p.docsTitle || ''}</p>
+              {/* legacy small title removed: we show descriptions and structured links only */}
               {/* Prefer structured docs descriptions; do not fall back to README 'about' summaries here */}
               {(() => {
                 const isGeneric = (s) => {
