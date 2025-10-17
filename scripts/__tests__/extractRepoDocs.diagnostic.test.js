@@ -1,4 +1,4 @@
-const { extractRepoDocsDetailed } = require('../fetchProjects');
+const { extractRepoDocsDetailed } = require('../lib/docs');
 
 describe('extractRepoDocsDetailed diagnostic', () => {
   test('sanitizes embedded AST/JSON fragments from descriptions', async () => {

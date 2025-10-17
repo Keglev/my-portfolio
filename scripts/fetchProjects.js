@@ -26,16 +26,8 @@ const DEBUG_FETCH = process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH =
 // The token presence will be checked when running as a script (see bottom guard).
 
 // Small sanitizer to remove accidental embedded AST/JSON fragments from extracted text
-function stripAstJsonFragments(s) {
-  try {
-    if (!s || typeof s !== 'string') return s;
-    // remove simple JSON-like AST fragments that include a "type" key
-    let t = s.replace(/\{\s*"type"\s*:\s*"[a-z]+"[\s\S]*?\}/gi, '');
-    // collapse whitespace
-    t = t.replace(/\s+/g, ' ').trim();
-    return t === '' ? null : t;
-  } catch (e) { return s; }
-}
+// NOTE: sanitization moved into modules that need it (extractReadmeDocs.js) to avoid
+// duplicating unused helpers at the top-level of this orchestrator.
 
 // Use a named query that declares a $login variable and fetches the user's pinned repositories; README content will be fetched via raw.githubusercontent per-repo.
 // We request __typename and use a minimal inline fragment for Repository fields.
@@ -47,285 +39,18 @@ async function fetchGraphQL() {
   return fetchGithub.runGraphQL(TOKEN, QUERY, { login: 'keglev' });
 }
 
-const mediaDownloader = require('./lib/mediaDownloader');
+const mediaDownloader = require('./lib/media/mediaDownloader');
 
 // isBadgeLike is provided by parseReadme.extractors; prefer that implementation to avoid duplication
 
 // All parsing helpers are provided via `parseReadme` (import above).
 
 const translation = require('./lib/translation');
-const translateToGermanDetailed = translation.translateToGermanDetailed;
 const shouldTranslateUI = translation.shouldTranslateUI;
 const translateWithCache = translation.translateWithCache;
+const { extractRepoDocsDetailed } = require('./lib/docs');
 
-// Extract specific repo docs pieces per user's requirements and translate descriptions to German.
-// Returns an object with found items or null when nothing found.
-async function extractRepoDocsDetailed(readmeText, repoName) {
-  if (!readmeText || !readmeText.length) return null;
-  const out = { architectureOverview: null, apiDocumentation: null, testing: null };
-  try {
-    // helper to convert relative repo paths to raw.githubusercontent URLs
-    const toRawGithub = (href) => {
-      if (!href) return href;
-      // absolute URLs -> return as-is
-      if (/^https?:\/\//i.test(href)) return href;
-      // strip surrounding <> or whitespace
-      let p = String(href).trim().replace(/^<|>$/g, '');
-      // remove leading ./ or leading /
-      p = p.replace(/^\.\//, '').replace(/^\//, '');
-      // if repoName not provided, return original href
-      if (!repoName) return p;
-      // build raw.githubusercontent URL (prefer main branch)
-      return `https://raw.githubusercontent.com/keglev/${repoName}/main/${p}`;
-    };
-    // 1) Architecture Overview: prefer AST-like extraction by searching for a heading and then a link with 'Index' or '/docs' in the href or label.
-    try {
-  const ast = parseReadme.parseMarkdown(readmeText);
-      if (ast && Array.isArray(ast.children)) {
-        for (let i = 0; i < ast.children.length; i++) {
-          const n = ast.children[i];
-          if (n.type === 'heading' && /architecture overview/i.test((n.children||[]).map(c=>c.value||'').join(''))) {
-            // scan following nodes for link nodes
-            let j = i+1;
-            while (j < ast.children.length && ast.children[j].type !== 'heading') {
-              const nn = ast.children[j];
-              // paragraph with link
-              if (nn.type === 'paragraph' && Array.isArray(nn.children)) {
-                for (const ch of nn.children) {
-                  if (ch.type === 'link' && ch.url) {
-                    const u = ch.url;
-                    const label = (ch.children||[]).map(c=>c.value||'').join('');
-                    if (/index/i.test(label) || /docs?/.test(u) || /index/.test(u)) {
-                      out.architectureOverview = { title: label || 'Architecture Overview', link: toRawGithub(u), description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
-                      break;
-                    }
-                    // keep the first link as fallback
-                    if (!out.architectureOverview) out.architectureOverview = { title: label || 'Architecture Overview', link: toRawGithub(u), description: (nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim() };
-                  }
-                }
-              }
-              // list items with links
-              if (nn.type === 'list' && Array.isArray(nn.children)) {
-                for (const li of nn.children) {
-                  // prefer AST-aware text extraction
-                  const flatLinks = (parseReadme.extractTextFromListItem && typeof parseReadme.extractTextFromListItem === 'function') ? parseReadme.extractTextFromListItem(li) : parseReadme.flattenNodeText(li || '').replace(/\r?\n/g,' ');
-                  const m = String(flatLinks).match(/https?:\/\/[^"']+/i);
-                  if (m) {
-                    const u = m[0];
-                    if (/docs?|index|architecture/i.test(u) || /docs?/i.test(flatLinks)) {
-                      out.architectureOverview = { title: 'Architecture Overview', link: toRawGithub(u), description: '' };
-                      break;
-                    }
-                    if (!out.architectureOverview) out.architectureOverview = { title: 'Architecture Overview', link: toRawGithub(u), description: '' };
-                  }
-                }
-              }
-              j++;
-            }
-            if (out.architectureOverview) break;
-          }
-        }
-      }
-      // fallback to text regex if AST didn't yield
-      if (!out.architectureOverview) {
-        const archRe = /^\s*#{1,6}\s*.*architecture overview.*$/im;
-        const archIdx = readmeText.search(archRe);
-        if (archIdx !== -1) {
-          const snippet = readmeText.slice(archIdx);
-          const linkLine = snippet.match(/-\s*\.\s*\[([^\]]*Index[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
-          if (linkLine) out.architectureOverview = { title: linkLine[1].trim(), link: toRawGithub(linkLine[2].trim()), description: stripAstJsonFragments((linkLine[3] || '').trim()) };
-          else {
-            const firstLink = snippet.match(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\.?\/?[^)\s]+|[^)]+\.md)\)\s*-?\s*(.*)/i);
-            if (firstLink) out.architectureOverview = { title: firstLink[1].trim(), link: toRawGithub(firstLink[2].trim()), description: stripAstJsonFragments((firstLink[3]||'').trim()) };
-          }
-        }
-      }
-    } catch (e) {
-      if (DEBUG_FETCH) console.log('extractRepoDocsDetailed arch AST error', e && e.message);
-    }
-
-    // 2) API Documentation Hub: find heading and pick first 'Complete API Documentation' link and its description
-    try {
-      // prefer AST extraction for api documentation hub
-  const ast = parseReadme.parseMarkdown(readmeText);
-      if (ast && Array.isArray(ast.children)) {
-        for (let i = 0; i < ast.children.length; i++) {
-          const n = ast.children[i];
-          if (n.type === 'heading' && /api documentation hub|api docs|api documentation/i.test((n.children||[]).map(c=>c.value||'').join(''))) {
-            let j = i+1;
-            while (j < ast.children.length && ast.children[j].type !== 'heading') {
-              const nn = ast.children[j];
-              if (nn.type === 'paragraph' && Array.isArray(nn.children)) {
-                for (const ch of nn.children) {
-                  if (ch.type === 'link' && ch.url) {
-                    const u = ch.url;
-                    const label = (ch.children||[]).map(c=>c.value||'').join('');
-                    if (/complete api|api docs|swagger|openapi|docs?/i.test(label + ' ' + u)) {
-                      out.apiDocumentation = { title: label || 'API Documentation', link: u, description: stripAstJsonFragments((nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim()) };
-                      break;
-                    }
-                    if (!out.apiDocumentation) out.apiDocumentation = { title: label || 'API Documentation', link: u, description: stripAstJsonFragments((nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim()) };
-                  }
-                }
-              }
-              if (nn.type === 'list' && Array.isArray(nn.children)) {
-                for (const li of nn.children) {
-                  const flat = (parseReadme.extractTextFromListItem && typeof parseReadme.extractTextFromListItem === 'function') ? parseReadme.extractTextFromListItem(li) : parseReadme.flattenNodeText(li || '').replace(/\r?\n/g,' ');
-                  const m = String(flat).match(/https?:\/\/[^"']+/i);
-                  if (m) {
-                    const u = m[0];
-                    if (/api|openapi|swagger|docs?/i.test(u) || /api/i.test(flat)) {
-                      out.apiDocumentation = { title: 'API Documentation', link: u, description: '' };
-                      break;
-                    }
-                    if (!out.apiDocumentation) out.apiDocumentation = { title: 'API Documentation', link: u, description: '' };
-                  }
-                }
-              }
-              j++;
-            }
-            if (out.apiDocumentation) break;
-          }
-        }
-      }
-      if (!out.apiDocumentation) {
-        const apiRe = /^\s*#{1,6}\s*.*api documentation hub.*$/im;
-        const apiIdx = readmeText.search(apiRe);
-        if (apiIdx !== -1) {
-          const snippet = readmeText.slice(apiIdx);
-          const compLink = snippet.match(/\[([^\]]*Complete API[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
-          if (compLink) out.apiDocumentation = { title: compLink[1].trim(), link: compLink[2].trim(), description: stripAstJsonFragments((compLink[3]||'').trim()) };
-          else {
-            const firstLink = snippet.match(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\.?\/?[^)\s]+|[^)]+\.md)\)\s*-?\s*(.*)/i);
-            if (firstLink) out.apiDocumentation = { title: firstLink[1].trim(), link: firstLink[2].trim(), description: stripAstJsonFragments((firstLink[3]||'').trim()) };
-          }
-        }
-      }
-    } catch (e) {
-      if (DEBUG_FETCH) console.log('extractRepoDocsDetailed api AST error', e && e.message);
-    }
-
-    // 3) Testing & Code Quality: find heading and extract Coverage link and Testing Architecture documentation link
-    try {
-  const ast = parseReadme.parseMarkdown(readmeText);
-      if (ast && Array.isArray(ast.children)) {
-        for (let i = 0; i < ast.children.length; i++) {
-          const n = ast.children[i];
-          if (n.type === 'heading' && /testing & code quality|testing/i.test((n.children||[]).map(c=>c.value||'').join(''))) {
-            let j = i+1;
-            while (j < ast.children.length && ast.children[j].type !== 'heading') {
-              const nn = ast.children[j];
-              if (nn.type === 'paragraph' && Array.isArray(nn.children)) {
-                for (const ch of nn.children) {
-                  if (ch.type === 'link' && ch.url) {
-                    const u = ch.url; const label = (ch.children||[]).map(c=>c.value||'').join('');
-                    if (/coverage|coverage badge|coveralls|codecov|coverage report/i.test(label + ' ' + u)) {
-                      out.testing = out.testing || {}; out.testing.coverage = { title: label || 'Coverage', link: u, description: stripAstJsonFragments((nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim()) };
-                    }
-                    if (/testing architecture|testing docs|test architecture/i.test(label + ' ' + u)) {
-                      out.testing = out.testing || {}; out.testing.testingDocs = { title: label || 'Testing Architecture', link: u, description: stripAstJsonFragments((nn.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim()) };
-                    }
-                    if (out.testing && out.testing.coverage && out.testing.testingDocs) break;
-                    if (!out.testing) out.testing = out.testing || {};
-                  }
-                }
-              }
-              if (nn.type === 'list' && Array.isArray(nn.children)) {
-                for (const li of nn.children) {
-                  const flat = (parseReadme.extractTextFromListItem && typeof parseReadme.extractTextFromListItem === 'function') ? parseReadme.extractTextFromListItem(li) : parseReadme.flattenNodeText(li || '').replace(/\r?\n/g,' ');
-                  const m = String(flat).match(/https?:\/\/[^"']+/i);
-                  if (m) {
-                    const u = m[0];
-                    if (/coverage|codecov|coveralls/i.test(u)) {
-                      out.testing = out.testing || {};
-                      out.testing.coverage = out.testing.coverage || { title: 'Coverage', link: u, description: '' };
-                    }
-                    if (/testing|test|architecture/i.test(u)) {
-                      out.testing = out.testing || {};
-                      out.testing.testingDocs = out.testing.testingDocs || { title: 'Testing Architecture', link: u, description: '' };
-                    }
-                  }
-                }
-              }
-              j++;
-            }
-            if (out.testing && (out.testing.coverage || out.testing.testingDocs)) break;
-          }
-        }
-      }
-      // fallback: original regex approach
-      if (!out.testing) {
-        const testRe = /^\s*#{1,6}\s*.*testing & code quality.*$/im;
-        const testIdx = readmeText.search(testRe);
-        if (testIdx !== -1) {
-          const snippet = readmeText.slice(testIdx);
-          const coverageMatch = snippet.match(/\[([^\]]*coverage[^\]]*)\]\((https?:\/\/[^)\s]+)\)\s*[–—-]?\s*(.*)/i);
-          if (coverageMatch) { out.testing = out.testing || {}; out.testing.coverage = { title: coverageMatch[1].trim(), link: coverageMatch[2].trim(), description: stripAstJsonFragments((coverageMatch[3]||'').trim()) }; }
-          const archTestMatch = snippet.match(/\[([^\]]*Testing Architecture Documentation[^\]]*)\]\(([^)]+)\)\s*[–—-]?\s*(.*)/i);
-          if (archTestMatch) { out.testing = out.testing || {}; out.testing.testingDocs = { title: archTestMatch[1].trim(), link: archTestMatch[2].trim(), description: stripAstJsonFragments((archTestMatch[3]||'').trim()) }; }
-        }
-      }
-    } catch (e) {
-      if (DEBUG_FETCH) console.log('extractRepoDocsDetailed testing AST error', e && e.message);
-    }
-
-    // Translate descriptions to German (if available)
-    // normalize relative links to raw GitHub when repoName provided
-    const normalizeIfRelative = (href) => {
-      if (!href) return href;
-      if (/^https?:\/\//i.test(href)) return href;
-      return toRawGithub(href);
-    };
-    if (out.architectureOverview && out.architectureOverview.link) {
-      out.architectureOverview.link = normalizeIfRelative(out.architectureOverview.link);
-    }
-    if (out.apiDocumentation && out.apiDocumentation.link) {
-      out.apiDocumentation.link = normalizeIfRelative(out.apiDocumentation.link);
-    }
-    if (out.testing && out.testing.testingDocs && out.testing.testingDocs.link) {
-      out.testing.testingDocs.link = normalizeIfRelative(out.testing.testingDocs.link);
-    }
-
-    if (out.architectureOverview && out.architectureOverview.description) {
-      const t = await translateToGermanDetailed(out.architectureOverview.description);
-      out.architectureOverview.description_de = t && t.text ? t.text : null;
-    }
-    if (out.apiDocumentation && out.apiDocumentation.description) {
-      const t = await translateToGermanDetailed(out.apiDocumentation.description);
-      out.apiDocumentation.description_de = t && t.text ? t.text : null;
-    }
-    if (out.testing) {
-      if (out.testing.coverage && out.testing.coverage.description) {
-        const t = await translateToGermanDetailed(out.testing.coverage.description);
-        out.testing.coverage.description_de = t && t.text ? t.text : null;
-      }
-      if (out.testing.testingDocs && out.testing.testingDocs.description) {
-        const t = await translateToGermanDetailed(out.testing.testingDocs.description);
-        out.testing.testingDocs.description_de = t && t.text ? t.text : null;
-      }
-    }
-    // translate short titles only (guarded by shouldTranslateUI)
-    try {
-      if (out.architectureOverview && shouldTranslateUI(out.architectureOverview.title)) {
-        const tt = await translateWithCache(repoName, out.architectureOverview.title);
-        out.architectureOverview.title_de = tt && tt.text ? tt.text : null;
-      }
-      if (out.apiDocumentation && shouldTranslateUI(out.apiDocumentation.title)) {
-        const tt = await translateWithCache(repoName, out.apiDocumentation.title);
-        out.apiDocumentation.title_de = tt && tt.text ? tt.text : null;
-      }
-      if (out.testing && out.testing.testingDocs && shouldTranslateUI(out.testing.testingDocs.title)) {
-        const tt = await translateWithCache(repoName, out.testing.testingDocs.title);
-        out.testing.testingDocs.title_de = tt && tt.text ? tt.text : null;
-      }
-    } catch (e) { if (DEBUG_FETCH) console.log('title translation failed', e && e.message); }
-  } catch (e) {
-    if (DEBUG_FETCH) console.log('extractRepoDocsDetailed error', e && e.message);
-  }
-  // check if any data found; if none, return null
-  const foundAny = (out.architectureOverview || out.apiDocumentation || out.testing) && ( (out.architectureOverview && out.architectureOverview.link) || (out.apiDocumentation && out.apiDocumentation.link) || (out.testing && (out.testing.coverage || out.testing.testingDocs)) );
-  return foundAny ? out : null;
-}
+// extractRepoDocsDetailed moved to scripts/lib/extractReadmeDocs.js
 
 // normalizeTitle and normalizeSummary are provided by `parseReadme`.
 
@@ -405,44 +130,11 @@ async function fetchPinned() {
         const re = /!\[[^\]]*\]\(([^)]+)\)/g; const m = re.exec(readme); if (m) candidate = m[1].trim();
       }
 
-      // attempt to download candidate
-      if (candidate) {
-        // sanitize candidate (remove title or angle brackets)
-        let img = candidate;
-        const sp = img.indexOf(' '); if (sp !== -1 && !img.startsWith('<')) img = img.slice(0, sp);
-        if (img.startsWith('<') && img.endsWith('>')) img = img.slice(1, -1);
-
-        const absoluteCandidates = /^https?:\/\//i.test(img) ? [img] : [ `https://raw.githubusercontent.com/keglev/${node.name}/main/${img.replace(/^\.\/?/,'')}`, `https://raw.githubusercontent.com/keglev/${node.name}/master/${img.replace(/^\.\/?/,'')}` ];
-        for (const u of absoluteCandidates) {
-          const fn = await mediaDownloader.downloadIfNeeded(node.name, u, { originalCandidate: candidate });
-          if (fn) {
-            // record which URL was chosen and why for debugging
-            try { node._imageSelection = node._imageSelection || {}; node._imageSelection.chosenUrl = u; node._imageSelection.filename = fn; node._imageSelection.reason = node._imageSelection.reason || 'downloaded'; } catch (e) {}
-            node.primaryImage = `/projects_media/${node.name}/${fn}`;
-            // Replace the specific candidate occurrence with the primaryImage
-            try { node.object.text = node.object.text.split(candidate).join(node.primaryImage); } catch (e) {}
-            // Additionally, rewrite any badge-like or SVG image references in the README to use the chosen primary image
-            try {
-              const pi = node.primaryImage;
-              if (pi && typeof node.object.text === 'string') {
-                // replace markdown image links that point to SVGs or badge-like hosts
-                node.object.text = node.object.text.replace(/!\[[^\]]*\]\((https?:\/\/[^)]+\.(svg))\)/gi, `![$1](${pi}`);
-                node.object.text = node.object.text.replace(/!\[[^\]]*\]\((https?:\/\/[^)]+)\)/gi, (m, p1) => {
-                  // if link looks badge-like, replace
-                  if (isBadgeLike(p1) || /\.svg$/i.test(p1)) return `![](${pi})`;
-                  return m;
-                });
-                // replace HTML <img src="..."> occurrences
-                node.object.text = node.object.text.replace(/<img[^>]+src=["']([^"']+)["'][^>]*>/gi, (m, src) => {
-                  if (isBadgeLike(src) || /\.svg$/i.test(src)) return `<img src="${pi}" />`;
-                  return m;
-                });
-              }
-            } catch (e) {}
-            break;
-          }
-        }
-      }
+      // delegate README media detection and download to media helper
+      try {
+        const mediaHelper = require('./lib/media');
+        await mediaHelper.processNodeMedia(node, MEDIA_ROOT, getAxios, { parseReadme, isBadgeLike, mediaDownloader, readme: node.object && node.object.text, ast: node._ast });
+      } catch (e) { if (DEBUG_FETCH) console.log('media helper failed', e && e.message); }
 
       // technologies
   node.technologies = parseReadme.extractTechnologiesFromAst(ast);
@@ -628,7 +320,7 @@ async function fetchPinned() {
           const summaryForTranslation = parseReadme.normalizeSummary(node.summary || '');
           const docsTitleForTranslation = parseReadme.normalizeTitle(node.docsTitle || '') || '';
           if (DEBUG_FETCH) { node._translation.debug.summaryInput = (summaryForTranslation||'').slice(0,400); node._translation.debug.docsTitleInput = (docsTitleForTranslation||'').slice(0,200); }
-          const before = Date.now();
+          // previous timing var removed — timing is handled around the orchestrator call
           // First, ensure we have repoDocs.apiDocumentation when only docsLink/docsTitle exist
           try {
             if (!node.repoDocs && node.docsLink) {
@@ -642,47 +334,15 @@ async function fetchPinned() {
             }
           } catch (e) { if (DEBUG_FETCH) console.log('backfill repoDocs from docsLink failed', e && e.message); }
 
-          // Collect short UI-visible strings to translate: summary, docsTitle, and any repoDocs.*.title
-          const titleTasks = [];
-          const mapToResultIndex = [];
-          if (shouldTranslateUI(summaryForTranslation)) { titleTasks.push(translateWithCache(node.name, summaryForTranslation)); mapToResultIndex.push(['summary']); }
-          if (shouldTranslateUI(docsTitleForTranslation)) { titleTasks.push(translateWithCache(node.name, docsTitleForTranslation)); mapToResultIndex.push(['docsTitle']); }
-          if (node.repoDocs) {
-            if (node.repoDocs.apiDocumentation && shouldTranslateUI(node.repoDocs.apiDocumentation.title)) { titleTasks.push(translateWithCache(node.name, node.repoDocs.apiDocumentation.title)); mapToResultIndex.push(['repoDocs','apiDocumentation','title']); }
-            if (node.repoDocs.architectureOverview && shouldTranslateUI(node.repoDocs.architectureOverview.title)) { titleTasks.push(translateWithCache(node.name, node.repoDocs.architectureOverview.title)); mapToResultIndex.push(['repoDocs','architectureOverview','title']); }
-            if (node.repoDocs.testing && node.repoDocs.testing.testingDocs && shouldTranslateUI(node.repoDocs.testing.testingDocs.title)) { titleTasks.push(translateWithCache(node.name, node.repoDocs.testing.testingDocs.title)); mapToResultIndex.push(['repoDocs','testing','testingDocs','title']); }
-          }
-          const results = await Promise.all(titleTasks);
-          // apply results according to mapToResultIndex
-          for (let ri = 0; ri < results.length; ri++) {
-            const res = results[ri] || { text: null };
-            const pathArr = mapToResultIndex[ri];
-            if (!pathArr || !Array.isArray(pathArr) || !res || !res.text) continue;
-            try {
-              if (pathArr.length === 1 && pathArr[0] === 'summary') node.summary_de = res.text;
-              else if (pathArr.length === 1 && pathArr[0] === 'docsTitle') node.docsTitle_de = res.text;
-              else if (pathArr[0] === 'repoDocs') {
-                // set nested title_de property
-                if (!node.repoDocs) node.repoDocs = {};
-                if (pathArr[1] === 'apiDocumentation') {
-                  node.repoDocs.apiDocumentation = node.repoDocs.apiDocumentation || {};
-                  node.repoDocs.apiDocumentation.title_de = res.text;
-                }
-                if (pathArr[1] === 'architectureOverview') {
-                  node.repoDocs.architectureOverview = node.repoDocs.architectureOverview || {};
-                  node.repoDocs.architectureOverview.title_de = res.text;
-                }
-                if (pathArr[1] === 'testing' && pathArr[2] === 'testingDocs') {
-                  node.repoDocs.testing = node.repoDocs.testing || {};
-                  node.repoDocs.testing.testingDocs = node.repoDocs.testing.testingDocs || {};
-                  node.repoDocs.testing.testingDocs.title_de = res.text;
-                }
-              }
-            } catch (e) { if (DEBUG_FETCH) console.log('apply translation result failed', e && e.message); }
-          }
-          const took = Date.now() - before;
-          node._translation.debug.requestMs = took;
-          if (DEBUG_FETCH) console.log(`DEBUG: DeepL took ${took}ms for ${node.name}`);
+          // Batch and apply short UI title translations via helper
+          try {
+            const orchestrator = translation.orchestrator || require('./lib/translation/translationOrchestrator');
+            const beforeBatch = Date.now();
+            await orchestrator.translateTitlesBatch(node, translateWithCache, shouldTranslateUI);
+            const took = Date.now() - beforeBatch;
+            node._translation.debug.requestMs = took;
+            if (DEBUG_FETCH) console.log(`DEBUG: DeepL took ${took}ms for ${node.name}`);
+          } catch (e) { if (DEBUG_FETCH) console.log('translation orchestrator failed', e && e.message); }
           // attach detailed responses
           // note: detailed responses are not persisted as a full debug payload to avoid using DeepL for long bodies
           node._translation.summary = node._translation.summary || { text: null, status: null };
