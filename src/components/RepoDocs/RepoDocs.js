@@ -107,12 +107,12 @@ const RepoDocs = () => {
                 const nodes = [];
                 if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.link) {
                   nodes.push(
-                    <p key="api"><strong>{p.repoDocs.apiDocumentation.title}</strong>: <a href={convertRawToBlob(p.repoDocs.apiDocumentation.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
+                    <p key="api"><a href={convertRawToBlob(p.repoDocs.apiDocumentation.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
                   );
                 }
                 if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.link) {
                   nodes.push(
-                    <p key="arch"><strong>{p.repoDocs.architectureOverview.title}</strong>: <a href={convertRawToBlob(p.repoDocs.architectureOverview.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
+                    <p key="arch"><a href={convertRawToBlob(p.repoDocs.architectureOverview.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
                   );
                 }
                 return nodes;
