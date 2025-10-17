@@ -368,7 +368,11 @@ async function fetchPinned() {
             const target = (process.env.DIAG_README_REPO && process.env.DIAG_README_REPO.trim()) || 'inventory-service';
             if (String(node.name || '').toLowerCase() === String(target).toLowerCase()) {
               const rawPath = path.join(mediaDir, `debug-raw-readme-${ts}.md`);
-              try { fs.writeFileSync(rawPath, readme, 'utf8'); console.log(`DEBUG: wrote raw README for ${node.name} -> ${rawPath}`); } catch (e) { if (DEBUG_FETCH) console.log('diag raw write failed', node.name, e && e.message); }
+              try {
+                fs.writeFileSync(rawPath, readme, 'utf8');
+                console.log(`DEBUG: wrote raw README for ${node.name} -> ${rawPath}`);
+                try { fs.writeFileSync(path.join(mediaDir, `debug-raw-readme-${ts}.meta.json`), JSON.stringify({ repo: node.name, ts, reason: 'raw-readme-dump' }, null, 2), 'utf8'); } catch(e){}
+              } catch (e) { if (DEBUG_FETCH) console.log('diag raw write failed', node.name, e && e.message); }
             }
           } catch (e) { if (DEBUG_FETCH) console.log('diag target write failed', e && e.message); }
 

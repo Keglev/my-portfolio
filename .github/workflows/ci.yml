@@ -34,3 +34,5 @@ jobs:
           path: |
             public/projects_media/**/debug-readme-*.txt
             public/projects_media/**/debug-readme-*.meta.json
+            public/projects_media/**/debug-raw-readme-*.md
+            public/projects_media/**/debug-raw-readme-*.meta.json
