@@ -678,6 +678,25 @@ async function fetchPinned() {
       }
     } catch (e) { if (DEBUG_FETCH) console.log('final normalization pass error', e && e.message); }
 
+    // Post-normalization: remove extracted titles to avoid showing non-localized or misleading small titles
+    // Keep links only. Set KEEP_EXTRACTED_TITLES=1 in the environment to preserve previous behavior.
+    try {
+      const keep = process.env.KEEP_EXTRACTED_TITLES === '1' || process.env.KEEP_EXTRACTED_TITLES === 'true';
+      if (!keep) {
+        for (const node of nodes) {
+          try {
+            if (node && node.repoDocs) {
+              if (node.repoDocs.architectureOverview) node.repoDocs.architectureOverview.title = null;
+              if (node.repoDocs.apiDocumentation) node.repoDocs.apiDocumentation.title = null;
+              if (node.repoDocs.testing && node.repoDocs.testing.testingDocs) node.repoDocs.testing.testingDocs.title = null;
+            }
+            // also clear the legacy docsTitle to avoid duplicate labels in older consumers
+            node.docsTitle = null;
+          } catch (e) { /* continue */ }
+        }
+      }
+    } catch (e) { if (DEBUG_FETCH) console.log('post-normalize clear titles failed', e && e.message); }
+
     // Post-process: prefer github.io hosted docs pages when raw.githubusercontent links are found
     try {
       const tryGithubIo = async (node, href) => {
