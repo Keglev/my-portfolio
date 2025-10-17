@@ -53,30 +53,10 @@ const mediaDownloader = require('./lib/mediaDownloader');
 
 // All parsing helpers are provided via `parseReadme` (import above).
 
-// DeepL API key from environment
-const DEEPL_KEY = process.env.DEEPL_API_KEY || process.env.DEEPL_KEY || process.env.DEEPL_SECRET;
-
-// Detailed DeepL wrapper: returns object with text/status/raw (for debug)
-async function translateToGermanDetailed(text) {
-  if (!DEEPL_KEY || !text) return { text: null, status: 'no-key-or-text' };
-  try {
-    const params = new URLSearchParams();
-    params.append('auth_key', DEEPL_KEY);
-    params.append('text', text);
-    params.append('target_lang', 'DE');
-  const ax = getAxios();
-  if (!ax) return { text: null, status: 'no-axios' };
-  const r = await ax.post('https://api-free.deepl.com/v2/translate', params.toString(), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, timeout: 10000 });
-    const out = (r && r.data && Array.isArray(r.data.translations) && r.data.translations[0] && r.data.translations[0].text) ? r.data.translations[0].text : null;
-    if (DEBUG_FETCH) {
-      try { console.log('DEBUG: DeepL response status', r && r.status); } catch (e) {}
-    }
-    return { text: out, status: (r && r.status) || null, raw: r && r.data };
-  } catch (e) {
-    if (DEBUG_FETCH) console.warn('DeepL failed (detailed):', (e && e.message) || e);
-    return { text: null, status: 'error', error: (e && e.message) || String(e) };
-  }
-}
+const translation = require('./lib/translation');
+const translateToGermanDetailed = translation.translateToGermanDetailed;
+const shouldTranslateUI = translation.shouldTranslateUI;
+const translateWithCache = translation.translateWithCache;
 
 // Extract specific repo docs pieces per user's requirements and translate descriptions to German.
 // Returns an object with found items or null when nothing found.
@@ -324,24 +304,19 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
         out.testing.testingDocs.description_de = t && t.text ? t.text : null;
       }
     }
-    // translate titles if deepl key provided
-    // Titles may be short UI strings; translate only when a key is present. Translation of longer
-    // descriptions is performed elsewhere but will be limited globally to avoid excessive usage.
+    // translate short titles only (guarded by shouldTranslateUI)
     try {
-      if (DEEPL_KEY) {
-        const shouldTranslateUI = (s) => { try { return s && typeof s === 'string' && s.trim().length>0 && s.trim().length <= 300; } catch(e){return false;} };
-        if (out.architectureOverview && out.architectureOverview.title && shouldTranslateUI(out.architectureOverview.title)) {
-          const tt = await translateToGermanDetailed(out.architectureOverview.title);
-          out.architectureOverview.title_de = tt && tt.text ? tt.text : null;
-        }
-        if (out.apiDocumentation && out.apiDocumentation.title && shouldTranslateUI(out.apiDocumentation.title)) {
-          const tt = await translateToGermanDetailed(out.apiDocumentation.title);
-          out.apiDocumentation.title_de = tt && tt.text ? tt.text : null;
-        }
-        if (out.testing && out.testing.testingDocs && out.testing.testingDocs.title && shouldTranslateUI(out.testing.testingDocs.title)) {
-          const tt = await translateToGermanDetailed(out.testing.testingDocs.title);
-          out.testing.testingDocs.title_de = tt && tt.text ? tt.text : null;
-        }
+      if (out.architectureOverview && shouldTranslateUI(out.architectureOverview.title)) {
+        const tt = await translateWithCache(repoName, out.architectureOverview.title);
+        out.architectureOverview.title_de = tt && tt.text ? tt.text : null;
+      }
+      if (out.apiDocumentation && shouldTranslateUI(out.apiDocumentation.title)) {
+        const tt = await translateWithCache(repoName, out.apiDocumentation.title);
+        out.apiDocumentation.title_de = tt && tt.text ? tt.text : null;
+      }
+      if (out.testing && out.testing.testingDocs && shouldTranslateUI(out.testing.testingDocs.title)) {
+        const tt = await translateWithCache(repoName, out.testing.testingDocs.title);
+        out.testing.testingDocs.title_de = tt && tt.text ? tt.text : null;
       }
     } catch (e) { if (DEBUG_FETCH) console.log('title translation failed', e && e.message); }
   } catch (e) {
@@ -383,31 +358,24 @@ async function fetchPinned() {
         if (diagEnabled && readme && typeof readme === 'string') {
           const mediaDir = path.join(MEDIA_ROOT, node.name);
           mediaDownloader.ensureDir(mediaDir);
-          const ts = Date.now();
+          // timestamp intentionally not used after removing debug write behavior
           // 1) targeted raw dump for a repo of interest (defaults to 'inventory-service')
           try {
             const target = (process.env.DIAG_README_REPO && process.env.DIAG_README_REPO.trim()) || 'inventory-service';
             if (String(node.name || '').toLowerCase() === String(target).toLowerCase()) {
-              const rawPath = path.join(mediaDir, `debug-raw-readme-${ts}.md`);
-              try {
-                fs.writeFileSync(rawPath, readme, 'utf8');
-                console.log(`DEBUG: wrote raw README for ${node.name} -> ${rawPath}`);
-                try { fs.writeFileSync(path.join(mediaDir, `debug-raw-readme-${ts}.meta.json`), JSON.stringify({ repo: node.name, ts, reason: 'raw-readme-dump' }, null, 2), 'utf8'); } catch(e){}
-              } catch (e) { if (DEBUG_FETCH) console.log('diag raw write failed', node.name, e && e.message); }
+              // Previously we wrote raw README files to disk here for debugging. That behavior
+              // has been removed to avoid persisting potentially sensitive README content.
+              if (DEBUG_FETCH) console.log(`DEBUG: would have written raw README for ${node.name} (suppressed)`);
             }
-          } catch (e) { if (DEBUG_FETCH) console.log('diag target write failed', e && e.message); }
+          } catch (e) { if (DEBUG_FETCH) console.log('diag target detect failed', e && e.message); }
 
           // 2) previous suspicious pattern capture (keeps existing behavior)
           try {
             const suspicious = /\{"type"\s*:\s*"[a-z]+"|"children"\s*:\s*\[/i.test(readme);
             if (suspicious) {
-              try {
-                const samplePath = path.join(mediaDir, `debug-readme-${ts}.txt`);
-                fs.writeFileSync(samplePath, readme, 'utf8');
-                console.log(`DEBUG: wrote suspicious README sample for ${node.name} -> ${samplePath}`);
-                // also write a tiny metadata file for quick inspection
-                try { fs.writeFileSync(path.join(mediaDir, `debug-readme-${ts}.meta.json`), JSON.stringify({ repo: node.name, ts, reason: 'suspected-serialized-ast' }, null, 2), 'utf8'); } catch(e){}
-              } catch (e) { if (DEBUG_FETCH) console.log('diag write failed', node.name, e && e.message); }
+              // Previously we persisted suspicious README samples to disk. Instead, log a concise
+              // diagnostic message when DEBUG_FETCH is enabled and avoid writing the raw README.
+              if (DEBUG_FETCH) console.log(`DEBUG: suspicious README pattern detected for ${node.name} (sample write suppressed)`);
             }
           } catch (e) { if (DEBUG_FETCH) console.log('diag detect failed', e && e.message); }
         }
@@ -652,7 +620,7 @@ async function fetchPinned() {
           }
         }
       } catch (e) { if (DEBUG_FETCH) console.log('post-docsLink heuristics failed', e && e.message); }
-      if (DEEPL_KEY) {
+  // translation block: translate short UI strings where applicable. translate module handles missing key.
         node._translation = node._translation || {};
         node._translation.debug = node._translation.debug || {};
         try {
@@ -675,15 +643,14 @@ async function fetchPinned() {
           } catch (e) { if (DEBUG_FETCH) console.log('backfill repoDocs from docsLink failed', e && e.message); }
 
           // Collect short UI-visible strings to translate: summary, docsTitle, and any repoDocs.*.title
-          const shouldTranslateUI = (s) => { try { return s && typeof s === 'string' && s.trim().length>0 && s.trim().length <= 300; } catch(e){return false;} };
           const titleTasks = [];
           const mapToResultIndex = [];
-          if (shouldTranslateUI(summaryForTranslation)) { titleTasks.push(translateToGermanDetailed(summaryForTranslation)); mapToResultIndex.push(['summary']); }
-          if (shouldTranslateUI(docsTitleForTranslation)) { titleTasks.push(translateToGermanDetailed(docsTitleForTranslation)); mapToResultIndex.push(['docsTitle']); }
+          if (shouldTranslateUI(summaryForTranslation)) { titleTasks.push(translateWithCache(node.name, summaryForTranslation)); mapToResultIndex.push(['summary']); }
+          if (shouldTranslateUI(docsTitleForTranslation)) { titleTasks.push(translateWithCache(node.name, docsTitleForTranslation)); mapToResultIndex.push(['docsTitle']); }
           if (node.repoDocs) {
-            if (node.repoDocs.apiDocumentation && shouldTranslateUI(node.repoDocs.apiDocumentation.title)) { titleTasks.push(translateToGermanDetailed(node.repoDocs.apiDocumentation.title)); mapToResultIndex.push(['repoDocs','apiDocumentation','title']); }
-            if (node.repoDocs.architectureOverview && shouldTranslateUI(node.repoDocs.architectureOverview.title)) { titleTasks.push(translateToGermanDetailed(node.repoDocs.architectureOverview.title)); mapToResultIndex.push(['repoDocs','architectureOverview','title']); }
-            if (node.repoDocs.testing && node.repoDocs.testing.testingDocs && shouldTranslateUI(node.repoDocs.testing.testingDocs.title)) { titleTasks.push(translateToGermanDetailed(node.repoDocs.testing.testingDocs.title)); mapToResultIndex.push(['repoDocs','testing','testingDocs','title']); }
+            if (node.repoDocs.apiDocumentation && shouldTranslateUI(node.repoDocs.apiDocumentation.title)) { titleTasks.push(translateWithCache(node.name, node.repoDocs.apiDocumentation.title)); mapToResultIndex.push(['repoDocs','apiDocumentation','title']); }
+            if (node.repoDocs.architectureOverview && shouldTranslateUI(node.repoDocs.architectureOverview.title)) { titleTasks.push(translateWithCache(node.name, node.repoDocs.architectureOverview.title)); mapToResultIndex.push(['repoDocs','architectureOverview','title']); }
+            if (node.repoDocs.testing && node.repoDocs.testing.testingDocs && shouldTranslateUI(node.repoDocs.testing.testingDocs.title)) { titleTasks.push(translateWithCache(node.name, node.repoDocs.testing.testingDocs.title)); mapToResultIndex.push(['repoDocs','testing','testingDocs','title']); }
           }
           const results = await Promise.all(titleTasks);
           // apply results according to mapToResultIndex
@@ -723,9 +690,8 @@ async function fetchPinned() {
         } catch (e) {
           node._translation = node._translation || {}; node._translation.error = e && e.message; if (DEBUG_FETCH) console.log('DEBUG: DeepL error', e && e.message);
         }
-        // persist meta immediately so translations and docsTitle_de are available on disk
+    // persist meta immediately so translations and docsTitle_de are available on disk
   try { mediaDownloader.persistMetaForNode(node); } catch (e) { if (DEBUG_FETCH) console.log('persist meta post-translation failed', e && e.message); }
-      }
     }
 
     // Final normalization pass: ensure repoDocs links are absolute raw.githubusercontent URLs

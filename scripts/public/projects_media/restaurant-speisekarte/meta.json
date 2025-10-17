@@ -11,31 +11,15 @@
   "summarySource": "heading",
   "translation": {
     "debug": {
-      "requestMs": 97
+      "requestMs": 187
     },
     "summary": {
-      "text": "Ein interaktives Restaurant-Menü.",
-      "status": 200,
-      "raw": {
-        "translations": [
-          {
-            "detected_source_language": "EN",
-            "text": "Ein interaktives Restaurant-Menü."
-          }
-        ]
-      }
+      "text": null,
+      "status": null
     },
     "docsTitle": {
-      "text": "React App Dokumentation erstellen",
-      "status": 200,
-      "raw": {
-        "translations": [
-          {
-            "detected_source_language": "EN",
-            "text": "React App Dokumentation erstellen"
-          }
-        ]
-      }
+      "text": null,
+      "status": null
     }
   }
 }

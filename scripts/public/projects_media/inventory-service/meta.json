@@ -11,31 +11,15 @@
   "summarySource": "heading",
   "translation": {
     "debug": {
-      "requestMs": 319
+      "requestMs": 173
     },
     "summary": {
-      "text": "Komplette Unternehmensanwendung für das Bestands- und Lieferantenmanagement mit umfassender Dokumentation, Sicherheitsarchitektur und CI/CD-Integration.",
-      "status": 200,
-      "raw": {
-        "translations": [
-          {
-            "detected_source_language": "EN",
-            "text": "Komplette Unternehmensanwendung für das Bestands- und Lieferantenmanagement mit umfassender Dokumentation, Sicherheitsarchitektur und CI/CD-Integration."
-          }
-        ]
-      }
+      "text": null,
+      "status": null
     },
     "docsTitle": {
-      "text": "Index für Backend-Dokumentation",
-      "status": 200,
-      "raw": {
-        "translations": [
-          {
-            "detected_source_language": "EN",
-            "text": "Index für Backend-Dokumentation"
-          }
-        ]
-      }
+      "text": null,
+      "status": null
     }
   }
 }
