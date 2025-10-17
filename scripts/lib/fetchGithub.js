@@ -1,4 +1,7 @@
-const axios = require('axios');
+/**
+ * fetchGithub.runGraphQL
+ * Lazily require axios at call-time to avoid test runners attempting to parse ESM entrypoints
+ */
 
 /**
  * runGraphQL - perform a GitHub GraphQL query with a token and return normalized nodes
@@ -9,9 +12,18 @@ const axios = require('axios');
  * @returns {Promise<Array>} nodes array (pinnedItems.nodes or repositories.nodes)
  */
 async function runGraphQL(token, query, variables = { login: 'keglev' }, opts = {}) {
+  // Lazy-load axios so Jest or other tooling doesn't parse the module at import time
+  let axios;
+  try {
+    // eslint-disable-next-line global-require
+    axios = require('axios');
+  } catch (e) {
+    throw new Error('fetchGithub: failed to require axios (is it installed?): ' + (e && e.message));
+  }
+
   const DEBUG = process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true';
-  const timeout = opts.timeout || 10000;
-  const payload = query.includes('$') ? { query, variables } : { query };
+  const timeout = (opts && opts.timeout) || 10000;
+  const payload = (typeof query === 'string' && query.includes('$')) ? { query, variables } : { query };
 
   // Quick auth test to surface auth problems early
   try {
@@ -29,10 +41,11 @@ async function runGraphQL(token, query, variables = { login: 'keglev' }, opts = 
   try {
     if (DEBUG) console.log('fetchGithub: sending query, variables:', variables);
     const res = await axios.post('https://api.github.com/graphql', payload, { headers: { Authorization: token ? `Bearer ${token}` : undefined }, timeout });
-    if (DEBUG) try { console.log('fetchGithub: response status', res && res.status); } catch (e) {}
+    if (DEBUG) try { console.log('fetchGithub: response status', res && res.status); } catch (err) {}
     if (res && res.data && res.data.errors && res.data.errors.length) {
       throw new Error('GraphQL errors: ' + JSON.stringify(res.data.errors));
     }
+
     const body = res && res.data ? res.data : null;
     const user = body && body.data && body.data.user;
     let nodes = null;
@@ -40,6 +53,7 @@ async function runGraphQL(token, query, variables = { login: 'keglev' }, opts = 
       if (user.pinnedItems && Array.isArray(user.pinnedItems.nodes)) nodes = user.pinnedItems.nodes;
       else if (user.repositories && Array.isArray(user.repositories.nodes)) nodes = user.repositories.nodes;
     }
+
     if (!Array.isArray(nodes)) {
       throw new Error('Invalid GraphQL response: ' + JSON.stringify(body));
     }

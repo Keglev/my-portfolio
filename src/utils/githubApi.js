@@ -1,17 +1,6 @@
 // axios publishes both ESM and CJS. For Jest (and some test runners) require() resolves
 // to the CJS build which avoids `import` parsing errors. Use a safe resolution here.
 let axios;
-try {
-  // Prefer require so tests load the CJS build from axios' exports
-  // eslint-disable-next-line global-require
-  const _axios = require('axios');
-  axios = _axios && _axios.default ? _axios.default : _axios;
-} catch (e) {
-  // Fallback to dynamic import - in runtime environments that support ESM this will work
-  // (rare in CRA test env), but the require path above should handle Jest.
-  // eslint-disable-next-line no-undef
-  axios = undefined;
-}
 
 // GitHub GraphQL API endpoint
 const GITHUB_API_URL = 'https://api.github.com/graphql';
@@ -38,11 +27,14 @@ export const fetchPinnedRepositories = async () => {
   try {
     // Send a POST request to the GitHub API with the GraphQL query
     if (!axios) {
-      // As a last resort, dynamically import axios in environments that support ESM
-      // (this should not be hit in Jest if require worked)
-      // eslint-disable-next-line no-undef
-      const imported = await import('axios');
-      axios = imported && imported.default ? imported.default : imported;
+      try {
+        // eslint-disable-next-line global-require
+        const _axios = require('axios');
+        axios = _axios && _axios.default ? _axios.default : _axios;
+      } catch (e) {
+        // fallback to dynamic import where available
+        try { const imported = await import('axios'); axios = imported && imported.default ? imported.default : imported; } catch (ee) { axios = undefined; }
+      }
     }
 
     const response = await axios.post(

@@ -8,7 +8,7 @@
     "@testing-library/user-event": "^13.5.0",
     "ajv": "^8.17.1",
     "axios": "^1.7.7",
-  "i18next": "^25.5.3",
+    "i18next": "^25.5.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^14.0.0",
@@ -24,6 +24,10 @@
     "prebuild": "node scripts/fetchProjects.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:node": "jest --config=jest.node.config.js --runInBand --testPathPattern=^scripts/",
+    "test:cra": "react-scripts test --runInBand --watchAll=false",
+    "test:all": "npm run test:node && npm run test:cra",
+    "test:ci": "cross-env CI=true npm run test:node && cross-env CI=true npm run test:cra",
     "test:helpers": "react-scripts test --testPathPattern=src/__tests__/fetchHelpers --watchAll=false",
     "audit:ci": "node scripts/audit-check.js",
     "eject": "react-scripts eject",
@@ -53,18 +57,14 @@
     "svgo": "^2.8.0",
     "resolve-url-loader": "^4.0.0"
   },
-  "jest": {
-    "transformIgnorePatterns": [
-      "node_modules/(?!(axios)/)"
-    ]
-  },
   "devDependencies": {
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
     "@babel/plugin-proposal-optional-chaining": "^7.21.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "cross-env": "^7.0.3",
+    "jsdoc": "^4.0.2",
+    "node-fetch": "^2.7.0",
     "remark": "^14.0.3",
     "remark-parse": "^10.0.1"
-    ,
-    "jsdoc": "^4.0.2"
   }
 }

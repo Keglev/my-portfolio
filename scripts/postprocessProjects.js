@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
+let axios;
 
 const FILE = path.join(__dirname, '..', 'public', 'projects.json');
 if (!fs.existsSync(FILE)) {
@@ -24,6 +24,10 @@ const tryGithubIo = async (node, href) => {
     if (!afterDocs) candidates.unshift(`https://keglev.github.io/${node.name}/`);
     for (const c of candidates) {
       try {
+        if (!axios) {
+          try { axios = require('axios'); } catch (e) { if (DEBUG) console.log('postprocess: axios require failed', e && e.message); }
+        }
+        if (!axios) continue;
         const h = await axios.head(c, { maxRedirects: 5, timeout: 5000 });
         const ct = (h && h.headers && h.headers['content-type']) || '';
         const xfo = (h && h.headers && (h.headers['x-frame-options'] || h.headers['X-Frame-Options'])) || '';

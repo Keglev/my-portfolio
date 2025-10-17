@@ -106,6 +106,17 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
+## Test Strategy (short note)
+
+This repository uses two test runners because the codebase contains both node-only scripts (in `scripts/`) and a Create React App frontend that requires CRA's Jest setup for CSS and asset transforms.
+
+- Node-only tests (parsing helpers, scripts) run with a dedicated Jest config: `npm run test:node`.
+- React/frontend tests run with Create React App's test runner: `npm run test:cra` (this is `react-scripts test`).
+- To run both locally: `npm run test:all`.
+- CI-friendly run (non-interactive): `npm run test:ci` (sets `CI=true`).
+
+We document this now; a more detailed test guide will follow in a separate docs file.
+
 ## Technologies
 
 - *React.js: Frontend framework for building user interfaces.

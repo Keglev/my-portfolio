@@ -1,132 +1,20 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
-const axios = require('axios');
-const crypto = require('crypto');
-// resilient parser factory: try unified/remark at runtime, but provide a synchronous fallback AST
-let parserFactory = null;
-try { parserFactory = require('unified'); } catch (e) { parserFactory = null; }
-
-function buildFallbackAst(text) {
-  // very small markdown -> AST fallback sufficient for our extraction needs
-  const lines = String(text || '').split(/\r?\n/);
-  const children = [];
-  let paraBuf = [];
-  const flushPara = () => {
-    if (paraBuf.length) {
-      const text = paraBuf.join(' ').trim();
-      // inline parse links [label](url) into link children
-      const parts = [];
-      let lastIndex = 0;
-  const linkRe = /\[([^\]]+)\]\((https?:\/\/[^)]+|\.?\/+[^)]+|[^)]+\.md)\)/g;
-      let m;
-      while ((m = linkRe.exec(text)) !== null) {
-        if (m.index > lastIndex) parts.push({ type: 'text', value: text.slice(lastIndex, m.index) });
-        parts.push({ type: 'link', url: m[2], children: [{ type: 'text', value: m[1] }] });
-        lastIndex = m.index + m[0].length;
-      }
-      if (lastIndex < text.length) parts.push({ type: 'text', value: text.slice(lastIndex) });
-      // fallback to single text child if no parts
-      const childrenNodes = (parts.length ? parts : [{ type: 'text', value: text }]);
-      children.push({ type: 'paragraph', children: childrenNodes });
-      paraBuf = [];
-    }
-  };
-  for (let i = 0; i < lines.length; i++) {
-    const l = lines[i];
-    const h = l.match(/^\s*(#{1,6})\s*(.*)$/);
-    if (h) {
-      flushPara();
-      children.push({ type: 'heading', depth: h[1].length, children: [{ type: 'text', value: h[2].trim() }] });
-      continue;
-    }
-    const imgMd = l.match(/!\[[^\]]*\]\(([^)]+)\)/);
-    if (imgMd) {
-      flushPara();
-      children.push({ type: 'image', url: imgMd[1].trim(), alt: '' });
-      continue;
-    }
-    const htmlImg = l.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/i);
-    if (htmlImg) {
-      flushPara();
-      children.push({ type: 'html', value: l });
-      continue;
-    }
-    if (/^\s*[-*+]\s+/.test(l)) {
-      // simple list handling: collect contiguous list items
-      const listItems = [];
-      let j = i;
-      while (j < lines.length && /^\s*[-*+]\s+/.test(lines[j])) {
-        listItems.push({ type: 'listItem', children: [{ type: 'paragraph', children: [{ type: 'text', value: lines[j].replace(/^\s*[-*+]\s+/, '').trim() }] }] });
-        j++;
-      }
-      children.push({ type: 'list', children: listItems });
-      i = j - 1;
-      continue;
-    }
-    if (l.trim() === '') { flushPara(); continue; }
-    paraBuf.push(l.trim());
-  }
-  flushPara();
-  return { type: 'root', children };
+// axios can be ESM-only in node_modules; require at top-level can cause Jest to attempt
+// to parse ESM and fail for some test runs. Use a safe lazy require pattern so tests
+// that mock axios can provide the mock before this module needs it; otherwise fall
+// back to null and functions that need axios should guard against it.
+let axios = null;
+function getAxios() {
+  if (axios) return axios;
+  try { const _a = require('axios'); axios = _a && _a.default ? _a.default : _a; return axios; } catch (e) { axios = null; return null; }
 }
-
-function parseMarkdown(text) {
-  if (!text) return null;
-  try {
-    // try unified/remark at runtime (may be ESM in node_modules); if it fails, fallback
-    if (parserFactory) {
-      try {
-        const factory = (typeof parserFactory === 'function') ? parserFactory : (parserFactory && parserFactory.default) ? parserFactory.default : null;
-        if (factory && typeof factory === 'function') {
-          let remarkParse = null;
-          try { remarkParse = require('remark-parse'); } catch (e) { remarkParse = null; }
-          if (remarkParse) return factory().use(remarkParse).parse(text);
-        }
-      } catch (e) {
-        if (DEBUG_FETCH) console.log('unified parse error', e && e.message);
-      }
-    }
-    try {
-      const remarkPkg = require('remark');
-      const remarkFactory = (typeof remarkPkg === 'function') ? remarkPkg : (remarkPkg && remarkPkg.default) ? remarkPkg.default : null;
-      let remarkParse = null;
-      try { remarkParse = require('remark-parse'); } catch (e) { remarkParse = null; }
-      if (remarkFactory && remarkParse) return remarkFactory().use(remarkParse).parse(text);
-    } catch (e) {
-      // ignore
-    }
-  } catch (e) {
-    if (DEBUG_FETCH) console.log('parseMarkdown error', e && e.message);
-  }
-  // final fallback: simple synchronous AST
-  return buildFallbackAst(text);
-}
-
-// Fallback: extract a section by heading name using regex when AST parsing isn't available
-function extractSectionWithRegex(text, headingRegexes) {
-  if (!text) return null;
-  try {
-    const lines = text.split(/\r?\n/);
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      for (const re of headingRegexes) {
-        if (re.test(line)) {
-          // collect following non-heading lines
-          const parts = [];
-          let j = i + 1;
-          while (j < lines.length && !/^#{1,6}\s+/.test(lines[j])) {
-            if (lines[j].trim()) parts.push(lines[j].trim());
-            j++;
-          }
-          if (parts.length) return parts.join('\n\n');
-          return null;
-        }
-      }
-    }
-  } catch (e) { if (DEBUG_FETCH) console.log('extractSectionWithRegex error', e && e.message); }
-  return null;
-}
+const parseReadme = require('./lib/parseReadme');
+const fetchGithub = require('./lib/fetchGithub');
+// use isBadgeLike provided by parseReadme.extractors
+const isBadgeLike = parseReadme && parseReadme.isBadgeLike ? parseReadme.isBadgeLike : (u => false);
+// README parsing helpers live in `scripts/lib/parseReadme.js` (parseMarkdown, findSectionText, etc.)
 
 // Output path for the client JSON
 const OUT_PATH = path.join(__dirname, '..', 'public', 'projects.json');
@@ -137,383 +25,21 @@ const DEBUG_FETCH = process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH =
 // NOTE: do not exit at require-time so helper functions can be imported by other scripts.
 // The token presence will be checked when running as a script (see bottom guard).
 
-const MAX = 2 * 1024 * 1024; // 2 MB max image download
 // Use a named query that declares a $login variable and fetches the user's pinned repositories; README content will be fetched via raw.githubusercontent per-repo.
 // We request __typename and use a minimal inline fragment for Repository fields.
 const QUERY = `query getPinned($login: String!) { user(login: $login) { pinnedItems(first: 12, types: [REPOSITORY]) { nodes { __typename ... on Repository { name description url } } } } }`;
 
-function isBadgeLike(u) {
-  if (!u) return false;
-  const s = String(u).toLowerCase();
-  // common badge patterns and CI hosts
-  if (s.includes('badge') || s.includes('shield') || s.includes('status') || s.includes('travis') || s.includes('circleci') || s.includes('shields.io') || s.includes('actions/workflows') || s.includes('github.com/badges')) return true;
-  // prefer raster images over SVGs (badges are frequently svg) unless no other choice
-  if (s.endsWith('.svg')) return true;
-  return false;
-}
-
-const { runGraphQL } = require('./lib/fetchGithub');
-
+// Small wrapper to call the fetchGithub runGraphQL helper with our token and query
 async function fetchGraphQL() {
-  // Delegate to scripts/lib/fetchGithub.runGraphQL
-  try {
-    const nodes = await runGraphQL(TOKEN, QUERY, { login: 'keglev' }, { timeout: 10000 });
-    return nodes;
-  } catch (e) {
-    throw e;
-  }
+  if (!fetchGithub || !fetchGithub.runGraphQL) throw new Error('fetchGithub.runGraphQL not available');
+  return fetchGithub.runGraphQL(TOKEN, QUERY, { login: 'keglev' });
 }
 
-function md5(input) { return crypto.createHash('md5').update(input || '').digest('hex'); }
+const mediaDownloader = require('./lib/mediaDownloader');
 
-function ensureDir(dir) { if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true }); }
+// isBadgeLike is provided by parseReadme.extractors; prefer that implementation to avoid duplication
 
-// Persist per-repo meta.json with translation and docsTitle fields after translations
-function persistMetaForNode(node) {
-  try {
-    const mediaDir = path.join(MEDIA_ROOT, node.name);
-    ensureDir(mediaDir);
-    const metaPath = path.join(mediaDir, 'meta.json');
-    let meta = { readmeHash: null, files: [] };
-    try { if (fs.existsSync(metaPath)) meta = JSON.parse(fs.readFileSync(metaPath, 'utf8')) || meta; } catch (e) { meta = { readmeHash: null, files: [] }; }
-    // update fields
-    try { meta.readmeHash = md5((node.object && node.object.text) || ''); } catch (e) {}
-    meta.files = meta.files || [];
-    if (node._imageSelection) meta.imageSelection = node._imageSelection;
-    if (node.primaryImage) meta.primaryImage = node.primaryImage;
-    if (node._summarySource) meta.summarySource = node._summarySource;
-    if (node._translation) {
-      // avoid storing large raw translation payload unless debug mode is enabled
-      try {
-        const transl = JSON.parse(JSON.stringify(node._translation));
-        if (!DEBUG_FETCH) {
-          if (transl.summary && transl.summary.raw) transl.summary.raw = undefined;
-          if (transl.docsTitle && transl.docsTitle.raw) transl.docsTitle.raw = undefined;
-        }
-        meta.translation = transl;
-      } catch (e) { meta.translation = node._translation; }
-    }
-    if (node.docsTitle_de) meta.docsTitle_de = node.docsTitle_de;
-    if (node.docsTitle) meta.docsTitle = node.docsTitle;
-    if (node.docsTitle_normalized) meta.docsTitle_normalized = node.docsTitle_normalized;
-    if (node.summary_de) meta.summary_de = node.summary_de;
-    try { fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2), 'utf8'); } catch (e) { if (DEBUG_FETCH) console.log('meta write failed for', node.name, e && e.message); }
-  } catch (e) { if (DEBUG_FETCH) console.log('persistMetaForNode error', e && e.message); }
-}
-
-async function downloadIfNeeded(repo, url, candidate) {
-  try {
-    const parsed = new URL(url);
-    const ext = path.extname(parsed.pathname) || '.img';
-    const base = path.basename(parsed.pathname, ext).replace(/[^a-z0-9-_]/gi, '_').slice(0, 40) || 'img';
-    const filename = `${base}-${md5(url).slice(0,8)}${ext}`;
-    const mediaDir = path.join(MEDIA_ROOT, repo);
-    ensureDir(mediaDir);
-    const out = path.join(mediaDir, filename);
-    const metaPath = path.join(mediaDir, 'meta.json');
-
-    let meta = { readmeHash: null, files: [] };
-    try { if (fs.existsSync(metaPath)) meta = JSON.parse(fs.readFileSync(metaPath, 'utf8')) || meta; } catch (e) { meta = { readmeHash: null, files: [] }; }
-
-    // If the file already present and tracked, reuse
-    if (meta.files && meta.files.includes(filename) && fs.existsSync(out)) return filename;
-
-    // HEAD-check content-type and size when possible. Avoid downloading SVG badges unless the candidate is explicitly a project-image path.
-    try {
-      const h = await axios.head(url, { maxRedirects: 5 });
-      const ct = h.headers['content-type'] || '';
-      const cl = h.headers['content-length'] ? parseInt(h.headers['content-length'], 10) : null;
-      if (!/^image\//i.test(ct)) return null;
-      // skip svg badge-like images unless the original candidate indicates a project-image
-      const isSvg = /svg/i.test(ct) || /\.svg$/i.test(url);
-      const explicitProjectImage = /project[-_]?image|src\/assets\/imgs|assets\/imgs|assets\/img/i.test(candidate || '');
-      if (isSvg && !explicitProjectImage) return null;
-      if (cl && cl > MAX) return null;
-    } catch (e) {
-      // ignore head failures and try GET
-    }
-
-    const r = await axios.get(url, { responseType: 'arraybuffer', maxContentLength: MAX, maxRedirects: 5 });
-    if (r && r.status === 200 && r.data) {
-      // if content returned is SVG but candidate wasn't explicit, drop it
-  const maybeText = (r.headers && r.headers['content-type']) || '';
-      const isSvgResp = /svg/i.test(maybeText) || /<svg[\s>]/i.test(String(r.data).slice(0, 512));
-      const explicitProjectImage2 = /project[-_]?image|src\/assets\/imgs|assets\/imgs|assets\/img/i.test(candidate || '');
-      if (isSvgResp && !explicitProjectImage2) return null;
-      fs.writeFileSync(out, r.data);
-      meta.files = meta.files || [];
-      if (!meta.files.includes(filename)) meta.files.push(filename);
-      fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2), 'utf8');
-      return filename;
-    }
-  } catch (e) {
-    // ignore and return null
-  }
-  return null;
-}
-
-function findImageCandidateFromAst(ast) {
-  if (!ast || !ast.children) return null;
-  let candidate = null;
-  // Helper to find images below a heading with a matching title (e.g., screenshots)
-  const findUnderHeading = (titleRe) => {
-    if (!ast || !Array.isArray(ast.children)) return null;
-    for (let i = 0; i < ast.children.length; i++) {
-      const n = ast.children[i];
-      if (n.type === 'heading') {
-        const txt = (n.children||[]).map(c=>c.value||'').join('').toLowerCase();
-        if (titleRe.test(txt)) {
-          // scan following nodes until next heading
-          let j = i+1;
-          while (j < ast.children.length && ast.children[j].type !== 'heading') {
-            const nn = ast.children[j];
-                if (nn.type === 'image' && nn.url) return nn.url;
-            if (nn.type === 'html' && typeof nn.value === 'string') {
-              const m = nn.value.match(/<img[^>]+src=["']?([^"' >]+)["']?/i);
-              if (m && m[1]) return m[1];
-            }
-            if (nn.children && Array.isArray(nn.children)) {
-              // search children for inline images
-                  const flat = JSON.stringify(nn);
-                   const r = flat.match(/https?:\/\/[^"']+|\/.+?\.(png|jpe?g|gif|svg)/i);
-              if (r && r[0]) return r[0];
-            }
-            j++;
-          }
-        }
-      }
-    }
-    return null;
-  };
-
-  // Prefer images under screenshots-like headings first
-  const preferred = findUnderHeading(/screenshots|screenshot|images|gallery/i);
-  if (preferred) return preferred;
-  const walk = (n) => {
-    if (!n || candidate) return;
-    if (n.type === 'image' && n.url) {
-      const u = n.url;
-      // prefer explicit project-image or assets/imgs references and raster formats (your standard)
-      if (/project[-_]?image|src\/assets\/imgs|src\/assets|assets\/imgs|assets\/img|project-image/i.test(u) && /\.(png|jpe?g|gif)$/i.test(u)) { candidate = u; candidate = u; candidate = u; candidate = u; candidate = u; candidate = u; candidate = u; candidate = u; candidate = u; candidate = u; candidate = u; candidate = u; candidate = u; candidate = u; return; }
-      if (!isBadgeLike(u) && /\.(png|jpe?g|gif)$/i.test(u)) { candidate = u; return; }
-      if (!isBadgeLike(u) && !candidate) candidate = u;
-    }
-    // handle raw HTML <img src="..."> nodes which remark parses as 'html'
-    if (n.type === 'html' && typeof n.value === 'string') {
-      // find img src attributes
-      const html = n.value;
-      const m = html.match(/<img[^>]+src=["']?([^"' >]+)["']?/i);
-      if (m && m[1]) {
-        const u = m[1];
-        if (/project[-_]?image|src\/assets\/imgs|src\/assets|assets\/imgs|assets\/img|project-image/i.test(u) && /\.(png|jpe?g|gif)$/i.test(u)) { candidate = u; return; }
-        if (!isBadgeLike(u) && /\.(png|jpe?g|gif)$/i.test(u)) { candidate = u; return; }
-        if (!isBadgeLike(u) && !candidate) candidate = u;
-      }
-    }
-    if (n.children && Array.isArray(n.children)) for (const c of n.children) walk(c);
-  };
-  walk(ast);
-  return candidate;
-}
-
-function extractTechnologiesFromAst(ast) {
-  try {
-    const techs = [];
-    if (!ast || !Array.isArray(ast.children)) return techs;
-    for (let i = 0; i < ast.children.length; i++) {
-      const el = ast.children[i];
-      if (el.type === 'heading' && /technolog|tech|stack/i.test(((el.children||[]).map(c=>c.value||'').join('')||''))) {
-        const currentDepth = el.depth || 2;
-        let j = i+1;
-        while (j < ast.children.length) {
-          const nn = ast.children[j];
-          // stop when we hit a heading at same or higher level
-          if (nn && nn.type === 'heading' && typeof nn.depth === 'number' && nn.depth <= currentDepth) break;
-          if (nn.type === 'list' && nn.children) {
-            for (const li of nn.children) {
-              // flatten text in list item
-              const txt = (li.children||[]).map(ch => {
-                if (ch.type === 'paragraph' || ch.type === 'text' || ch.type === 'link') return (ch.children||[]).map(cc=>cc.value||'').join(' ');
-                return ch.value || '';
-              }).join(' ').trim();
-              if (txt) techs.push(txt.replace(/^[*\-\s]+/,'').trim());
-            }
-          }
-          if (nn.type === 'paragraph') {
-            const p = (nn.children||[]).map(c=>c.value||'').join(' ');
-            if (p && p.includes(',')) p.split(',').map(s=>s.trim().replace(/^Also[:\s]+/i,'')).filter(Boolean).forEach(x=>techs.push(x));
-            else if (p && p.length>0 && !/^(<|!|#)/.test(p)) techs.push(p.trim().replace(/^Also[:\s]+/i,''));
-          }
-          j++;
-        }
-        break;
-      }
-    }
-    return techs.filter(Boolean);
-  } catch (e) { return []; }
-}
-
-function extractDocsFromAst(ast, repo) {
-  try {
-    const docs = { documentation: null, apiDocumentation: null };
-    // helper: convert relative hrefs to raw.githubusercontent when repo provided
-    const toRaw = (href) => {
-      if (!href) return href;
-      if (/^https?:\/\//i.test(href)) return href;
-      const p = String(href).trim().replace(/^\.\//, '').replace(/^\//, '');
-      return repo ? `https://raw.githubusercontent.com/keglev/${repo}/main/${p}` : p;
-    };
-    if (!ast || !Array.isArray(ast.children)) return docs;
-    for (let i = 0; i < ast.children.length; i++) {
-      const n = ast.children[i];
-      if (n.type === 'heading') {
-        // flatten heading text robustly
-        const flattenNodeText = (node) => {
-          try {
-            if (!node) return '';
-            if (node.type === 'text') return node.value || '';
-            if (node.children && Array.isArray(node.children)) return node.children.map(ch => flattenNodeText(ch)).join('');
-            return node.value || '';
-          } catch (e) { return ''; }
-        };
-        const headingText = (flattenNodeText(n) || '').toLowerCase();
-        // documentation section
-        if (/\bdocumentation\b/.test(headingText) && !docs.documentation) {
-          const currentDepth = n.depth || 2;
-          let k = i+1;
-          while (k < ast.children.length) {
-            const nn = ast.children[k];
-            if (nn && nn.type === 'heading' && typeof nn.depth === 'number' && nn.depth <= currentDepth) break;
-            if (nn.type === 'paragraph' && nn.children) {
-              const linkNode = nn.children.find(c => c.type === 'link');
-              if (linkNode) {
-                const link = linkNode.url;
-                const desc = nn.children.filter(c => c.type === 'text').map(c => c.value).join(' ').trim();
-                docs.documentation = { title: (linkNode.children && linkNode.children[0] && linkNode.children[0].value) || 'Documentation', link, description: desc };
-                docs.documentation = { title: (linkNode.children && linkNode.children[0] && linkNode.children[0].value) || 'Documentation', link: toRaw(link), description: desc };
-                break;
-              }
-            }
-            if (nn.type === 'list' && nn.children) {
-              for (const li of nn.children) {
-                const linkChild = (li.children||[]).flatMap(ch => (ch.children||[])).find(c => c && c.type === 'link');
-                if (linkChild) {
-                  const link = linkChild.url;
-                  const desc = (li.children||[]).flatMap(ch => (ch.children||[])).filter(c=>c.type==='text').map(c => c.value).join(' ').trim();
-                  docs.documentation = { title: (linkChild.children && linkChild.children[0] && linkChild.children[0].value) || 'Documentation', link, description: desc };
-                  docs.documentation = { title: (linkChild.children && linkChild.children[0] && linkChild.children[0].value) || 'Documentation', link: toRaw(link), description: desc };
-                  break;
-                }
-              }
-              if (docs.documentation) break;
-            }
-            k++;
-          }
-        }
-
-        // API docs
-        if (/api documentation|api docs|api documentation hub/i.test(headingText) && !docs.apiDocumentation) {
-          const currentDepth = n.depth || 2;
-          let k = i+1;
-          while (k < ast.children.length) {
-            const nn = ast.children[k];
-            if (nn && nn.type === 'heading' && typeof nn.depth === 'number' && nn.depth <= currentDepth) break;
-            if (nn.type === 'paragraph' && nn.children) {
-              const linkNode = nn.children.find(c => c.type === 'link');
-              if (linkNode) {
-                const link = linkNode.url;
-                const desc = nn.children.filter(c => c.type === 'text').map(c => c.value).join(' ').trim();
-                docs.apiDocumentation = { title: (linkNode.children && linkNode.children[0] && linkNode.children[0].value) || 'API Documentation', link, description: desc };
-                docs.apiDocumentation = { title: (linkNode.children && linkNode.children[0] && linkNode.children[0].value) || 'API Documentation', link: toRaw(link), description: desc };
-                break;
-              }
-            }
-            if (nn.type === 'list' && nn.children) {
-              for (const li of nn.children) {
-                const linkChild = (li.children||[]).flatMap(ch => (ch.children||[])).find(c => c && c.type === 'link');
-                if (linkChild) {
-                  const link = linkChild.url;
-                  const desc = (li.children||[]).flatMap(ch => (ch.children||[])).filter(c=>c.type==='text').map(c => c.value).join(' ').trim();
-                  docs.apiDocumentation = { title: (linkChild.children && linkChild.children[0] && linkChild.children[0].value) || 'API Documentation', link: toRaw(link), description: desc };
-                  break;
-                }
-                // fallback: scan for any absolute URL inside the list item and use it
-                const flat = JSON.stringify(li);
-                const m = flat.match(/https?:\/\/[^"']+/i);
-                if (m) {
-                  const u = m[0];
-                  if (/api|openapi|swagger|docs?/i.test(u) || /api/i.test(flat)) {
-                    docs.apiDocumentation = { title: 'API Documentation', link: toRaw(u), description: '' };
-                    break;
-                  }
-                  if (!docs.apiDocumentation) docs.apiDocumentation = { title: 'API Documentation', link: toRaw(u), description: '' };
-                }
-              }
-              if (docs.apiDocumentation) break;
-            }
-            k++;
-          }
-        }
-      }
-    }
-    // legacy fields
-    if (docs.documentation) docs.legacy = { docsLink: docs.documentation.link, docsTitle: docs.documentation.title };
-    else if (docs.apiDocumentation) docs.legacy = { docsLink: docs.apiDocumentation.link, docsTitle: docs.apiDocumentation.title };
-    else docs.legacy = { docsLink: null, docsTitle: null };
-    return docs;
-  } catch (e) { return { documentation: null, apiDocumentation: null, legacy: { docsLink: null, docsTitle: null } }; }
-}
-
-// Find a section by heading synonyms and return its text (paragraphs joined)
-function findSectionText(ast, headingRegexes) {
-  try {
-    if (!ast || !Array.isArray(ast.children)) return null;
-    const flatten = (node) => {
-      if (!node) return '';
-      if (node.type === 'text') return node.value || '';
-      if (node.children && Array.isArray(node.children)) return node.children.map(flatten).join('');
-      return node.value || '';
-    };
-    for (let i = 0; i < ast.children.length; i++) {
-      const n = ast.children[i];
-      if (n.type === 'heading') {
-        const headingText = (flatten(n) || '').toLowerCase();
-        for (const re of headingRegexes) {
-          if (re.test(headingText)) {
-            const currentDepth = n.depth || 2;
-            let j = i + 1;
-            const parts = [];
-            while (j < ast.children.length) {
-              const nn = ast.children[j];
-              if (nn && nn.type === 'heading' && typeof nn.depth === 'number' && nn.depth <= currentDepth) break;
-              if (nn.type === 'paragraph') {
-                const txt = (nn.children||[]).map(c=>c.value||'').join(' ').trim();
-                if (txt) parts.push(txt);
-              }
-              if (nn.type === 'list' && Array.isArray(nn.children)) {
-                for (const li of nn.children) {
-                  const txt = (li.children||[]).map(ch => (ch.children||[]).map(cc=>cc.value||'').join(' ') || ch.value || '').join(' ').trim();
-                  if (txt) parts.push(txt);
-                }
-              }
-              // capture html nodes (may contain <img> or descriptive text)
-              if (nn.type === 'html' && typeof nn.value === 'string') {
-                const cleaned = nn.value.replace(/<[^>]+>/g, ' ').replace(/\s+/g,' ').trim();
-                if (cleaned) parts.push(cleaned);
-              }
-              j++;
-            }
-            if (parts.length) return parts.join('\n\n');
-            return null;
-          }
-        }
-      }
-    }
-  } catch (e) {
-    if (DEBUG_FETCH) console.log('findSectionText error', e && e.message);
-  }
-  return null;
-}
+// All parsing helpers are provided via `parseReadme` (import above).
 
 // DeepL API key from environment
 const DEEPL_KEY = process.env.DEEPL_API_KEY || process.env.DEEPL_KEY || process.env.DEEPL_SECRET;
@@ -526,7 +52,9 @@ async function translateToGermanDetailed(text) {
     params.append('auth_key', DEEPL_KEY);
     params.append('text', text);
     params.append('target_lang', 'DE');
-    const r = await axios.post('https://api-free.deepl.com/v2/translate', params.toString(), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, timeout: 10000 });
+  const ax = getAxios();
+  if (!ax) return { text: null, status: 'no-axios' };
+  const r = await ax.post('https://api-free.deepl.com/v2/translate', params.toString(), { headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, timeout: 10000 });
     const out = (r && r.data && Array.isArray(r.data.translations) && r.data.translations[0] && r.data.translations[0].text) ? r.data.translations[0].text : null;
     if (DEBUG_FETCH) {
       try { console.log('DEBUG: DeepL response status', r && r.status); } catch (e) {}
@@ -560,7 +88,7 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
     };
     // 1) Architecture Overview: prefer AST-like extraction by searching for a heading and then a link with 'Index' or '/docs' in the href or label.
     try {
-      const ast = parseMarkdown(readmeText);
+  const ast = parseReadme.parseMarkdown(readmeText);
       if (ast && Array.isArray(ast.children)) {
         for (let i = 0; i < ast.children.length; i++) {
           const n = ast.children[i];
@@ -626,7 +154,7 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
     // 2) API Documentation Hub: find heading and pick first 'Complete API Documentation' link and its description
     try {
       // prefer AST extraction for api documentation hub
-      const ast = parseMarkdown(readmeText);
+  const ast = parseReadme.parseMarkdown(readmeText);
       if (ast && Array.isArray(ast.children)) {
         for (let i = 0; i < ast.children.length; i++) {
           const n = ast.children[i];
@@ -686,7 +214,7 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
 
     // 3) Testing & Code Quality: find heading and extract Coverage link and Testing Architecture documentation link
     try {
-      const ast = parseMarkdown(readmeText);
+  const ast = parseReadme.parseMarkdown(readmeText);
       if (ast && Array.isArray(ast.children)) {
         for (let i = 0; i < ast.children.length; i++) {
           const n = ast.children[i];
@@ -791,63 +319,15 @@ async function extractRepoDocsDetailed(readmeText, repoName) {
   return foundAny ? out : null;
 }
 
-// Normalize titles/short text: strip markdown links, emoji-like surrogate pairs, common markdown punctuation
-function normalizeTitle(t, maxLen = 120) {
-  if (!t) return null;
-  try {
-    let s = String(t || '');
-    // replace markdown links [text](url) -> text
-  s = s.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-    // remove inline URLs
-    s = s.replace(/https?:\/\/\S+/g, '');
-    // remove emoji surrogate pairs
-    s = s.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '');
-    // remove :emoji: shortcodes
-    s = s.replace(/:[a-z0-9_+-]+:/gi, '');
-    // strip markdown emphasis/backticks/hash/greater-than
-  s = s.replace(/[*_`>#~]/g, '');
-    // collapse whitespace
-    s = s.replace(/\s+/g, ' ').trim();
-    if (s.length > maxLen) s = s.slice(0, maxLen).trim() + '…';
-    return s || null;
-  } catch (e) {
-    return (t && String(t).slice(0, maxLen)) || null;
-  }
-}
-
-// Normalize longer summary: remove excessive markdown, collapse whitespace, truncate
-function normalizeSummary(t, maxLen = 400) {
-  if (!t) return '';
-  try {
-    let s = String(t || '');
-    // remove code blocks
-    s = s.replace(/```[\s\S]*?```/g, '');
-    // remove inline code
-    s = s.replace(/`([^`]+)`/g, '$1');
-    // replace markdown links [text](url) -> text
-  s = s.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-    // strip HTML tags
-    s = s.replace(/<[^>]+>/g, '');
-    // remove stray URLs
-    s = s.replace(/https?:\/\/\S+/g, '');
-    // remove emoji surrogate pairs
-    s = s.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '');
-    // collapse whitespace
-    s = s.replace(/\s+/g, ' ').trim();
-    if (s.length > maxLen) s = s.slice(0, maxLen).trim() + '…';
-    return s;
-  } catch (e) {
-    return (t && String(t).slice(0, maxLen)) || '';
-  }
-}
+// normalizeTitle and normalizeSummary are provided by `parseReadme`.
 
 async function fetchPinned() {
   try {
     const nodes = await fetchGraphQL();
     if (!Array.isArray(nodes)) throw new Error('Invalid response from GraphQL');
 
-    // ensure media root exists
-    ensureDir(MEDIA_ROOT);
+  // ensure media root exists
+  mediaDownloader.ensureDir(MEDIA_ROOT);
 
   // filter for repository nodes (pinnedItems can contain other types)
   const repoNodes = nodes.filter(n => n && n.__typename === 'Repository');
@@ -856,7 +336,8 @@ async function fetchPinned() {
       if (!node.object || !node.object.text) {
         for (const br of ['main','master']) {
           try {
-            const r = await axios.get(`https://raw.githubusercontent.com/keglev/${node.name}/${br}/README.md`, { responseType: 'text', timeout: 8000 });
+            const ax = getAxios(); if (!ax) continue;
+            const r = await ax.get(`https://raw.githubusercontent.com/keglev/${node.name}/${br}/README.md`, { responseType: 'text', timeout: 8000 });
             if (r && r.status === 200 && r.data) { node.object = node.object || {}; node.object.text = r.data; break; }
           } catch (e) { }
         }
@@ -867,7 +348,7 @@ async function fetchPinned() {
 
   // parse AST
   let ast = null;
-  try { ast = parseMarkdown(readme); } catch (e) { ast = null; }
+  try { ast = parseReadme.parseMarkdown(readme); } catch (e) { ast = null; }
   // attach AST for later extraction
   try { node._ast = ast; } catch (e) { /* ignore */ }
 
@@ -877,12 +358,13 @@ async function fetchPinned() {
       const explicitPaths = [`https://raw.githubusercontent.com/keglev/${node.name}/main/src/assets/imgs/project-image.png`, `https://raw.githubusercontent.com/keglev/${node.name}/master/src/assets/imgs/project-image.png`];
       for (const p of explicitPaths) {
         try {
-          const h = await axios.head(p, { maxRedirects: 5, timeout: 4000 });
+          const ax = getAxios(); if (!ax) continue;
+          const h = await ax.head(p, { maxRedirects: 5, timeout: 4000 });
           const ct = (h.headers['content-type']||'').toLowerCase();
           if (h.status === 200 && /^image\//.test(ct)) { candidate = p; node._imageSelection = { original: 'src/assets/imgs/project-image.png', chosenUrl: p, reason: 'explicit-project-image' }; break; }
         } catch (e) { /* ignore */ }
       }
-      if (!candidate) candidate = findImageCandidateFromAst(ast);
+  if (!candidate) candidate = parseReadme.findImageCandidateFromAst(ast);
       if (!candidate) {
         const re = /!\[[^\]]*\]\(([^)]+)\)/g; const m = re.exec(readme); if (m) candidate = m[1].trim();
       }
@@ -896,7 +378,7 @@ async function fetchPinned() {
 
         const absoluteCandidates = /^https?:\/\//i.test(img) ? [img] : [ `https://raw.githubusercontent.com/keglev/${node.name}/main/${img.replace(/^\.\/?/,'')}`, `https://raw.githubusercontent.com/keglev/${node.name}/master/${img.replace(/^\.\/?/,'')}` ];
         for (const u of absoluteCandidates) {
-          const fn = await downloadIfNeeded(node.name, u, candidate);
+          const fn = await mediaDownloader.downloadIfNeeded(node.name, u, { originalCandidate: candidate });
           if (fn) {
             // record which URL was chosen and why for debugging
             try { node._imageSelection = node._imageSelection || {}; node._imageSelection.chosenUrl = u; node._imageSelection.filename = fn; node._imageSelection.reason = node._imageSelection.reason || 'downloaded'; } catch (e) {}
@@ -927,10 +409,10 @@ async function fetchPinned() {
       }
 
       // technologies
-      node.technologies = extractTechnologiesFromAst(ast);
+  node.technologies = parseReadme.extractTechnologiesFromAst(ast);
 
       // docs (AST lightweight extraction)
-  const docs = extractDocsFromAst(ast, node.name) || { documentation: null, apiDocumentation: null, legacy: { docsLink: null, docsTitle: null } };
+  const docs = parseReadme.extractDocsFromAst(ast, node.name) || { documentation: null, apiDocumentation: null, legacy: { docsLink: null, docsTitle: null } };
   node.docs = { documentation: docs.documentation, apiDocumentation: docs.apiDocumentation };
   node.docsLink = (docs.legacy && docs.legacy.docsLink) || null;
   node.docsTitle = (docs.legacy && docs.legacy.docsTitle) || null;
@@ -973,7 +455,7 @@ async function fetchPinned() {
               node.repoDocs = node.repoDocs || {};
               node.repoDocs.apiDocumentation = node.repoDocs.apiDocumentation || { title: label || 'API Documentation', link: absolute, description: '' };
               node.docsLink = node.docsLink || absolute;
-              node.docsTitle = node.docsTitle || normalizeTitle(label) || 'Documentation';
+              node.docsTitle = node.docsTitle || parseReadme.normalizeTitle(label) || 'Documentation';
               break;
             }
           }
@@ -981,12 +463,12 @@ async function fetchPinned() {
       }
       // persist per-repo meta readmeHash and selection/translation metadata
       try {
-        const mediaDir = path.join(MEDIA_ROOT, node.name);
-        ensureDir(mediaDir);
+    const mediaDir = path.join(MEDIA_ROOT, node.name);
+    mediaDownloader.ensureDir(mediaDir);
         const metaPath = path.join(mediaDir, 'meta.json');
         let meta = { readmeHash: null, files: [] };
         try { if (fs.existsSync(metaPath)) meta = JSON.parse(fs.readFileSync(metaPath, 'utf8')) || meta; } catch (e) { meta = { readmeHash: null, files: [] }; }
-        const h = md5(node.object.text || '');
+    const h = mediaDownloader.md5(node.object.text || '');
   meta.readmeHash = h;
   meta.files = meta.files || [];
   if (node._imageSelection) meta.imageSelection = node._imageSelection;
@@ -1003,12 +485,12 @@ async function fetchPinned() {
       let summary = '';
       let summarySource = null;
       try {
-  const astLocal = node._ast || (readme ? parseMarkdown(readme) : null);
+  const astLocal = node._ast || (readme ? parseReadme.parseMarkdown(readme) : null);
           const headingRegexes = [/\babout\b/i, /\bsummary\b/i, /\boverview\b/i, /\bdescription\b/i, /\bintro\b/i, /\bwhat\b/i];
           let sec = null;
-          if (astLocal) sec = findSectionText(astLocal, headingRegexes);
+          if (astLocal) sec = parseReadme.findSectionText(astLocal, headingRegexes);
           // fallback to regex-based extractor when AST isn't available or didn't find a section
-          if (!sec && readme) sec = extractSectionWithRegex(readme, headingRegexes);
+          if (!sec && readme) sec = parseReadme.extractSectionWithRegex(readme, headingRegexes);
           if (sec && sec.trim().length > 30) {
             const paras = sec.split(/\n\s*\n/).map(p => p.replace(/\s+/g,' ').trim()).filter(Boolean);
             summary = paras.length ? paras[0] : sec.replace(/\s+/g,' ').trim();
@@ -1022,7 +504,7 @@ async function fetchPinned() {
         if (summary.length>160) summary = summary.slice(0,160);
       }
   // normalize and store summary
-  const normalizedSummary = normalizeSummary(summary || '');
+  const normalizedSummary = parseReadme.normalizeSummary(summary || '');
   node.summary = normalizedSummary || '';
   node._summarySource = summarySource;
   // keep a short raw excerpt for debugging
@@ -1092,8 +574,8 @@ async function fetchPinned() {
         node._translation.debug = node._translation.debug || {};
         try {
           // normalize short title and summary before translation
-          const summaryForTranslation = normalizeSummary(node.summary || '');
-          const docsTitleForTranslation = normalizeTitle(node.docsTitle || '') || '';
+          const summaryForTranslation = parseReadme.normalizeSummary(node.summary || '');
+          const docsTitleForTranslation = parseReadme.normalizeTitle(node.docsTitle || '') || '';
           if (DEBUG_FETCH) { node._translation.debug.summaryInput = (summaryForTranslation||'').slice(0,400); node._translation.debug.docsTitleInput = (docsTitleForTranslation||'').slice(0,200); }
           const before = Date.now();
           const [rSummary, rDocsTitle] = await Promise.all([translateToGermanDetailed(summaryForTranslation), translateToGermanDetailed(docsTitleForTranslation)]);
@@ -1109,7 +591,7 @@ async function fetchPinned() {
           node._translation = node._translation || {}; node._translation.error = e && e.message; if (DEBUG_FETCH) console.log('DEBUG: DeepL error', e && e.message);
         }
         // persist meta immediately so translations and docsTitle_de are available on disk
-        try { persistMetaForNode(node); } catch (e) { if (DEBUG_FETCH) console.log('persist meta post-translation failed', e && e.message); }
+  try { mediaDownloader.persistMetaForNode(node); } catch (e) { if (DEBUG_FETCH) console.log('persist meta post-translation failed', e && e.message); }
       }
     }
 
@@ -1165,7 +647,8 @@ async function fetchPinned() {
           if (!afterDocs) candidates.unshift(`https://keglev.github.io/${node.name}/`);
           for (const c of candidates) {
             try {
-              const h = await axios.head(c, { maxRedirects: 5, timeout: 5000 });
+              const ax = getAxios(); if (!ax) continue;
+              const h = await ax.head(c, { maxRedirects: 5, timeout: 5000 });
               const ct = (h && h.headers && h.headers['content-type']) || '';
               const xfo = (h && h.headers && (h.headers['x-frame-options'] || h.headers['X-Frame-Options'])) || '';
               if (h && h.status === 200 && /html/i.test(ct) && !/deny/i.test(xfo)) {
@@ -1226,14 +709,14 @@ if (require.main === module) {
 // Export helpers for unit tests
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
-    parseMarkdown,
-    extractSectionWithRegex,
-    normalizeTitle,
-    normalizeSummary,
-    findImageCandidateFromAst,
-    isBadgeLike,
-    extractTechnologiesFromAst,
-    extractDocsFromAst
+    parseMarkdown: parseReadme.parseMarkdown,
+    extractSectionWithRegex: parseReadme.extractSectionWithRegex,
+    normalizeTitle: parseReadme.normalizeTitle,
+    normalizeSummary: parseReadme.normalizeSummary,
+    findImageCandidateFromAst: parseReadme.findImageCandidateFromAst,
+  isBadgeLike: parseReadme.isBadgeLike,
+    extractTechnologiesFromAst: parseReadme.extractTechnologiesFromAst,
+    extractDocsFromAst: parseReadme.extractDocsFromAst
   };
   // Also export the detailed extractor for debugging/runnable checks
   try { module.exports.extractRepoDocsDetailed = extractRepoDocsDetailed; } catch (e) { /* ignore in some environments */ }
