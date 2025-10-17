@@ -23,4 +23,6 @@ jobs:
       - name: Run CI tests
         env:
           CI: true
+          DIAG_README: '1'
+          PARSE_README_TRACE: '1'
         run: npm run test:ci

@@ -3,6 +3,7 @@ let parserFactory = null;
 try { parserFactory = require('unified'); } catch (e) { parserFactory = null; }
 
 function buildFallbackAst(text) {
+  try { if (process.env.PARSE_README_TRACE === '1' || process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true') console.log('TRACE buildFallbackAst snippet:', String(text||'').slice(0,200)); } catch(e){}
   const lines = String(text || '').split(/\r?\n/);
   const children = [];
   let paraBuf = [];
@@ -65,6 +66,7 @@ function buildFallbackAst(text) {
 function parseMarkdown(text) {
   if (!text) return null;
   try {
+    try { if (process.env.PARSE_README_TRACE === '1' || process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true') console.log('TRACE parseMarkdown invoked, length=', String(text||'').length); } catch(e){}
     if (parserFactory) {
       try {
         const factory = (typeof parserFactory === 'function') ? parserFactory : (parserFactory && parserFactory.default) ? parserFactory.default : null;
@@ -83,6 +85,7 @@ function parseMarkdown(text) {
       if (remarkFactory && remarkParse) return remarkFactory().use(remarkParse).parse(text);
     } catch (e) { /* ignore */ }
   } catch (e) { /* ignore */ }
+  try { if (process.env.PARSE_README_TRACE === '1' || process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true') console.log('TRACE parseMarkdown using fallback parser'); } catch(e){}
   return buildFallbackAst(text);
 }
 

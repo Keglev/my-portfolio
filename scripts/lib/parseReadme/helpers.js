@@ -3,7 +3,15 @@ function flattenNodeText(node) {
   try {
     if (!node) return '';
     if (node.type === 'text') return node.value || '';
-    if (node.children && Array.isArray(node.children)) return node.children.map(flattenNodeText).join('');
+    if (node.children && Array.isArray(node.children)) {
+      const out = node.children.map(flattenNodeText).join('');
+      try {
+        if (process.env.PARSE_README_TRACE === '1' || process.env.DEBUG_FETCH === 'true' || process.env.DEBUG_FETCH === '1') {
+          console.log('TRACE flattenNodeText ->', { nodeType: node.type, sample: String(out).slice(0,200) });
+        }
+      } catch (e) {}
+      return out;
+    }
     return node.value || '';
   } catch (e) { return ''; }
 }
@@ -31,6 +39,7 @@ function extractLinkFromParagraphNode(node) {
   if (linkNode && linkNode.url) {
     const title = (linkNode.children && linkNode.children[0] && linkNode.children[0].value) || null;
     const desc = node.children.filter(c => c.type === 'text').map(c => c.value).join(' ').trim();
+    try { if (process.env.PARSE_README_TRACE === '1' || process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true') console.log('TRACE extractLinkFromParagraphNode', { title, link: linkNode.url, desc: String(desc).slice(0,200) }); } catch(e){}
     return { link: linkNode.url, title, description: desc };
   }
   return null;
@@ -40,6 +49,7 @@ function extractLinkFromListNode(li) {
   try {
     const flat = JSON.stringify(li);
     const mdMatch = flat.match(/\[([^\]]+)\]\(([^)]+)\)/);
+    try { if (process.env.PARSE_README_TRACE === '1' || process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true') console.log('TRACE extractLinkFromListNode flat', String(flat).slice(0,300)); } catch(e){}
     if (mdMatch) return { title: mdMatch[1] || null, link: mdMatch[2] || null };
   } catch (e) { /* ignore */ }
   return null;
