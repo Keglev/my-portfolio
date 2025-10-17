@@ -360,21 +360,33 @@ async function fetchPinned() {
       try {
         const diagEnabled = (process.env.DIAG_README === '1') || DEBUG_FETCH;
         if (diagEnabled && readme && typeof readme === 'string') {
-          const suspicious = /\{"type"\s*:\s*"[a-z]+"|"children"\s*:\s*\[/i.test(readme);
-          if (suspicious) {
-            try {
-              const mediaDir = path.join(MEDIA_ROOT, node.name);
-              mediaDownloader.ensureDir(mediaDir);
-              const ts = Date.now();
-              const samplePath = path.join(mediaDir, `debug-readme-${ts}.txt`);
-              fs.writeFileSync(samplePath, readme, 'utf8');
-              console.log(`DEBUG: wrote suspicious README sample for ${node.name} -> ${samplePath}`);
-              // also write a tiny metadata file for quick inspection
-              try { fs.writeFileSync(path.join(mediaDir, `debug-readme-${ts}.meta.json`), JSON.stringify({ repo: node.name, ts, reason: 'suspected-serialized-ast' }, null, 2), 'utf8'); } catch(e){}
-            } catch (e) { if (DEBUG_FETCH) console.log('diag write failed', node.name, e && e.message); }
-          }
+          const mediaDir = path.join(MEDIA_ROOT, node.name);
+          mediaDownloader.ensureDir(mediaDir);
+          const ts = Date.now();
+          // 1) targeted raw dump for a repo of interest (defaults to 'inventory-service')
+          try {
+            const target = (process.env.DIAG_README_REPO && process.env.DIAG_README_REPO.trim()) || 'inventory-service';
+            if (String(node.name || '').toLowerCase() === String(target).toLowerCase()) {
+              const rawPath = path.join(mediaDir, `debug-raw-readme-${ts}.md`);
+              try { fs.writeFileSync(rawPath, readme, 'utf8'); console.log(`DEBUG: wrote raw README for ${node.name} -> ${rawPath}`); } catch (e) { if (DEBUG_FETCH) console.log('diag raw write failed', node.name, e && e.message); }
+            }
+          } catch (e) { if (DEBUG_FETCH) console.log('diag target write failed', e && e.message); }
+
+          // 2) previous suspicious pattern capture (keeps existing behavior)
+          try {
+            const suspicious = /\{"type"\s*:\s*"[a-z]+"|"children"\s*:\s*\[/i.test(readme);
+            if (suspicious) {
+              try {
+                const samplePath = path.join(mediaDir, `debug-readme-${ts}.txt`);
+                fs.writeFileSync(samplePath, readme, 'utf8');
+                console.log(`DEBUG: wrote suspicious README sample for ${node.name} -> ${samplePath}`);
+                // also write a tiny metadata file for quick inspection
+                try { fs.writeFileSync(path.join(mediaDir, `debug-readme-${ts}.meta.json`), JSON.stringify({ repo: node.name, ts, reason: 'suspected-serialized-ast' }, null, 2), 'utf8'); } catch(e){}
+              } catch (e) { if (DEBUG_FETCH) console.log('diag write failed', node.name, e && e.message); }
+            }
+          } catch (e) { if (DEBUG_FETCH) console.log('diag detect failed', e && e.message); }
         }
-      } catch (e) { if (DEBUG_FETCH) console.log('diag detect failed', e && e.message); }
+      } catch (e) { if (DEBUG_FETCH) console.log('diag outer failed', e && e.message); }
       if (!readme || typeof readme !== 'string') continue;
 
   // parse AST
