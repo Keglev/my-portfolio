@@ -152,87 +152,15 @@ function isBadgeLike(u) {
   return false;
 }
 
+const { runGraphQL } = require('./lib/fetchGithub');
+
 async function fetchGraphQL() {
-  const variables = { login: 'keglev' };
-  const TEST_Q = '{ viewer { login } }';
+  // Delegate to scripts/lib/fetchGithub.runGraphQL
   try {
-    // quick auth/test query to ensure tokens and endpoint are healthy
-    try {
-      if (DEBUG_FETCH) console.log('DEBUG: Running quick viewer { login } test');
-      const testRes = await axios.post('https://api.github.com/graphql', { query: TEST_Q }, { headers: { Authorization: `Bearer ${TOKEN}` }, timeout: 8000 });
-      if (testRes && testRes.data && testRes.data.errors && testRes.data.errors.length) {
-        throw new Error('GraphQL test errors: ' + JSON.stringify(testRes.data.errors));
-      }
-      if (!testRes || !testRes.data || !testRes.data.data || !testRes.data.data.viewer) {
-        if (DEBUG_FETCH) console.log('DEBUG: testRes body:', JSON.stringify(testRes && testRes.data).slice(0,1000));
-        throw new Error('GraphQL test failed: unexpected response');
-      }
-    } catch (e) {
-      throw new Error('GraphQL auth/test query failed: ' + (e && e.message));
-    }
-    if (DEBUG_FETCH) {
-      console.log('DEBUG: GraphQL variables:', variables, 'Auth present:', !!TOKEN);
-      try {
-        console.log('DEBUG: QUERY length:', QUERY.length);
-        const col = 228;
-        const start = Math.max(0, col - 60);
-        const end = Math.min(QUERY.length, col + 60);
-        const snippet = QUERY.slice(start, end);
-        const codes = snippet.split('').map(c => { const cc = c.charCodeAt(0); return (cc < 32 || cc > 126) ? ('\\u' + cc.toString(16).padStart(4,'0')) : c; }).join('');
-        console.log('DEBUG: QUERY snippet around col', col, ':', codes);
-        console.log('DEBUG: outbound payload preview:', JSON.stringify({ query: QUERY.slice(0,1000), variables: variables }, null, 2).slice(0,2000));
-      } catch (e) { /* ignore debug failures */ }
-    }
-  // send variables only if the query actually declares variables
-  const payload = QUERY.includes('$') ? { query: QUERY, variables } : { query: QUERY };
-  if (DEBUG_FETCH) try { console.log('DEBUG: outbound payload length', JSON.stringify(payload).length); } catch(e){}
-  const res = await axios.post('https://api.github.com/graphql', payload, { headers: { Authorization: `Bearer ${TOKEN}` }, timeout: 10000 });
-    if (DEBUG_FETCH) {
-      try { console.log('DEBUG: GraphQL response status:', res && res.status, 'body preview:', JSON.stringify(res.data).slice(0, 2000)); } catch (e) { /* ignore */ }
-    }
-    // surface GraphQL errors if present
-    if (res && res.data && res.data.errors && res.data.errors.length) {
-      if (DEBUG_FETCH) {
-        try {
-          console.log('DEBUG: GraphQL errors payload:', JSON.stringify(res.data.errors, null, 2));
-          const err0 = res.data.errors[0];
-          if (err0 && err0.locations && err0.locations[0] && typeof err0.locations[0].column === 'number') {
-            const col = err0.locations[0].column; // 1-based
-            const idx = Math.max(0, col - 1);
-            const start = Math.max(0, idx - 40);
-            const end = Math.min(QUERY.length, idx + 40);
-            const snippet = QUERY.slice(start, end);
-            const codes = snippet.split('').map(c => { const cc = c.charCodeAt(0); return (cc < 32 || cc > 126) ? ('\\u' + cc.toString(16).padStart(4,'0')) : c; }).join('');
-            console.log('DEBUG: Query snippet around reported column', col, ':', codes);
-          }
-        } catch (e) { /* ignore */ }
-      }
-      throw new Error('GraphQL errors: ' + JSON.stringify(res.data.errors));
-    }
-    // Normalize response body and accept either pinnedItems.nodes or repositories.nodes
-    const body = (res && res.data) ? res.data : null;
-    const user = body && body.data && body.data.user;
-    let nodes = null;
-    if (user) {
-      if (user.pinnedItems && Array.isArray(user.pinnedItems.nodes)) nodes = user.pinnedItems.nodes;
-      else if (user.repositories && Array.isArray(user.repositories.nodes)) nodes = user.repositories.nodes;
-    }
-    if (!Array.isArray(nodes)) {
-      const bstr = body ? JSON.stringify(body, null, 2) : String(res);
-      if (DEBUG_FETCH) {
-        try {
-          console.log('DEBUG: GraphQL body keys:', Object.keys(body || {}));
-          if (body && body.data && body.data.user) console.log('DEBUG: user keys:', Object.keys(body.data.user));
-        } catch (e) {}
-      }
-      throw new Error('Invalid response from GraphQL: ' + bstr + '\nSent variables: ' + JSON.stringify(variables));
-    }
+    const nodes = await runGraphQL(TOKEN, QUERY, { login: 'keglev' }, { timeout: 10000 });
     return nodes;
-  } catch (err) {
-    if (err.response && err.response.data) {
-      throw new Error('GraphQL request failed: ' + JSON.stringify(err.response.data, null, 2) + '\nSent variables: ' + JSON.stringify(variables));
-    }
-    throw new Error((err && err.message) || String(err));
+  } catch (e) {
+    throw e;
   }
 }
 
