@@ -102,28 +102,17 @@ const RepoDocs = () => {
                   return link;
                 };
 
-                const getLinkLabel = (pLocal, type) => {
-                  try {
-                    // prefer specific translated title if present
-                    if (i18n && i18n.language === 'de') {
-                      if (type === 'api' && pLocal.repoDocs && pLocal.repoDocs.apiDocumentation && pLocal.repoDocs.apiDocumentation.title_de) return pLocal.repoDocs.apiDocumentation.title_de;
-                      if (type === 'arch' && pLocal.repoDocs && pLocal.repoDocs.architectureOverview && pLocal.repoDocs.architectureOverview.title_de) return pLocal.repoDocs.architectureOverview.title_de;
-                      if (pLocal.docsTitle_de) return pLocal.docsTitle_de;
-                      return 'Hier öffnen';
-                    }
-                  } catch (e) {}
-                  return t('viewDocs');
-                };
+                const linkLabel = (i18n && i18n.language === 'de') ? 'Hier öffnen' : t('viewDocs');
 
                 const nodes = [];
                 if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.link) {
                   nodes.push(
-                    <p key="api"><strong>{p.repoDocs.apiDocumentation.title}</strong>: <a href={convertRawToBlob(p.repoDocs.apiDocumentation.link)} target="_blank" rel="noopener noreferrer" className="project-link">{getLinkLabel(p, 'api')}</a></p>
+                    <p key="api"><strong>{p.repoDocs.apiDocumentation.title}</strong>: <a href={convertRawToBlob(p.repoDocs.apiDocumentation.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
                   );
                 }
                 if (p.repoDocs && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.link) {
                   nodes.push(
-                    <p key="arch"><strong>{p.repoDocs.architectureOverview.title}</strong>: <a href={convertRawToBlob(p.repoDocs.architectureOverview.link)} target="_blank" rel="noopener noreferrer" className="project-link">{getLinkLabel(p, 'arch')}</a></p>
+                    <p key="arch"><strong>{p.repoDocs.architectureOverview.title}</strong>: <a href={convertRawToBlob(p.repoDocs.architectureOverview.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
                   );
                 }
                 return nodes;
