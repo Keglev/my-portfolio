@@ -45,8 +45,8 @@ const Experience = () => {
 
   return (
     <div className="experience-container" id="Experience">
-      {/* Heading for the experience section */}
-      <h2>{t('experience')}</h2>
+  {/* Heading for the experience section */}
+  <h2>{t('experience.jobExperiences')}</h2>
       
       {/* Mapping through the experiences array and displaying each one */}
       <div className="experience-list">

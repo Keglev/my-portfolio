@@ -3,7 +3,10 @@
   "title": "Software Engineer",
   "about": "Über mich",
   "projects": "Projekte",
-  "experience": "Erfahrung",
+  "experience": {
+    "label": "Erfahrung",
+    "jobExperiences": "Berufserfahrungen"
+  },
   "footerMessage": "Entworfen & entwickelt von Carlos Keglevich",
   "language": {
     "english": "Englisch",

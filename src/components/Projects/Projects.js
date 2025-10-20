@@ -36,13 +36,11 @@ const Projects = () => {
   }, [projects]);
 
   return (
-    <section className="projects" id="Projects">
+    <section className="project-container" id="Projects">
       <h2>{t('projects.title', 'Projects')}</h2>
-      <div className="projects-grid">
-        {projects.map((p) => (
-          <div key={p.name} className="project-card">
-            <ProjectCard project={p} image={getPrimaryImage(p)} />
-          </div>
+      <div className="project-grid">
+        {projects.map((p, idx) => (
+          <ProjectCard key={p.name || idx} project={p} image={getPrimaryImage(p)} index={idx} />
         ))}
       </div>
     </section>

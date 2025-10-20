@@ -145,22 +145,32 @@ export const FooterMessage = styled.div`
  * Wrapper for language buttons area
  */
 export const LanguageWrapper = styled.div`
-  margin-bottom: 2rem;
+  margin-bottom: 4.5rem; /* more separation from menu */
   display: flex;
-  gap: 0.5rem;
+  gap: 1.5rem; /* increased gap so buttons sit away from menu links */
   button {
-    background: transparent;
-    border: 1px solid rgba(204,214,246,0.08);
-    color: #ccd6f6;
-    padding: 0.4rem 0.6rem;
-    border-radius: 4px;
+    background: rgba(100,255,218,0.04);
+    border: 1px solid rgba(100,255,218,0.16);
+    color: #64ffda;
+    padding: 0.5rem 0.8rem;
+    border-radius: 6px;
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(10,25,47,0.25);
+    transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease, box-shadow 0.12s ease;
   }
   button:hover {
-    background: rgba(100,255,218,0.06);
-    color: #64ffda;
-    transform: translateY(-1px);
+    background: rgba(100,255,218,0.12);
+    color: #0a192f;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(100,255,218,0.12);
+  }
+  /* Slight border to visually separate language buttons from the rest of the footer */
+  & {
+    padding: 0.6rem 0.8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.02);
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.02));
   }
 `;
 

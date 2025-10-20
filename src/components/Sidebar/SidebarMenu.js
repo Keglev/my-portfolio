@@ -53,7 +53,7 @@ const SidebarMenu = ({ activeSection, changeLanguage }) => {
           containerId="scroll-container"
           offset={70}
         >
-          {t('experience')}
+          {t('experience.jobExperiences')}
         </StyledLink>
       </Menu>
 
