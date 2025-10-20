@@ -3,6 +3,9 @@
  * -------------------------
  * Small helper used during development to run eslint against the `src`
  * directory with strict settings so CI and local dev keep the same rules.
+ *
+ * Quick try-it (PowerShell):
+ *   node .\scripts\run-eslint-dev.js
  */
 const { execSync } = require('child_process');
 process.env.NODE_ENV = 'development';

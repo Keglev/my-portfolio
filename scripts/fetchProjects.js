@@ -29,6 +29,9 @@
  * This file is intentionally small; most pipeline logic lives in
  * `scripts/lib/fetchPinned.js` and the parse helpers under
  * `scripts/lib/parseReadme`.
+ *
+ * Quick try-it (PowerShell):
+ *   $env:GH_PROJECTS_TOKEN = 'ghp_xxx'; node .\scripts\fetchProjects.js
  */
 
 // Re-usable parsing helpers (re-exported at bottom for tests)

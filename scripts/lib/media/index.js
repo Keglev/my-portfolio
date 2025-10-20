@@ -14,3 +14,7 @@ module.exports = {
    */
   processNodeMedia: require('./mediaHelper').processNodeMedia
 };
+
+/* Quick try-it (PowerShell):
+ *   node -e "require('./scripts/lib/media').processNodeMedia({name:'sample'}, './public/projects_media', ()=>null).then(console.log).catch(console.error)"
+ */

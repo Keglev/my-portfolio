@@ -58,6 +58,26 @@ Notes:
 - Never commit your secret; setting it in the environment is safe for local runs.
 - `fetchProjects.js` will only call DeepL when a relevant env var is present (`DEEPL_API_KEY` or `DEEPL_SECRET` — both are supported).
 
+### Run pipeline locally (explicit quick commands)
+
+If you only want to run the fetch + postprocess steps from PowerShell, here are exact commands you can paste in. These run the same steps CI uses but locally. Make sure you are in the repository root (`my-portfolio`).
+
+```powershell
+# (optional) set a GitHub token in this shell so the pipeline can read private or rate-limited repos
+$env:GH_PROJECTS_TOKEN = 'ghp_xxx'
+
+# fetch README data, media and generate public/projects.json
+node .\scripts\fetchProjects.js
+
+# normalize and prefer github.io doc links where available
+node .\scripts\postprocessProjects.js
+
+# (optional) generate the production build
+npm run build
+```
+
+If you don't have a GitHub token set the fetch step will skip network fetches and the postprocess step will operate on the existing `public/projects.json` file (if present). Always avoid committing secrets.
+
 ## Re-run via GitHub Actions (recommended for regular use)
 
 - Go to GitHub → Actions → "Build and Fetch Projects" (or the workflow name you use) → Run workflow.
