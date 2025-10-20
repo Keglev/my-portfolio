@@ -52,18 +52,41 @@ export const getAboutSection = (readmeText) => {
 
 export const getTechnologyWords = (readmeText) => {
   if (!readmeText) return [];
-  const techMatch = readmeText.match(/##+\s*Technologies/i);
-  if (!techMatch) return [];
-  const contentAfterTech = readmeText.substring(techMatch.index).split('\n').slice(1);
+  // Find the first heading that looks tech-related (e.g. 'Technologies', 'Tech', 'Tech Stack')
+  const lines = readmeText.split(/\r?\n/);
+  let startIndex = -1;
+  for (let i = 0; i < lines.length; i++) {
+    const h = lines[i].trim();
+    const m = h.match(/^#{1,6}\s*(.*)$/);
+    if (m) {
+      const title = (m[1] || '').toLowerCase();
+      if (/\btech\b|technolog/i.test(title)) { startIndex = i + 1; break; }
+    }
+  }
+  if (startIndex === -1) return [];
+
   const techWords = [];
-  for (let line of contentAfterTech) {
-    if (line.trim().startsWith('#')) break;
-    if (!line.trim() || line.toLowerCase().includes('contributing') || line.startsWith('[')) continue;
-    // Extract all bold tokens like **Docker** or **Node.js**
-    const bolds = Array.from(line.matchAll(/\*\*([^*][^*]*?)\*\*/g));
-    for (const b of bolds) {
-      const token = (b && b[1]) ? b[1].trim() : null;
-      if (token) techWords.push(token);
+  for (let i = startIndex; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^#{1,6}\s+/.test(line)) break; // next section
+    if (!line.trim()) continue;
+    if (/^\[/.test(line.trim())) continue;
+    if (/contributing/i.test(line)) continue;
+
+    // Extract bold tokens **token** or __token__
+    const regex = /\*\*(.+?)\*\*|__(.+?)__/g;
+    let m;
+    while ((m = regex.exec(line)) !== null) {
+      const raw = (m[1] || m[2] || '').trim();
+      if (!raw) continue;
+  // normalize: strip surrounding punctuation and whitespace (keep interior punctuation)
+  let token = raw.trim();
+  const stripChars = new Set(['-', ':', '(', ')', '[', ']', '"', "'", ',', '.', ';']);
+  while (token.length && (token[0].trim() === '' || stripChars.has(token[0]))) token = token.slice(1);
+  while (token.length && (token[token.length - 1].trim() === '' || stripChars.has(token[token.length - 1]))) token = token.slice(0, -1);
+  token = token.trim();
+      if (!token) continue;
+      if (!techWords.includes(token)) techWords.push(token);
     }
   }
   return techWords;
