@@ -1,6 +1,24 @@
-// Orchestrates finding a README image candidate, attempting explicit paths,
-// downloading a deterministic filename via mediaDownloader and updating node
-// (primaryImage, _imageSelection, and README rewrites).
+/**
+ * mediaHelper.processNodeMedia
+ *
+ * High-level orchestration for README image selection and persistence.
+ * Steps:
+ * 1. Ensure media directory exists under `mediaRoot/<repo>`.
+ * 2. Prefer an explicit `src/assets/imgs/project-image.png` on main/master.
+ * 3. Fall back to an AST-derived candidate or the first inline markdown image.
+ * 4. Sanitize the candidate URL/path and attempt deterministic download via mediaDownloader.
+ * 5. If a file is written, update `node.primaryImage`, rewrite README image
+ *    occurrences to reference `/projects_media/<repo>/<file>` and populate
+ *    `_imageSelection` metadata.
+ *
+ * Parameters:
+ * - node: repository node object with `name` and optionally `object.text` (README)
+ * - mediaRoot: absolute filesystem root where project media folders will be created
+ * - getAxios: a factory function that returns an axios-like client for probing
+ * - opts: optional overrides (parseReadme, isBadgeLike, mediaDownloader, readme, ast)
+ *
+ * Returns: Promise<string|null> filename (relative to the repo media dir) or null
+ */
 async function processNodeMedia(node, mediaRoot, getAxios, opts = {}) {
   const parseReadme = opts.parseReadme || require('../parseReadme');
   const isBadgeLike = opts.isBadgeLike || (u => false);
