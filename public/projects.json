@@ -1,0 +1,5360 @@
+[
+  {
+    "__typename": "Repository",
+    "name": "inventory-service",
+    "description": "An enterprise-style full-stack application for Inventory and Supplier Management",
+    "url": "https://github.com/Keglev/inventory-service",
+    "object": {
+      "text": "# SmartSupplyPro\n\n**Enterprise Inventory Management System - Java Spring Boot & React**\n\n## About\n\nComplete enterprise-style full-stack application for Inventory & Supplier Management with comprehensive documentation, security architecture, and CI/CD integration.\n\n## Description\nThis project simulates a real-world software system for small-to-medium manufacturing companies, inspired by real job experience in purchasing and production planning. It includes modern technologies, OAuth2 authentication, automated CI/CD pipelines, comprehensive testing, and business intelligence visualizations.\n\n![https://github.com/Keglev/inventory-service/actions/workflows/ci-build.yml/badge.svg](/projects_media/inventory-service/project-image.png-8a3255c0.png  \n![https://github.com/Keglev/inventory-service/actions/workflows/frontend-ci.yml/badge.svg](/projects_media/inventory-service/project-image.png-8a3255c0.png\n\n**📅 Last Updated:** October 13, 2025 - Controller Layer Testing Architecture Complete  \n**🏗️ Status:** 60,000+ words comprehensive documentation | Enterprise architecture | Working CI/CD pipeline\n\n---\n\n## Table of contents\n\n1. [Still under construction](#still-under-construction)\n2. [Screenshots](#screenshots)\n3. [Project status](#project-status)\n4. [Features](#features)\n5. [Security](#security)\n6. [Documentation](#documentation)\n  - [Architecture Overview](#architecture-overview)\n  - [API Integration Guides](#api-integration-guides)\n  - [API Documentation Hub](#api-documentation-hub)\n  - [API Endpoints](#api-endpoints)\n7. [Testing & Code quality](#testing-code-quality)\n8. [Tech stack](#tech-stack)\n9. [Environment profiles (Ci/CD)](#environment-profiles)\n10. [Available Scripts](#available-scripts)\n11. [Coming next](#coming-next)\n\n<a id=\"still-under-construction\"></a>\n## Still under construction\n\n> ⚠️ **Still under construction**\n> - Enterprise documentation is not yet complete\n> - Frontend development still not complete\n\n---\n\n<a id=\"screenshots\"></a>\n## Screenshots\n\n<img src=\"./frontend/src/assets/project-image.png\" alt=\"Analytics Dashboard\" width=\"600\" height=\"300\"/>\n\n<img src=\"./frontend/src/assets/barchart.png\" alt=\"Analytics Dashboard\" width=\"600\" height=\"300\"/>\n\n---\n\n<a id=\"project-status\"></a>\n## Project status\n\n### ✅ Backend Development - Complete\n- ✅ 60,000+ words comprehensive documentation\n- ✅ Professional API documentation with TypeDoc, OpenAPI, and Redoc\n- ✅ Complete backend architecture with enterprise patterns\n- ✅ Working CI/CD pipeline for backend\n- ✅ Controller layer testing architecture complete\n\n### 🚧 Frontend Development - In Progress\n- ✅ React + TypeScript + Material-UI foundation\n- ✅ CI/CD pipeline working and automatically deployed\n- 🚧 Dashboard UI development ongoing\n- 🚧 CRUD operations implementation needed\n- 🚧 Frontend testing documentation needed\n\n### 📚 Documentation Status\n- ✅ Backend testing documentation complete\n- 🚧 Frontend testing documentation needed\n- 🚧 Complete integration testing documentation needed\n\n---\n\n<a id=\"features\"></a>\n## 🚀 Features\n\n### 🎯 Core Modules\n- ✅ **Authentication** with Google OAuth2 via Spring Security\n- 📦 **Inventory Management** – CRUD items, quantity tracking, stock history\n- 🧾 **Supplier Management** – CRUD supplier data, filtering by name  \n- 📊 **Analytics & Dashboard** – Visual insights including:\n  - Stock value over time\n  - Monthly stock movement\n  - Update frequency per item\n  - Low stock alerts\n\n---\n\n<a id=\"security\"></a>\n## 🛡️ Security\n\n- OAuth2 login with Google integration and role-based access (`ADMIN`, `USER`)\n- All `/api/**` endpoints are secured with Spring Security\n- Fine-grained access control using `@PreAuthorize` annotations\n- **Note**: Swagger is **not used** for security simplification - instead using TypeDoc, OpenAPI, and Redoc for API documentation\n\n---\n\n### Key documents:\n\n- [OAuth2 Security Architecture](./docs/architecture/patterns/oauth2-security-architecture.md) — detailed OAuth2 and token flow\n- [Security Patterns](./docs/architecture/patterns/security-patterns.md) — common security patterns used across services\n- [Cross-Cutting Security](./docs/architecture/patterns/security-cross-cutting-patterns.md) — cross-cutting concerns and implementations\n\n<a id=\"documentation\"></a>\n## 📘 Documentation\n\n<a id=\"architecture-overview\"></a>\n### 🏗️ Architecture Overview\n\n- . [Index for Backend Documentation](./docs/backend/README.md) — architecture landing with service catalog\n- . [Service Layer Overview](./docs/architecture/services/README.md) — service responsibilities and patterns\n- . [Design Patterns & Security](./docs/architecture/patterns/) — architecture patterns, security, and implementation\n\nKey documents:\n\n  - [OAuth2 Security Architecture](./docs/architecture/patterns/oauth2-security-architecture.md) — detailed OAuth2 and token flow\n  - [Security Patterns](./docs/architecture/patterns/security-patterns.md) — common security patterns used across services\n  - [Cross-Cutting Security](./docs/architecture/patterns/security-cross-cutting-patterns.md) — cross-cutting concerns and implementations\n\n<a id=\"api-integration-guides\"></a>\n### 📡 API Integration Guides\n\nComprehensive integration documentation for all backend layers:\n\n- . [Exception Handling](./docs/architecture/exceptions/) — comprehensive exception handling patterns *(25,000+ words)*\n- . [Mapper Patterns](./docs/architecture/mappers/) — mapping strategies and DTO patterns *(35,000+ words)*\n- . [Enum Business Logic](./docs/architecture/enums/) — domain enums and business rules\n- . [Configuration Patterns](./docs/architecture/patterns/) — configuration best practices and patterns\n- . [Refactoring Roadmap](./docs/architecture/refactoring/) — planned refactors and migration notes\n\nService Documentation:\n\n- . [AnalyticsService](./docs/architecture/services/analytics-service.md) — Business insights, WAC algorithm (🔴 HIGH complexity)\n- . [InventoryItemService](./docs/architecture/services/inventory-item-service.md) — Inventory CRUD, stock history (🟡 MEDIUM complexity)\n- . [SupplierService](./docs/architecture/services/supplier-service.md) — Master data management (🟢 LOW complexity)\n- . [StockHistoryService](./docs/architecture/services/stock-history-service.md) — Append-only audit log (🟢 LOW complexity)\n- . [OAuth2 Services](./docs/architecture/services/oauth2-services.md) — Authentication integration (🟡 MEDIUM complexity)\n\n<a id=\"api-documentation-hub\"></a>\n ### 🚀 API Documentation Hub\n \n - [Complete API Documentation (ReDoc)](docs/api/redoc/index.html) — interactive API landing page\n - [Interactive API Reference](docs/api/redoc/api.html) — direct ReDoc explorer\n - [API index and quick reference](docs/api/README.md) — API index and quick reference\n\n---\n\n<a id=\"testing-code-quality\"></a>\n## 🧪 Testing & Code Quality\n\n**🚧 Still under construction** - Backend testing complete, frontend testing documentation needed\n\n### 🧪 Backend Testing Architecture\n- **JUnit 5** with Mockito for comprehensive unit testing\n- **Testcontainers** for integration testing with Oracle database\n- **MockMvc** for controller layer testing with Spring Security integration\n- **JaCoCo** for code coverage analysis and reporting\n\n📊 **View Coverage Reports:**\n👉 [**Backend Test Coverage (JaCoCo)**](https://keglev.github.io/inventory-service/backend/coverage/index.html)\n\n📚 **Complete Testing Documentation:**\n👉 [**Testing Architecture Documentation**](./docs/architecture/testing/README.md) - Enterprise testing strategy and implementation guides\n\n> Coverage reports are automatically updated on every CI build and published via GitHub Pages.\n\n### 🚧 Frontend Testing (Still under construction)\n- Vitest for unit testing framework\n- React Testing Library for component testing  \n- TypeDoc for documentation generation\n- Coverage reports and documentation coming soon\n\n---\n\n<a id=\"tech-stack\"></a>\n## 🧰 Tech Stack \n\n### Backend\n- **Java 17+** with **Spring Boot 3.5+**\n- **Spring Security** (OAuth2 + Role-based Access Control)\n- **Oracle Autonomous Database** (Free Tier with wallet connectivity)\n- **REST APIs** documented via OpenAPI YAML specifications\n- **Docker** containerization with multi-stage builds\n- **JUnit 5** + **Mockito** + **Testcontainers** for comprehensive testing\n\n### Frontend\n- **React 19** + **TypeScript** for type-safe development\n- **Material-UI (MUI)** for enterprise-grade component library\n- **Vite** for fast development and optimized builds\n- **Axios** for HTTP client with React Query for state management\n- **React Router** for SPA navigation\n- **Vitest** + **React Testing Library** for testing\n- **TypeDoc** for documentation generation\n\n### DevOps & Infrastructure\n- **GitHub Actions** for automated CI/CD pipelines\n- **Docker Compose** for local development environment\n- **Fly.io** for backend deployment with Oracle DB connectivity\n- **Koyeb** for frontend deployment with automated builds\n- **JaCoCo** + **GitHub Pages** for live test coverage reporting\n\n---\n\n<a id=\"environment-profiles\"></a>\n## 🌐 Environment Profiles\n\n- `application-dev.yml` — Local development (auto-reload, detailed logging)\n- `application-prod.yml` — Production deployment (Docker + CI/CD)  \n- `application-test.yml` — Testing environment (unit + integration tests with Testcontainers)\n\nOracle Wallet authentication is configured via environment variables for secure database access across all environments.\n\n---\n\n## ✅ CI/CD\n\n**🚧 Still under construction** - CI/CD is working, documentation updates needed\n\n### 🔄 Automated Pipelines\nGitHub Actions automatically handle:\n\n**Backend CI/CD:**\n- ✅ Builds and tests Spring Boot application using Maven\n- ✅ Runs comprehensive test suite (unit tests)\n- ✅ Generates and publishes test coverage reports to GitHub Pages\n- ✅ Builds Docker image and pushes to DockerHub with security scanning\n- ✅ Automated deployment ready (manual trigger for Oracle IP restrictions)\n\n**Frontend CI/CD:**\n- ✅ Builds and tests React application with Vitest\n- ✅ Automatically deploys to Koyeb on successful builds\n- ✅ Live deployment at: https://inventory-service.koyeb.app\n- ✅ Health checks and smoke tests included\n\n<a id=\"available-scripts\"></a>\n## Available Scripts\n\nBelow are a few common commands used during development:\n\n- Backend (Maven): `./mvnw spring-boot:run`\n- Run tests: `./mvnw test`\n- Frontend (development): `npm run dev` (from `frontend/`)\n- Frontend (build): `npm run build` (from `frontend/`)\n\n---\n\n## Deployment\n\n### CI/CD Pipeline Status\n**✅ CI/CD pipelines are working and operational**\n\n**Backend Deployment:**\n1. **Automated CI/CD**: Push to main → Triggers build, test, and Docker image creation\n2. **Manual Production Deploy**: Due to Oracle free tier IP restrictions, backend deployment uses manual trigger:\n   ```bash\n   fly deploy\n   ```\n   This approach:\n   - ✅ Uses your whitelisted IP during local Docker build process\n   - ✅ Deploys via `fly.toml` configuration with `Dockerfile` and `start.sh` \n   - ✅ No dependency on external Docker registry pulls\n   - ✅ Reliable deployment to: https://inventoryservice.fly.dev\n\n**Frontend Deployment:**\n- ✅ **Fully Automated**: Push to main → Auto-build and deploy to Koyeb\n- ✅ **Live Application**: https://inventory-service.koyeb.app\n- ✅ **Health Checks**: Automated smoke tests and health monitoring\n\n### Why This Deployment Strategy Works\n- **Oracle Free Tier**: Requires IP whitelisting for database connections\n- **Fixed IP Solution**: Using Fly.io VM provides stable IP address\n- **Local Build**: Ensures build process uses your whitelisted IP\n- **No Daily IP Updates**: Eliminates need to constantly update Oracle IP whitelist\n\n### Production Environment\n- **Backend**: Spring Boot with `application-prod.yml` profile\n- **Database**: Oracle Autonomous DB with wallet-based authentication\n- **Security**: OAuth2 with Google integration\n- **Monitoring**: Health check endpoints and application logging\n\n---\n\n<a id=\"coming-next\"></a>\n## 👀 Coming Next - Still Under Construction\n\n### 🚧 Frontend Development\n- **Dashboard UI**: Still developing comprehensive frontend dashboard\n- **CRUD Operations**: Still need to implement complete CRUD operations in frontend\n- **Dynamic Chart Filtering**: Advanced analytics visualization features\n\n### 🚧 Infrastructure Enhancements\n- **Jenkins Parallel CI**: No parallel CI pipeline implementation yet\n- **Advanced Monitoring**: Enhanced logging and monitoring capabilities\n\n### 🚧 Documentation\n- **Frontend Testing**: Complete frontend testing documentation needed\n- **Integration Guides**: Cross-system integration documentation\n\n---\n\n📬 For questions or contributions, feel free to [open an issue](https://github.com/Keglev/inventory-service/issues).\n\n. JaCoCo\n"
+    },
+    "_ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "SmartSupplyPro"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**Enterprise Inventory Management System - Java Spring Boot & React**"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "About"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Complete enterprise-style full-stack application for Inventory & Supplier Management with comprehensive documentation, security architecture, and CI/CD integration."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Description"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This project simulates a real-world software system for small-to-medium manufacturing companies, inspired by real job experience in purchasing and production planning. It includes modern technologies, OAuth2 authentication, automated CI/CD pipelines, comprehensive testing, and business intelligence visualizations."
+            }
+          ]
+        },
+        {
+          "type": "image",
+          "url": "https://github.com/Keglev/inventory-service/actions/workflows/ci-build.yml/badge.svg",
+          "alt": ""
+        },
+        {
+          "type": "image",
+          "url": "https://github.com/Keglev/inventory-service/actions/workflows/frontend-ci.yml/badge.svg",
+          "alt": ""
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**📅 Last Updated:** October 13, 2025 - Controller Layer Testing Architecture Complete **🏗️ Status:** 60,000+ words comprehensive documentation | Enterprise architecture | Working CI/CD pipeline"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Table of contents"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[Architecture Overview](#architecture-overview)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[API Integration Guides](#api-integration-guides)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[API Documentation Hub](#api-documentation-hub)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[API Endpoints](#api-endpoints)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "1. [Still under construction](#still-under-construction) 2. [Screenshots](#screenshots) 3. [Project status](#project-status) 4. [Features](#features) 5. [Security](#security) 6. [Documentation](#documentation) 7. [Testing & Code quality](#testing-code-quality) 8. [Tech stack](#tech-stack) 9. [Environment profiles (Ci/CD)](#environment-profiles) 10. [Available Scripts](#available-scripts) 11. [Coming next](#coming-next)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"still-under-construction\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Still under construction"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "> ⚠️ **Still under construction** > - Enterprise documentation is not yet complete > - Frontend development still not complete"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"screenshots\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Screenshots"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "value": "<img src=\"./frontend/src/assets/project-image.png\" alt=\"Analytics Dashboard\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "html",
+          "value": "<img src=\"./frontend/src/assets/barchart.png\" alt=\"Analytics Dashboard\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"project-status\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Project status"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "✅ Backend Development - Complete"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ 60,000+ words comprehensive documentation"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Professional API documentation with TypeDoc, OpenAPI, and Redoc"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Complete backend architecture with enterprise patterns"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Working CI/CD pipeline for backend"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Controller layer testing architecture complete"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "🚧 Frontend Development - In Progress"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ React + TypeScript + Material-UI foundation"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ CI/CD pipeline working and automatically deployed"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🚧 Dashboard UI development ongoing"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🚧 CRUD operations implementation needed"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🚧 Frontend testing documentation needed"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "📚 Documentation Status"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Backend testing documentation complete"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🚧 Frontend testing documentation needed"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🚧 Complete integration testing documentation needed"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"features\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🚀 Features"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "🎯 Core Modules"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ **Authentication** with Google OAuth2 via Spring Security"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "📦 **Inventory Management** – CRUD items, quantity tracking, stock history"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🧾 **Supplier Management** – CRUD supplier data, filtering by name"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "📊 **Analytics & Dashboard** – Visual insights including:"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Stock value over time"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Monthly stock movement"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Update frequency per item"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Low stock alerts"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"security\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🛡️ Security"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "OAuth2 login with Google integration and role-based access (`ADMIN`, `USER`)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "All `/api/**` endpoints are secured with Spring Security"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Fine-grained access control using `@PreAuthorize` annotations"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Note**: Swagger is **not used** for security simplification - instead using TypeDoc, OpenAPI, and Redoc for API documentation"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Key documents:"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[OAuth2 Security Architecture](./docs/architecture/patterns/oauth2-security-architecture.md) — detailed OAuth2 and token flow"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[Security Patterns](./docs/architecture/patterns/security-patterns.md) — common security patterns used across services"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[Cross-Cutting Security](./docs/architecture/patterns/security-cross-cutting-patterns.md) — cross-cutting concerns and implementations"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"documentation\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "📘 Documentation"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"architecture-overview\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "🏗️ Architecture Overview"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [Index for Backend Documentation](./docs/backend/README.md) — architecture landing with service catalog"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [Service Layer Overview](./docs/architecture/services/README.md) — service responsibilities and patterns"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [Design Patterns & Security](./docs/architecture/patterns/) — architecture patterns, security, and implementation"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Key documents:"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[OAuth2 Security Architecture](./docs/architecture/patterns/oauth2-security-architecture.md) — detailed OAuth2 and token flow"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[Security Patterns](./docs/architecture/patterns/security-patterns.md) — common security patterns used across services"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[Cross-Cutting Security](./docs/architecture/patterns/security-cross-cutting-patterns.md) — cross-cutting concerns and implementations"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"api-integration-guides\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "📡 API Integration Guides"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Comprehensive integration documentation for all backend layers:"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [Exception Handling](./docs/architecture/exceptions/) — comprehensive exception handling patterns *(25,000+ words)*"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [Mapper Patterns](./docs/architecture/mappers/) — mapping strategies and DTO patterns *(35,000+ words)*"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [Enum Business Logic](./docs/architecture/enums/) — domain enums and business rules"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [Configuration Patterns](./docs/architecture/patterns/) — configuration best practices and patterns"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [Refactoring Roadmap](./docs/architecture/refactoring/) — planned refactors and migration notes"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Service Documentation:"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [AnalyticsService](./docs/architecture/services/analytics-service.md) — Business insights, WAC algorithm (🔴 HIGH complexity)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [InventoryItemService](./docs/architecture/services/inventory-item-service.md) — Inventory CRUD, stock history (🟡 MEDIUM complexity)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [SupplierService](./docs/architecture/services/supplier-service.md) — Master data management (🟢 LOW complexity)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [StockHistoryService](./docs/architecture/services/stock-history-service.md) — Append-only audit log (🟢 LOW complexity)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ". [OAuth2 Services](./docs/architecture/services/oauth2-services.md) — Authentication integration (🟡 MEDIUM complexity)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"api-documentation-hub\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "🚀 API Documentation Hub"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[Complete API Documentation (ReDoc)](docs/api/redoc/index.html) — interactive API landing page"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[Interactive API Reference](docs/api/redoc/api.html) — direct ReDoc explorer"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[API index and quick reference](docs/api/README.md) — API index and quick reference"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"testing-code-quality\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🧪 Testing & Code Quality"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**🚧 Still under construction** - Backend testing complete, frontend testing documentation needed"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "🧪 Backend Testing Architecture"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**JUnit 5** with Mockito for comprehensive unit testing"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Testcontainers** for integration testing with Oracle database"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**MockMvc** for controller layer testing with Spring Security integration"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**JaCoCo** for code coverage analysis and reporting"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "📊 **View Coverage Reports:** 👉 "
+            },
+            {
+              "type": "link",
+              "url": "https://keglev.github.io/inventory-service/backend/coverage/index.html",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "**Backend Test Coverage (JaCoCo)**"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "📚 **Complete Testing Documentation:** 👉 "
+            },
+            {
+              "type": "link",
+              "url": "./docs/architecture/testing/README.md",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "**Testing Architecture Documentation**"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " - Enterprise testing strategy and implementation guides"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "> Coverage reports are automatically updated on every CI build and published via GitHub Pages."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "🚧 Frontend Testing (Still under construction)"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Vitest for unit testing framework"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "React Testing Library for component testing"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "TypeDoc for documentation generation"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Coverage reports and documentation coming soon"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"tech-stack\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🧰 Tech Stack"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Backend"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Java 17+** with **Spring Boot 3.5+**"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Spring Security** (OAuth2 + Role-based Access Control)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Oracle Autonomous Database** (Free Tier with wallet connectivity)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**REST APIs** documented via OpenAPI YAML specifications"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Docker** containerization with multi-stage builds"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**JUnit 5** + **Mockito** + **Testcontainers** for comprehensive testing"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Frontend"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**React 19** + **TypeScript** for type-safe development"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Material-UI (MUI)** for enterprise-grade component library"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Vite** for fast development and optimized builds"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Axios** for HTTP client with React Query for state management"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**React Router** for SPA navigation"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Vitest** + **React Testing Library** for testing"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**TypeDoc** for documentation generation"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "DevOps & Infrastructure"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**GitHub Actions** for automated CI/CD pipelines"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Docker Compose** for local development environment"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Fly.io** for backend deployment with Oracle DB connectivity"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Koyeb** for frontend deployment with automated builds"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**JaCoCo** + **GitHub Pages** for live test coverage reporting"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"environment-profiles\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🌐 Environment Profiles"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "`application-dev.yml` — Local development (auto-reload, detailed logging)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "`application-prod.yml` — Production deployment (Docker + CI/CD)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "`application-test.yml` — Testing environment (unit + integration tests with Testcontainers)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Oracle Wallet authentication is configured via environment variables for secure database access across all environments."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "✅ CI/CD"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**🚧 Still under construction** - CI/CD is working, documentation updates needed"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "🔄 Automated Pipelines"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "GitHub Actions automatically handle:"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Builds and tests Spring Boot application using Maven"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Runs comprehensive test suite (unit tests)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Generates and publishes test coverage reports to GitHub Pages"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Builds Docker image and pushes to DockerHub with security scanning"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Automated deployment ready (manual trigger for Oracle IP restrictions)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**Backend CI/CD:**"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Builds and tests React application with Vitest"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Automatically deploys to Koyeb on successful builds"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Live deployment at: https://inventory-service.koyeb.app"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Health checks and smoke tests included"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**Frontend CI/CD:**"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"available-scripts\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Available Scripts"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Below are a few common commands used during development:"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Backend (Maven): `./mvnw spring-boot:run`"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Run tests: `./mvnw test`"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Frontend (development): `npm run dev` (from `frontend/`)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Frontend (build): `npm run build` (from `frontend/`)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Deployment"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "CI/CD Pipeline Status"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**✅ CI/CD pipelines are working and operational**"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Uses your whitelisted IP during local Docker build process"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Deploys via `fly.toml` configuration with `Dockerfile` and `start.sh`"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ No dependency on external Docker registry pulls"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ Reliable deployment to: https://inventoryservice.fly.dev"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**Backend Deployment:** 1. **Automated CI/CD**: Push to main → Triggers build, test, and Docker image creation 2. **Manual Production Deploy**: Due to Oracle free tier IP restrictions, backend deployment uses manual trigger: ```bash fly deploy ``` This approach:"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ **Fully Automated**: Push to main → Auto-build and deploy to Koyeb"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ **Live Application**: https://inventory-service.koyeb.app"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ **Health Checks**: Automated smoke tests and health monitoring"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**Frontend Deployment:**"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Why This Deployment Strategy Works"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Oracle Free Tier**: Requires IP whitelisting for database connections"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Fixed IP Solution**: Using Fly.io VM provides stable IP address"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Local Build**: Ensures build process uses your whitelisted IP"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**No Daily IP Updates**: Eliminates need to constantly update Oracle IP whitelist"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Production Environment"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Backend**: Spring Boot with `application-prod.yml` profile"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Database**: Oracle Autonomous DB with wallet-based authentication"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Security**: OAuth2 with Google integration"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Monitoring**: Health check endpoints and application logging"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "<a id=\"coming-next\"></a>"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "👀 Coming Next - Still Under Construction"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "🚧 Frontend Development"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Dashboard UI**: Still developing comprehensive frontend dashboard"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**CRUD Operations**: Still need to implement complete CRUD operations in frontend"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Dynamic Chart Filtering**: Advanced analytics visualization features"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "🚧 Infrastructure Enhancements"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Jenkins Parallel CI**: No parallel CI pipeline implementation yet"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Advanced Monitoring**: Enhanced logging and monitoring capabilities"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "🚧 Documentation"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Frontend Testing**: Complete frontend testing documentation needed"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Integration Guides**: Cross-system integration documentation"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "---"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "📬 For questions or contributions, feel free to "
+            },
+            {
+              "type": "link",
+              "url": "https://github.com/Keglev/inventory-service/issues",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "open an issue"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": "."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": ". JaCoCo"
+            }
+          ]
+        }
+      ]
+    },
+    "_imageSelection": {
+      "original": "src/assets/imgs/project-image.png",
+      "chosenUrl": "https://raw.githubusercontent.com/keglev/inventory-service/main/src/assets/imgs/project-image.png",
+      "reason": "explicit-project-image",
+      "filename": "project-image.png-8a3255c0.png"
+    },
+    "primaryImage": "/projects_media/inventory-service/project-image.png-8a3255c0.png",
+    "technologies": [
+      "Java 17+ with Spring Boot 3.5+",
+      "Spring Security",
+      "Oracle Autonomous Database",
+      "REST APIs documented via OpenAPI YAML specifications",
+      "Docker containerization with multi-stage builds",
+      "JUnit 5 + Mockito + Testcontainers for comprehensive testing",
+      "React 19 + TypeScript for type-safe development",
+      "Material-UI",
+      "Vite for fast development and optimized builds",
+      "Axios for HTTP client with React Query for state management",
+      "React Router for SPA navigation",
+      "Vitest + React Testing Library for testing",
+      "TypeDoc for documentation generation",
+      "GitHub Actions for automated CI/CD pipelines",
+      "Docker Compose for local development environment",
+      "Fly.io for backend deployment with Oracle DB connectivity",
+      "Koyeb for frontend deployment with automated builds",
+      "JaCoCo + GitHub Pages for live test coverage reporting"
+    ],
+    "docs": {
+      "documentation": {
+        "title": "Index for Backend Documentation",
+        "link": "https://raw.githubusercontent.com/keglev/inventory-service/main/docs/backend/README.md",
+        "description": ""
+      },
+      "apiDocumentation": {
+        "title": "Complete API Documentation (ReDoc)",
+        "link": "https://raw.githubusercontent.com/keglev/inventory-service/main/docs/api/redoc/index.html",
+        "description": ""
+      }
+    },
+    "docsLink": "https://raw.githubusercontent.com/keglev/inventory-service/main/docs/backend/README.md",
+    "docsTitle": "Index for Backend Documentation",
+    "repoDocs": {
+      "architectureOverview": {
+        "title": "Index for Backend Documentation",
+        "link": "https://raw.githubusercontent.com/keglev/inventory-service/main/docs/backend/README.md",
+        "description": "architecture landing with service catalog",
+        "description_de": "Architekturlandung mit Servicekatalog",
+        "title_de": "Index für Backend-Dokumentation"
+      },
+      "apiDocumentation": {
+        "title": "Complete API Documentation (ReDoc)",
+        "link": "https://keglev.github.io/inventory-service/api/redoc",
+        "description": "interactive API landing page",
+        "description_de": "interaktive API-Landingpage",
+        "title_de": "Vollständige API-Dokumentation (ReDoc)"
+      },
+      "testing": {
+        "coverage": {
+          "title": "**Backend Test Coverage (JaCoCo)**",
+          "link": "https://keglev.github.io/inventory-service/backend/coverage/index.html",
+          "description": "📊 **View Coverage Reports:** 👉",
+          "description_de": "📊 **Deckungsberichte anzeigen:** 👉"
+        },
+        "testingDocs": {
+          "title": "**Testing Architecture Documentation**",
+          "link": "https://raw.githubusercontent.com/keglev/inventory-service/main/docs/architecture/testing/README.md",
+          "description": "📚 **Complete Testing Documentation:** 👉 - Enterprise testing strategy and implementation guides",
+          "description_de": "📚 **Vollständige Testdokumentation:** 👉 - Leitfäden zur Teststrategie und -durchführung für Unternehmen",
+          "title_de": "**Test der Architekturdokumentation**"
+        }
+      }
+    },
+    "summary": "Complete enterprise-style full-stack application for Inventory & Supplier Management with comprehensive documentation, security architecture, and CI/CD integration.",
+    "_summarySource": "heading",
+    "_summaryRaw": "Complete enterprise-style full-stack application for Inventory & Supplier Management with comprehensive documentation, security architecture, and CI/CD integration.",
+    "mediaDownloaded": false,
+    "_translation": {
+      "debug": {
+        "requestMs": 173
+      },
+      "summary": {
+        "text": null,
+        "status": null
+      },
+      "docsTitle": {
+        "text": null,
+        "status": null
+      }
+    },
+    "summary_de": "Vollständige Full-Stack-Anwendung für das Bestands- und Lieferantenmanagement im Unternehmensstil mit umfassender Dokumentation, Sicherheitsarchitektur und CI/CD-Integration.",
+    "docsTitle_de": "Index für Backend-Dokumentation"
+  },
+  {
+    "__typename": "Repository",
+    "name": "stockease",
+    "description": "A backend in Java Spring boot to control merchandise stock",
+    "url": "https://github.com/Keglev/stockease",
+    "object": {
+      "text": "# StockEase Backend\n\n## About\nStockEase is a backend service for managing stock-related data efficiently. Built with **Spring Boot** and integrated with **PostgreSQL**, this project showcases authentication, role-based access control, and CRUD operations for products. \n\n## 📖 Table of Contents\n- [📌 About](#-about)\n- [🚀 Features](#-features)\n- [🖼️ Screenshots](#-screenshots)\n- [🛠️ Installation](#-installation)\n- [📌 Usage](#-usage)\n- [🧑‍💻 Available Scripts](#-available-scripts)\n- [⚙️ Technologies](#-technologies)\n- [🔗 API Integration](#-api-integration)\n- [🤝 Contributing](#-contributing)\n\n## 🚀 Features\n- ✅ **User Authentication with JWT** 🔑\n- ✅ **Role-Based Access Control (Admin & User)** 👥\n- ✅ **CRUD Operations for Products** 📝\n- ✅ **Paginated Product Fetching** 📑\n- ✅ **Total Stock Value Calculation** 💰\n- ✅ **Industry-Standard Testing with Mockito** 🧪\n\n# Screenshots\nHere are some screenshots from Postman showing some API answers:\n\n### Example API Response in Postman:\n\n### Adding a Product\n<img src=\"./src/assets/imgs/project-image.png\" alt=\"Adding Product\" width=\"600\" height=\"300\"/>\n\n### Updating Product Quantity\n\n<img src=\"./src/assets/imgs/updateQuantity.png\" alt=\"Update Quantity\" width=\"600\" height=\"300\"/>\n\n### Example of a missing input from the user.\n\n<img src=\"./src/assets/imgs/Missingquantity.png\" alt=\"Missing quantity\" width=\"600\" height=\"300\"/>\n\n## 🛠️ Installation\n### **1. Clone the Repository**\n```bash\ngit clone https://github.com/yourusername/StockEase.git\ncd StockEase\n```\n\n### **2. Set Up Database Credentials**\nCreate an `application.properties` file inside `src/main/resources/` and configure it:\n```properties\nspring.datasource.url=jdbc:postgresql://DATABASE_HOST/DATABASE_NAME\nspring.datasource.username=YOUR_DB_USER\nspring.datasource.password=YOUR_DB_PASSWORD\n```\nReplace placeholders with actual values.\n\n### **3. Run the Application**\nUse Maven to build and start the application:\n```bash\nmvn spring-boot:run\n```\n\n## 📌 Usage\nThis portfolio backend is designed to:\n- **Handle stock-related data** including adding, updating, deleting, and fetching product details.\n- **Provide secured endpoints** with JWT authentication.\n- **Manage user roles** to restrict access to admin and user functionalities.\n- **Integrate with a frontend application** for full-stack functionality.\n\n## 🧑‍💻 Available Scripts\n- `mvn spring-boot:run` - Runs the application.\n- `mvn test` - Runs unit tests with **Mockito**.\n- `mvn package` - Builds the application.\n\n##  Technologies ⚙️\n- *Spring Boot\n- *Java\n- *Spring Security \n- *PostgreSQL \n- *JWT (JSON Web Token) \n- *Mockito \n- *Jakarta Persistence API (JPA) \n- Jakarta Validation API (Data Validation)\n- Hibernate Core (ORM Implementation)\n- *Hibernate Validator \n- Lombok \n- Spring Boot DevTools \n- Jakarta Servlet API (HTTP Request Handling)\n- *REST API \n- Maven (Build Tool)\n\n## 🔗 API Integration\nThis backend provides a **REST API** for interacting with stock data. You can find the full API documentation here:\n\n📌 **[View Full API Documentation](src/main/docs/api.md)**\n\n## 🤝 Contributing\nContributions are welcome! If you'd like to improve this project, feel free to:\n- Fork the repository\n- Create a new branch\n- Make your changes\n- Submit a pull request\n\nFor any issues or improvements, please open a GitHub issue. 🚀\n\n\n\n"
+    },
+    "_ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "StockEase Backend"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "About"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "StockEase is a backend service for managing stock-related data efficiently. Built with **Spring Boot** and integrated with **PostgreSQL**, this project showcases authentication, role-based access control, and CRUD operations for products."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "📖 Table of Contents"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[📌 About](#-about)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[🚀 Features](#-features)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[🖼️ Screenshots](#-screenshots)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[🛠️ Installation](#-installation)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[📌 Usage](#-usage)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[🧑‍💻 Available Scripts](#-available-scripts)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[⚙️ Technologies](#-technologies)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[🔗 API Integration](#-api-integration)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "[🤝 Contributing](#-contributing)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🚀 Features"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ **User Authentication with JWT** 🔑"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ **Role-Based Access Control (Admin & User)** 👥"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ **CRUD Operations for Products** 📝"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ **Paginated Product Fetching** 📑"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ **Total Stock Value Calculation** 💰"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "✅ **Industry-Standard Testing with Mockito** 🧪"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "Screenshots"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Here are some screenshots from Postman showing some API answers:"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Example API Response in Postman:"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Adding a Product"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "value": "<img src=\"./src/assets/imgs/project-image.png\" alt=\"Adding Product\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Updating Product Quantity"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "value": "<img src=\"./src/assets/imgs/updateQuantity.png\" alt=\"Update Quantity\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Example of a missing input from the user."
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "value": "<img src=\"./src/assets/imgs/Missingquantity.png\" alt=\"Missing quantity\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🛠️ Installation"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "**1. Clone the Repository**"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "```bash git clone https://github.com/yourusername/StockEase.git cd StockEase ```"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "**2. Set Up Database Credentials**"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Create an `application.properties` file inside `src/main/resources/` and configure it: ```properties spring.datasource.url=jdbc:postgresql://DATABASE_HOST/DATABASE_NAME spring.datasource.username=YOUR_DB_USER spring.datasource.password=YOUR_DB_PASSWORD ``` Replace placeholders with actual values."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "**3. Run the Application**"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Use Maven to build and start the application: ```bash mvn spring-boot:run ```"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "📌 Usage"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Handle stock-related data** including adding, updating, deleting, and fetching product details."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Provide secured endpoints** with JWT authentication."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Manage user roles** to restrict access to admin and user functionalities."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Integrate with a frontend application** for full-stack functionality."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This portfolio backend is designed to:"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🧑‍💻 Available Scripts"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "`mvn spring-boot:run` - Runs the application."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "`mvn test` - Runs unit tests with **Mockito**."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "`mvn package` - Builds the application."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Technologies ⚙️"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*Spring Boot"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*Java"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*Spring Security"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*PostgreSQL"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*JWT (JSON Web Token)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*Mockito"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*Jakarta Persistence API (JPA)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Jakarta Validation API (Data Validation)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Hibernate Core (ORM Implementation)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*Hibernate Validator"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Lombok"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Spring Boot DevTools"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Jakarta Servlet API (HTTP Request Handling)"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*REST API"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Maven (Build Tool)"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🔗 API Integration"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This backend provides a **REST API** for interacting with stock data. You can find the full API documentation here:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "📌 **"
+            },
+            {
+              "type": "link",
+              "url": "src/main/docs/api.md",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "View Full API Documentation"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": "**"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🤝 Contributing"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Fork the repository"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Create a new branch"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Make your changes"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Submit a pull request"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Contributions are welcome! If you'd like to improve this project, feel free to:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "For any issues or improvements, please open a GitHub issue. 🚀"
+            }
+          ]
+        }
+      ]
+    },
+    "_imageSelection": {
+      "original": "src/assets/imgs/project-image.png",
+      "chosenUrl": "https://raw.githubusercontent.com/keglev/stockease/main/src/assets/imgs/project-image.png",
+      "reason": "explicit-project-image",
+      "filename": "project-image.png-ce62396f.png"
+    },
+    "primaryImage": "/projects_media/stockease/project-image.png-ce62396f.png",
+    "technologies": [
+      "*Spring Boot",
+      "*Java",
+      "*Spring Security",
+      "*PostgreSQL",
+      "*JWT",
+      "*Mockito",
+      "*Jakarta Persistence API",
+      "Jakarta Validation API",
+      "Hibernate Core",
+      "*Hibernate Validator",
+      "Lombok",
+      "Spring Boot DevTools",
+      "Jakarta Servlet API",
+      "*REST API",
+      "Maven"
+    ],
+    "docs": {
+      "documentation": null,
+      "apiDocumentation": null
+    },
+    "docsLink": "https://raw.githubusercontent.com/keglev/stockease/main/src/main/docs/api.md",
+    "docsTitle": "View Full API Documentation",
+    "repoDocs": {
+      "apiDocumentation": {
+        "title": "View Full API Documentation",
+        "link": "https://raw.githubusercontent.com/keglev/stockease/main/src/main/docs/api.md",
+        "description": "",
+        "title_de": "Vollständige API-Dokumentation anzeigen"
+      }
+    },
+    "summary": "StockEase is a backend service for managing stock-related data efficiently. Built with **Spring Boot** and integrated with **PostgreSQL**, this project showcases authentication, role-based access control, and CRUD operations for products.",
+    "_summarySource": "heading",
+    "_summaryRaw": "StockEase is a backend service for managing stock-related data efficiently. Built with **Spring Boot** and integrated with **PostgreSQL**, this project showcases authentication, role-based access control, and CRUD operations for products.",
+    "mediaDownloaded": false,
+    "_translation": {
+      "debug": {
+        "requestMs": 270
+      },
+      "summary": {
+        "text": null,
+        "status": null
+      },
+      "docsTitle": {
+        "text": null,
+        "status": null
+      }
+    },
+    "summary_de": "StockEase ist ein Backend-Service zur effizienten Verwaltung von Bestandsdaten. Dieses Projekt wurde mit **Spring Boot** entwickelt und mit **PostgreSQL** integriert. Es zeigt Authentifizierung, rollenbasierte Zugriffskontrolle und CRUD-Operationen für Produkte.",
+    "docsTitle_de": "Vollständige API-Dokumentation anzeigen"
+  },
+  {
+    "__typename": "Repository",
+    "name": "frontend",
+    "description": "A Front-End code made in Typescript to control merchandise stock",
+    "url": "https://github.com/Keglev/frontend",
+    "object": {
+      "text": "# StockEase Frontend\n\n## About\nStockEase is a React + TypeScript application for efficient stock and inventory management. It integrates with the StockEase backend to provide authentication, role-based access control, and complete CRUD operations for products.\n\n## 📖 Table of Contents\n- 📌 About\n- 🚀 Features\n- 🖼️ Screenshots\n- 🛠️ Installation\n- 📌 Usage\n- 🧑‍💻 Available Scripts\n- ⚙️ Technologies\n- 🔗 API Integration\n- 🤝 Contributing\n\n## 🚀 Features\n✅ User Authentication with JWT 🔑  \n✅ Role-Based Access Control (Admin & User) 👥  \n✅ CRUD Operations for Products 📝  \n✅ Paginated Product Fetching 📑  \n✅ Total Stock Value Calculation 💰  \n✅ Dark Mode Support 🌙  \n✅ Multi-Language Support (English & German) 🌍  \n✅ Fully Responsive Design 📱  \n\n## 🖼️ Screenshots\nHere are some screenshots showcasing StockEase UI:\n\n  **Admin Dashboard:**\n  \n  <img src=\"./src/assets/imgs/project-image.png\" alt=\"Admin Dashboard\" width=\"600\" height=\"300\"/>\n  \n- **German Version:**\n- \n  <img src=\"./src/assets/imgs/german-version.png\" alt=\"Admin Dashboard German\" width=\"600\" height=\"300\"/>\n  \n- **Dark Mode Enabled:**\n- \n  <img src=\"./src/assets/imgs/dark-mode.png\" alt=\"Dark Mode\" width=\"600\" height=\"300\"/>\n\n## 🛠️ Installation\n### 1. Clone the Repository\n```sh\ngit clone https://github.com/yourusername/StockEase-Frontend.git\ncd StockEase-Frontend\n```\n\n### 2. Install Dependencies\n```sh\nnpm install\n```\n\n### 3. Configure Environment Variables\nCreate a **.env** file in the project root and set up the API base URL:\n```\nVITE_API_BASE_URL=http://localhost:8081/api\n```\nAdjust the URL if deploying to a different backend.\n\n### 4. Run the Application\n```sh\nnpm run dev\n```\nThis will start the development server at **http://localhost:5173** (default Vite port).\n\n## 📌 Usage\nThis frontend allows users to:\n- Log in with JWT authentication\n- View and manage stock-related data\n- Admin users can add, edit, and delete products\n- Regular users can search, modify and view product details\n- Supports pagination and real-time stock value calculation\n\n## 🧑‍💻 Available Scripts\n```sh\nnpm run dev         # Starts the development server\nnpm run build       # Builds the project for production\nnpm run preview     # Previews the production build\nnpm run lint        # Runs ESLint for code linting\n```\n\n## Technologies ⚙️\n- *React \n- *TypeScript \n- React Router \n- *Tailwind CSS \n- *Vite \n- *Axios \n- *i18next \n- *JWT Authentication \n- React Hook Form\n- React Query \n- ShadCN UI \n\n## 🔗 API Integration\nThis frontend communicates with the **StockEase Backend**, which provides RESTful API endpoints for managing stock data.\n\n📌 View Full API Documentation: [StockEase Backend API Docs](#) (Update with actual link)\n\n## 🤝 Contributing\nContributions are welcome! If you'd like to improve this project, feel free to:\n\n1. Fork the repository\n2. Create a new branch\n3. Make your changes\n4. Submit a pull request\n\nFor any issues or improvements, please open a GitHub issue. 🚀\n\n\n"
+    },
+    "_ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "StockEase Frontend"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "About"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "StockEase is a React + TypeScript application for efficient stock and inventory management. It integrates with the StockEase backend to provide authentication, role-based access control, and complete CRUD operations for products."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "📖 Table of Contents"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "📌 About"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🚀 Features"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🖼️ Screenshots"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🛠️ Installation"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "📌 Usage"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🧑‍💻 Available Scripts"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "⚙️ Technologies"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🔗 API Integration"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "🤝 Contributing"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🚀 Features"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "✅ User Authentication with JWT 🔑 ✅ Role-Based Access Control (Admin & User) 👥 ✅ CRUD Operations for Products 📝 ✅ Paginated Product Fetching 📑 ✅ Total Stock Value Calculation 💰 ✅ Dark Mode Support 🌙 ✅ Multi-Language Support (English & German) 🌍 ✅ Fully Responsive Design 📱"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🖼️ Screenshots"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Here are some screenshots showcasing StockEase UI:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**Admin Dashboard:**"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "value": "  <img src=\"./src/assets/imgs/project-image.png\" alt=\"Admin Dashboard\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**German Version:**"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "value": "  <img src=\"./src/assets/imgs/german-version.png\" alt=\"Admin Dashboard German\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "**Dark Mode Enabled:**"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "value": "  <img src=\"./src/assets/imgs/dark-mode.png\" alt=\"Dark Mode\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🛠️ Installation"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "1. Clone the Repository"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "```sh git clone https://github.com/yourusername/StockEase-Frontend.git cd StockEase-Frontend ```"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "2. Install Dependencies"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "```sh npm install ```"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "3. Configure Environment Variables"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Create a **.env** file in the project root and set up the API base URL: ``` VITE_API_BASE_URL=http://localhost:8081/api ``` Adjust the URL if deploying to a different backend."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "4. Run the Application"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "```sh npm run dev ``` This will start the development server at **http://localhost:5173** (default Vite port)."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "📌 Usage"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Log in with JWT authentication"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "View and manage stock-related data"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Admin users can add, edit, and delete products"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Regular users can search, modify and view product details"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "Supports pagination and real-time stock value calculation"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This frontend allows users to:"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🧑‍💻 Available Scripts"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "```sh npm run dev         # Starts the development server npm run build       # Builds the project for production npm run preview     # Previews the production build npm run lint        # Runs ESLint for code linting ```"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Technologies ⚙️"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "children": [
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*React"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*TypeScript"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "React Router"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*Tailwind CSS"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*Vite"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*Axios"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*i18next"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "*JWT Authentication"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "React Hook Form"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "React Query"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "listItem",
+              "children": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "type": "text",
+                      "value": "ShadCN UI"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🔗 API Integration"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This frontend communicates with the **StockEase Backend**, which provides RESTful API endpoints for managing stock data."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "📌 View Full API Documentation: [StockEase Backend API Docs](#) (Update with actual link)"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "🤝 Contributing"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Contributions are welcome! If you'd like to improve this project, feel free to:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "1. Fork the repository 2. Create a new branch 3. Make your changes 4. Submit a pull request"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "For any issues or improvements, please open a GitHub issue. 🚀"
+            }
+          ]
+        }
+      ]
+    },
+    "_imageSelection": {
+      "original": "src/assets/imgs/project-image.png",
+      "chosenUrl": "https://raw.githubusercontent.com/keglev/frontend/master/src/assets/imgs/project-image.png",
+      "reason": "explicit-project-image",
+      "filename": "project-image.png-31d63bb0.png"
+    },
+    "primaryImage": "/projects_media/frontend/project-image.png-31d63bb0.png",
+    "technologies": [
+      "*React",
+      "*TypeScript",
+      "React Router",
+      "*Tailwind CSS",
+      "*Vite",
+      "*Axios",
+      "*i18next",
+      "*JWT Authentication",
+      "React Hook Form",
+      "React Query",
+      "ShadCN UI"
+    ],
+    "docs": {
+      "documentation": null,
+      "apiDocumentation": null
+    },
+    "docsLink": "https://github.com/keglev/frontend/blob/main/README.md",
+    "docsTitle": "🔗 API Integration",
+    "summary": "StockEase is a React + TypeScript application for efficient stock and inventory management. It integrates with the StockEase backend to provide authentication, role-based access control, and complete CRUD operations for products.",
+    "_summarySource": "heading",
+    "_summaryRaw": "StockEase is a React + TypeScript application for efficient stock and inventory management. It integrates with the StockEase backend to provide authentication, role-based access control, and complete CRUD operations for products.",
+    "mediaDownloaded": false,
+    "_translation": {
+      "debug": {
+        "requestMs": 202
+      },
+      "summary": {
+        "text": null,
+        "status": null
+      },
+      "docsTitle": {
+        "text": null,
+        "status": null
+      }
+    },
+    "repoDocs": {
+      "apiDocumentation": {
+        "title": "🔗 API Integration",
+        "link": "https://github.com/keglev/frontend/blob/main/README.md",
+        "description": "",
+        "title_de": "🔗 API-Integration"
+      }
+    },
+    "summary_de": "StockEase ist eine React + TypeScript-Anwendung für eine effiziente Lager- und Bestandsverwaltung. Sie ist mit dem StockEase-Backend integriert, um Authentifizierung, rollenbasierte Zugriffskontrolle und vollständige CRUD-Operationen für Produkte bereitzustellen.",
+    "docsTitle_de": "API-Integration"
+  },
+  {
+    "__typename": "Repository",
+    "name": "restaurant-speisekarte",
+    "description": "a small business website made in React. ",
+    "url": "https://github.com/Keglev/restaurant-speisekarte",
+    "object": {
+      "text": "## About\n\nAn interactive restaurant Menu.\n\n## A Restaurant Menu - with interaction from the user.\n\nYou are probably familiar with Restaurant Menus on the internet. However, some restaurants have boring websites, and sometimes, the user needs to take the risk of going to the place. \nThis small application offers a little bit more: the user can search the menu for items containing pasta, salad, or even meat. \n\n\n# Table of Contents\n\n[Features](#Features) \n\n[Screenshots](#Screenshots)\n\n[Installation](#Instalation)\n\n[Usage](#Usage)\n\n[Available Scripts](#Available-Scripts)\n\n[Technologies](#Technologies)\n\n[API Integration](#API-Integration)\n\n[Contributing](#Contributing)\n\n\n# Features\n\n🔍 This app can be used in every restaurant. You just need to change the pictures and the core menu according to the type of restaurant.\n The design is based on a German Menu Restaurant, but it is possible to make an English version too.\n The user can use a search bar to find items in the menu. The menu automatically loads the items with the pictures and price when the user still writing on it.\n 📱 The page loads fast, so make the app more user-friendly.\n\n # Screenshots\n\n # Initial screen\n<img src=\"./src/assets/imgs/project-image.png\" alt=\"Screenshot 1\" width=\"600\" height=\"300\"/>\n\n# Search example screen showing the \"Salat\" and \"Fleisch\":\n\n<img src=\"./src/assets/imgs/salatspeisekarte.png\" alt=\"Screenshot 1\" width=\"600\" height=\"300\"/>\n\n<img src=\"./src/assets/imgs/fleischspeiserkarte.png\" alt=\"Screenshot 1\" width=\"600\" height=\"300\"/>\n\n# example with \"Nudeln\":\n\n<img src=\"./src/assets/imgs/nudelnspeisekarte.png\" alt=\"Screenshot 1\" width=\"600\" height=\"300\"/>\n\n\n \n# Installation\nTo run this app locally, follow these steps:\n\n1. Clone the repository:\n\n  git clone https://github.com/your-username/restaurant-finder-app.git\n\n2. Navigate to the project directory:\n   \n  cd restaurant-finder-app\n\n3. Install the dependencies:\n\n   npm install\n\n4.  Start the development server:\n\n   npm start\n\n## Usage\n\nIn the initial screen, you can start to search the menu items (In German)\nThis will automatically load the pictures and the prices together. it also contains a description of the dish(In German)\nexample: if you write \"Pasta\" it will load all menu items that contain Pasta. It also works if you write \"Getränk\" or \"Fleisch\"\n\n## Available Scripts\n\nIn the project directory, you can run:\n\n### `npm start`\n\nRuns the app in the development mode.\\\nOpen [http://localhost:3000](http://localhost:3000) to view it in your browser.\n\nThe page will reload when you make changes.\\\nYou may also see any lint errors in the console.\n\n### `npm test`\n\nLaunches the test runner in the interactive watch mode.\\\nSee the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.\n\n### `npm run build`\n\nBuilds the app for production to the `build` folder.\\\nIt correctly bundles React in production mode and optimizes the build for the best performance.\n\nThe build is minified and the filenames include the hashes.\\\nYour app is ready to be deployed!\n\nSee the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.\n\n### `npm run eject`\n\n**Note: this is a one-way operation. Once you `eject`, you can't go back!**\n\nIf you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.\n\nInstead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.\n\nYou don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.\n\n## Technologies:\n\nFrontend: *React, *Next.js\n\nBackend: *Node.js, *JavaScript\n\nStyling: *CSS\n\n## Contributing\n\nContributions are welcome! Here's how you can contribute:\n\n1. Fork the repository.\n2. Create a new branch (git checkout -b feature/YourFeatureName).\n3. Commit your changes (git commit -m 'Add some feature').\n4. Commit your changes (git commit -m 'Add some feature').\n5. Open a pull request.\n\n## Learn More\n\nYou can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).\n\nTo learn React, check out the [React documentation](https://reactjs.org/).\n\n### Code Splitting\n\nThis section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)\n\n### Analyzing the Bundle Size\n\nThis section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)\n\n### Making a Progressive Web App\n\nThis section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)\n\n### Advanced Configuration\n\nThis section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)\n\n### Deployment\n\nThis section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)\n\n### `npm run build` fails to minify\n\nThis section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)\n\n"
+    },
+    "_ast": {
+      "type": "root",
+      "children": [
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "About"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "An interactive restaurant Menu."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "A Restaurant Menu - with interaction from the user."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "You are probably familiar with Restaurant Menus on the internet. However, some restaurants have boring websites, and sometimes, the user needs to take the risk of going to the place. This small application offers a little bit more: the user can search the menu for items containing pasta, salad, or even meat."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "Table of Contents"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "[Features](#Features)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "[Screenshots](#Screenshots)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "[Installation](#Instalation)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "[Usage](#Usage)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "[Available Scripts](#Available-Scripts)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "[Technologies](#Technologies)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "[API Integration](#API-Integration)"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "[Contributing](#Contributing)"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "Features"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "🔍 This app can be used in every restaurant. You just need to change the pictures and the core menu according to the type of restaurant. The design is based on a German Menu Restaurant, but it is possible to make an English version too. The user can use a search bar to find items in the menu. The menu automatically loads the items with the pictures and price when the user still writing on it. 📱 The page loads fast, so make the app more user-friendly."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "Screenshots"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "Initial screen"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "value": "<img src=\"./src/assets/imgs/project-image.png\" alt=\"Screenshot 1\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "Search example screen showing the \"Salat\" and \"Fleisch\":"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "value": "<img src=\"./src/assets/imgs/salatspeisekarte.png\" alt=\"Screenshot 1\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "html",
+          "value": "<img src=\"./src/assets/imgs/fleischspeiserkarte.png\" alt=\"Screenshot 1\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "example with \"Nudeln\":"
+            }
+          ]
+        },
+        {
+          "type": "html",
+          "value": "<img src=\"./src/assets/imgs/nudelnspeisekarte.png\" alt=\"Screenshot 1\" width=\"600\" height=\"300\"/>"
+        },
+        {
+          "type": "heading",
+          "depth": 1,
+          "children": [
+            {
+              "type": "text",
+              "value": "Installation"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "To run this app locally, follow these steps:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "1. Clone the repository:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "git clone https://github.com/your-username/restaurant-finder-app.git"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "2. Navigate to the project directory:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "cd restaurant-finder-app"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "3. Install the dependencies:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "npm install"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "4.  Start the development server:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "npm start"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Usage"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "In the initial screen, you can start to search the menu items (In German) This will automatically load the pictures and the prices together. it also contains a description of the dish(In German) example: if you write \"Pasta\" it will load all menu items that contain Pasta. It also works if you write \"Getränk\" or \"Fleisch\""
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Available Scripts"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "In the project directory, you can run:"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "`npm start`"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Runs the app in the development mode.\\ Open "
+            },
+            {
+              "type": "link",
+              "url": "http://localhost:3000",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "http://localhost:3000"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " to view it in your browser."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "The page will reload when you make changes.\\ You may also see any lint errors in the console."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "`npm test`"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Launches the test runner in the interactive watch mode.\\ See the section about "
+            },
+            {
+              "type": "link",
+              "url": "https://facebook.github.io/create-react-app/docs/running-tests",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "running tests"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " for more information."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "`npm run build`"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Builds the app for production to the `build` folder.\\ It correctly bundles React in production mode and optimizes the build for the best performance."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "The build is minified and the filenames include the hashes.\\ Your app is ready to be deployed!"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "See the section about "
+            },
+            {
+              "type": "link",
+              "url": "https://facebook.github.io/create-react-app/docs/deployment",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "deployment"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": " for more information."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "`npm run eject`"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**Note: this is a one-way operation. Once you `eject`, you can't go back!**"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Technologies:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Frontend: *React, *Next.js"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Backend: *Node.js, *JavaScript"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Styling: *CSS"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Contributing"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Contributions are welcome! Here's how you can contribute:"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "1. Fork the repository. 2. Create a new branch (git checkout -b feature/YourFeatureName). 3. Commit your changes (git commit -m 'Add some feature'). 4. Commit your changes (git commit -m 'Add some feature'). 5. Open a pull request."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 2,
+          "children": [
+            {
+              "type": "text",
+              "value": "Learn More"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "You can learn more in the "
+            },
+            {
+              "type": "link",
+              "url": "https://facebook.github.io/create-react-app/docs/getting-started",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "Create React App documentation"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": "."
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "To learn React, check out the "
+            },
+            {
+              "type": "link",
+              "url": "https://reactjs.org/",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "React documentation"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "value": "."
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Code Splitting"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This section has moved here: "
+            },
+            {
+              "type": "link",
+              "url": "https://facebook.github.io/create-react-app/docs/code-splitting",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "https://facebook.github.io/create-react-app/docs/code-splitting"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Analyzing the Bundle Size"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This section has moved here: "
+            },
+            {
+              "type": "link",
+              "url": "https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Making a Progressive Web App"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This section has moved here: "
+            },
+            {
+              "type": "link",
+              "url": "https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Advanced Configuration"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This section has moved here: "
+            },
+            {
+              "type": "link",
+              "url": "https://facebook.github.io/create-react-app/docs/advanced-configuration",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "https://facebook.github.io/create-react-app/docs/advanced-configuration"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "Deployment"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This section has moved here: "
+            },
+            {
+              "type": "link",
+              "url": "https://facebook.github.io/create-react-app/docs/deployment",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "https://facebook.github.io/create-react-app/docs/deployment"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "depth": 3,
+          "children": [
+            {
+              "type": "text",
+              "value": "`npm run build` fails to minify"
+            }
+          ]
+        },
+        {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This section has moved here: "
+            },
+            {
+              "type": "link",
+              "url": "https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify",
+              "children": [
+                {
+                  "type": "text",
+                  "value": "https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "_imageSelection": {
+      "original": "src/assets/imgs/project-image.png",
+      "chosenUrl": "https://raw.githubusercontent.com/keglev/restaurant-speisekarte/master/src/assets/imgs/project-image.png",
+      "reason": "explicit-project-image",
+      "filename": "project-image.png-4d512d75.png"
+    },
+    "primaryImage": "/projects_media/restaurant-speisekarte/project-image.png-4d512d75.png",
+    "technologies": [
+      "Frontend: *React",
+      "*Next.js",
+      "Backend: *Node.js",
+      "*JavaScript",
+      "Styling: *CSS"
+    ],
+    "docs": {
+      "documentation": null,
+      "apiDocumentation": null
+    },
+    "docsLink": "https://facebook.github.io/create-react-app/docs/getting-started",
+    "docsTitle": "Create React App documentation",
+    "summary": "An interactive restaurant Menu.",
+    "_summarySource": "heading",
+    "_summaryRaw": "An interactive restaurant Menu.",
+    "mediaDownloaded": false,
+    "_translation": {
+      "debug": {
+        "requestMs": 187
+      },
+      "summary": {
+        "text": null,
+        "status": null
+      },
+      "docsTitle": {
+        "text": null,
+        "status": null
+      }
+    },
+    "repoDocs": {
+      "apiDocumentation": {
+        "title": "Create React App documentation",
+        "link": "https://facebook.github.io/create-react-app/docs/getting-started",
+        "description": "",
+        "title_de": "React App Dokumentation erstellen"
+      }
+    },
+    "summary_de": "Ein interaktives Restaurant-Menü.",
+    "docsTitle_de": "React App Dokumentation erstellen"
+  }
+]
