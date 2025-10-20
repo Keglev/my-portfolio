@@ -47,11 +47,9 @@ jobs:
           echo "Generating JSDoc into docs/jsdoc"
           npm run docs:jsdoc
 
-      - name: Publish API docs to gh-pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/jsdoc
+      # Publishing to gh-pages removed — this repo is configured to serve
+      # documentation from `main/docs`. The workflow will still generate
+      # JSDoc into `docs/jsdoc` so you can commit or manage it as needed.
 
       - name: Prepare Vercel prebuilt output
         run: |
