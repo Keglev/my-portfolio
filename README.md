@@ -14,6 +14,7 @@ Welcome to my personal portfolio website, showcasing my skills, projects, and ex
 - [Technologies](#technologies)
 - [API Integration](#API-Integration)
 - [Contributing](#contributing)
+ - [Documentation](#documentation)
 
 ## Features
 ✨ **Interactive Portfolio**: Explore featured projects, experience, and skills through a clean and interactive layout.
@@ -40,6 +41,18 @@ Welcome to my personal portfolio website, showcasing my skills, projects, and ex
 <img src="./src/assets/imgs/project-image2.png" alt="Screenshot 2" width="600" height="300"/>
 
 ## Installation
+
+## Documentation
+
+The generated API and developer documentation is published on GitHub Pages:
+
+https://keglev.github.io/my-portfolio/
+
+You can also generate the docs locally with:
+
+```powershell
+npm run docs:jsdoc
+```
 
 To run this app locally, follow these steps:
 
