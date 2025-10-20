@@ -148,6 +148,7 @@ export const LanguageWrapper = styled.div`
   margin-bottom: 4.5rem; /* more separation from menu */
   display: flex;
   gap: 1.5rem; /* increased gap so buttons sit away from menu links */
+  margin-top: 1rem; /* ensure there is room above buttons */
   button {
     background: rgba(100,255,218,0.04);
     border: 1px solid rgba(100,255,218,0.16);
@@ -160,10 +161,11 @@ export const LanguageWrapper = styled.div`
     transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease, box-shadow 0.12s ease;
   }
   button:hover {
-    background: rgba(100,255,218,0.12);
+    /* copy tech-box hover: brighter, green background and shadow */
+    background: #64ffda;
     color: #0a192f;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 14px rgba(100,255,218,0.12);
+    transform: translateY(-3px) scale(1.06);
+    box-shadow: 0 8px 18px rgba(100,255,218,0.14);
   }
   /* Slight border to visually separate language buttons from the rest of the footer */
   & {

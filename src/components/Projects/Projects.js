@@ -16,6 +16,8 @@ let ProjectsData = [];
 const Projects = () => {
   const { t } = useTranslation();
   const [projects, setProjects] = useState(() => ProjectsData || []);
+  // track loaded state per project so ProjectCard can toggle the `.visible` class
+  const [loadedImages, setLoadedImages] = useState({});
 
   // If build-time `deployed_projects.json` is empty, try to fetch the runtime
   // `public/projects.json` as a fallback so the Projects list renders during dev.
@@ -40,7 +42,14 @@ const Projects = () => {
       <h2>{t('projects', 'Projects')}</h2>
       <div className="project-grid">
         {projects.map((p, idx) => (
-          <ProjectCard key={p.name || idx} project={p} image={getPrimaryImage(p)} index={idx} />
+          <ProjectCard
+            key={p.name || idx}
+            project={p}
+            image={getPrimaryImage(p)}
+            index={idx}
+            loadedImages={loadedImages}
+            setLoadedImages={setLoadedImages}
+          />
         ))}
       </div>
     </section>
