@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
-import { SiXing } from 'react-icons/si';
 import {
   SidebarContainer,
   NameTitle,
-  Menu,
-  StyledLink,
-  SocialLinksWrapper,
-  SocialLinks,
   FooterMessage,
+  LegalButton,
 } from './SidebarStyles'; // Importing styled components from a separate file
-import LanguageButtons from '../LanguageButtons/LanguageButtons'; // Import LanguageButtons component
+import SidebarMenu from './SidebarMenu';
+import SidebarSocial from './SidebarSocial';
 
 import i18n from '../../i18n'; // Import i18n configuration
 
@@ -69,100 +65,26 @@ const Sidebar = () => {
       </NameTitle>
 
       {/* Navigation menu */}
-      <Menu>
-        {/* Link to "About" section, highlights when active */}
-        <StyledLink
-            to="About"
-            smooth={true}
-            duration={500}
-            spy={true}
-            activeClass={activeSection === 'About' ? 'active' : ''}
-            containerId="scroll-container"
-            offset={70} // Adjust the offset value to handle fixed header
-        >
-            {t('about')}
-        </StyledLink>
+      <SidebarMenu activeSection={activeSection} changeLanguage={(lng) => changeLanguage(lng)} />
 
-         {/* Link to "Projects" section */}
-         <StyledLink
-            to="Projects"
-            smooth={true}
-            duration={500}
-            spy={true}
-            activeClass={activeSection === 'Projects' ? 'active' : ''}
-            containerId="scroll-container"
-            offset={70}
-        >
-            {t('projects')}
-        </StyledLink>
-       
-      {/* Link to "Repo Docs" section */}
-      <StyledLink
-        to="RepoDocs"
-        smooth={true}
-        duration={500}
-        spy={true}
-        activeClass={activeSection === 'RepoDocs' ? 'active' : ''}
-        containerId="scroll-container"
-        offset={70}
-      >
-        {t('repoDocs')}
-      </StyledLink>
-        
-        {/* Link to "Experience" section */}
-        <StyledLink
-            to="Experience"
-            smooth={true}
-            duration={500}
-            spy={true}
-            activeClass={activeSection === 'Experience' ? 'active' : ''}
-            containerId="scroll-container"
-            offset={70}
-        >
-            {t('experience')}
-        </StyledLink>
-      </Menu>
+      <SidebarSocial />
 
-      {/* Social media links */}
-      <SocialLinksWrapper>
-        <SocialLinks>
-          <a href="https://github.com/keglev" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-            <FaGithub />
-          </a>
-          <a href="https://linkedin.com/in/carloskeglevich" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-            <FaLinkedin />
-          </a>
-          <a href="https://www.xing.com/profile/Carlos_Keglevich" target="_blank" rel="noopener noreferrer" aria-label="Xing">
-            <SiXing />
-          </a>
-          <a href="mailto:carlos.keglevich@gmail.com" target="_blank" rel="noopener noreferrer" aria-label="Email">
-            <FaEnvelope />
-          </a>
-        </SocialLinks>
-      </SocialLinksWrapper>
-
-       {/* Language Switch Buttons */}
-       <div style={{ marginBottom: '2rem' }}>
-        <LanguageButtons>
-          <button onClick={() => changeLanguage('en')}>{t('language.english')}</button>
-          <button onClick={() => changeLanguage('de')}>{t('language.german')}</button>
-        </LanguageButtons>
-      </div>
+      {/* Language switch moved into SidebarMenu */}
 
       {/* Footer message */}
       <FooterMessage>
         <p>{t('footerMessage')}</p>
         <div style={{ marginTop: '1rem' }}>
-          <button
+          <LegalButton
             type="button"
+            aria-label="Jump to legal section"
             onClick={() => {
               const el = document.getElementById('Legal');
               if (el) el.scrollIntoView({ behavior: 'smooth' });
             }}
-            style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'inherit', textDecoration: 'underline' }}
           >
             {t('legalLink')}
-          </button>
+          </LegalButton>
         </div>
       </FooterMessage>
     </SidebarContainer>

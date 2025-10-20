@@ -24,6 +24,13 @@ try {
 
 // Small console suppression for a known ReactDOMTestUtils deprecation noise
 try {
+  // Ensure the modern React act environment flag is set for node test runs
+  if (typeof global !== 'undefined') global.IS_REACT_ACT_ENVIRONMENT = true;
+} catch (e) {}
+
+// Keep a targeted suppression for the specific ReactDOMTestUtils.act deprecation
+// message so test logs stay clean.
+try {
   const realConsoleError = console.error;
   console.error = (...args) => {
     try {

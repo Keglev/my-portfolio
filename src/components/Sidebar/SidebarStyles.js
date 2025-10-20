@@ -140,3 +140,36 @@ export const FooterMessage = styled.div`
     font-size: 0.8rem;
   }
 `;
+
+/**
+ * Wrapper for language buttons area
+ */
+export const LanguageWrapper = styled.div`
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 0.5rem;
+  button {
+    background: transparent;
+    border: 1px solid rgba(204,214,246,0.08);
+    color: #ccd6f6;
+    padding: 0.4rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease;
+  }
+  button:hover {
+    background: rgba(100,255,218,0.06);
+    color: #64ffda;
+    transform: translateY(-1px);
+  }
+`;
+
+export const LegalButton = styled.button`
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: underline;
+  font: inherit;
+`;
