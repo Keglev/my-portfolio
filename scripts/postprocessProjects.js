@@ -99,6 +99,49 @@ const tryGithubIo = async (node, href) => {
       }
     } catch (e) { if (DEBUG) console.log('docsTitle fix failed', node.name, e && e.message); }
   }
+  // Normalize technologies if present (remove markdown bold, trailing parentheticals and punctuation)
+  function normalizeTech(token) {
+    if (!token) return null;
+    let t = String(token).trim();
+    // remove markdown bold markers if present
+    t = t.replace(/\*\*/g, '');
+    // remove trailing "for ..." descriptors (e.g., "for testing")
+    t = t.replace(/\s+for\b[\s\S]*$/i, '').trim();
+    // remove inline parentheses and contents
+    const p = t.indexOf('(');
+    if (p !== -1) t = t.slice(0, p).trim();
+    // now split combined entries on common separators but preserve version suffixes that include '+' adjacent to digits
+    // separators: comma, ' with ', ' and ', ' / ', '&', ' + ' (space-surrounded plus)
+    const parts = String(t).split(/\s*(?:,|\bwith\b|\band\b|\s+\/\s+|\s+&\s+|\s+\+\s+)\s*/i).map(s=>s && s.trim()).filter(Boolean);
+    // trim surrounding punctuation for each part
+    const stripChars = new Set(['-', ':', '(', ')', '[', ']', '"', "'", ',', '.', ';']);
+    const cleaned = parts.map(part => {
+      let q = String(part || '').trim();
+      while (q.length && (q[0].trim() === '' || stripChars.has(q[0]))) q = q.slice(1);
+      while (q.length && (q[q.length - 1].trim() === '' || stripChars.has(q[q.length - 1]))) q = q.slice(0, -1);
+      return q.trim();
+    }).filter(Boolean);
+    // return array of cleaned parts (caller will dedupe)
+    return cleaned.length ? cleaned : null;
+  }
+  for (const node of nodes) {
+    try {
+      if (Array.isArray(node.technologies)) {
+        const seen = new Set();
+        const out = [];
+        for (const t of node.technologies) {
+          const n = normalizeTech(t);
+          if (!n) continue;
+          // normalizeTech now returns array of parts or single string
+          const parts = Array.isArray(n) ? n : [n];
+          for (const p of parts) {
+            if (p && !seen.has(p)) { seen.add(p); out.push(p); }
+          }
+        }
+        node.technologies = out;
+      }
+    } catch (e) { if (DEBUG) console.log('normalize techs failed', node.name, e && e.message); }
+  }
   fs.writeFileSync(FILE, JSON.stringify(nodes, null, 2), 'utf8');
   console.log('Wrote', FILE);
 })();
