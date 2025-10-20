@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { getProjectImageUrl } from './projectsUtils';
 
 const ProjectCard = ({
   project,
@@ -22,15 +23,16 @@ const ProjectCard = ({
     const tries = parseInt(img.getAttribute('data-try') || '0', 10);
     if (tries === 0) {
       img.setAttribute('data-try', '1');
-      if (typeof getProjectImageUrl === 'function') {
-        img.src = getProjectImageUrl(project.name, 'master');
-        return;
-      }
+      // try remote raw URL for 'main' branch first
+      try { img.src = getProjectImageUrl(project.name, 'main'); return; } catch (err) {}
+      // fall back to the default public path
       img.src = `/projects_media/${project.name}/project-image.png`;
       return;
     }
     if (tries === 1) {
       img.setAttribute('data-try', '2');
+      // try remote raw URL for 'master' branch
+      try { img.src = getProjectImageUrl(project.name, 'master'); return; } catch (err) {}
       if (typeof generatePlaceholderSVGDataUrl === 'function') {
         img.src = generatePlaceholderSVGDataUrl(project.name);
       } else {

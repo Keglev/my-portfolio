@@ -59,9 +59,11 @@ export const getTechnologyWords = (readmeText) => {
   for (let line of contentAfterTech) {
     if (line.trim().startsWith('#')) break;
     if (!line.trim() || line.toLowerCase().includes('contributing') || line.startsWith('[')) continue;
-    const words = line.match(/\*\s*([\w\s()-]+)/g);
-    if (words) {
-      words.forEach(word => techWords.push(word.replace(/^\*\s*/, '').trim()));
+    // Extract all bold tokens like **Docker** or **Node.js**
+    const bolds = Array.from(line.matchAll(/\*\*([^*][^*]*?)\*\*/g));
+    for (const b of bolds) {
+      const token = (b && b[1]) ? b[1].trim() : null;
+      if (token) techWords.push(token);
     }
   }
   return techWords;
