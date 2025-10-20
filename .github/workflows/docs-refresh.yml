@@ -42,6 +42,17 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Generate JSDoc API docs
+        run: |
+          echo "Generating JSDoc into docs/jsdoc"
+          npm run docs:jsdoc
+
+      - name: Publish API docs to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/jsdoc
+
       - name: Prepare Vercel prebuilt output
         run: |
           rm -rf .vercel/output || true
@@ -62,13 +73,7 @@ jobs:
             echo "ERROR: .vercel/output/static/projects.json not found"; exit 1;
           fi
 
-      - name: Deploy to Vercel (prebuilt)
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          echo "Listing .vercel/output before deploy"
-          ls -la .vercel || true
-          ls -la .vercel/output || true
-          npx --yes vercel --prod --token "$VERCEL_TOKEN" --yes --prebuilt .
+      # Vercel deploy step removed per request — this workflow will generate
+      # API docs and (optionally) publish them to the `gh-pages` branch. To
+      # deploy the site via Vercel use your existing Vercel workflow or run
+      # deployment manually from your local machine.
