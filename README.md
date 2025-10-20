@@ -46,7 +46,7 @@ Welcome to my personal portfolio website, showcasing my skills, projects, and ex
 
 The generated API and developer documentation is published on GitHub Pages:
 
-https://keglev.github.io/my-portfolio/
+https://keglev.github.io/my-portfolio/jsdoc/index.html
 
 You can also generate the docs locally with:
 
