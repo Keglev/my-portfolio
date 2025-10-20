@@ -1,31 +1,56 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-const ProjectCard = ({ project, index, loadedImages, setLoadedImages, getPrimaryImage, getProjectImageUrl, generatePlaceholderSVGDataUrl, getAboutSection, getTechnologyWords }) => {
+const ProjectCard = ({
+  project,
+  index,
+  loadedImages = {},
+  setLoadedImages = () => {},
+  image,
+  getProjectImageUrl,
+  generatePlaceholderSVGDataUrl,
+  getAboutSection = () => null,
+  getTechnologyWords = () => []
+}) => {
   const { t, i18n } = useTranslation();
+
+  // Prefer explicit image prop (passed by parent). Fallback to public media path.
+  const initialSrc = image || `/projects_media/${project.name}/project-image.png`;
+
+  const handleError = (e) => {
+    const img = e.currentTarget;
+    const tries = parseInt(img.getAttribute('data-try') || '0', 10);
+    if (tries === 0) {
+      img.setAttribute('data-try', '1');
+      if (typeof getProjectImageUrl === 'function') {
+        img.src = getProjectImageUrl(project.name, 'master');
+        return;
+      }
+      img.src = `/projects_media/${project.name}/project-image.png`;
+      return;
+    }
+    if (tries === 1) {
+      img.setAttribute('data-try', '2');
+      if (typeof generatePlaceholderSVGDataUrl === 'function') {
+        img.src = generatePlaceholderSVGDataUrl(project.name);
+      } else {
+        // simple 1x1 transparent pixel as last resort
+        img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+      }
+    }
+    setLoadedImages(prev => ({ ...prev, [index]: true }));
+  };
+
   return (
     <div className={'project-card ' + (loadedImages[index] ? 'visible' : '')} key={index}>
       <div className="image-wrap">
         <img
-          src={getPrimaryImage(project)}
+          src={initialSrc}
           alt={project.name + ' project'}
           className={'project-image ' + (loadedImages[index] ? 'loaded' : '')}
           loading="lazy"
           onLoad={() => setLoadedImages(prev => ({ ...prev, [index]: true }))}
-          onError={(e) => {
-            const img = e.currentTarget;
-            const tries = parseInt(img.getAttribute('data-try') || '0', 10);
-            if (tries === 0) {
-              img.setAttribute('data-try', '1');
-              img.src = getProjectImageUrl(project.name, 'master');
-              return;
-            }
-            if (tries === 1) {
-              img.setAttribute('data-try', '2');
-              img.src = generatePlaceholderSVGDataUrl(project.name);
-            }
-            setLoadedImages(prev => ({ ...prev, [index]: true }));
-          }}
+          onError={handleError}
         />
       </div>
       <div className="project-content">
