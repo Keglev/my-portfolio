@@ -42,13 +42,47 @@ function extractTechnologiesFromAst(ast) {
         break;
       }
     }
-    return techs.filter(Boolean);
+    const results = techs.filter(Boolean);
+    // fallback: if no bold tokens found, attempt legacy extraction (list items + comma-splitting)
+    if (results.length === 0) {
+      const legacy = [];
+      for (let i = 0; i < ast.children.length; i++) {
+        const el = ast.children[i];
+        if (el.type === 'heading' && /technolog|tech|stack/i.test(((el.children||[]).map(c=>c.value||'').join('')||''))) {
+          const currentDepth = el.depth || 2;
+          let j = i+1;
+          while (j < ast.children.length) {
+            const nn = ast.children[j];
+            if (nn && nn.type === 'heading' && typeof nn.depth === 'number' && nn.depth <= currentDepth) break;
+            if (nn.type === 'list' && nn.children) {
+              for (const li of nn.children) {
+                const txt = extractTextFromListItem(li);
+                if (txt && txt.includes(',')) {
+                  txt.split(',').map(s=>s.trim()).filter(Boolean).forEach(x=>legacy.push(x));
+                } else if (txt) legacy.push(txt.trim());
+              }
+            }
+            if (nn.type === 'paragraph') {
+              const p = flattenNodeText(nn).trim();
+              if (p && p.includes(',')) p.split(',').map(s=>s.trim()).filter(Boolean).forEach(x=>legacy.push(x));
+              else if (p && p.length>0 && !/^(<|!|#)/.test(p)) legacy.push(p.replace(/^Also[:\s]+/i,'').trim());
+            }
+            j++;
+          }
+          break;
+        }
+      }
+      return legacy.filter(Boolean).map(s => normalize(s)).filter(Boolean);
+    }
+    return results;
   } catch (e) { return []; }
 }
 
 function normalize(raw) {
   if (!raw) return null;
   let token = String(raw).trim();
+  // remove leading 'Also:' or similar accidental prefixes
+  token = token.replace(/^Also[:\s]+/i, '').trim();
   const p = token.indexOf('(');
   if (p !== -1) token = token.slice(0, p).trim();
   const stripChars = new Set(['-', ':', '(', ')', '[', ']', '"', "'", ',', '.', ';']);
