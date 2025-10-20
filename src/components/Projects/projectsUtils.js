@@ -55,12 +55,18 @@ export const getTechnologyWords = (readmeText) => {
   const lines = readmeText.split(/\r?\n/);
   // locate start of technologies section
   let startIndex = -1;
+  let headingLevel = 0;
   for (let i = 0; i < lines.length; i++) {
     const h = lines[i].trim();
     const m = h.match(/^#{1,6}\s*(.*)$/);
     if (m) {
       const title = (m[1] || '').toLowerCase();
-      if (/\btech\b|technolog/i.test(title)) { startIndex = i + 1; break; }
+      if (/\btech\b|technolog/i.test(title)) {
+        startIndex = i + 1;
+        const hashes = (h.match(/^#+/) || [''])[0];
+        headingLevel = hashes.length || 0;
+        break;
+      }
     }
   }
   if (startIndex === -1) return [];
@@ -68,27 +74,31 @@ export const getTechnologyWords = (readmeText) => {
   // find end of section
   let endIndex = lines.length;
   for (let i = startIndex; i < lines.length; i++) {
-    if (/^#{1,6}\s+/.test(lines[i])) { endIndex = i; break; }
+    const h = lines[i].trim();
+    const m = h.match(/^#{1,6}\s*(.*)$/);
+    if (m) {
+      const hashes = (h.match(/^#+/) || [''])[0];
+      const level = hashes.length || 0;
+      // stop at the next heading that is the same or higher level than the tech heading
+      if (headingLevel && level <= headingLevel) { endIndex = i; break; }
+      // otherwise, it's a subheading (e.g., ###) and we continue
+    }
   }
 
   const sectionText = lines.slice(startIndex, endIndex).join('\n');
   const techWords = [];
-
-  let pos = 0;
-  while (pos < sectionText.length) {
-    const open = sectionText.indexOf('**', pos);
-    if (open === -1) break;
-    const close = sectionText.indexOf('**', open + 2);
-    if (close === -1) {
-      // unmatched opener: break (end of section reached without a closer)
-      break;
-    }
-    let content = sectionText.slice(open + 2, close).replace(/\s+/g, ' ').trim();
-    if (content) {
-      const token = normalizeTechToken(content);
+  const sectionLines = sectionText.split(/\r?\n/);
+  const boldRe = /\*\*([^*]+?)\*\*/g;
+  for (const l of sectionLines) {
+    if (!l || !l.trim()) continue;
+    // find all strict **...** occurrences on this line
+    const matches = Array.from(l.matchAll(boldRe));
+    for (const m of matches) {
+      const raw = (m && m[1]) ? m[1].trim() : '';
+      if (!raw) continue;
+      const token = normalizeTechToken(raw);
       if (token && !techWords.includes(token)) techWords.push(token);
     }
-    pos = close + 2;
   }
 
   return techWords;
