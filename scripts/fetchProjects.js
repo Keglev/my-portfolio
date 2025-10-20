@@ -35,6 +35,9 @@
 const parseReadme = require('./lib/parseReadme');
 
 // Prefer GH_PROJECTS_TOKEN for clarity, fallback to generic GITHUB_TOKEN
+// This token is only required when running the pipeline against GitHub's API
+// (CI normally provides it). Tests import this module directly so the
+// presence of the token is checked only when the script executes.
 const TOKEN = process.env.GH_PROJECTS_TOKEN || process.env.GITHUB_TOKEN;
 
 // NOTE: do not exit at require-time so helper functions can be imported by other scripts.
@@ -44,10 +47,13 @@ const { fetchPinned } = require('./lib/fetchPinned');
 // When executed directly from node, run the fetch pipeline.
 // This guard prevents the pipeline from running during unit tests where
 // the module is required to re-export helper functions.
+// When executed directly from the CLI, run the fetch pipeline. This guard
+// prevents running the network-heavy pipeline during unit tests which only
+// need to re-export helper functions.
 if (require.main === module) {
   if (!TOKEN) {
-    // Explicit, non-fatal notice: missing token means CI/local fetch will be skipped.
-    // Keep this visible — it's actionable — but prefix with DEBUG info if present.
+    // Missing token is actionable but not fatal in local/dev contexts.
+    // We explicitly exit 0 so CI can detect missing credentials and skip.
     console.warn('No GitHub token found in environment. Skipping fetch.');
     process.exit(0);
   }
@@ -59,6 +65,9 @@ if (require.main === module) {
 }
 
 // Export small helpers for unit tests (re-export parseReadme helpers)
+// Export small helpers for unit tests (re-export parseReadme helpers). We only
+// export a thin shim so callers can import parsing utilities without running
+// the whole fetch pipeline.
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     parseMarkdown: parseReadme.parseMarkdown,

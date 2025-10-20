@@ -1,4 +1,11 @@
 #!/usr/bin/env node
+/**
+ * scripts/debugRepoDocs.js
+ * ------------------------
+ * Small CLI helper to debug repository README links and documentation
+ * section discovery. Pass optional repo names on the command line to scope
+ * the output; otherwise it runs against all entries in `public/projects.json`.
+ */
 const fs = require('fs');
 const path = require('path');
 
