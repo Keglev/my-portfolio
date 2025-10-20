@@ -72,21 +72,35 @@ export const getTechnologyWords = (readmeText) => {
     if (!line.trim()) continue;
     if (/^\[/.test(line.trim())) continue;
     if (/contributing/i.test(line)) continue;
+    // First try strictly bolded tokens (**token** or __token__)
+    const boldRegex = /\*\*([^*]+?)\*\*|__([^_]+?)__/g;
+    let matches = Array.from(line.matchAll(boldRegex));
+    // Fallback: catch malformed cases like *Mockito** by matching 1-2 star/underscore wrappers
+    if (matches.length === 0) {
+      matches = Array.from(line.matchAll(/(\*{1,2}|_{1,2})([^*_]+?)\1/g));
+    }
 
-    // Extract bold tokens **token** or __token__
-    const regex = /\*\*(.+?)\*\*|__(.+?)__/g;
-    let m;
-    while ((m = regex.exec(line)) !== null) {
-      const raw = (m[1] || m[2] || '').trim();
-      if (!raw) continue;
-  // normalize: strip surrounding punctuation and whitespace (keep interior punctuation)
-  let token = raw.trim();
-  const stripChars = new Set(['-', ':', '(', ')', '[', ']', '"', "'", ',', '.', ';']);
-  while (token.length && (token[0].trim() === '' || stripChars.has(token[0]))) token = token.slice(1);
-  while (token.length && (token[token.length - 1].trim() === '' || stripChars.has(token[token.length - 1]))) token = token.slice(0, -1);
-  token = token.trim();
-      if (!token) continue;
-      if (!techWords.includes(token)) techWords.push(token);
+    for (const m of matches) {
+      // Use the raw matched substring and strip surrounding markdown markers
+      let rawMatch = (m && m[0]) ? String(m[0]) : '';
+      if (!rawMatch) continue;
+      // remove leading/trailing * or _ characters
+      let content = rawMatch.replace(/^[_*]+|[_*]+$/g, '').trim();
+      if (!content) continue;
+      // If the content has parenthetical expansion like JWT(Json Web Token), keep only the token before '('
+      if (content.includes('(')) content = content.split('(')[0].trim();
+      // Split tokens on common separators (e.g. "A + B", "A, B")
+      const parts = content.split(/\s*[+,/|;&]\s*/).map(p => p.trim()).filter(Boolean);
+      for (let part of parts) {
+        // strip common surrounding punctuation
+        let token = part;
+        const stripChars = new Set(['-', ':', '(', ')', '[', ']', '"', "'", ',', '.', ';']);
+        while (token.length && (token[0].trim() === '' || stripChars.has(token[0]))) token = token.slice(1);
+        while (token.length && (token[token.length - 1].trim() === '' || stripChars.has(token[token.length - 1]))) token = token.slice(0, -1);
+        token = token.trim();
+        if (!token) continue;
+        if (!techWords.includes(token)) techWords.push(token);
+      }
     }
   }
   return techWords;
