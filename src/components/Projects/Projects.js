@@ -37,7 +37,7 @@ const Projects = () => {
 
   return (
     <section className="project-container" id="Projects">
-      <h2>{t('projects.title', 'Projects')}</h2>
+      <h2>{t('projects', 'Projects')}</h2>
       <div className="project-grid">
         {projects.map((p, idx) => (
           <ProjectCard key={p.name || idx} project={p} image={getPrimaryImage(p)} index={idx} />
