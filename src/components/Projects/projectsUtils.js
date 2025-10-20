@@ -52,8 +52,8 @@ export const getAboutSection = (readmeText) => {
 
 export const getTechnologyWords = (readmeText) => {
   if (!readmeText) return [];
-  // Find the first heading that looks tech-related (e.g. 'Technologies', 'Tech', 'Tech Stack')
   const lines = readmeText.split(/\r?\n/);
+  // locate start of technologies section
   let startIndex = -1;
   for (let i = 0; i < lines.length; i++) {
     const h = lines[i].trim();
@@ -65,43 +65,45 @@ export const getTechnologyWords = (readmeText) => {
   }
   if (startIndex === -1) return [];
 
-  const techWords = [];
+  // find end of section
+  let endIndex = lines.length;
   for (let i = startIndex; i < lines.length; i++) {
-    const line = lines[i];
-    if (/^#{1,6}\s+/.test(line)) break; // next section
-    if (!line.trim()) continue;
-    if (/^\[/.test(line.trim())) continue;
-    if (/contributing/i.test(line)) continue;
-    // First try strictly bolded tokens (**token** or __token__)
-    const boldRegex = /\*\*([^*]+?)\*\*|__([^_]+?)__/g;
-    let matches = Array.from(line.matchAll(boldRegex));
-    // Fallback: catch malformed cases like *Mockito** by matching 1-2 star/underscore wrappers
-    if (matches.length === 0) {
-      matches = Array.from(line.matchAll(/(\*{1,2}|_{1,2})([^*_]+?)\1/g));
-    }
-
-    for (const m of matches) {
-      // Use the raw matched substring and strip surrounding markdown markers
-      let rawMatch = (m && m[0]) ? String(m[0]) : '';
-      if (!rawMatch) continue;
-      // remove leading/trailing * or _ characters
-      let content = rawMatch.replace(/^[_*]+|[_*]+$/g, '').trim();
-      if (!content) continue;
-      // If the content has parenthetical expansion like JWT(Json Web Token), keep only the token before '('
-      if (content.includes('(')) content = content.split('(')[0].trim();
-      // Split tokens on common separators (e.g. "A + B", "A, B")
-      const parts = content.split(/\s*[+,/|;&]\s*/).map(p => p.trim()).filter(Boolean);
-      for (let part of parts) {
-        // strip common surrounding punctuation
-        let token = part;
-        const stripChars = new Set(['-', ':', '(', ')', '[', ']', '"', "'", ',', '.', ';']);
-        while (token.length && (token[0].trim() === '' || stripChars.has(token[0]))) token = token.slice(1);
-        while (token.length && (token[token.length - 1].trim() === '' || stripChars.has(token[token.length - 1]))) token = token.slice(0, -1);
-        token = token.trim();
-        if (!token) continue;
-        if (!techWords.includes(token)) techWords.push(token);
-      }
-    }
+    if (/^#{1,6}\s+/.test(lines[i])) { endIndex = i; break; }
   }
+
+  const sectionText = lines.slice(startIndex, endIndex).join('\n');
+  const techWords = [];
+
+  let pos = 0;
+  while (pos < sectionText.length) {
+    const open = sectionText.indexOf('**', pos);
+    if (open === -1) break;
+    const close = sectionText.indexOf('**', open + 2);
+    if (close === -1) {
+      // unmatched opener: break (end of section reached without a closer)
+      break;
+    }
+    let content = sectionText.slice(open + 2, close).replace(/\s+/g, ' ').trim();
+    if (content) {
+      const token = normalizeTechToken(content);
+      if (token && !techWords.includes(token)) techWords.push(token);
+    }
+    pos = close + 2;
+  }
+
   return techWords;
 };
+
+function normalizeTechToken(raw) {
+  if (!raw) return null;
+  let token = String(raw).trim();
+  // remove any trailing parenthetical piece
+  const p = token.indexOf('(');
+  if (p !== -1) token = token.slice(0, p).trim();
+  // trim common surrounding punctuation
+  const stripChars = new Set(['-', ':', '(', ')', '[', ']', '"', "'", ',', '.', ';']);
+  while (token.length && (token[0].trim() === '' || stripChars.has(token[0]))) token = token.slice(1);
+  while (token.length && (token[token.length - 1].trim() === '' || stripChars.has(token[token.length - 1]))) token = token.slice(0, -1);
+  token = token.trim();
+  return token || null;
+}
