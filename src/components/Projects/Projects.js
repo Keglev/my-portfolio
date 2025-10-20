@@ -4,15 +4,10 @@ import ProjectCard from './ProjectCard';
 import { getPrimaryImage } from './projectsUtils';
 import './Projects.css';
 
-// deployed_projects.json lives at repo root (produced at build-time). In Jest/CRA tests
-// it may not be resolvable, so require it in a try/catch and fall back to an empty list.
+// We intentionally do NOT require a build-time JSON file here because during
+// the production build that file may not exist and webpack would fail.
+// The pipeline writes `public/projects.json` which we fetch at runtime below.
 let ProjectsData = [];
-try {
-  // eslint-disable-next-line global-require
-  ProjectsData = require('../../deployed_projects.json');
-} catch (e) {
-  ProjectsData = [];
-}
 
 /**
  * Projects component
