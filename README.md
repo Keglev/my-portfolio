@@ -80,6 +80,9 @@ To run this app locally, follow these steps:
 
    npm start
 
+## Architecture docs
+ Will be available soon
+
 ## Usage
 
 This App is to showcase my portfolio. 
