@@ -27,7 +27,7 @@
     "test:node": "jest --config=jest.node.config.js --runInBand --testPathPattern=src/__tests__",
     "test:cra": "react-scripts test --runInBand --watchAll=false",
     "test:all": "npm run test:node && npm run test:cra",
-    "test:ci": "cross-env CI=true npm run test:node && cross-env CI=true npm run test:cra",
+    "test:ci": "cross-env CI=true NODE_ENV=test npm run test:node && cross-env CI=true NODE_ENV=test npm run test:cra",
     "test:helpers": "react-scripts test --testPathPattern=src/__tests__/fetchHelpers --watchAll=false",
     "audit:ci": "node scripts/audit-check.js",
     "eject": "react-scripts eject",
