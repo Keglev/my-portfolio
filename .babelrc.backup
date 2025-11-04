@@ -1,4 +1,15 @@
 {
+    "env": {
+      "development": {
+        "presets": ["react-app"]
+      },
+      "production": {
+        "presets": ["react-app"]
+      },
+      "test": {
+        "presets": ["react-app"]
+      }
+    },
     "presets": ["react-app"],
     "ignore": [],
     "plugins": [
