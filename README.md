@@ -25,6 +25,8 @@ Welcome to my personal portfolio website, showcasing my skills, projects, and ex
 
 📂 **Projects Showcase**: A detailed presentation of my projects with descriptions and links to the GitHub repositories.
 
+📂 **Repo Docs**: A link to my main project's documentation, like API, Architecture, and deployment techniques
+
 👨‍💼 **Experience Section**: Display of my professional experience, highlighting key achievements and roles.
 
 📫 **Contact Information Section**: Includes direct links to GitHub, LinkedIn, and email for easy communication.
@@ -77,6 +79,9 @@ To run this app locally, follow these steps:
 6. Start the development server:
 
    npm start
+
+## Architecture docs
+ Will be available soon
 
 ## Usage
 
