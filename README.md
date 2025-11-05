@@ -1,22 +1,33 @@
 # About
-This is a Portfolio Website. It showcases my skills and projects. 
+This is a Portfolio Website. It showcases my skills and projects. You can use it for showing your skills too!  
 
-# 💼 My Portfolio
+# 💼 Description
 
 Welcome to my personal portfolio website, showcasing my skills, projects, and experiences as a software engineer. This responsive web application is designed to provide visitors with an insight into my work, technical expertise, and professional journey.
 
 ## Table of Contents
-- [Features](#features)
+
 - [Screenshots](#screenshots)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Available Scripts](#available-scripts)
-- [Technologies](#technologies)
+- [Features](#features)
+- [Project Status](#projectstatus)
+- [Testing & Code Quality](#Testing-code-quality)
+- [Documentation](#documentation)
 - [API Integration](#API-Integration)
+- [Technologies](#technologies)
 - [Contributing](#contributing)
- - [Documentation](#documentation)
+
+## Screenshots
+
+# Main image: A screenshot of the homepage showing the layout and header
+
+<img src="./src/assets/imgs/project-image.png" alt="Screenshot 1" width="600" height="300"/>
+
+# Image from the projects section: Displays the project cards fetched from GitHub.
+
+<img src="./src/assets/imgs/project-image2.png" alt="Screenshot 2" width="600" height="300"/>
 
 ## Features
+
 ✨ **Interactive Portfolio**: Explore featured projects, experience, and skills through a clean and interactive layout.
 
 🖥️ **Responsive Design**: Optimized for various screen sizes including mobile, tablet, and desktop.
@@ -31,20 +42,41 @@ Welcome to my personal portfolio website, showcasing my skills, projects, and ex
 
 📫 **Contact Information Section**: Includes direct links to GitHub, LinkedIn, and email for easy communication.
 
+## Project Status
 
-## Screenshots
+- ✅ Professional API documentation with OpenAPI specifications
 
-# Main image: A screenshot of the homepage showing the layout and header
+- ✅ Working CI/CD pipeline for build, test, and deployment
 
-<img src="./src/assets/imgs/project-image.png" alt="Screenshot 1" width="600" height="300"/>
+### 📚 Documentation Status 
 
-# Image from the projects section: Displays the project cards fetched from GitHub.
+-  ⚠️ **Still under construction** Enterprise-level documentation with architecture diagrams 
 
-<img src="./src/assets/imgs/project-image2.png" alt="Screenshot 2" width="600" height="300"/>
+- ⚠️ **Still under construction** Testing strategy documentation
 
-## Installation
+- ⚠️ **Still under construction** Deployment and CI/CD documentation
+
+## Testing & Code Quality
+
+### Test Strategy (short note)
+
+This repository uses two test runners because the codebase contains both node-only scripts (in `scripts/`) and a Create React App frontend that requires CRA's Jest setup for CSS and asset transforms.
+
+- Node-only tests (parsing helpers, scripts) run with a dedicated Jest config: `npm run test:node`.
+- React/frontend tests run with Create React App's test runner: `npm run test:cra` (this is `react-scripts test`).
+- To run both locally: `npm run test:all`.
+- CI-friendly run (non-interactive): `npm run test:ci` (sets `CI=true`).
+
+Still under construction; a more detailed test guide will follow in a separate docs file.
 
 ## Documentation
+
+## API Integration
+
+This app integrates with:
+
+GitHub API: To display the App images from pinned repositories.
+For more information, check out the GitHub API Documentation.
 
 The generated API and developer documentation is published on GitHub Pages:
 
@@ -55,6 +87,10 @@ You can also generate the docs locally with:
 ```powershell
 npm run docs:jsdoc
 ```
+## Architecture docs
+ Will be available soon
+
+## Instalation
 
 To run this app locally, follow these steps:
 
@@ -79,9 +115,6 @@ To run this app locally, follow these steps:
 6. Start the development server:
 
    npm start
-
-## Architecture docs
- Will be available soon
 
 ## Usage
 
@@ -124,17 +157,6 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-## Test Strategy (short note)
-
-This repository uses two test runners because the codebase contains both node-only scripts (in `scripts/`) and a Create React App frontend that requires CRA's Jest setup for CSS and asset transforms.
-
-- Node-only tests (parsing helpers, scripts) run with a dedicated Jest config: `npm run test:node`.
-- React/frontend tests run with Create React App's test runner: `npm run test:cra` (this is `react-scripts test`).
-- To run both locally: `npm run test:all`.
-- CI-friendly run (non-interactive): `npm run test:ci` (sets `CI=true`).
-
-We document this now; a more detailed test guide will follow in a separate docs file.
-
 ## Technologies
 
 - *React.js: Frontend framework for building user interfaces.
@@ -143,13 +165,6 @@ We document this now; a more detailed test guide will follow in a separate docs 
 - *JavaScript (ES6+): Core language used throughout the app.
 - GitHub Integration: Used for project images and other data fetching.
 - HTML5 & CSS3: Standard web technologies for structuring and styling the app.
-
-## API Integration
-
-This app integrates with:
-
-GitHub API: To display the App images from pinned repositories.
-For more information, check out the GitHub API Documentation.
 
 ## Contributing
 
