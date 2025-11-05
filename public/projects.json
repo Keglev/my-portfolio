@@ -68,14 +68,13 @@
           ]
         },
         {
-          "type": "image",
-          "url": "https://github.com/Keglev/inventory-service/actions/workflows/ci-build.yml/badge.svg",
-          "alt": ""
-        },
-        {
-          "type": "image",
-          "url": "https://github.com/Keglev/inventory-service/actions/workflows/frontend-ci.yml/badge.svg",
-          "alt": ""
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "![https://github.com/Keglev/inventory-service/actions/workflows/ci-build.yml/badge.svg](/projects_media/inventory-service/project-image.png-8a3255c0.png ![https://github.com/Keglev/inventory-service/actions/workflows/frontend-ci.yml/badge.svg](/projects_media/inventory-service/project-image.png-8a3255c0.png"
+            }
+          ]
         },
         {
           "type": "paragraph",
@@ -2655,24 +2654,30 @@
     },
     "primaryImage": "/projects_media/inventory-service/project-image.png-8a3255c0.png",
     "technologies": [
-      "Java 17+ with Spring Boot 3.5+",
+      "Java 17+",
+      "Spring Boot 3.5+",
       "Spring Security",
       "Oracle Autonomous Database",
-      "REST APIs documented via OpenAPI YAML specifications",
-      "Docker containerization with multi-stage builds",
-      "JUnit 5 + Mockito + Testcontainers for comprehensive testing",
-      "React 19 + TypeScript for type-safe development",
+      "REST APIs",
+      "Docker",
+      "JUnit 5",
+      "Mockito",
+      "Testcontainers",
+      "React 19",
+      "TypeScript",
       "Material-UI",
-      "Vite for fast development and optimized builds",
-      "Axios for HTTP client with React Query for state management",
-      "React Router for SPA navigation",
-      "Vitest + React Testing Library for testing",
-      "TypeDoc for documentation generation",
-      "GitHub Actions for automated CI/CD pipelines",
-      "Docker Compose for local development environment",
-      "Fly.io for backend deployment with Oracle DB connectivity",
-      "Koyeb for frontend deployment with automated builds",
-      "JaCoCo + GitHub Pages for live test coverage reporting"
+      "Vite",
+      "Axios",
+      "React Router",
+      "Vitest",
+      "React Testing Library",
+      "TypeDoc",
+      "GitHub Actions",
+      "Docker Compose",
+      "Fly.io",
+      "Koyeb",
+      "JaCoCo",
+      "GitHub Pages"
     ],
     "docs": {
       "documentation": {
@@ -2691,41 +2696,41 @@
     "repoDocs": {
       "architectureOverview": {
         "title": "Index for Backend Documentation",
-        "link": "https://raw.githubusercontent.com/keglev/inventory-service/main/docs/backend/README.md",
+        "link": "https://keglev.github.io/inventory-service/docs/backend/README.md",
         "description": "architecture landing with service catalog",
-        "description_de": "Architekturlandung mit Servicekatalog",
-        "title_de": "Index für Backend-Dokumentation"
+        "description_de": null,
+        "title_de": null
       },
       "apiDocumentation": {
         "title": "Complete API Documentation (ReDoc)",
-        "link": "https://keglev.github.io/inventory-service/api/redoc",
+        "link": "https://keglev.github.io/inventory-service/docs/api/redoc/index.html",
         "description": "interactive API landing page",
-        "description_de": "interaktive API-Landingpage",
-        "title_de": "Vollständige API-Dokumentation (ReDoc)"
+        "description_de": null,
+        "title_de": null
       },
       "testing": {
         "coverage": {
           "title": "**Backend Test Coverage (JaCoCo)**",
           "link": "https://keglev.github.io/inventory-service/backend/coverage/index.html",
           "description": "📊 **View Coverage Reports:** 👉",
-          "description_de": "📊 **Deckungsberichte anzeigen:** 👉"
+          "description_de": null
         },
         "testingDocs": {
           "title": "**Testing Architecture Documentation**",
-          "link": "https://raw.githubusercontent.com/keglev/inventory-service/main/docs/architecture/testing/README.md",
+          "link": "https://keglev.github.io/inventory-service/docs/architecture/testing/README.md",
           "description": "📚 **Complete Testing Documentation:** 👉 - Enterprise testing strategy and implementation guides",
-          "description_de": "📚 **Vollständige Testdokumentation:** 👉 - Leitfäden zur Teststrategie und -durchführung für Unternehmen",
-          "title_de": "**Test der Architekturdokumentation**"
+          "description_de": null,
+          "title_de": null
         }
       }
     },
     "summary": "Complete enterprise-style full-stack application for Inventory & Supplier Management with comprehensive documentation, security architecture, and CI/CD integration.",
     "_summarySource": "heading",
     "_summaryRaw": "Complete enterprise-style full-stack application for Inventory & Supplier Management with comprehensive documentation, security architecture, and CI/CD integration.",
-    "mediaDownloaded": false,
+    "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 173
+        "requestMs": 4
       },
       "summary": {
         "text": null,
@@ -3680,8 +3685,8 @@
       "documentation": null,
       "apiDocumentation": null
     },
-    "docsLink": "https://raw.githubusercontent.com/keglev/stockease/main/src/main/docs/api.md",
-    "docsTitle": "View Full API Documentation",
+    "docsLink": "https://github.com/keglev/stockease/blob/main/README.md",
+    "docsTitle": "Example API Response in Postman:",
     "repoDocs": {
       "apiDocumentation": {
         "title": "View Full API Documentation",
@@ -3693,10 +3698,10 @@
     "summary": "StockEase is a backend service for managing stock-related data efficiently. Built with **Spring Boot** and integrated with **PostgreSQL**, this project showcases authentication, role-based access control, and CRUD operations for products.",
     "_summarySource": "heading",
     "_summaryRaw": "StockEase is a backend service for managing stock-related data efficiently. Built with **Spring Boot** and integrated with **PostgreSQL**, this project showcases authentication, role-based access control, and CRUD operations for products.",
-    "mediaDownloaded": false,
+    "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 270
+        "requestMs": 3
       },
       "summary": {
         "text": null,
@@ -4480,10 +4485,10 @@
     "summary": "StockEase is a React + TypeScript application for efficient stock and inventory management. It integrates with the StockEase backend to provide authentication, role-based access control, and complete CRUD operations for products.",
     "_summarySource": "heading",
     "_summaryRaw": "StockEase is a React + TypeScript application for efficient stock and inventory management. It integrates with the StockEase backend to provide authentication, role-based access control, and complete CRUD operations for products.",
-    "mediaDownloaded": false,
+    "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 202
+        "requestMs": 2
       },
       "summary": {
         "text": null,
@@ -5332,10 +5337,10 @@
     "summary": "An interactive restaurant Menu.",
     "_summarySource": "heading",
     "_summaryRaw": "An interactive restaurant Menu.",
-    "mediaDownloaded": false,
+    "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 187
+        "requestMs": 3
       },
       "summary": {
         "text": null,

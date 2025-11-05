@@ -22,6 +22,21 @@ const MEDIA_ROOT = path.join(__dirname, '..', '..', 'public', 'projects_media');
 const QUERY = `query getPinned($login: String!) { user(login: $login) { pinnedItems(first: 12, types: [REPOSITORY]) { nodes { __typename ... on Repository { name description url } } } } }`;
 
 async function fetchGraphQL() {
+  // If we don't have a GitHub token, try to fall back to an existing
+  // generated projects.json in the repo so the pipeline can run in
+  // offline/unauthed mode and re-process existing nodes (e.g. to
+  // re-normalize doc links using the extractor's safe fallback).
+  if (!TOKEN) {
+    try {
+      const raw = fs.readFileSync(OUT_PATH, 'utf8');
+      const nodes = JSON.parse(raw);
+      if (Array.isArray(nodes)) return nodes;
+    } catch (e) {
+      // No token and couldn't read an existing projects.json file.
+      // Bail with a clear error so callers understand how to proceed.
+      throw new Error('No GH token set and failed to read existing public/projects.json; provide GH_PROJECTS_TOKEN or create public/projects.json');
+    }
+  }
   if (!fetchGithub || !fetchGithub.runGraphQL) throw new Error('fetchGithub.runGraphQL not available');
   return fetchGithub.runGraphQL(TOKEN, QUERY, { login: 'keglev' });
 }

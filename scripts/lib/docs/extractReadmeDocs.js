@@ -19,11 +19,29 @@ async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache)
   try {
     const toRawGithub = (href) => {
       if (!href) return href;
+      // Leave absolute URLs alone
       if (/^https?:\/\//i.test(href)) return href;
-      let p = String(href).trim().replace(/^<|>$/g, '');
-      p = p.replace(/^\.\//, '').replace(/^\//, '');
+
+      // Normalize relative path: remove surrounding <>, leading ./ or / and strip ../ segments
+      let p = String(href).trim().replace(/^<|>$/g, '').replace(/^\.\//, '').replace(/^\//, '');
+      p = p.replace(/\.\.\//g, '');
+
       if (!repoName) return p;
-      return `https://raw.githubusercontent.com/keglev/${repoName}/main/${p}`;
+
+      // If we have a GitHub token, prefer raw.githubusercontent (original behavior)
+      if (process.env.GITHUB_TOKEN) {
+        return `https://raw.githubusercontent.com/keglev/${repoName}/main/${p}`;
+      }
+
+      // No token: only convert safe-looking documentation paths to the gh-pages URL
+      // Allow docs/architecture/* and docs/* files ending with .html or .md
+      const safeGhPagesPattern = /^(docs\/architecture\/.+\.(?:html|md)|docs\/.+\.(?:html|md))$/i;
+      if (safeGhPagesPattern.test(p)) {
+        return `https://keglev.github.io/${repoName}/${p.replace(/^\/*/, '')}`;
+      }
+
+      // Fallback: return the normalized relative path (do not construct arbitrary external URLs)
+      return p;
     };
     try {
       const ast = parseReadme.parseMarkdown(readmeText);

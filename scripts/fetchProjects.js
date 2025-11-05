@@ -38,10 +38,8 @@
 const parseReadme = require('./lib/parseReadme');
 
 // Prefer GH_PROJECTS_TOKEN for clarity, fallback to generic GITHUB_TOKEN
-// This token is only required when running the pipeline against GitHub's API
-// (CI normally provides it). Tests import this module directly so the
-// presence of the token is checked only when the script executes.
-const TOKEN = process.env.GH_PROJECTS_TOKEN || process.env.GITHUB_TOKEN;
+// (kept in other modules). Tests import this module directly so the
+// presence of the token is checked when the pipeline runs.
 
 // NOTE: do not exit at require-time so helper functions can be imported by other scripts.
 // The token presence will be checked when running as a script (see bottom guard).
@@ -54,13 +52,9 @@ const { fetchPinned } = require('./lib/fetchPinned');
 // prevents running the network-heavy pipeline during unit tests which only
 // need to re-export helper functions.
 if (require.main === module) {
-  if (!TOKEN) {
-    // Missing token is actionable but not fatal in local/dev contexts.
-    // We explicitly exit 0 so CI can detect missing credentials and skip.
-    console.warn('No GitHub token found in environment. Skipping fetch.');
-    process.exit(0);
-  }
-  // Run the pipeline and ensure any unhandled errors exit non-zero so CI fails.
+  // Run the pipeline. If a GitHub token is available the pipeline will
+  // query the GraphQL API; if not, fetchPinned() will attempt to load
+  // an existing `public/projects.json` and re-process those nodes.
   fetchPinned().catch(e => {
     console.error('Unhandled error in fetchPinned:', (e && e.message) || e);
     process.exit(4);
