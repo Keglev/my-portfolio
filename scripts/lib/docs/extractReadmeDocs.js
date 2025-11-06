@@ -334,25 +334,35 @@ async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache)
         for (let i = 0; i < ast.children.length && !found; i++) {
           const n = ast.children[i];
           if (n.type === 'paragraph' && Array.isArray(n.children)) {
+            // Build paragraph text to allow cases where "Production URL" appears as
+            // bold text or plain text immediately before the link (label may not
+            // contain the phrase). If the paragraph contains the phrase,
+            // take the first link in the paragraph as the production URL.
+            const paraText = (n.children || []).map(c => (c.value || '')).join(' ').trim();
+            let paraHasProduction = /Production\s+URL\b/i.test(paraText);
             for (const ch of n.children) {
               if (ch.type === 'link' && ch.url) {
                 const label = (ch.children || []).map(c => c.value || '').join('').trim();
                 const cleaned = label.replace(/^[•\-*.\s📁📚🏗️🎯🚀📌]*\s*/i, '').trim();
-                if (/^Production\s+URL\b/i.test(cleaned)) {
-                  out.productionUrl = { title: label || 'Production URL', link: ch.url, description: stripAstJsonFragments((n.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim()) };
+                if (/^Production\s+URL\b/i.test(cleaned) || paraHasProduction) {
+                  out.productionUrl = { title: label || 'Production URL', link: ch.url, description: stripAstJsonFragments(paraText) };
                   found = true; break;
                 }
               }
             }
+            if (found) break;
           }
           if (!found && n.type === 'list' && Array.isArray(n.children)) {
             for (const li of n.children) {
               const flat = parseReadme.flattenNodeText(li || '').replace(/\r?\n/g, ' ');
+              // If the flattened list item contains the phrase "Production URL",
+              // pick the first markdown link in the item as the production URL.
+              const itemHasProduction = /Production\s+URL\b/i.test(flat);
               const allLinks = flat.matchAll(/\[([^\]]+)\]\(([^)]+)\)/ig);
               for (const lm of allLinks) {
                 const rawLabel = (lm[1]||'').trim();
                 const cleaned = rawLabel.replace(/^[•\-*.\s📁📚🏗️🎯🚀📌]*\s*/i, '').trim();
-                if (/^Production\s+URL\b/i.test(cleaned)) {
+                if (/^Production\s+URL\b/i.test(cleaned) || itemHasProduction) {
                   out.productionUrl = { title: rawLabel, link: (lm[2]||'').trim(), description: '' };
                   found = true; break;
                 }
