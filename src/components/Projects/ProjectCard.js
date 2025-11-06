@@ -85,11 +85,11 @@ const ProjectCard = ({
             <span className="tech-box" key={idx}>{word}</span>
           ))}
         </div>
-        <div style={{display: 'flex', gap: '8px', marginTop: '8px'}}>
+        <div style={{display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px'}}>
           <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-link">
             {t('viewOnGithub')}
           </a>
-          {/* Production URL: show short "URL" label when extractor found a Production URL in repo docs */}
+          {/* Production URL: show descriptive label below GitHub link when extractor found a Production URL in repo docs */}
           {project.repoDocs && project.repoDocs.productionUrl && project.repoDocs.productionUrl.link && (
             (() => {
               const convertRawToBlob = (link) => {
@@ -108,7 +108,7 @@ const ProjectCard = ({
               };
 
               return (
-                <a href={convertRawToBlob(project.repoDocs.productionUrl.link)} target="_blank" rel="noopener noreferrer" className="project-link">
+                <a href={convertRawToBlob(project.repoDocs.productionUrl.link)} target="_blank" rel="noopener noreferrer" className="project-link" style={{marginTop: '6px'}}>
                   {t('urlLabel')}
                 </a>
               );

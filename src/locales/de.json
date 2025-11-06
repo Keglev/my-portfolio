@@ -54,8 +54,9 @@
   "viewDocs": "Dokumentation ansehen",
   "translationMissing": "Übersetzung fehlt",
   "repoDocs": "Projekte Documentation",
-  "urlLabel": "URL",
+  
   "noRepoDocs": "Keine Dokumentations-Links gefunden.",
+  "urlLabel": "Zur Live-Anwendung",
   "legalLink": "Impressum & Datenschutzerklärung",
   "legal": {
     "heading": "Impressum & Datenschutzerklärung",
