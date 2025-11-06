@@ -2691,37 +2691,30 @@
         "description": ""
       }
     },
-    "docsLink": "https://raw.githubusercontent.com/keglev/inventory-service/main/docs/backend/README.md",
+    "docsLink": "https://keglev.github.io/inventory-service/docs/backend/README.md",
     "docsTitle": "Index for Backend Documentation",
     "repoDocs": {
       "architectureOverview": {
         "title": "Index for Backend Documentation",
         "link": "https://keglev.github.io/inventory-service/docs/backend/README.md",
-        "description": "architecture landing with service catalog",
-        "description_de": null,
+        "description": "",
         "title_de": null
       },
       "apiDocumentation": {
         "title": "Complete API Documentation (ReDoc)",
         "link": "https://keglev.github.io/inventory-service/docs/api/redoc/index.html",
-        "description": "interactive API landing page",
-        "description_de": null,
+        "description": "",
         "title_de": null
       },
       "testing": {
-        "coverage": {
-          "title": "**Backend Test Coverage (JaCoCo)**",
-          "link": "https://keglev.github.io/inventory-service/backend/coverage/index.html",
-          "description": "📊 **View Coverage Reports:** 👉",
-          "description_de": null
-        },
-        "testingDocs": {
-          "title": "**Testing Architecture Documentation**",
-          "link": "https://keglev.github.io/inventory-service/docs/architecture/testing/README.md",
-          "description": "📚 **Complete Testing Documentation:** 👉 - Enterprise testing strategy and implementation guides",
-          "description_de": null,
-          "title_de": null
-        }
+        "coverage": [
+          {
+            "title": "**Backend Test Coverage (JaCoCo)**",
+            "link": "https://keglev.github.io/inventory-service/backend/coverage/index.html",
+            "description": "📊 **View Coverage Reports:** 👉",
+            "description_de": null
+          }
+        ]
       }
     },
     "summary": "Complete enterprise-style full-stack application for Inventory & Supplier Management with comprehensive documentation, security architecture, and CI/CD integration.",
@@ -2730,7 +2723,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 4
+        "requestMs": 2
       },
       "summary": {
         "text": null,
@@ -3688,12 +3681,14 @@
     "docsLink": "https://github.com/keglev/stockease/blob/main/README.md",
     "docsTitle": "Example API Response in Postman:",
     "repoDocs": {
+      "architectureOverview": null,
       "apiDocumentation": {
-        "title": "View Full API Documentation",
-        "link": "https://raw.githubusercontent.com/keglev/stockease/main/src/main/docs/api.md",
+        "title": "🔗 API Integration",
+        "link": "https://keglev.github.io/stockease/#-api-integration",
         "description": "",
-        "title_de": "Vollständige API-Dokumentation anzeigen"
-      }
+        "title_de": null
+      },
+      "testing": null
     },
     "summary": "StockEase is a backend service for managing stock-related data efficiently. Built with **Spring Boot** and integrated with **PostgreSQL**, this project showcases authentication, role-based access control, and CRUD operations for products.",
     "_summarySource": "heading",
@@ -3701,7 +3696,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 3
+        "requestMs": 1
       },
       "summary": {
         "text": null,
@@ -4488,7 +4483,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 2
+        "requestMs": 1
       },
       "summary": {
         "text": null,
@@ -4500,12 +4495,14 @@
       }
     },
     "repoDocs": {
+      "architectureOverview": null,
       "apiDocumentation": {
-        "title": "🔗 API Integration",
-        "link": "https://github.com/keglev/frontend/blob/main/README.md",
+        "title": "StockEase Backend API Docs",
+        "link": "https://raw.githubusercontent.com/keglev/frontend/main/#",
         "description": "",
-        "title_de": "🔗 API-Integration"
-      }
+        "title_de": null
+      },
+      "testing": null
     },
     "summary_de": "StockEase ist eine React + TypeScript-Anwendung für eine effiziente Lager- und Bestandsverwaltung. Sie ist mit dem StockEase-Backend integriert, um Authentifizierung, rollenbasierte Zugriffskontrolle und vollständige CRUD-Operationen für Produkte bereitzustellen.",
     "docsTitle_de": "API-Integration"
@@ -5340,7 +5337,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 3
+        "requestMs": 1
       },
       "summary": {
         "text": null,
@@ -5352,12 +5349,14 @@
       }
     },
     "repoDocs": {
+      "architectureOverview": null,
       "apiDocumentation": {
-        "title": "Create React App documentation",
-        "link": "https://facebook.github.io/create-react-app/docs/getting-started",
+        "title": "API Integration",
+        "link": "https://keglev.github.io/restaurant-speisekarte/#API-Integration",
         "description": "",
-        "title_de": "React App Dokumentation erstellen"
-      }
+        "title_de": null
+      },
+      "testing": null
     },
     "summary_de": "Ein interaktives Restaurant-Menü.",
     "docsTitle_de": "React App Dokumentation erstellen"

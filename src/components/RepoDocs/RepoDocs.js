@@ -36,7 +36,8 @@ const RepoDocs = () => {
           summary: p.summary_de || p.summary || '',
           // mark if this repo actually has docs we should surface
           hasDocs: !!(
-            (p.repoDocs && ((p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.link) || (p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.link))) ||
+            (p.repoDocs && p.repoDocs.placeholder) || // always show "Under Construction" when present
+            (p.repoDocs && ((p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.link) || (p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.link) || (p.repoDocs.testing && p.repoDocs.testing.coverage && p.repoDocs.testing.coverage.length > 0))) ||
             (p.docs && ((p.docs.apiDocumentation && p.docs.apiDocumentation.link) || (p.docs.documentation && p.docs.documentation.link))) ||
             p.docsLink ||
             // If parser left an AST, look for headings that indicate documentation sections
@@ -92,6 +93,21 @@ const RepoDocs = () => {
 
                 const linkLabel = t('viewDocs');
 
+                // Check if this project has the "Under Construction" placeholder
+                if (p.repoDocs && p.repoDocs.placeholder) {
+                  const placeholderText = (i18n && i18n.language === 'de' && p.repoDocs.placeholder.title_de) 
+                    ? p.repoDocs.placeholder.title_de 
+                    : p.repoDocs.placeholder.title;
+                  const placeholderDesc = (i18n && i18n.language === 'de' && p.repoDocs.placeholder.description_de)
+                    ? p.repoDocs.placeholder.description_de
+                    : p.repoDocs.placeholder.description;
+                  return (
+                    <p key="placeholder" style={{ fontStyle: 'italic', color: '#888' }}>
+                      <strong>{placeholderText}</strong> — {placeholderDesc}
+                    </p>
+                  );
+                }
+
                 const nodes = [];
                 if (p.repoDocs && p.repoDocs.apiDocumentation && p.repoDocs.apiDocumentation.link) {
                   nodes.push(
@@ -102,6 +118,14 @@ const RepoDocs = () => {
                   nodes.push(
                     <p key="arch"><strong>{(i18n && i18n.language === 'de' && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.title_de) ? p.repoDocs.architectureOverview.title_de : p.repoDocs.architectureOverview.title}</strong>: <a href={convertRawToBlob(p.repoDocs.architectureOverview.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
                   );
+                }
+                // Handle multiple Test Coverage links (array format)
+                if (p.repoDocs && p.repoDocs.testing && p.repoDocs.testing.coverage && Array.isArray(p.repoDocs.testing.coverage)) {
+                  p.repoDocs.testing.coverage.forEach((cov, covIdx) => {
+                    nodes.push(
+                      <p key={`cov-${covIdx}`}><strong>{(i18n && i18n.language === 'de' && cov.title_de) ? cov.title_de : cov.title}</strong>: <a href={convertRawToBlob(cov.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
+                    );
+                  });
                 }
                 return nodes;
               })()}
