@@ -25,12 +25,16 @@ async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache)
       // raw.githubusercontent links or README contains absolute raw URLs.
       if (/^https?:\/\//i.test(href)) {
         // If it's a raw.githubusercontent URL for the same owner, convert it
-        // to the gh-pages URL when there's no token.
+        // to either GitHub blob URL (.md) or gh-pages URL (.html) when no token.
           if (!(process.env.GITHUB_TOKEN || process.env.GH_PROJECTS_TOKEN)) {
           const rawMatch = String(href).match(/^https?:\/\/raw\.githubusercontent\.com\/keglev\/([^/]+)\/(?:main|master)\/(.+)$/i);
           if (rawMatch) {
             const repo = rawMatch[1];
             const rest = rawMatch[2].replace(/^\/*/, '');
+            // .md files → GitHub blob URL, .html → GitHub Pages
+            if (/\.md$/i.test(rest)) {
+              return `https://github.com/keglev/${repo}/blob/main/${rest}`;
+            }
             return `https://keglev.github.io/${repo}/${rest}`;
           }
           // Also handle github.com blob URLs like https://github.com/keglev/repo/blob/main/docs/x.html
@@ -39,9 +43,14 @@ async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache)
             const repo = blobMatch[1];
             const rest = blobMatch[2].replace(/^\/*/, '');
             // Only convert if the resulting path looks like documentation we allow
-            const maybe = rest;
             const safePattern = /^(?:docs\/architecture\/.+\.(?:html|md)|docs\/.+\.(?:html|md)|src\/(?:main\/)?docs\/.+\.(?:html|md))$/i;
-            if (safePattern.test(maybe)) return `https://keglev.github.io/${repo}/${maybe}`;
+            if (safePattern.test(rest)) {
+              // .md stays as blob, .html → gh-pages
+              if (/\.md$/i.test(rest)) {
+                return href; // already a blob URL, keep it
+              }
+              return `https://keglev.github.io/${repo}/${rest}`;
+            }
           }
         }
         return href;
@@ -58,13 +67,18 @@ async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache)
         return `https://raw.githubusercontent.com/keglev/${repoName}/main/${p}`;
       }
 
-      // No token: only convert safe-looking documentation paths to the gh-pages URL
-      // Allow docs/architecture/* and docs/* files ending with .html or .md
-      // Also allow common alternate locations like src/docs/... and src/main/docs/...
-      const safeGhPagesPattern = /^(?:docs\/architecture\/.+\.(?:html|md)|docs\/.+\.(?:html|md)|src\/(?:main\/)?docs\/.+\.(?:html|md))$/i;
-      if (safeGhPagesPattern.test(p)) {
-        // remove any leading slashes
+      // No token: convert safe-looking documentation paths.
+      // Strategy: .md files → GitHub blob URL (rendered by GitHub)
+      //           .html files → GitHub Pages URL (static hosting)
+      // Allow docs/architecture/* and docs/* files, and src/docs/... and src/main/docs/...
+      const safeDocsPattern = /^(?:docs\/architecture\/.+\.(?:html|md)|docs\/.+\.(?:html|md)|src\/(?:main\/)?docs\/.+\.(?:html|md))$/i;
+      if (safeDocsPattern.test(p)) {
         const cleaned = p.replace(/^\/*/, '');
+        // If it's a .md file, use GitHub blob URL so GitHub renders it
+        if (/\.md$/i.test(cleaned)) {
+          return `https://github.com/keglev/${repoName}/blob/main/${cleaned}`;
+        }
+        // Otherwise (.html), use GitHub Pages URL
         return `https://keglev.github.io/${repoName}/${cleaned}`;
       }
 
