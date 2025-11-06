@@ -16,10 +16,10 @@ describe('SidebarMenu', () => {
       </I18nextProvider>
     );
 
-    // Links
-    expect(screen.getByText(/projects/i)).toBeInTheDocument();
-    expect(screen.getByText(/about/i)).toBeInTheDocument();
-    expect(screen.getByText(/experience/i)).toBeInTheDocument();
+  // Links - use role/name queries to avoid ambiguous matches (e.g. "Projects Documentation")
+  expect(screen.getByRole('link', { name: /^projects$/i })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /about/i })).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: /experience/i })).toBeInTheDocument();
 
     // Language buttons
     const enBtn = screen.getByRole('button', { name: /switch to english/i });

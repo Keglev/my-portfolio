@@ -89,6 +89,31 @@ const ProjectCard = ({
           <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-link">
             {t('viewOnGithub')}
           </a>
+          {/* Production URL: show short "URL" label when extractor found a Production URL in repo docs */}
+          {project.repoDocs && project.repoDocs.productionUrl && project.repoDocs.productionUrl.link && (
+            (() => {
+              const convertRawToBlob = (link) => {
+                if (!link) return link;
+                try {
+                  const m = link.match(/^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/i);
+                  if (m) {
+                    const user = m[1];
+                    const repo = m[2];
+                    const branch = m[3];
+                    const path = m[4];
+                    return `https://github.com/${user}/${repo}/blob/${branch}/${path}`;
+                  }
+                } catch (e) { /* ignore */ }
+                return link;
+              };
+
+              return (
+                <a href={convertRawToBlob(project.repoDocs.productionUrl.link)} target="_blank" rel="noopener noreferrer" className="project-link">
+                  {t('urlLabel')}
+                </a>
+              );
+            })()
+          )}
         </div>
       </div>
     </div>
