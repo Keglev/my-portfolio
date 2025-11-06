@@ -53,7 +53,8 @@
   "viewOnGithub": "Auf GitHub ansehen",
   "viewDocs": "Dokumentation ansehen",
   "translationMissing": "Übersetzung fehlt",
-  "repoDocs": "Repo Docs",
+  "repoDocs": "Projekte Documentation",
+  "urlLabel": "URL",
   "noRepoDocs": "Keine Dokumentations-Links gefunden.",
   "legalLink": "Impressum & Datenschutzerklärung",
   "legal": {

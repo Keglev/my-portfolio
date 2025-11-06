@@ -15,7 +15,7 @@ function stripAstJsonFragments(s) {
 // Returns an object with found items or null when nothing found.
 async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache) {
   if (!readmeText || !readmeText.length) return null;
-  const out = { architectureOverview: null, apiDocumentation: null, testing: null };
+  const out = { architectureOverview: null, apiDocumentation: null, testing: null, productionUrl: null };
   try {
     const toRawGithub = (href) => {
       if (!href) return href;
@@ -269,7 +269,7 @@ async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache)
       }
     } catch (e) { if (DEBUG_FETCH) console.log('extractRepoDocsDetailed api fallback error', e && e.message); }
 
-    // Simplified testing extraction: find ALL explicit markdown links whose
+  // Simplified testing extraction: find ALL explicit markdown links whose
     // labels contain the words "Test Coverage" (case-insensitive). This will
     // populate out.testing.coverage as an array to support multiple coverage
     // reports (e.g., backend and frontend). The extraction stops after scanning
@@ -323,6 +323,67 @@ async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache)
       if (DEBUG_FETCH) console.log('extractRepoDocsDetailed testing AST error', e && e.message);
     }
 
+    // Production URL extraction: find first explicit markdown link whose label
+    // begins with "Production URL" (case-insensitive) after stripping common
+    // prefixes (bullets, emojis, dots). The production URL will be shown in the
+    // UI as a short "URL" link.
+    try {
+      const ast = parseReadme.parseMarkdown(readmeText);
+      if (ast && Array.isArray(ast.children)) {
+        let found = false;
+        for (let i = 0; i < ast.children.length && !found; i++) {
+          const n = ast.children[i];
+          if (n.type === 'paragraph' && Array.isArray(n.children)) {
+            for (const ch of n.children) {
+              if (ch.type === 'link' && ch.url) {
+                const label = (ch.children || []).map(c => c.value || '').join('').trim();
+                const cleaned = label.replace(/^[•\-*.\s📁📚🏗️🎯🚀📌]*\s*/i, '').trim();
+                if (/^Production\s+URL\b/i.test(cleaned)) {
+                  out.productionUrl = { title: label || 'Production URL', link: ch.url, description: stripAstJsonFragments((n.children||[]).filter(c=>c.type==='text').map(c=>c.value).join(' ').trim()) };
+                  found = true; break;
+                }
+              }
+            }
+          }
+          if (!found && n.type === 'list' && Array.isArray(n.children)) {
+            for (const li of n.children) {
+              const flat = parseReadme.flattenNodeText(li || '').replace(/\r?\n/g, ' ');
+              const allLinks = flat.matchAll(/\[([^\]]+)\]\(([^)]+)\)/ig);
+              for (const lm of allLinks) {
+                const rawLabel = (lm[1]||'').trim();
+                const cleaned = rawLabel.replace(/^[•\-*.\s📁📚🏗️🎯🚀📌]*\s*/i, '').trim();
+                if (/^Production\s+URL\b/i.test(cleaned)) {
+                  out.productionUrl = { title: rawLabel, link: (lm[2]||'').trim(), description: '' };
+                  found = true; break;
+                }
+              }
+              if (found) break;
+            }
+          }
+        }
+      }
+
+      // Plain-text fallback: scan lines for a markdown link whose label begins with Production URL
+      if (!out.productionUrl) {
+        const lines = readmeText.split(/\r?\n/);
+        for (const line of lines) {
+          if (/^\s*#{1,6}\s/.test(line)) continue; // skip headings
+          const allLinks = line.matchAll(/\[([^\]]+)\]\(([^)]+)\)/ig);
+          for (const lm of allLinks) {
+            const rawLabel = (lm[1]||'').trim();
+            const cleaned = rawLabel.replace(/^[•\-*.\s📁📚🏗️🎯🚀📌]*\s*/i, '').trim();
+            if (/^Production\s+URL\b/i.test(cleaned)) {
+              out.productionUrl = { title: rawLabel, link: (lm[2]||'').trim(), description: '' };
+              break;
+            }
+          }
+          if (out.productionUrl) break;
+        }
+      }
+    } catch (e) {
+      if (DEBUG_FETCH) console.log('extractRepoDocsDetailed production URL AST error', e && e.message);
+    }
+
     const normalizeIfRelative = (href) => {
       if (!href) return href;
       if (/^https?:\/\//i.test(href)) return href;
@@ -331,6 +392,7 @@ async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache)
     if (out.architectureOverview && out.architectureOverview.link) out.architectureOverview.link = normalizeIfRelative(out.architectureOverview.link);
     if (out.apiDocumentation && out.apiDocumentation.link) out.apiDocumentation.link = normalizeIfRelative(out.apiDocumentation.link);
     if (out.testing && out.testing.testingDocs && out.testing.testingDocs.link) out.testing.testingDocs.link = normalizeIfRelative(out.testing.testingDocs.link);
+  if (out.productionUrl && out.productionUrl.link) out.productionUrl.link = normalizeIfRelative(out.productionUrl.link);
 
     if (out.architectureOverview && out.architectureOverview.description) {
       const t = translateWithCache ? await translateWithCache(repoName, out.architectureOverview.description) : { text: null };
@@ -372,7 +434,7 @@ async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache)
   } catch (e) { if (DEBUG_FETCH) console.log('extractRepoDocsDetailed error', e && e.message); }
   
   // Check if we found any actual documentation links
-  const foundAny = (out.architectureOverview || out.apiDocumentation || out.testing) && ( (out.architectureOverview && out.architectureOverview.link) || (out.apiDocumentation && out.apiDocumentation.link) || (out.testing && out.testing.coverage && out.testing.coverage.length > 0) );
+  const foundAny = (out.architectureOverview || out.apiDocumentation || out.testing || out.productionUrl) && ( (out.architectureOverview && out.architectureOverview.link) || (out.apiDocumentation && out.apiDocumentation.link) || (out.testing && out.testing.coverage && out.testing.coverage.length > 0) || (out.productionUrl && out.productionUrl.link) );
   
   // If no documentation was found, return a placeholder indicating docs are under construction
   if (!foundAny) {

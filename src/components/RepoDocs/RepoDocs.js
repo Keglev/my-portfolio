@@ -119,6 +119,12 @@ const RepoDocs = () => {
                     <p key="arch"><strong>{(i18n && i18n.language === 'de' && p.repoDocs.architectureOverview && p.repoDocs.architectureOverview.title_de) ? p.repoDocs.architectureOverview.title_de : p.repoDocs.architectureOverview.title}</strong>: <a href={convertRawToBlob(p.repoDocs.architectureOverview.link)} target="_blank" rel="noopener noreferrer" className="project-link">{linkLabel}</a></p>
                   );
                 }
+                // Production URL (rendered as short "URL" link in the card)
+                if (p.repoDocs && p.repoDocs.productionUrl && p.repoDocs.productionUrl.link) {
+                  nodes.push(
+                    <p key="url"><strong>{(i18n && i18n.language === 'de' && p.repoDocs.productionUrl && p.repoDocs.productionUrl.title_de) ? p.repoDocs.productionUrl.title_de : p.repoDocs.productionUrl.title}</strong>: <a href={convertRawToBlob(p.repoDocs.productionUrl.link)} target="_blank" rel="noopener noreferrer" className="project-link">{t('urlLabel')}</a></p>
+                  );
+                }
                 // Handle multiple Test Coverage links (array format)
                 if (p.repoDocs && p.repoDocs.testing && p.repoDocs.testing.coverage && Array.isArray(p.repoDocs.testing.coverage)) {
                   p.repoDocs.testing.coverage.forEach((cov, covIdx) => {
