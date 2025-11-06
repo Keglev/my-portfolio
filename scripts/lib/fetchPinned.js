@@ -106,6 +106,10 @@ async function fetchPinned() {
         if (raw && raw[1] && raw[2]) {
           const repo = raw[1];
           const path = raw[2].replace(/^\/*/, '');
+          // Skip .md files - they should use blob URLs (GitHub will render them)
+          if (/\.md$/i.test(path)) {
+            return null; // Don't convert
+          }
           // Loosened safe check: convert if path contains a docs/ segment or looks like an API doc
           if (/\bdocs\b/i.test(path) || /api\.(?:md|html)$/i.test(path) || /\bapi\b/i.test(path)) {
             return `https://keglev.github.io/${repo}/${path}`;
@@ -116,6 +120,10 @@ async function fetchPinned() {
         if (blob && blob[1] && blob[2]) {
           const repo = blob[1];
           const path = blob[2].replace(/^\/*/, '');
+          // Skip .md files - they should stay as blob URLs (GitHub will render them)
+          if (/\.md$/i.test(path)) {
+            return null; // Don't convert
+          }
           if (/\bdocs\b/i.test(path) || /api\.(?:md|html)$/i.test(path) || /\bapi\b/i.test(path)) {
             return `https://keglev.github.io/${repo}/${path}`;
           }

@@ -2691,12 +2691,12 @@
         "description": ""
       }
     },
-    "docsLink": "https://keglev.github.io/inventory-service/docs/backend/README.md",
+    "docsLink": "https://raw.githubusercontent.com/keglev/inventory-service/main/docs/backend/README.md",
     "docsTitle": "Index for Backend Documentation",
     "repoDocs": {
       "architectureOverview": {
         "title": "Index for Backend Documentation",
-        "link": "https://keglev.github.io/inventory-service/docs/backend/README.md",
+        "link": "https://github.com/keglev/inventory-service/blob/main/docs/backend/README.md",
         "description": "",
         "title_de": null
       },
@@ -4483,7 +4483,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 1
+        "requestMs": 2
       },
       "summary": {
         "text": null,
