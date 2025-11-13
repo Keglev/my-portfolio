@@ -1,12 +1,35 @@
+############################################################
+# Build and Fetch Projects (GitHub Actions)
+#
+# Purpose
+# - Fetch repository READMEs and documentation links for the portfolio
+# - Post-process and normalize links for offline use (no token fallbacks)
+# - Run a production build of the React site and prepare a Vercel prebuilt
+#   output directory so CI can deploy an optimized artifact.
+#
+# Design notes (enterprise-grade)
+# - This workflow separates responsibilities: fetching/prefetching project
+#   metadata is done before building the static site to ensure `public/projects.json`
+#   is bundled into the artifact. The build is deterministic (npm ci) and
+#   prebuilt output is prepared for Vercel to avoid runtime fetch surprises.
+# - Security-sensitive values (GitHub tokens, Vercel tokens, DeepL keys) are
+#   expected to be provided through repository secrets. The workflow NEVER
+#   prints secret values; logs should be safe for observability.
+# - Steps are idempotent where possible and include simple existence checks
+#   to produce actionable failure messages without exposing secrets.
+############################################################
 name: Build and Fetch Projects
 
 on:
+  # Trigger on main branch push events. README/docs-only changes are
+  # intentionally ignored because they have their own lightweight refresh
+  # workflow (docs-refresh.yml). This saves CI minutes for documentation edits.
   push:
     branches: [ main ]
-    # Do not trigger this full code build on README/docs updates — those are handled by docs-refresh.yml
     paths-ignore:
       - 'README.md'
       - 'docs/**'
+  # Allow manual runs through the UI for ad-hoc builds or debugging.
   workflow_dispatch:
 
 jobs:
@@ -15,14 +38,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        # NOTE: actions/checkout checks out repository content for this workflow.
+        # We intentionally do not set fetch-depth here so that any scripts that
+        # rely on git history can work. If you need to optimize for speed,
+        # consider adding `with: fetch-depth: 0` and auditing downstream scripts.
 
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+        # Uses the platform-supplied Node LTS for a consistent CI environment.
+        # Pinning major version avoids accidental upgrades during CI runs.
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+        # `npm ci` installs exact versions from package-lock.json, ensuring
+        # reproducible builds. `--legacy-peer-deps` is used to resolve legacy
+        # peer dependency conflicts predictable in CI; evaluate removing it
+        # once upstream packages are modernized.
 
       - name: Fetch GitHub pinned projects
         if: github.event_name != 'pull_request'
@@ -36,25 +69,44 @@ jobs:
           echo "Running fetchProjects.js (DeepL will be used only if DEEPL_SECRET or DEEPL_API_KEY is set in the environment)"
           node -e "console.log('DeepL present?', !!process.env.DEEPL_SECRET || !!process.env.DEEPL_API_KEY)"
           node scripts/fetchProjects.js
+        # The fetch step queries GitHub to build the `public/projects.json` file.
+        # Conditional: we skip this step for pull requests to avoid exposing
+        # secrets to untrusted forks. The script is robust and falls back to
+        # reading the existing `public/projects.json` when no token is present.
+        # The log above intentionally only prints a boolean to confirm DeepL
+        # presence — DO NOT echo secret values.
 
       - name: Post-process fetched projects (prefer github.io docs)
         if: github.event_name != 'pull_request'
         run: |
           node scripts/postprocessProjects.js
+        # Convert raw/blob URLs conservatively to GitHub Pages URLs where safe.
+        # This post-processing enforces consistent links for the front-end.
 
       - name: Fallback README doc-scan (backfill relative docs)
         if: github.event_name != 'pull_request'
         run: |
           node scripts/applyFallbackDocScan.js
+        # A safety pass to backfill relative docs paths when the upstream
+        # repository does not publish GitHub Pages. This avoids dead links in
+        # the UI and is intentionally conservative: it will not fabricate
+        # external URLs, only normalize repository-local paths.
 
       - name: Verify projects.json contents
         if: github.event_name != 'pull_request'
         run: |
           echo "projects.json summary"
           node -e "const fs=require('fs');const p='public/projects.json';if(!fs.existsSync(p)){console.log('missing',p);process.exit(0);}const j=JSON.parse(fs.readFileSync(p,'utf8')||'[]');console.log('repos:',j.length);for(const r of j){const api=(r.repoDocs&&r.repoDocs.apiDocumentation&&r.repoDocs.apiDocumentation.link)||null;const arch=(r.repoDocs&&r.repoDocs.architectureOverview&&r.repoDocs.architectureOverview.link)||null;console.log(r.name,'docsLink->',r.docsLink||null,'api->',api,'arch->',arch)}"
+        # Quick sanity check to print a compact summary of collected docs links.
+        # This step is intentionally non-blocking for visibility but will
+        # surface unexpected emptiness (e.g., missing public/projects.json).
 
       - name: Build
         run: npm run build
+        # Runs the production build (Create React App). This produces a
+        # deterministic `build/` directory which we copy into the Vercel
+        # prebuilt output. If builds fail here, the failure is actionable and
+        # should be debugged locally with `npm run build`.
 
       - name: Prepare Vercel prebuilt output
         run: |
@@ -70,6 +122,11 @@ jobs:
           # Vercel Output API v3 config: serve filesystem first then SPA fallback
           printf '%s\n' '{' '  "version": 3,' '  "routes": [' '    { "handle": "filesystem" },' '    { "src": "\/(.*)", "dest": "/index.html" }' '  ]' '}' > .vercel/output/config.json
           echo '{}' > .vercel/output/.vc-config.json || true
+        # Create the exact Vercel prebuilt directory layout expected by the
+        # Vercel CLI. We copy `build/` and generated `public/` artifacts so the
+        # final deploy is an immutable snapshot of the CI output.
+        # Note: using `cp -f` and `|| true` makes this step idempotent and
+        # tolerant to missing optional files (media etc.).
 
       - name: Verify prebuilt static artifacts
         run: |
@@ -81,6 +138,9 @@ jobs:
           else
             echo "ERROR: .vercel/output/static/projects.json not found"; exit 1;
           fi
+        # Strict validation to guarantee that the static snapshot contains
+        # the generated `projects.json`. Failing here prevents deploying a
+        # stale or incomplete artifact to production.
 
       # NOTE: debug artifact upload removed to avoid leaking README samples and reduce CI noise.
 
@@ -94,3 +154,9 @@ jobs:
           ls -la .vercel || true
           ls -la .vercel/output || true
           npx --yes vercel --prod --token "$VERCEL_TOKEN" --yes --prebuilt .
+        # Deploy the prepared prebuilt output to Vercel using the provided
+        # organisation and project secrets. The `--prebuilt` flag ensures the
+        # uploaded artifact content is served verbatim by Vercel.
+        # Security: VERCEL_TOKEN must be stored in repository secrets. Do not
+        # echo tokens or other secrets to the log; only existence checks are
+        # performed above.

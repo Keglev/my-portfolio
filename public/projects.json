@@ -2715,7 +2715,8 @@
             "description_de": null
           }
         ]
-      }
+      },
+      "productionUrl": null
     },
     "summary": "Complete enterprise-style full-stack application for Inventory & Supplier Management with comprehensive documentation, security architecture, and CI/CD integration.",
     "_summarySource": "heading",
@@ -2723,7 +2724,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 2
+        "requestMs": 4
       },
       "summary": {
         "text": null,
@@ -3688,7 +3689,8 @@
         "description": "",
         "title_de": null
       },
-      "testing": null
+      "testing": null,
+      "productionUrl": null
     },
     "summary": "StockEase is a backend service for managing stock-related data efficiently. Built with **Spring Boot** and integrated with **PostgreSQL**, this project showcases authentication, role-based access control, and CRUD operations for products.",
     "_summarySource": "heading",
@@ -3696,7 +3698,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 1
+        "requestMs": 3
       },
       "summary": {
         "text": null,
@@ -4483,7 +4485,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 2
+        "requestMs": 3
       },
       "summary": {
         "text": null,
@@ -4502,7 +4504,8 @@
         "description": "",
         "title_de": null
       },
-      "testing": null
+      "testing": null,
+      "productionUrl": null
     },
     "summary_de": "StockEase ist eine React + TypeScript-Anwendung für eine effiziente Lager- und Bestandsverwaltung. Sie ist mit dem StockEase-Backend integriert, um Authentifizierung, rollenbasierte Zugriffskontrolle und vollständige CRUD-Operationen für Produkte bereitzustellen.",
     "docsTitle_de": "API-Integration"
@@ -5337,7 +5340,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 1
+        "requestMs": 2
       },
       "summary": {
         "text": null,
@@ -5356,7 +5359,8 @@
         "description": "",
         "title_de": null
       },
-      "testing": null
+      "testing": null,
+      "productionUrl": null
     },
     "summary_de": "Ein interaktives Restaurant-Menü.",
     "docsTitle_de": "React App Dokumentation erstellen"
