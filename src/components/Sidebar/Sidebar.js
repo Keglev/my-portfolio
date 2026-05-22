@@ -22,6 +22,7 @@ const Sidebar = () => {
   // Hook to update the active section based on the user's scroll position
   useEffect(() => {
     const handleScroll = () => {
+  const educationSection = document.getElementById('Education');
   const projectsSection = document.getElementById('Projects');
   const experienceSection = document.getElementById('Experience');
   const repoDocsSection = document.getElementById('RepoDocs');
@@ -38,6 +39,8 @@ const Sidebar = () => {
         setActiveSection('Experience');
       } else if (projectsSection && scrollPosition >= projectsSection.offsetTop) {
         setActiveSection('Projects');
+      } else if (educationSection && scrollPosition >= educationSection.offsetTop) {
+        setActiveSection('Education');
       } else {
         setActiveSection('About');
       }

@@ -2,6 +2,7 @@
   "name": "Carlos Keglevich",
   "title": "Software Engineer",
   "about": "Über mich",
+  "education": "Ausbildung",
   "projects": "Projekte",
   "experience": {
     "label": "Erfahrung",
@@ -17,6 +18,29 @@
     "description1": "Hallo! Ich bin Carlos Keglevich, ein Full-Stack-Entwickler mit Backend-Fokus, wohnhaft in Deutschland. Ich konzentriere mich auf die Entwicklung sicherer und skalierbarer Enterprise-Anwendungen.",
     "description2": "Ich spezialisiere mich auf Java Spring Boot und React/TypeScript und entwickle robuste REST-APIs mit solider Architektur, CI/CD-Pipelines und End-to-End-Tests.",
     "description3": "Außerhalb der Programmierung genieße ich lange Spaziergänge in der Natur, Schachspielen, körperliche Aktivität und das Lesen über Technologie und Innovation."
+  },
+  "educationSection": {
+    "heading": "Bildung & Weiterbildung",
+    "entry1": {
+      "title": "Bachelor of Arts — Betriebswirtschaftslehre (BWL)",
+      "institution": "Pontifícia Universidade Católica do Rio Grande do Sul (PUCRS), Brasilien",
+      "note": "Offiziell anerkannt in Deutschland — Zeugnisbewertung KMK"
+    },
+    "entry2": {
+      "title": "Qualifizierung Anwendungs- und Datenbankentwicklung (modular)",
+      "institution": "Comcave College, Deutschland — gefördert durch die Bundesagentur für Arbeit",
+      "note": "Schwerpunkte: Java SE, Oracle-Datenbankentwicklung, Anwendungsentwicklung"
+    },
+    "entry3": {
+      "title": "Oracle Java SE Zertifizierung (OCA / OCP) — in Vorbereitung",
+      "institution": "",
+      "note": ""
+    },
+    "entry4": {
+      "title": "Full-Stack Development",
+      "institution": "DIO — Digital Innovation One (remote, 2023–2024)",
+      "note": "React, TypeScript, JavaScript, Java, GraphQL"
+    }
   },
   "experienceSection": {
     "experience1": {

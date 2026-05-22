@@ -21,6 +21,18 @@ const SidebarMenu = ({ activeSection, changeLanguage }) => {
         </StyledLink>
 
         <StyledLink
+          to="Education"
+          smooth={true}
+          duration={500}
+          spy={true}
+          activeClass={activeSection === 'Education' ? 'active' : ''}
+          containerId="scroll-container"
+          offset={70}
+        >
+          {t('education')}
+        </StyledLink>
+
+        <StyledLink
           to="Projects"
           smooth={true}
           duration={500}

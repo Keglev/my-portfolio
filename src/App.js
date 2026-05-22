@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css'; // Import the CSS file for custom styles
 import Projects from './components/Projects/Projects'; // Import Projects component
 import About from './components/About/About'; // Import About component
+import Education from './components/Education/Education'; // Import Education component
 import Experience from './components/Experience/Experience'; // Import Experience component
 import Sidebar from './components/Sidebar/Sidebar'; // Import Sidebar component
 import RepoDocs from './components/RepoDocs/RepoDocs';
@@ -25,6 +26,11 @@ function App() {
           {/* Section for About component */}
           <div className="section" id="About">
             <About />
+          </div>
+
+          {/* Section for Education component */}
+          <div className="section" id="Education">
+            <Education />
           </div>
 
           {/* Section for Projects component */}
