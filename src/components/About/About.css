@@ -39,7 +39,7 @@
 
 /* Paragraph styling inside the content area */
 .content p {
-  text-align: justify; /* Justifies the text */
+  text-align: left; /* Align text to the left */
   margin-bottom: 1rem;
   font-size: 1rem;
   color: #8892b0; /* Muted text color for paragraphs */
