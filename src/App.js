@@ -1,54 +1,54 @@
 import React from 'react';
-import './App.css'; // Import the CSS file for custom styles
-import Projects from './components/Projects/Projects'; // Import Projects component
-import About from './components/About/About'; // Import About component
-import Education from './components/Education/Education'; // Import Education component
-import Experience from './components/Experience/Experience'; // Import Experience component
-import Sidebar from './components/Sidebar/Sidebar'; // Import Sidebar component
+import './App.css';
+import Projects from './components/Projects/Projects';
+import About from './components/About/About';
+import Education from './components/Education/Education';
+import Experience from './components/Experience/Experience';
+import Sidebar from './components/Sidebar/Sidebar';
 import RepoDocs from './components/RepoDocs/RepoDocs';
 import Legal from './components/Legal/Legal';
-import { GlobalStyles } from './styles/GlobalStyles'; // Import global styles
-import "./i18n"; // Import the i18n configuration
+import { GlobalStyles } from './styles/GlobalStyles';
+import "./i18n"; // Initializes i18next with locale resources; must be imported before any translated component renders
 
+/**
+ * Root application component.
+ * Renders the fixed sidebar alongside a scrollable main content area.
+ * Section `id` attributes must stay in sync with sidebar navigation anchors for scroll-spy to work.
+ */
 function App() {
   return (
     <>
-      {/* Apply global styles to the entire app */}
+      {/* Injects CSS-in-JS global resets and theme variables into the document */}
       <GlobalStyles />
 
-      {/* Container that holds both the sidebar and main content */}
       <div className="container">
-        {/* Sidebar component for navigation */}
+        {/* Fixed navigation sidebar; highlights the active section as the user scrolls */}
         <Sidebar />
 
-        {/* Main content area with scrolling container */}
+        {/* `scroll-container` is the scroll target monitored by the sidebar's scroll-spy logic */}
         <div className="main-content" id="scroll-container">
-          {/* Section for About component */}
           <div className="section" id="About">
             <About />
           </div>
 
-          {/* Section for Education component */}
           <div className="section" id="Education">
             <Education />
           </div>
 
-          {/* Section for Projects component */}
           <div className="section" id="Projects">
             <Projects />
           </div>
 
-          {/* Section for Repo Docs component (moved to appear after Projects) */}
+          {/* Displays auto-fetched README documentation for pinned repositories */}
           <div className="section" id="RepoDocs">
             <RepoDocs />
           </div>
 
-          {/* Section for Experience component */}
           <div className="section" id="Experience">
             <Experience />
           </div>
 
-          {/* Section for Legal / Impressum and Privacy Policy */}
+          {/* Impressum and Privacy Policy — required for legal compliance (GDPR) */}
           <div className="section" id="Legal">
             <Legal />
           </div>
