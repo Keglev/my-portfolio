@@ -16,11 +16,15 @@ export const SidebarContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
+  padding: 1.5rem 1rem;
+  overflow-y: auto;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
     width: 100%;
     height: auto;
     position: relative;
+    overflow-y: visible;
   }
 `;
 
@@ -89,8 +93,6 @@ export const Menu = styled.div`
  * Wrapper for social links like GitHub, LinkedIn, and Email
  */
 export const SocialLinksWrapper = styled.div`
-  margin-top: auto;
-  margin-bottom: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -127,7 +129,7 @@ export const SocialLinks = styled.div`
  * Footer message at the bottom of the sidebar
  */
 export const FooterMessage = styled.div`
-  margin-bottom: 2rem;
+  margin-bottom: 0;
   text-align: center;
   font-size: 0.9rem;
   color: #ccd6f6;
@@ -145,10 +147,10 @@ export const FooterMessage = styled.div`
  * Wrapper for language buttons area
  */
 export const LanguageWrapper = styled.div`
-  margin-bottom: 4.5rem; /* more separation from menu */
+  margin-bottom: 1rem;
   display: flex;
-  gap: 1.5rem; /* increased gap so buttons sit away from menu links */
-  margin-top: 1rem; /* ensure there is room above buttons */
+  gap: 1.5rem;
+  margin-top: 1rem;
   button {
     background: rgba(100,255,218,0.04);
     border: 1px solid rgba(100,255,218,0.16);
@@ -190,13 +192,10 @@ export const LegalButton = styled.button`
  * Wrapper for the CV download button
  */
 export const CVDownloadWrapper = styled.div`
-  margin-bottom: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 0;
   display: flex;
   justify-content: center;
-  padding: 0.6rem 0.8rem;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.02);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(0, 0, 0, 0.02));
 `;
 
 /**
