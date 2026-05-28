@@ -185,3 +185,42 @@ export const LegalButton = styled.button`
   text-decoration: underline;
   font: inherit;
 `;
+
+/**
+ * Wrapper for the CV download button
+ */
+export const CVDownloadWrapper = styled.div`
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), rgba(0, 0, 0, 0.02));
+`;
+
+/**
+ * Styled anchor for downloading the CV, matches the language button effect
+ */
+export const CVDownloadLink = styled.a`
+  display: inline-block;
+  background: rgba(100, 255, 218, 0.04);
+  border: 1px solid rgba(100, 255, 218, 0.16);
+  color: #64ffda;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(10, 25, 47, 0.25);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease,
+    box-shadow 0.12s ease;
+
+  &:hover {
+    background: #64ffda;
+    color: #0a192f;
+    transform: translateY(-3px) scale(1.06);
+    box-shadow: 0 8px 18px rgba(100, 255, 218, 0.14);
+  }
+`;

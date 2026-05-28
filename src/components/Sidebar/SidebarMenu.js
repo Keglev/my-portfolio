@@ -1,9 +1,17 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Menu, StyledLink, LanguageWrapper } from './SidebarStyles';
+import { Menu, StyledLink, LanguageWrapper, CVDownloadWrapper, CVDownloadLink } from './SidebarStyles';
 
 const SidebarMenu = ({ activeSection, changeLanguage }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  const cvFile =
+    i18n.language === 'de'
+      ? '/Carlos_Keglevich_Lebenslauf_DE.pdf'
+      : '/Carlos_Keglevich_CV_EN.pdf';
+
+  const cvLabel =
+    i18n.language === 'de' ? 'Lebenslauf herunterladen' : 'Download Resume';
 
   return (
     <>
@@ -73,6 +81,18 @@ const SidebarMenu = ({ activeSection, changeLanguage }) => {
         <button onClick={() => changeLanguage('en')} aria-label="Switch to English">{t('language.english')}</button>
         <button onClick={() => changeLanguage('de')} aria-label="Switch to German">{t('language.german')}</button>
       </LanguageWrapper>
+
+      <CVDownloadWrapper>
+        <CVDownloadLink
+          href={cvFile}
+          download
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={cvLabel}
+        >
+          {cvLabel}
+        </CVDownloadLink>
+      </CVDownloadWrapper>
     </>
   );
 };
