@@ -47,31 +47,10 @@ jobs:
           echo "Generating JSDoc into docs/jsdoc"
           npm run docs:jsdoc
 
-      # Publishing to gh-pages removed — this repo is configured to serve
-      # documentation from `main/docs`. The workflow will still generate
-      # JSDoc into `docs/jsdoc` so you can commit or manage it as needed.
-
-      - name: Prepare Vercel prebuilt output
-        run: |
-          rm -rf .vercel/output || true
-          mkdir -p .vercel/output/static
-          cp -r build/* .vercel/output/static/ || true
-          cp -f public/projects.json .vercel/output/static/projects.json || true
-          cp -r public/projects_media .vercel/output/static/projects_media || true
-          printf '%s\n' '{' '  "version": 3,' '  "routes": [' '    { "handle": "filesystem" },' '    { "src": "/(.*)", "dest": "/index.html" }' '  ]' '}' > .vercel/output/config.json
-
-      - name: Verify prebuilt static artifacts
-        run: |
-          echo "Listing .vercel/output/static contents"
-          ls -la .vercel/output/static || true
-          if [ -f .vercel/output/static/projects.json ]; then
-            echo "projects.json size:" $(stat -c%s .vercel/output/static/projects.json)
-            node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('.vercel/output/static/projects.json','utf8')||'[]');console.log('repos:',p.length);for(const r of p){const api=(r.repoDocs&&r.repoDocs.apiDocumentation&&r.repoDocs.apiDocumentation.link)||null;const arch=(r.repoDocs&&r.repoDocs.architectureOverview&&r.repoDocs.architectureOverview.link)||null;console.log(r.name,'docsLink->',r.docsLink||null,'api->',api,'arch->',arch)}"
-          else
-            echo "ERROR: .vercel/output/static/projects.json not found"; exit 1;
-          fi
-
-      # Vercel deploy step removed per request — this workflow will generate
-      # API docs and (optionally) publish them to the `gh-pages` branch. To
-      # deploy the site via Vercel use your existing Vercel workflow or run
-      # deployment manually from your local machine.
+      - name: Deploy JSDoc API docs
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/jsdoc
+          keep_files: false
+          commit_message: "docs: update JSDoc [${{ github.sha }}]"
