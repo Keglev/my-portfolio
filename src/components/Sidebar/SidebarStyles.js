@@ -16,8 +16,8 @@ export const SidebarContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
-  padding: 1.5rem 1rem;
-  overflow-y: auto;
+  padding: 1rem 1rem;
+  overflow: hidden;
   box-sizing: border-box;
 
   @media (max-width: 768px) {
@@ -54,23 +54,25 @@ export const NameTitle = styled.div`
   text-align: center;
 
   h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    font-size: clamp(1.4rem, 4.8vw, 1.9rem);
+    margin-bottom: 0.3rem;
     color: #64ffda;
+    white-space: nowrap;
   }
 
   h2 {
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     color: #8892b0;
   }
 
   @media (max-width: 768px) {
     h1 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
+      white-space: normal;
     }
 
     h2 {
-      font-size: 1.2rem;
+      font-size: 1rem;
     }
   }
 `;
@@ -79,10 +81,10 @@ export const NameTitle = styled.div`
  * Menu wrapper for the links
  */
 export const Menu = styled.div`
-  margin-top: 2rem;
+  margin-top: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.2rem;
 
   @media (max-width: 768px) {
     display: none; /* Hide menu on smaller screens */
