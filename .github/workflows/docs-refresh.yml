@@ -51,12 +51,12 @@ jobs:
           npm run docs:jsdoc
 
       - name: Copy coverage report into docs
-        run: cp -r coverage/ docs/jsdoc/coverage/
+        run: cp -r coverage/ docs/coverage/
 
-      - name: Deploy JSDoc API docs
+      - name: Deploy docs
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs/jsdoc
+          publish_dir: ./docs
           keep_files: false
           commit_message: "docs: update JSDoc [${{ github.sha }}]"
