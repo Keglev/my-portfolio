@@ -3,6 +3,10 @@ name: CI
 on:
   push:
     branches: [ main ]
+    # Only run when source or test files change.
+    # Docs-only changes are handled directly by docs-refresh.yml.
+    paths:
+      - 'src/**'
   pull_request:
     branches: [ main ]
 
@@ -25,3 +29,17 @@ jobs:
           CI: true
         run: npm run test:ci
       # Debug README artifact upload removed from CI to avoid storing raw README samples in workflow artifacts.
+
+  # Runs once after all matrix test jobs pass, on pushes to main only (not PRs).
+  # This ensures docs-refresh (and its coverage report) always reflects passing code.
+  trigger-docs-refresh:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - name: Trigger docs-refresh workflow
+        run: gh workflow run docs-refresh.yml --ref main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

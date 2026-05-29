@@ -3,11 +3,18 @@ name: Docs refresh
 on:
   push:
     branches: [ main ]
-    # only trigger when repository-local docs change
+    # Trigger directly only for docs changes.
+    # Code/test changes are handled by ci.yml, which dispatches this workflow
+    # after all tests pass.
     paths:
       - 'docs/**'
-      - 'src/**'
   workflow_dispatch:
+
+# Prevent concurrent runs. If docs/** and src/** both change in the same commit,
+# the docs-triggered run is cancelled in favour of the CI-dispatched one.
+concurrency:
+  group: docs-refresh
+  cancel-in-progress: true
 
 jobs:
   refresh-docs:
