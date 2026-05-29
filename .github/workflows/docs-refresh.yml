@@ -5,8 +5,8 @@ on:
     branches: [ main ]
     # only trigger when repository-local docs change
     paths:
-      - 'README.md'
       - 'docs/**'
+      - 'src/**'
   workflow_dispatch:
 
 jobs:
@@ -23,6 +23,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
+
+      - name: Run tests with coverage
+        run: npm run test:node -- --coverage
 
       - name: Fetch projects (docs-only run)
         env:
@@ -46,6 +49,9 @@ jobs:
         run: |
           echo "Generating JSDoc into docs/jsdoc"
           npm run docs:jsdoc
+
+      - name: Copy coverage report into docs
+        run: cp -r coverage/ docs/jsdoc/coverage/
 
       - name: Deploy JSDoc API docs
         uses: peaceiris/actions-gh-pages@v4

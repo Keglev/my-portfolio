@@ -11,5 +11,7 @@ module.exports = {
     '^.+\\.(css|less|scss|sass)$': '<rootDir>/config/jest/styleMock.js',
     '^.+\\.(jpg|jpeg|png|gif|webp|svg)$': '<rootDir>/config/jest/fileMock.js',
     '^react-dom/test-utils$': '<rootDir>/config/jest/react-dom-test-utils.js'
-  }
+  },
+  coverageReporters: ['html', 'text', 'lcov'],
+  coverageDirectory: '<rootDir>/coverage'
 };
