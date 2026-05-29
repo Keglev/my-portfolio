@@ -30,6 +30,6 @@
 /* Section padding and scroll margin */
 .section {
   padding: 2rem 0; /* Vertical padding for sections */
-  min-height: 90vh; /* Each section takes up most of the viewport height */
+  min-height: auto; /* Sections are as tall as their content — no artificial gaps */
   scroll-margin-top: 70px; /* Offset for scrolling behavior */
 }
