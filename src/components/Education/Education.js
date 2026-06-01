@@ -2,6 +2,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './Education.css';
 
+/**
+ * Displays a list of educational qualifications and certifications.
+ * Dynamically renders education entries from i18n resources with optional institution
+ * and note fields.
+ *
+ * @returns {JSX.Element} Education section with a list of qualification cards.
+ */
 const Education = () => {
   const { t } = useTranslation();
 
