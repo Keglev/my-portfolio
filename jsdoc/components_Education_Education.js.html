@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/Projects/Projects.js</title>
+    <title>JSDoc: Source: components/Education/Education.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/Projects/Projects.js</h1>
+    <h1 class="page-title">Source: components/Education/Education.js</h1>
 
     
 
@@ -26,65 +26,64 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+            <pre class="prettyprint source linenums"><code>import React from 'react';
 import { useTranslation } from 'react-i18next';
-import ProjectCard from './ProjectCard';
-import { getPrimaryImage } from './projectsUtils';
-import './Projects.css';
-
-// We intentionally do NOT require a build-time JSON file here because during
-// the production build that file may not exist and webpack would fail.
-// The pipeline writes `public/projects.json` which we fetch at runtime below.
-let ProjectsData = [];
+import './Education.css';
 
 /**
- * Projects component
- * Renders a grid of ProjectCard components using pre-built data (deployed_projects.json).
+ * Displays a list of educational qualifications and certifications.
+ * Dynamically renders education entries from i18n resources with optional institution
+ * and note fields.
+ *
+ * @returns {JSX.Element} Education section with a list of qualification cards.
  */
-const Projects = () => {
+const Education = () => {
   const { t } = useTranslation();
-  const [projects, setProjects] = useState(() => ProjectsData || []);
-  // track loaded state per project so ProjectCard can toggle the `.visible` class
-  const [loadedImages, setLoadedImages] = useState({});
 
-  // If build-time `deployed_projects.json` is empty, try to fetch the runtime
-  // `public/projects.json` as a fallback so the Projects list renders during dev.
-  useEffect(() => {
-    if (projects &amp;&amp; projects.length > 0) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch('/projects.json');
-        if (!res.ok) return;
-        const json = await res.json();
-        if (!cancelled &amp;&amp; Array.isArray(json) &amp;&amp; json.length > 0) setProjects(json);
-      } catch (e) {
-        // ignore fetch errors
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [projects]);
+  const entries = [
+    {
+      title: t('educationSection.entry1.title'),
+      institution: t('educationSection.entry1.institution'),
+      note: t('educationSection.entry1.note'),
+    },
+    {
+      title: t('educationSection.entry2.title'),
+      institution: t('educationSection.entry2.institution'),
+      note: t('educationSection.entry2.note'),
+    },
+    {
+      title: t('educationSection.entry3.title'),
+      institution: t('educationSection.entry3.institution'),
+      note: t('educationSection.entry3.note'),
+    },
+    {
+      title: t('educationSection.entry4.title'),
+      institution: t('educationSection.entry4.institution'),
+      note: t('educationSection.entry4.note'),
+    },
+  ];
 
   return (
-    &lt;section className="project-container" id="Projects">
-      &lt;h2>{t('projects', 'Projects')}&lt;/h2>
-      &lt;div className="project-grid">
-        {projects.map((p, idx) => (
-          &lt;ProjectCard
-            key={p.name || idx}
-            project={p}
-            image={getPrimaryImage(p)}
-            index={idx}
-            loadedImages={loadedImages}
-            setLoadedImages={setLoadedImages}
-          />
+    &lt;div className="education-container" id="Education">
+      &lt;h2>{t('educationSection.heading')}&lt;/h2>
+      &lt;div className="education-list">
+        {entries.map((entry, index) => (
+          &lt;div className="education-card" key={index}>
+            &lt;h3>{entry.title}&lt;/h3>
+            {entry.institution &amp;&amp; (
+              &lt;p className="education-institution">{entry.institution}&lt;/p>
+            )}
+            {entry.note &amp;&amp; (
+              &lt;p className="education-note">{entry.note}&lt;/p>
+            )}
+          &lt;/div>
         ))}
       &lt;/div>
-    &lt;/section>
+    &lt;/div>
   );
 };
 
-export default Projects;
+export default Education;
 </code></pre>
         </article>
     </section>
