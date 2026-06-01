@@ -34,7 +34,7 @@ jobs:
         run: npm ci --legacy-peer-deps
 
       - name: Run tests with coverage
-        run: npm run test:node -- --coverage
+        run: npx jest --config=jest.node.config.js --runInBand --testPathPattern=src/__tests__ --coverage
 
       - name: Fetch projects (docs-only run)
         env:
