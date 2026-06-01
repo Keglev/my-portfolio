@@ -60,12 +60,16 @@ jobs:
           npm run docs:jsdoc
 
       - name: Copy coverage report into docs
-        run: cp -r coverage/ docs/coverage/
+        run: |
+          rm -rf docs/coverage
+          cp -r coverage docs/coverage
 
-      - name: Deploy docs
+      - name: Deploy docs to gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
+          publish_branch: gh-pages
           keep_files: false
-          commit_message: "docs: update JSDoc [${{ github.sha }}]"
+          force_orphan: false
+          commit_message: "docs: update coverage and jsdoc [${{ github.sha }}]"
