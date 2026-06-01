@@ -3,10 +3,16 @@ name: CI
 on:
   push:
     branches: [ main ]
-    # Only run when source or test files change.
+    # Run when source, test, or config files change.
     # Docs-only changes are handled directly by docs-refresh.yml.
     paths:
       - 'src/**'
+      - 'scripts/**'
+      - 'config/**'
+      - 'jest.node.config.js'
+      - 'package.json'
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/docs-refresh.yml'
   pull_request:
     branches: [ main ]
 
