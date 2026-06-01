@@ -33,8 +33,10 @@ jobs:
       - name: Install dependencies
         run: npm ci --legacy-peer-deps
 
-      - name: Run tests with coverage
-        run: npx jest --config=jest.node.config.js --runInBand --testPathPattern=src/__tests__ --coverage
+      - name: Run tests with coverage (full test suite)
+        run: |
+          echo "Running full test suite to collect complete coverage"
+          npx jest --config=jest.node.config.js --runInBand --coverage
 
       - name: Fetch projects (docs-only run)
         env:
