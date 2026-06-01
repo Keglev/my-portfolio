@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">95.45% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/22</span>
+                <span class='fraction'>21/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">73.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>11/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/6</span>
+                <span class='fraction'>6/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/17</span>
+                <span class='fraction'>17/17</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -131,42 +131,42 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -190,43 +190,43 @@ import './Projects.css';
 // We intentionally do NOT require a build-time JSON file here because during
 // the production build that file may not exist and webpack would fail.
 // The pipeline writes `public/projects.json` which we fetch at runtime below.
-let ProjectsData = <span class="cstat-no" title="statement not covered" >[];</span>
+let ProjectsData = [];
 &nbsp;
 /**
  * Projects component
  * Renders a grid of ProjectCard components using pre-built data (deployed_projects.json).
  */
-const Projects = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-  const { t } = <span class="cstat-no" title="statement not covered" >useTranslation();</span>
-  const [projects, setProjects] = <span class="cstat-no" title="statement not covered" >useState(<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >ProjectsData || [])</span>;</span>
+const Projects = () =&gt; {
+  const { t } = useTranslation();
+  const [projects, setProjects] = useState(() =&gt; ProjectsData || <span class="branch-1 cbranch-no" title="branch not covered" >[])</span>;
   // track loaded state per project so ProjectCard can toggle the `.visible` class
-  const [loadedImages, setLoadedImages] = <span class="cstat-no" title="statement not covered" >useState({});</span>
+  const [loadedImages, setLoadedImages] = useState({});
 &nbsp;
   // If build-time `deployed_projects.json` is empty, try to fetch the runtime
   // `public/projects.json` as a fallback so the Projects list renders during dev.
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    if (projects &amp;&amp; projects.length &gt; 0) <span class="cstat-no" title="statement not covered" >return;</span></span>
-    let cancelled = <span class="cstat-no" title="statement not covered" >false;</span>
-<span class="cstat-no" title="statement not covered" >    (<span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      try {</span>
-        const res = <span class="cstat-no" title="statement not covered" >await fetch('/projects.json');</span>
-<span class="cstat-no" title="statement not covered" >        if (!res.ok) <span class="cstat-no" title="statement not covered" >return;</span></span>
-        const json = <span class="cstat-no" title="statement not covered" >await res.json();</span>
-<span class="cstat-no" title="statement not covered" >        if (!cancelled &amp;&amp; Array.isArray(json) &amp;&amp; json.length &gt; 0) <span class="cstat-no" title="statement not covered" >setProjects(json);</span></span>
+  useEffect(() =&gt; {
+    if (projects &amp;&amp; projects.length &gt; 0) return;
+    let cancelled = false;
+    (async () =&gt; {
+      try {
+        const res = await fetch('/projects.json');
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!res.ok) <span class="cstat-no" title="statement not covered" >return;</span>
+        const json = await res.json();
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (!cancelled &amp;&amp; Array.isArray(json) &amp;&amp; json.length &gt; 0) setProjects(json);
       } catch (e) {
         // ignore fetch errors
       }
     })();
-<span class="cstat-no" title="statement not covered" >    return <span class="fstat-no" title="function not covered" >()</span> =&gt; { <span class="cstat-no" title="statement not covered" >cancelled = true; </span>};</span>
+    return () =&gt; { cancelled = true; };
   }, [projects]);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;section className="project-container" id="Projects"&gt;
       &lt;h2&gt;{t('projects', 'Projects')}&lt;/h2&gt;
       &lt;div className="project-grid"&gt;
-        {projects.map(<span class="fstat-no" title="function not covered" >(p</span>, idx) =&gt; (
-<span class="cstat-no" title="statement not covered" >          &lt;ProjectCard</span>
-            key={p.name || idx}
+        {projects.map((p, idx) =&gt; (
+          &lt;ProjectCard
+            key={p.name || <span class="branch-1 cbranch-no" title="branch not covered" >idx}</span>
             project={p}
             image={getPrimaryImage(p)}
             index={idx}
@@ -247,7 +247,7 @@ export default Projects;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-01T13:01:43.351Z
+                at 2026-06-01T17:04:36.765Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

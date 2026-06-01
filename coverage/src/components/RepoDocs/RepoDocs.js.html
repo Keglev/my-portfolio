@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">14.08% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/71</span>
+                <span class='fraction'>10/71</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">0.64% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/156</span>
+                <span class='fraction'>1/156</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">23.07% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/13</span>
+                <span class='fraction'>3/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">17.85% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/56</span>
+                <span class='fraction'>10/56</span>
             </div>
         
             
@@ -218,18 +218,14 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -240,6 +236,10 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -267,14 +267,14 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -369,14 +369,14 @@
 import { useTranslation } from 'react-i18next';
 import './RepoDocs.css';
 &nbsp;
-const RepoDocs = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-  const { t, i18n } = <span class="cstat-no" title="statement not covered" >useTranslation();</span>
-  const [projectsWithDocs, setProjectsWithDocs] = <span class="cstat-no" title="statement not covered" >useState([]);</span>
+const RepoDocs = () =&gt; {
+  const { t, i18n } = useTranslation();
+  const [projectsWithDocs, setProjectsWithDocs] = useState([]);
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  useEffect(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
-    const load = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >as</span>ync () =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >      try {</span>
-        const res = <span class="cstat-no" title="statement not covered" >await fetch('/projects.json');</span>
+  useEffect(() =&gt; {
+    const load = async () =&gt; {
+      try {
+        const res = await fetch('/projects.json');
 <span class="cstat-no" title="statement not covered" >        if (!res.ok) <span class="cstat-no" title="statement not covered" >return setProjectsWithDocs([]);</span></span>
         const data = <span class="cstat-no" title="statement not covered" >await res.json();</span>
         // Debug: log the fetched projects for runtime inspection
@@ -418,14 +418,14 @@ const RepoDocs = <span class="cstat-no" title="statement not covered" ><span cla
 <span class="cstat-no" title="statement not covered" >  try { <span class="cstat-no" title="statement not covered" >console.debug('RepoDocs: enriched projectsWithDocs', filtered.map(<span class="fstat-no" title="function not covered" >e </span>=&gt; (<span class="cstat-no" title="statement not covered" >{ name: e.name, docsTitle: e.docsTitle })</span>)); </span>} catch (e) {}</span>
 <span class="cstat-no" title="statement not covered" >  setProjectsWithDocs(filtered);</span>
       } catch (e) {
-<span class="cstat-no" title="statement not covered" >        setProjectsWithDocs([]);</span>
+        setProjectsWithDocs([]);
       }
     };
-<span class="cstat-no" title="statement not covered" >    load();</span>
+    load();
   }, []);
 &nbsp;
   // Render horizontally like Experience cards (compact list)
-<span class="cstat-no" title="statement not covered" >  return (</span>
+  return (
     &lt;div className="experience-container" id="RepoDocs"&gt;
       &lt;h2&gt;{t('repoDocs')}&lt;/h2&gt;
 &nbsp;
@@ -435,7 +435,7 @@ const RepoDocs = <span class="cstat-no" title="statement not covered" ><span cla
             &lt;p&gt;{t('noRepoDocs')}&lt;/p&gt;
           &lt;/div&gt;
         ) : (
-          projectsWithDocs.map(<span class="fstat-no" title="function not covered" >(p</span>, idx) =&gt; (
+<span class="branch-1 cbranch-no" title="branch not covered" >          projectsWithDocs.map(<span class="fstat-no" title="function not covered" >(p</span>, idx) =&gt; (</span>
 <span class="cstat-no" title="statement not covered" >            &lt;div className="experience-card" key={idx}&gt;</span>
               &lt;h3&gt;{p.name}&lt;/h3&gt;
               {/* legacy small title removed: we show descriptions and structured links only */}
@@ -523,7 +523,7 @@ export default RepoDocs;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-01T13:01:43.322Z
+                at 2026-06-01T17:04:36.732Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
