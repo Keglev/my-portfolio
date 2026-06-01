@@ -1,15 +1,16 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next'; // Importing translation hook
-import './Experience.css'; // Importing the CSS file for styling
+import { useTranslation } from 'react-i18next';
+import './Experience.css';
 
 /**
- * The Experience component displays a list of professional experiences,
- * including the title, date, and a brief summary of each position.
+ * Displays a timeline of professional work experience.
+ * Renders job titles, employment dates, and position summaries from i18n resources.
+ *
+ * @returns {JSX.Element} Experience section with a list of job cards.
  */
 const Experience = () => {
-  // Array containing experience data
-  const { t } = useTranslation(); // Initialize translation hook
-  // used text from locales directory according to selected language
+  const { t } = useTranslation();
+  /* Entries pulled from locales directory in the language selected by the user */
   const experiences = [
     {
       title: t('experienceSection.experience1.title'),
@@ -45,10 +46,8 @@ const Experience = () => {
 
   return (
     <div className="experience-container" id="Experience">
-  {/* Heading for the experience section */}
-  <h2>{t('experience.jobExperiences')}</h2>
+      <h2>{t('experience.jobExperiences')}</h2>
       
-      {/* Mapping through the experiences array and displaying each one */}
       <div className="experience-list">
         {experiences.map((exp, index) => (
           <div className="experience-card" key={index}>
