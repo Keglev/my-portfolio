@@ -14,6 +14,8 @@ import "./i18n"; // Initializes i18next with locale resources; must be imported 
  * Root application component.
  * Renders the fixed sidebar alongside a scrollable main content area.
  * Section `id` attributes must stay in sync with sidebar navigation anchors for scroll-spy to work.
+ *
+ * @returns {JSX.Element} Full page layout: global styles, fixed sidebar, and scrollable main content sections.
  */
 function App() {
   return (
