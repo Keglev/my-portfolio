@@ -1,106 +1,121 @@
-/* Container for the About section */
+/* ==========================================================================
+   Component: About Section
+   ========================================================================== */
+
+/* ==========================================================================
+   Layout: Container & Sections
+   ========================================================================== */
+
+/* Main about section — flex layout splits profile image and content horizontally */
 .about-container {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   text-align: left;
   padding: 5rem 2rem;
-  background-color: #0a192f; /* Dark background color */
-  color: #ccd6f6; /* Light text color */
+  background-color: #0a192f;
+  color: #ccd6f6;
 }
 
-/* Media query for smaller screens */
+/* Mobile: Stack sections vertically since horizontal space is limited */
 @media (max-width: 768px) {
   .about-container {
-      flex-direction: column; /* Stack content vertically on small screens */
-      align-items: center; /* Center align content */
+      flex-direction: column;
+      align-items: center;
   }
   .content {
-    text-align: center; /* Center text on smaller screens */
+    text-align: center;
   }
   .tech-list {
-    justify-content: center; /* Center tech stack list */
+    justify-content: center;
   }
 }
 
-/* Content area styling */
+/* ==========================================================================
+   Content: Text & Typography
+   ========================================================================== */
+
+/* 600px max-width ensures comfortable reading length (55–75 chars per line) */
 .content {
-  max-width: 600px; /* Restrict content width for better readability */
-  text-align: left; /* Align text to the left */
+  max-width: 600px;
+  text-align: left;
 }
 
-/* Heading styling inside the content area */
 .content h2 {
-  color: #64ffda; /* Bright accent color */
+  color: #64ffda;
   font-size: 2rem;
   margin-bottom: 1.5rem;
-  text-align: left; /* Align heading left */
+  text-align: left;
 }
 
-/* Paragraph styling inside the content area */
 .content p {
-  text-align: left; /* Align text to the left */
+  text-align: left;
   margin-bottom: 1rem;
   font-size: 1rem;
-  color: #8892b0; /* Muted text color for paragraphs */
-  line-height: 1.5; /* Increased line-height for readability */
+  color: #8892b0;
+  line-height: 1.5; /* Increased for accessibility and readability */
 }
 
-/* Tech list styling */
+/* ==========================================================================
+   Tech Stack: Grid Layout
+   ========================================================================== */
+
+/* Two-column grid keeps tech items compact while maintaining scannability */
 .tech-list {
   display: grid;
-  grid-template-columns: repeat(2, minmax(140px, 200px)); /* Create two columns */
-  gap: 0.5rem; /* Space between tech items */
+  grid-template-columns: repeat(2, minmax(140px, 200px));
+  gap: 0.5rem;
   margin-top: 1rem;
-  list-style: none; /* Remove bullet points */
-  color: #64ffda; /* Bright color for tech names */
-  padding-left: 0; /* Remove default list padding */
-  text-align: left; /* Align tech list to the left */
+  list-style: none;
+  color: #64ffda;
+  padding-left: 0;
+  text-align: left;
 }
 
-/* Styling for individual tech list items */
 .tech-list li {
   font-size: 1rem;
   margin-bottom: 0.5rem;
   display: flex;
-  align-items: center; /* Align icon with text */
+  align-items: center;
 }
 
-/* Icon styling inside tech list items */
+/* Icon sits left of text; 1.5rem matches the visual weight of text */
 .tech-list svg {
   margin-right: 0.5rem;
-  font-size: 1.5rem; /* Adjust icon size */
-  color: #64ffda; /* Bright icon color */
+  font-size: 1.5rem;
+  color: #64ffda;
 }
 
-/* Profile image container styling */
+/* ==========================================================================
+   Profile Image: Image & Effects
+   ========================================================================== */
+
 .profile {
   max-width: 300px;
-  margin-left: 4rem; /* Add margin to the left of the image */
+  margin-left: 4rem; /* Horizontal spacing between content and image */
 }
 
-/* Profile image styling */
 .profile img {
   width: 100%;
   max-width: 250px;
-  border-radius: 50%; /* Make the image round */
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3); /* Add subtle shadow */
-  border: 4px solid #64ffda; /* Add a bright border */
-  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease; /* Smooth hover effects */
+  border-radius: 50%;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+  border: 4px solid #64ffda;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
 }
 
-/* Hover effect for the profile image */
+/* Hover states provide visual feedback; scale=1.05 is subtle but noticeable */
 .profile img:hover {
-  transform: scale(1.05); /* Slight zoom */
-  box-shadow: 0px 12px 20px rgba(0, 255, 150, 0.6); /* Larger shadow on hover */
-  filter: hue-rotate(160deg); /* Color shift effect */
+  transform: scale(1.05);
+  box-shadow: 0px 12px 20px rgba(0, 255, 150, 0.6); /* Larger halo effect signals interaction */
+  filter: hue-rotate(160deg); /* Accent color shift emphasizes hover state */
 }
 
-/* Media query for profile section on smaller screens */
+/* Mobile: Remove left margin and stack profile below content */
 @media (max-width: 768px) {
   .profile {
       margin-left: 0;
       margin-top: 2rem;
-      max-width: 250px; /* Restrict image size on small screens */
+      max-width: 250px;
   }
 }

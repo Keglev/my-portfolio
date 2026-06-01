@@ -1,17 +1,20 @@
 import React from 'react';
-import './About.css'; // Import the CSS file for styling
-import ProfilePic from '../../assets/profile-pic.jpg'; // Import the profile image
-import { SiReact, SiPostgresql, SiSpringboot, SiDocker, SiTypescript, SiMaterialdesign, SiGit, SiVite } from 'react-icons/si'; // Import technology icons
-import { FaJava, FaGithub, FaShieldAlt } from 'react-icons/fa'; // Import Java, GitHub and Shield icons
-import { TbTestPipe } from 'react-icons/tb'; // test pipe icon for JUnit/Mockito
-import { useTranslation } from 'react-i18next'; // Translation function to translate text
+import './About.css';
+import ProfilePic from '../../assets/profile-pic.jpg';
+import { SiReact, SiPostgresql, SiSpringboot, SiDocker, SiTypescript, SiMaterialdesign, SiGit, SiVite } from 'react-icons/si';
+import { FaJava, FaGithub, FaShieldAlt } from 'react-icons/fa';
+import { TbTestPipe } from 'react-icons/tb';
+import { useTranslation } from 'react-i18next';
 
 /**
- * The About component renders information about the developer
- * and showcases the technologies they are proficient in.
+ * Renders developer profile and technology stack.
+ * Displays introductory text from i18n resources alongside a profile picture
+ * and icons for key technical skills grouped into categories.
+ *
+ * @returns {JSX.Element} About section with profile image, biography text, and tech stack icons.
  */
 const About = () => {
-  const { t } = useTranslation(); // Translation function to translate text
+  const { t } = useTranslation();
   return (
     <div className="about-container" id="About">
       {/* Content section */}
@@ -22,7 +25,7 @@ const About = () => {
         <p>{t('aboutSection.description2')}</p>
         <p>{t('aboutSection.description3')}</p>
       
-        {/* Shorter tech lists — grouped */}
+        {/* Grouped by domain: backend, frontend, devops */}
         <p>🔧 <strong>Tech Stack:</strong></p>
         <ul className="tech-list">
           <li><FaJava /> Java 17</li>
