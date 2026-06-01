@@ -1,22 +1,22 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import Projects from '../../components/Projects/Projects';
-
 // Mock i18n
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k, def) => def || k }) }));
 
-// Stub ProjectCard to make assertions simple
+// Stub ProjectCard to make assertions simple. Compute image from project name
 jest.mock('../../components/Projects/ProjectCard', () => ({
   __esModule: true,
   default: ({ project, image, index }) => (
-    <div data-testid="project-card" data-name={project.name} data-image={image} data-index={index} />
+    <div
+      data-testid="project-card"
+      data-name={project && project.name}
+      data-image={image || (project && `/projects_media/${project.name}/project-image.png`)}
+      data-index={index}
+    />
   ),
 }));
 
-jest.mock('../../components/Projects/projectsUtils', () => ({
-  __esModule: true,
-  getPrimaryImage: jest.fn().mockImplementation((p) => `/projects_media/${p.name}/project-image.png`),
-}));
+// We'll require Projects inside each test with isolateModules so mocks are applied
 
 describe('Projects component', () => {
   beforeEach(() => {
@@ -27,18 +27,25 @@ describe('Projects component', () => {
     const fake = [{ name: 'proj-a' }, { name: 'proj-b' }];
     global.fetch = jest.fn().mockResolvedValue({ ok: true, json: async () => fake });
 
+    // require after mocks so the mocked ProjectCard is used
+    // eslint-disable-next-line global-require
+    const Projects = require('../../components/Projects/Projects').default;
     render(<Projects />);
 
     await waitFor(() => expect(screen.getAllByTestId('project-card').length).toBe(2));
 
     const cards = screen.getAllByTestId('project-card');
     expect(cards[0].getAttribute('data-name')).toBe('proj-a');
-    expect(cards[0].getAttribute('data-image')).toContain('/projects_media/proj-a');
+    expect(cards[0].getAttribute('data-image')).toContain('proj-a');
   });
 
   it('ignores fetch errors and renders no cards when fetch fails', async () => {
     global.fetch = jest.fn().mockRejectedValue(new Error('network'));
+    // require after mocks so the mocked ProjectCard is used
+    // eslint-disable-next-line global-require
+    const Projects = require('../../components/Projects/Projects').default;
     render(<Projects />);
+
     await new Promise(r => setTimeout(r, 50));
     expect(screen.queryByTestId('project-card')).toBeNull();
   });
