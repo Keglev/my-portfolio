@@ -138,7 +138,7 @@ const RepoDocs = () => {
 
               {/* Legacy fallback: render legacy docsLink if nothing structured exists */}
               {!((p.repoDocs && (p.repoDocs.apiDocumentation || p.repoDocs.architectureOverview)) || (p.docs && p.docs.documentation)) && p.docsLink && (
-                <p><a href={(p.docsLink && p.docsLink.includes('raw.githubusercontent.com')) ? p.docsLink.replace(/^https:\/\/raw\.githubusercontent\.com\//i, 'https://github.com/').replace(/\/([^/]+)\/([^/]+)\/(.+)$/, '/blob/$1/$2/$3') : p.docsLink} target="_blank" rel="noopener noreferrer" className="project-link">{t('viewDocs')}</a></p>
+                <p><a href={(p.docsLink && p.docsLink.includes('raw.githubusercontent.com')) ? p.docsLink.replace(/^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/i, 'https://github.com/$1/$2/blob/$3/$4') : p.docsLink} target="_blank" rel="noopener noreferrer" className="project-link">{t('viewDocs')}</a></p>
               )}
             </div>
           ))

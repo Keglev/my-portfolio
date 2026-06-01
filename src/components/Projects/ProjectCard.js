@@ -65,11 +65,14 @@ const ProjectCard = ({
         img.src = `https://raw.githubusercontent.com/keglev/${project.name}/master/src/assets/imgs/project-image.png`;
         return;
       } catch (err) {}
+    }
+
+    if (tries === 2) {
       if (typeof generatePlaceholderSVGDataUrl === 'function') {
         img.src = generatePlaceholderSVGDataUrl(project.name);
       } else {
         // Last resort: 1×1 transparent GIF to silence the broken-image indicator
-        img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==';
+        img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=='
       }
     }
 
@@ -107,7 +110,7 @@ const ProjectCard = ({
             );
           }
           // Render a skeleton placeholder while the description is still loading
-          return <div className="skeleton-description short skeleton" style={{width: '60%'}} />;
+          return <div data-testid="project-summary-skeleton" className="skeleton-description short skeleton" style={{width: '60%'}} />;
         })()}
         <div className="technologies">
           {/* Use pre-parsed technology list when available; otherwise extract keywords from README text */}
