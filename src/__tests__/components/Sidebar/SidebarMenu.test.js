@@ -31,4 +31,20 @@ describe('SidebarMenu', () => {
     expect(changeLanguage).toHaveBeenCalledWith('en');
     expect(changeLanguage).toHaveBeenCalledWith('de');
   });
+
+  it('renders the German CV label and file when the active language is de', () => {
+    const changeLanguage = jest.fn();
+    i18n.changeLanguage('de');
+
+    render(
+      <I18nextProvider i18n={i18n}>
+        <SidebarMenu activeSection="About" changeLanguage={changeLanguage} />
+      </I18nextProvider>
+    );
+
+    expect(screen.getByRole('link', { name: /lebenslauf herunterladen/i })).toHaveAttribute(
+      'href',
+      '/Carlos_Keglevich_Lebenslauf_DE.pdf'
+    );
+  });
 });
