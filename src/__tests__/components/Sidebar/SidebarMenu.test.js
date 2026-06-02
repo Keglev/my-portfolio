@@ -47,4 +47,25 @@ describe('SidebarMenu', () => {
       '/Carlos_Keglevich_Lebenslauf_DE.pdf'
     );
   });
+
+  it('evaluates the RepoDocs and Experience active branches', () => {
+    const changeLanguage = jest.fn();
+    i18n.changeLanguage('en');
+
+    const { rerender } = render(
+      <I18nextProvider i18n={i18n}>
+        <SidebarMenu activeSection="RepoDocs" changeLanguage={changeLanguage} />
+      </I18nextProvider>
+    );
+
+    expect(screen.getByRole('link', { name: /projects documentation/i })).toBeInTheDocument();
+
+    rerender(
+      <I18nextProvider i18n={i18n}>
+        <SidebarMenu activeSection="Experience" changeLanguage={changeLanguage} />
+      </I18nextProvider>
+    );
+
+    expect(screen.getByRole('link', { name: /job experiences/i })).toBeInTheDocument();
+  });
 });

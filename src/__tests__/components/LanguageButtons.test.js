@@ -39,4 +39,17 @@ describe('LanguageButtons component', () => {
     expect(changeMock).toHaveBeenCalledWith('en');
     expect(enBtn).toHaveClass('active');
   });
+
+  it('defaults to German when no language is set', () => {
+    useTranslation.mockReturnValue({
+      i18n: { language: undefined, changeLanguage: jest.fn() },
+      t: (k) => (k === 'language.english' ? 'English' : 'German'),
+    });
+
+    const LanguageButtons = require('../../components/LanguageButtons/LanguageButtons').default;
+    render(<LanguageButtons />);
+
+    expect(screen.getByText('German')).toHaveClass('active');
+    expect(screen.getByText('English')).not.toHaveClass('active');
+  });
 });
