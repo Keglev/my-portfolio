@@ -469,4 +469,4 @@ function shouldTranslateUI(s) {
   try { return s && typeof s === 'string' && s.trim().length > 0 && s.trim().length <= 300; } catch (e) { return false; }
 }
 
-module.exports = { extractRepoDocsDetailed, shouldTranslateUI };
+module.exports = { extractRepoDocsDetailed, shouldTranslateUI, stripAstJsonFragments };
