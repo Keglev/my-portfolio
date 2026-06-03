@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">41.17% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/17</span>
+                <span class='fraction'>17/17</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">42.85% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>9/21</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/14</span>
+                <span class='fraction'>14/14</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -92,49 +92,49 @@
 <a name='L27'></a><a href='#L27'>27</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">#!/usr/bin/env node
 // Small normalization helpers for docs links and repoDocs
-function <span class="fstat-no" title="function not covered" >toRawGithub(</span>href, repoName) {
-<span class="cstat-no" title="statement not covered" >  if (!href) <span class="cstat-no" title="statement not covered" >return href;</span></span>
-<span class="cstat-no" title="statement not covered" >  if (/^https?:\/\//i.test(href)) <span class="cstat-no" title="statement not covered" >return href;</span></span>
-  const p = <span class="cstat-no" title="statement not covered" >String(href).trim().replace(/^\.\//, '').replace(/^\//, '');</span>
-<span class="cstat-no" title="statement not covered" >  return `https://raw.githubusercontent.com/keglev/${repoName}/main/${p}`;</span>
+function toRawGithub(href, repoName) {
+  if (!href) return href;
+  if (/^https?:\/\//i.test(href)) return href;
+  const p = String(href).trim().replace(/^\.\//, '').replace(/^\//, '');
+  return `https://raw.githubusercontent.com/keglev/${repoName}/main/${p}`;
 }
 &nbsp;
 function normalizeRepoDocsLinks(node) {
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (!node || !node.repoDocs) <span class="cstat-no" title="statement not covered" >return node;</span>
+  if (!node || !node.repoDocs) return node;
   try {
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (node.repoDocs.architectureOverview &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >node.repoDocs.architectureOverview.link)</span> {
-<span class="cstat-no" title="statement not covered" >      node.repoDocs.architectureOverview.link = toRawGithub(node.repoDocs.architectureOverview.link, node.name);</span>
+    if (node.repoDocs.architectureOverview &amp;&amp; node.repoDocs.architectureOverview.link) {
+      node.repoDocs.architectureOverview.link = toRawGithub(node.repoDocs.architectureOverview.link, node.name);
     }
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (node.repoDocs.apiDocumentation &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >node.repoDocs.apiDocumentation.link)</span> {
-<span class="cstat-no" title="statement not covered" >      node.repoDocs.apiDocumentation.link = toRawGithub(node.repoDocs.apiDocumentation.link, node.name);</span>
+    if (node.repoDocs.apiDocumentation &amp;&amp; node.repoDocs.apiDocumentation.link) {
+      node.repoDocs.apiDocumentation.link = toRawGithub(node.repoDocs.apiDocumentation.link, node.name);
     }
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (node.repoDocs.testing &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >node.repoDocs.testing.testingDocs </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >node.repoDocs.testing.testingDocs.link)</span> {
-<span class="cstat-no" title="statement not covered" >      node.repoDocs.testing.testingDocs.link = toRawGithub(node.repoDocs.testing.testingDocs.link, node.name);</span>
+    if (node.repoDocs.testing &amp;&amp; node.repoDocs.testing.testingDocs &amp;&amp; node.repoDocs.testing.testingDocs.link) {
+      node.repoDocs.testing.testingDocs.link = toRawGithub(node.repoDocs.testing.testingDocs.link, node.name);
     }
   } catch (e) { /* swallow */ }
   return node;
@@ -148,7 +148,7 @@ module.exports = { toRawGithub, normalizeRepoDocsLinks };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-03T17:38:53.993Z
+                at 2026-06-03T18:01:39.421Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

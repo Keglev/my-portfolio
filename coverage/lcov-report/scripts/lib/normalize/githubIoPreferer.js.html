@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">73.33% </span>
+                <span class="strong">86.66% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>22/30</span>
+                <span class='fraction'>26/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.45% </span>
+                <span class="strong">72.97% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>22/37</span>
+                <span class='fraction'>27/37</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.36% </span>
+                <span class="strong">95.45% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>19/22</span>
+                <span class='fraction'>21/22</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -95,29 +95,29 @@
 <a name='L30'></a><a href='#L30'>30</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
@@ -127,26 +127,26 @@ async function tryGithubIo(node, href, getAxios, DEBUG_FETCH) {
   try {
     if (!href) return null;
     const m = href.match(new RegExp('https?://raw.githubusercontent.com/(?:[^/]+)/(?:[^/]+)/(?:main|master)/(?:docs)/(.+)$', 'i'));
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (!m || !m[1]) <span class="cstat-no" title="statement not covered" >return null;</span>
+    if (!m || !m[1]) return null;
     const afterDocs = m[1].replace(/index\.html$/i, '').replace(/(^\/|\/$)/g, '');
     const candidates = [];
     candidates.push(`https://keglev.github.io/${node.name}/${afterDocs}`);
     candidates.push(`https://keglev.github.io/${node.name}/${afterDocs}/index.html`);
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (!afterDocs) candidates.unshift(`https://keglev.github.io/${node.name}/`);
+    if (!afterDocs) candidates.unshift(`https://keglev.github.io/${node.name}/`);
     for (const c of candidates) {
       try {
-        const ax = getAxios ? getAxios() : <span class="branch-1 cbranch-no" title="branch not covered" >null;</span> <span class="missing-if-branch" title="if path not taken" >I</span>if (!ax) <span class="cstat-no" title="statement not covered" >continue;</span>
+        const ax = getAxios ? getAxios() : <span class="branch-1 cbranch-no" title="branch not covered" >null;</span> if (!ax) continue;
         const h = await ax.head(c, { maxRedirects: 5, timeout: 5000 });
         const ct = (h &amp;&amp; h.headers &amp;&amp; h.headers['content-type']) || <span class="branch-3 cbranch-no" title="branch not covered" >'';</span>
         const xfo = (h &amp;&amp; h.headers &amp;&amp; (h.headers['x-frame-options'] || h.headers['X-Frame-Options'])) || '';
-        <span class="missing-if-branch" title="else path not taken" >E</span>if (h &amp;&amp; h.status === 200 &amp;&amp; /html/i.test(ct) &amp;&amp; !/deny/i.test(xfo)) {
+        if (h &amp;&amp; h.status === 200 &amp;&amp; /html/i.test(ct) &amp;&amp; !/deny/i.test(xfo)) {
           <span class="missing-if-branch" title="if path not taken" >I</span>if (DEBUG_FETCH) <span class="cstat-no" title="statement not covered" >console.log('Prefer github.io for', node.name, href, '-&gt;', c, 'headers:', { status: h.status, ct, xfo });</span>
           return c;
         }
-      } catch (e) { <span class="cstat-no" title="statement not covered" >if (DEBUG_FETCH) <span class="cstat-no" title="statement not covered" >console.log('github.io candidate failed', c, e &amp;&amp; e.message); </span></span>}
+      } catch (e) { <span class="missing-if-branch" title="if path not taken" >I</span>if (DEBUG_FETCH) <span class="cstat-no" title="statement not covered" >console.log('github.io candidate failed', c, e &amp;&amp; e.message); </span>}
     }
   } catch (e) { <span class="cstat-no" title="statement not covered" >if (DEBUG_FETCH) <span class="cstat-no" title="statement not covered" >console.log('tryGithubIo error', e &amp;&amp; e.message); </span></span>}
-<span class="cstat-no" title="statement not covered" >  return null;</span>
+  return null;
 }
 &nbsp;
 module.exports = { tryGithubIo };
@@ -157,7 +157,7 @@ module.exports = { tryGithubIo };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-03T17:38:53.993Z
+                at 2026-06-03T18:01:39.421Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
