@@ -4,7 +4,7 @@
   "summarySource": "first-paragraph",
   "translation": {
     "debug": {
-      "requestMs": 2
+      "requestMs": 5
     },
     "summary": {
       "text": null,
