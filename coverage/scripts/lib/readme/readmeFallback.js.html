@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">10% </span>
+                <span class="strong">95% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>2/20</span>
+                <span class='fraction'>19/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">86.66% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/15</span>
+                <span class='fraction'>13/15</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.18% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>2/11</span>
+                <span class='fraction'>11/11</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -84,42 +84,42 @@
 <a name='L19'></a><a href='#L19'>19</a>
 <a name='L20'></a><a href='#L20'>20</a>
 <a name='L21'></a><a href='#L21'>21</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">#!/usr/bin/env node
 let axios = null;
-function <span class="fstat-no" title="function not covered" >getAxios(</span>) {
-<span class="cstat-no" title="statement not covered" >  if (axios) <span class="cstat-no" title="statement not covered" >return axios;</span></span>
-<span class="cstat-no" title="statement not covered" >  try { const _a = <span class="cstat-no" title="statement not covered" >require('axios');</span> <span class="cstat-no" title="statement not covered" >axios = _a &amp;&amp; _a.default ? _a.default : _a; <span class="cstat-no" title="statement not covered" ></span>return axios; </span>} catch (e) { <span class="cstat-no" title="statement not covered" >axios = null; <span class="cstat-no" title="statement not covered" ></span>return null; </span>}</span>
+function getAxios() {
+  <span class="missing-if-branch" title="if path not taken" >I</span>if (axios) <span class="cstat-no" title="statement not covered" >return axios;</span>
+  try { const _a = require('axios'); axios = _a &amp;&amp; _a.default ? _a.default : <span class="branch-1 cbranch-no" title="branch not covered" >_a;</span> return axios; } catch (e) { axios = null; return null; }
 }
 &nbsp;
-async function <span class="fstat-no" title="function not covered" >fetchReadmeFromRaw(</span>org, repo, branches = <span class="branch-0 cbranch-no" title="branch not covered" >['main','master'],</span> timeout = <span class="branch-0 cbranch-no" title="branch not covered" >8000)</span> {
-  const ax = <span class="cstat-no" title="statement not covered" >getAxios();</span> <span class="cstat-no" title="statement not covered" >if (!ax) <span class="cstat-no" title="statement not covered" >return null;</span></span>
-<span class="cstat-no" title="statement not covered" >  for (const br of branches) {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-      const url = <span class="cstat-no" title="statement not covered" >`https://raw.githubusercontent.com/${org}/${repo}/${br}/README.md`;</span>
-      const r = <span class="cstat-no" title="statement not covered" >await ax.get(url, { responseType: 'text', timeout });</span>
-<span class="cstat-no" title="statement not covered" >      if (r &amp;&amp; r.status === 200 &amp;&amp; r.data) <span class="cstat-no" title="statement not covered" >return r.data;</span></span>
+async function fetchReadmeFromRaw(org, repo, branches = ['main','master'], timeout = 8000) {
+  const ax = getAxios(); if (!ax) return null;
+  for (const br of branches) {
+    try {
+      const url = `https://raw.githubusercontent.com/${org}/${repo}/${br}/README.md`;
+      const r = await ax.get(url, { responseType: 'text', timeout });
+      if (r &amp;&amp; r.status === 200 &amp;&amp; r.data) return r.data;
     } catch (e) { /* ignore */ }
   }
-<span class="cstat-no" title="statement not covered" >  return null;</span>
+  return null;
 }
 &nbsp;
 module.exports = { fetchReadmeFromRaw };
@@ -130,7 +130,7 @@ module.exports = { fetchReadmeFromRaw };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-03T18:01:39.364Z
+                at 2026-06-03T19:10:40.081Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
