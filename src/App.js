@@ -8,6 +8,7 @@ import Sidebar from './components/Sidebar/Sidebar';
 import RepoDocs from './components/RepoDocs/RepoDocs';
 import Legal from './components/Legal/Legal';
 import { GlobalStyles } from './styles/GlobalStyles';
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import "./i18n"; // Initializes i18next with locale resources; must be imported before any translated component renders
 
 /**
@@ -20,6 +21,9 @@ import "./i18n"; // Initializes i18next with locale resources; must be imported 
 function App() {
   return (
     <>
+      {/* Vercel Speed Insights component for real-time performance monitoring; can be removed in production */}
+      <SpeedInsights />
+
       {/* Injects CSS-in-JS global resets and theme variables into the document */}
       <GlobalStyles />
 

@@ -4,6 +4,11 @@
  * and that key top-level content is present in the DOM.
  */
 import { render, screen } from '@testing-library/react';
+
+jest.mock('@vercel/speed-insights/react', () => ({
+  SpeedInsights: () => null,
+}), { virtual: true });
+
 import App from './App';
 
 // Confirm the main heading is rendered — indicates a successful App mount.
