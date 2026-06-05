@@ -202,4 +202,56 @@ describe('main', () => {
     await main([node]);
     expect(node.technologies).toBe('React');
   });
+
+  // ── isBadTitle: node.docs fallback paths ─────────────────────────────────
+
+  test('falls back to node.docs.apiDocumentation.title when repoDocs has no good title', async () => {
+    const node = {
+      name: 'repo',
+      docsTitle: null,
+      docsLink: 'https://example.com',
+      docs: { apiDocumentation: { title: 'API Docs from docs', link: 'https://api.example.com' } },
+    };
+    await main([node]);
+    expect(node.docsTitle).toBe('API Docs from docs');
+  });
+
+  test('falls back to node.docs.documentation.title when apiDocumentation is missing', async () => {
+    const node = {
+      name: 'repo',
+      docsTitle: null,
+      docsLink: 'https://example.com',
+      docs: { documentation: { title: 'General Docs', link: 'https://docs.example.com' } },
+    };
+    await main([node]);
+    expect(node.docsTitle).toBe('General Docs');
+  });
+
+  test('sets docsTitle to null when docsTitle is null and docsLink is also absent', async () => {
+    const node = { name: 'repo', docsTitle: null, docsLink: null };
+    await main([node]);
+    expect(node.docsTitle).toBeNull();
+  });
+
+  // ── tryGithubIo for repoDocs.testing.testingDocs ──────────────────────────
+
+  test('probes github.io for repoDocs.testing.testingDocs raw link', async () => {
+    axios.head = jest.fn(async () => ({
+      status: 200,
+      headers: { 'content-type': 'text/html' },
+    }));
+    const node = {
+      name: 'repo',
+      repoDocs: {
+        testing: {
+          testingDocs: {
+            link: 'https://raw.githubusercontent.com/keglev/repo/main/docs/testing.html',
+          },
+        },
+      },
+    };
+    await main([node]);
+    expect(node.repoDocs.testing.testingDocs.link).toMatch(/keglev\.github\.io\/repo/);
+  });
+
 });

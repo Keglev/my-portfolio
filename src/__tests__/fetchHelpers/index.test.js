@@ -28,4 +28,66 @@ describe('fetchProjects helpers', () => {
     expect(isBadgeLike('https://example.com/image.png')).toBe(false);
     expect(isBadgeLike('https://github.com/actions/workflows/ci.yml/badge.svg')).toBe(true);
   });
+
+  // ── extractRepoDocsDetailed re-export ────────────────────────────────────
+
+  test('module.exports includes extractRepoDocsDetailed when docs module is available', () => {
+    const mod = require('../../../scripts/fetchProjects');
+    expect(typeof mod.extractRepoDocsDetailed).toBe('function');
+  });
+
+  // ── findImageCandidateFromAst and extractDocsFromAst re-exports ───────────
+
+  test('module.exports includes findImageCandidateFromAst', () => {
+    const mod = require('../../../scripts/fetchProjects');
+    expect(typeof mod.findImageCandidateFromAst).toBe('function');
+  });
+
+  test('module.exports includes extractDocsFromAst', () => {
+    const mod = require('../../../scripts/fetchProjects');
+    expect(typeof mod.extractDocsFromAst).toBe('function');
+  });
+
+  test('module.exports includes extractTechnologiesFromAst', () => {
+    const mod = require('../../../scripts/fetchProjects');
+    expect(typeof mod.extractTechnologiesFromAst).toBe('function');
+  });
+
+  // ── normalizeSummary edge cases ───────────────────────────────────────────
+
+  test('normalizeSummary returns empty string for blank input', () => {
+    expect(normalizeSummary('')).toBe('');
+    expect(normalizeSummary('   ')).toBe('');
+  });
+
+  test('normalizeSummary strips emoji characters', () => {
+    const out = normalizeSummary('Hello 😊 world', 60);
+    expect(out).not.toContain('😊');
+    expect(out).toContain('Hello');
+  });
+
+  // ── normalizeTitle edge cases ─────────────────────────────────────────────
+
+  test('normalizeTitle returns null for null/undefined/empty input', () => {
+    expect(normalizeTitle(null)).toBeNull();
+    expect(normalizeTitle(undefined)).toBeNull();
+    expect(normalizeTitle('')).toBeNull();
+  });
+
+  test('normalizeTitle strips backtick code spans', () => {
+    const out = normalizeTitle('`const foo`');
+    expect(out).not.toContain('`');
+  });
+
+  // ── extractSectionWithRegex edge cases ────────────────────────────────────
+
+  test('extractSectionWithRegex returns null when no section matches', () => {
+    const md = '# Title\n\n## Intro\n\nSome intro text.\n\n## Other\n\nOther text.';
+    const result = extractSectionWithRegex(md, [/\bnonsense\b/i]);
+    expect(result).toBeNull();
+  });
+
+  test('extractSectionWithRegex returns null for empty markdown', () => {
+    expect(extractSectionWithRegex('', [/about/i])).toBeNull();
+  });
 });

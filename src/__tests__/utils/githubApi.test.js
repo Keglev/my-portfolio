@@ -56,3 +56,42 @@ describe('githubApi.fetchPinnedRepositories', () => {
     consoleErrorSpy.mockRestore();
   });
 });
+
+// ── axios.default resolution ──────────────────────────────────────────────────
+// Tests the `_axios && _axios.default ? _axios.default : _axios` branch by
+// providing a mock whose exports object has a `.default` property.
+
+describe('githubApi – axios.default branch', () => {
+  beforeEach(() => {
+    jest.resetModules();
+    jest.clearAllMocks();
+  });
+
+  it('uses axios.default when the required module exposes a .default export', async () => {
+    const mockPost = jest.fn().mockResolvedValue({
+      data: {
+        data: { user: { pinnedItems: { nodes: [{ name: 'repo-default' }] } } },
+      },
+    });
+    jest.doMock('axios', () => ({ default: { post: mockPost }, __esModule: true }));
+
+    const { fetchPinnedRepositories } = require('../../utils/githubApi');
+    const nodes = await fetchPinnedRepositories();
+
+    jest.unmock('axios');
+    expect(mockPost).toHaveBeenCalledTimes(1);
+    expect(nodes).toEqual([{ name: 'repo-default' }]);
+  });
+
+  it('returns empty array and logs error when axios require throws', async () => {
+    jest.doMock('axios', () => { throw new Error('module not found'); });
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { fetchPinnedRepositories } = require('../../utils/githubApi');
+    const nodes = await fetchPinnedRepositories();
+
+    jest.unmock('axios');
+    consoleSpy.mockRestore();
+    expect(nodes).toEqual([]);
+  });
+});

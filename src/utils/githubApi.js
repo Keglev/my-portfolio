@@ -32,8 +32,7 @@ export const fetchPinnedRepositories = async () => {
         const _axios = require('axios');
         axios = _axios && _axios.default ? _axios.default : _axios;
       } catch (e) {
-        // fallback to dynamic import where available
-        try { const imported = await import('axios'); axios = imported && imported.default ? imported.default : imported; } catch (ee) { axios = undefined; }
+        axios = undefined;
       }
     }
 

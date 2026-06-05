@@ -93,4 +93,32 @@ describe('projectsUtils', () => {
     expect(getTechnologyWords('')).toEqual([]);
     expect(getTechnologyWords('## About\nNothing relevant')).toEqual([]);
   });
+
+  it('returns null for getAboutSection on null/undefined input or when About heading is absent', () => {
+    expect(getAboutSection(null)).toBeNull();
+    expect(getAboutSection(undefined)).toBeNull();
+    expect(getAboutSection('# Title\n## Other\nSome text')).toBeNull();
+  });
+
+  it('returns null when the About section contains only blank lines before the next heading', () => {
+    expect(getAboutSection('## About\n\n## Next')).toBeNull();
+  });
+
+  it('skips blank lines inside the About section without including them in output', () => {
+    const readme = '## About\n\nActual content here.\n\n## Next';
+    const result = getAboutSection(readme);
+    expect(result).toBe('Actual content here.');
+  });
+
+  it('uses "Project" as the SVG title when generatePlaceholderSVGDataUrl receives a falsy value', () => {
+    const svgUrl = generatePlaceholderSVGDataUrl(null);
+    const decoded = decodeURIComponent(svgUrl.replace('data:image/svg+xml;charset=UTF-8,', ''));
+    expect(decoded).toContain('Project');
+    expect(svgUrl.startsWith('data:image/svg+xml;charset=UTF-8,')).toBe(true);
+  });
+
+  it('skips bold entries that are only whitespace when extracting technology words', () => {
+    const readme = '## Technologies\n- **  **\n- **React**';
+    expect(getTechnologyWords(readme)).toEqual(['React']);
+  });
 });

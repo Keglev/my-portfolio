@@ -115,4 +115,72 @@ describe('extractReadmeDocs AST paths', () => {
     expect(result.apiDocumentation.link).toBe('https://raw.githubusercontent.com/keglev/repo-abs/main/docs/api.html');
     expect(result.productionUrl.link).toBe('https://raw.githubusercontent.com/keglev/repo-abs/main/docs/index.html');
   });
+
+  it('extracts architecture, API and production URL from real markdown list items', async () => {
+    const readmeText = [
+      '# Architecture Overview',
+      '- [Index](./docs/architecture/index.html)',
+      '# API',
+      '- [Complete API](./docs/api.md)',
+      '# Production URL',
+      '- [Production URL](https://keglev.github.io/repo-li/)',
+    ].join('\n');
+
+    const result = await extractRepoDocsDetailed(readmeText, 'repo-li', null);
+
+    // Architecture from list item regex fallback (findLinksInListItem not exported by real module)
+    expect(result.architectureOverview.link).toBe('https://keglev.github.io/repo-li/docs/architecture/index.html');
+    // API from list item via extractTextFromListItem
+    expect(result.apiDocumentation.link).toBe('https://github.com/keglev/repo-li/blob/main/docs/api.md');
+    // Production URL from list item
+    expect(result.productionUrl.link).toBe('https://keglev.github.io/repo-li/');
+  });
+
+  it('converts github.com blob .html safe path to github pages URL', async () => {
+    const readmeText = [
+      '# Architecture Overview',
+      '[Index](https://github.com/keglev/repo-blob/blob/main/docs/arch.html)',
+      '# API',
+      '[Complete API](https://github.com/keglev/repo-blob/blob/main/docs/api.md)',
+    ].join('\n');
+
+    const result = await extractRepoDocsDetailed(readmeText, 'repo-blob', null);
+
+    // blob .html safe path → github pages (line 52)
+    expect(result.architectureOverview.link).toBe('https://keglev.github.io/repo-blob/docs/arch.html');
+    // blob .md safe path → returns href (line 50)
+    expect(result.apiDocumentation.link).toBe('https://github.com/keglev/repo-blob/blob/main/docs/api.md');
+  });
+
+  it('returns blob URL unchanged when path does not match safe docs pattern', async () => {
+    const readmeText = [
+      '# Architecture Overview',
+      '[Index](https://github.com/keglev/repo-unsafe/blob/main/other/readme.html)',
+    ].join('\n');
+
+    const result = await extractRepoDocsDetailed(readmeText, 'repo-unsafe', null);
+
+    // blobMatch but safePattern fails → return href unchanged
+    expect(result.architectureOverview.link).toBe('https://github.com/keglev/repo-unsafe/blob/main/other/readme.html');
+  });
+
+  it('finds API documentation via final scan when label contains "api"', async () => {
+    const readmeText = 'Check the [API Reference](./docs/api-guide.html) for usage details.';
+
+    const result = await extractRepoDocsDetailed(readmeText, 'repo-api-scan', null);
+
+    // Final scan: hasApiInLabel = true → found
+    expect(result.apiDocumentation).toBeDefined();
+    expect(result.apiDocumentation.title).toBe('API Reference');
+  });
+
+  it('finds API documentation via final scan when URL ends with api.html', async () => {
+    const readmeText = 'Full [Reference Docs](./docs/api.html) available here.';
+
+    const result = await extractRepoDocsDetailed(readmeText, 'repo-api-url', null);
+
+    // Final scan: hasApiInUrl = true (api.html)
+    expect(result.apiDocumentation).toBeDefined();
+    expect(result.apiDocumentation.link).toBe('https://keglev.github.io/repo-api-url/docs/api.html');
+  });
 });

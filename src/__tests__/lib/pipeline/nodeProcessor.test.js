@@ -1,3 +1,8 @@
+jest.mock('fs', () => ({
+  existsSync: jest.fn(() => false),
+  readdirSync: jest.fn(() => []),
+}));
+
 // Mock sub-modules that would otherwise overwrite node properties we want to test
 jest.mock('../../../../scripts/lib/readme/readmeHandler');
 jest.mock('../../../../scripts/lib/docs', () => ({ extractRepoDocsDetailed: jest.fn() }));
@@ -13,10 +18,19 @@ jest.mock('../../../../scripts/lib/normalize/normalize', () => ({
   normalizeRepoDocsLinks: jest.fn(),
 }));
 
+const fs = require('fs');
 const readmeHandler = require('../../../../scripts/lib/readme/readmeHandler');
 const docsModule = require('../../../../scripts/lib/docs');
+const docsHeuristics = require('../../../../scripts/lib/docs/docsHeuristics');
+const mediaPersistence = require('../../../../scripts/lib/media/persistence');
+const normalizeModule = require('../../../../scripts/lib/normalize/normalize');
 const { processNode } = require('../../../../scripts/lib/pipeline/nodeProcessor');
 const parseReadme = require('../../../../scripts/lib/parseReadme');
+
+// Real modules (not mocked) — used for spying in specific tests
+const summaryExtractor = require('../../../../scripts/lib/summary/summaryExtractor');
+const translatorFacade = require('../../../../scripts/lib/translation/translatorFacade');
+const githubIoPreferer = require('../../../../scripts/lib/normalize/githubIoPreferer');
 
 function makeServices(overrides = {}) {
   return {
@@ -32,11 +46,13 @@ function makeServices(overrides = {}) {
 
 describe('nodeProcessor – processNode', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.resetAllMocks();
     delete process.env.DEBUG_FETCH;
-    // Default: sub-modules are silent no-ops
+    // Restore default behaviours for the key mocked sub-modules
     readmeHandler.processNodeReadme.mockResolvedValue(undefined);
     docsModule.extractRepoDocsDetailed.mockResolvedValue(null);
+    fs.existsSync.mockReturnValue(false);
+    fs.readdirSync.mockReturnValue([]);
   });
 
   afterEach(() => {
@@ -72,6 +88,25 @@ describe('nodeProcessor – processNode', () => {
     expect(readmeHandler.processNodeReadme).toHaveBeenCalled();
   });
 
+  // ── extractRepoDocsDetailed ───────────────────────────────────────────────
+
+  test('assigns node.repoDocs when extractRepoDocsDetailed returns a non-null value', async () => {
+    docsModule.extractRepoDocsDetailed.mockResolvedValue({
+      apiDocumentation: { title: 'API Ref', link: 'https://example.com/api' },
+    });
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    const result = await processNode(node, makeServices());
+    expect(result.repoDocs).toBeDefined();
+    expect(result.repoDocs.apiDocumentation.title).toBe('API Ref');
+  });
+
+  test('does not assign node.repoDocs when extractRepoDocsDetailed returns null', async () => {
+    docsModule.extractRepoDocsDetailed.mockResolvedValue(null);
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    await processNode(node, makeServices());
+    expect(node.repoDocs).toBeUndefined();
+  });
+
   // ── DEBUG_FETCH via service flag ──────────────────────────────────────────
 
   test('logs and swallows readmeHandler error when DEBUG_FETCH=true', async () => {
@@ -85,7 +120,98 @@ describe('nodeProcessor – processNode', () => {
       expect.any(String),
       expect.any(String)
     );
-    consoleLogSpy.mockRestore();
+  });
+
+  test('logs and swallows extractRepoDocsDetailed error when DEBUG_FETCH=true', async () => {
+    docsModule.extractRepoDocsDetailed.mockRejectedValue(new Error('docs boom'));
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    await processNode(node, makeServices({ DEBUG_FETCH: true }));
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining('extractRepoDocsDetailed failed'),
+      expect.any(String),
+      expect.any(String)
+    );
+  });
+
+  test('logs and swallows docsHeuristics.postProcessDocsLinkCandidates error when DEBUG_FETCH=true', async () => {
+    docsHeuristics.postProcessDocsLinkCandidates.mockImplementation(() => { throw new Error('heuristics boom'); });
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    await processNode(node, makeServices({ DEBUG_FETCH: true }));
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining('postProcessDocsLinkCandidates failed'),
+      expect.any(String),
+      expect.any(String)
+    );
+  });
+
+  test('logs and swallows summaryExtractor error when DEBUG_FETCH=true', async () => {
+    jest.spyOn(summaryExtractor, 'extractSummaryFromNode').mockImplementation(() => { throw new Error('summary boom'); });
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    await processNode(node, makeServices({ DEBUG_FETCH: true }));
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining('summary extraction failed'),
+      expect.any(String),
+      expect.any(String)
+    );
+  });
+
+  test('records _translation.error and logs when translateNode throws with DEBUG_FETCH=true', async () => {
+    jest.spyOn(translatorFacade, 'translateNode').mockRejectedValue(new Error('translate boom'));
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    await processNode(node, makeServices({ DEBUG_FETCH: true }));
+    expect(node._translation.error).toBe('translate boom');
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining('translation error'),
+      expect.any(String)
+    );
+  });
+
+  test('logs and swallows persistMetaForNode error when DEBUG_FETCH=true', async () => {
+    mediaPersistence.persistMetaForNode.mockImplementation(() => { throw new Error('persist boom'); });
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    await processNode(node, makeServices({ DEBUG_FETCH: true }));
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining('persistMetaForNode failed'),
+      expect.any(String),
+      expect.any(String)
+    );
+  });
+
+  test('logs and swallows normalizeRepoDocsLinks error when DEBUG_FETCH=true', async () => {
+    normalizeModule.normalizeRepoDocsLinks.mockImplementation(() => { throw new Error('normalize boom'); });
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    await processNode(node, makeServices({ DEBUG_FETCH: true }));
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining('normalizeRepoDocsLinks failed'),
+      expect.any(String),
+      expect.any(String)
+    );
+  });
+
+  test('logs when github.io prefer throws with DEBUG_FETCH=true', async () => {
+    jest.spyOn(githubIoPreferer, 'tryGithubIo').mockRejectedValue(new Error('probe boom'));
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const rawUrl = 'https://raw.githubusercontent.com/keglev/repo/main/docs/index.html';
+    const node = { name: 'repo', object: { text: '# Hi' }, docsLink: rawUrl };
+    await processNode(node, makeServices({ DEBUG_FETCH: true }));
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringContaining('github.io prefer failed'),
+      expect.any(String),
+      expect.any(String)
+    );
+  });
+
+  test('logs translation timing when DEBUG_FETCH=true and translation succeeds', async () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    await processNode(node, makeServices({ DEBUG_FETCH: true }));
+    expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/translation took \d+ms for repo/));
   });
 
   // ── DEBUG_FETCH via process.env ───────────────────────────────────────────
@@ -126,8 +252,21 @@ describe('nodeProcessor – processNode', () => {
     expect(result._translation).toBeDefined();
   });
 
+  test('records _translation.error when translateNode throws', async () => {
+    jest.spyOn(translatorFacade, 'translateNode').mockRejectedValue(new Error('translate fail'));
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    const result = await processNode(node, makeServices());
+    expect(result._translation.error).toBe('translate fail');
+  });
+
+  test('initializes _translation.summary and _translation.docsTitle to null stubs', async () => {
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    const result = await processNode(node, makeServices());
+    expect(result._translation.summary).toEqual({ text: null, status: null });
+    expect(result._translation.docsTitle).toEqual({ text: null, status: null });
+  });
+
   // ── raw.githubusercontent → tryGithubIo: docsLink ────────────────────────
-  // readmeHandler is mocked so it will NOT overwrite docsLink.
 
   test('leaves docsLink unchanged when github.io probe returns 404', async () => {
     const rawUrl = 'https://raw.githubusercontent.com/keglev/repo/main/docs/guide.html';
@@ -148,7 +287,6 @@ describe('nodeProcessor – processNode', () => {
   });
 
   // ── raw.githubusercontent → tryGithubIo: repoDocs sub-paths ──────────────
-  // extractRepoDocsDetailed is mocked to return null, so node.repoDocs is preserved.
 
   test('replaces repoDocs.apiDocumentation.link when it is a raw.githubusercontent URL', async () => {
     const rawUrl = 'https://raw.githubusercontent.com/keglev/repo/main/docs/api.html';
@@ -195,7 +333,32 @@ describe('nodeProcessor – processNode', () => {
   // ── mediaDownloaded flag ──────────────────────────────────────────────────
 
   test('sets mediaDownloaded=false when media directory does not exist', async () => {
-    const node = { name: 'repo-that-does-not-exist', object: { text: '# Hi' } };
+    fs.existsSync.mockReturnValue(false);
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    const result = await processNode(node, makeServices());
+    expect(result.mediaDownloaded).toBe(false);
+  });
+
+  test('sets mediaDownloaded=true when media dir has files besides meta.json', async () => {
+    fs.existsSync.mockReturnValue(true);
+    fs.readdirSync.mockReturnValue(['screenshot.png', 'meta.json']);
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    const result = await processNode(node, makeServices());
+    expect(result.mediaDownloaded).toBe(true);
+  });
+
+  test('sets mediaDownloaded=false when media dir exists but only has meta.json', async () => {
+    fs.existsSync.mockReturnValue(true);
+    fs.readdirSync.mockReturnValue(['meta.json']);
+    const node = { name: 'repo', object: { text: '# Hi' } };
+    const result = await processNode(node, makeServices());
+    expect(result.mediaDownloaded).toBe(false);
+  });
+
+  test('sets mediaDownloaded=false when readdirSync throws', async () => {
+    fs.existsSync.mockReturnValue(true);
+    fs.readdirSync.mockImplementation(() => { throw new Error('EPERM'); });
+    const node = { name: 'repo', object: { text: '# Hi' } };
     const result = await processNode(node, makeServices());
     expect(result.mediaDownloaded).toBe(false);
   });
@@ -203,7 +366,6 @@ describe('nodeProcessor – processNode', () => {
   // ── outer catch ───────────────────────────────────────────────────────────
 
   test('does not propagate unexpected top-level errors', async () => {
-    // Passing a broken parseReadme triggers errors deep in the pipeline
     const node = { name: 'repo', object: { text: '# Hi\n\nContent.' } };
     const result = await processNode(node, makeServices({ parseReadme: null }));
     expect(result).toBeDefined();

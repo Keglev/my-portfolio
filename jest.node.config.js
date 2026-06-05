@@ -24,13 +24,16 @@ module.exports = {
     'scripts/**/*.js',
     // Include all source files so coverage report is comprehensive
   ],
-  // Exclude test files from coverage reporting
+  // Exclude test files, entry points, and standalone debug/audit scripts from coverage reporting
   coveragePathIgnorePatterns: [
     'node_modules',
     '__tests__',
     '\\.test\\.js$',
     '\\.spec\\.js$',
+    'setupTests\\.js',
+    'debugRepoDocs\\.js',
+    'audit-check\\.js',
   ],
-  coverageReporters: ['html', 'text', 'lcov'],
+  coverageReporters: ['html', 'text', 'lcov', 'json-summary'],
   coverageDirectory: '<rootDir>/coverage'
 };
