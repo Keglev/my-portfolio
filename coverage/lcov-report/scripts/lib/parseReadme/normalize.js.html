@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.66% </span>
+                <span class="strong">93.33% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>26/30</span>
+                <span class='fraction'>28/30</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40.9% </span>
+                <span class="strong">63.63% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>9/22</span>
+                <span class='fraction'>14/22</span>
             </div>
         
             
@@ -96,39 +96,39 @@
 <a name='L31'></a><a href='#L31'>31</a>
 <a name='L32'></a><a href='#L32'>32</a>
 <a name='L33'></a><a href='#L33'>33</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">27x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
-<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">54x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-yes">45x</span>
+<span class="cline-any cline-yes">45x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">function normalizeTitle(t, maxLen = <span class="branch-0 cbranch-no" title="branch not covered" >120)</span> {
-  <span class="missing-if-branch" title="if path not taken" >I</span>if (!t) <span class="cstat-no" title="statement not covered" >return null;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">function normalizeTitle(t, maxLen = 120) {
+  if (!t) return null;
   try {
     let s = String(t || <span class="branch-1 cbranch-no" title="branch not covered" >'')</span>;
     s = s.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
@@ -137,8 +137,8 @@
     s = s.replace(/:[a-z0-9_+-]+:/gi, '');
     s = s.replace(/[*_`&gt;#~]/g, '');
     s = s.replace(/\s+/g, ' ').trim();
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (s.length &gt; maxLen) s = s.slice(0, maxLen).trim() + '…';
-    return s || <span class="branch-1 cbranch-no" title="branch not covered" >null;</span>
+    if (s.length &gt; maxLen) s = s.slice(0, maxLen).trim() + '…';
+    return s || null;
   } catch (e) { <span class="cstat-no" title="statement not covered" >return (t &amp;&amp; String(t).slice(0, maxLen)) || null; </span>}
 }
 &nbsp;
@@ -153,7 +153,7 @@ function normalizeSummary(t, maxLen = 400) {
     s = s.replace(/https?:\/\/\S+/g, '');
     s = s.replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '');
     s = s.replace(/\s+/g, ' ').trim();
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (s.length &gt; maxLen) <span class="cstat-no" title="statement not covered" >s = s.slice(0, maxLen).trim() + '…';</span>
+    if (s.length &gt; maxLen) s = s.slice(0, maxLen).trim() + '…';
     return s;
   } catch (e) { <span class="cstat-no" title="statement not covered" >return (t &amp;&amp; String(t).slice(0, maxLen)) || ''; </span>}
 }
@@ -166,7 +166,7 @@ module.exports = { normalizeTitle, normalizeSummary };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-05T12:06:45.458Z
+                at 2026-06-05T18:47:12.955Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
