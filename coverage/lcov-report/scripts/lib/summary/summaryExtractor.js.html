@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.48% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>22/27</span>
+                <span class='fraction'>27/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">58.97% </span>
+                <span class="strong">97.43% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>23/39</span>
+                <span class='fraction'>38/39</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/3</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">86.36% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>19/22</span>
+                <span class='fraction'>22/22</span>
             </div>
         
             
@@ -98,32 +98,32 @@
 <a name='L33'></a><a href='#L33'>33</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">35x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">27x</span>
+<span class="cline-any cline-yes">27x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
@@ -134,28 +134,28 @@ function extractSummaryFromNode(node, parseReadme) {
   let summary = '';
   let summarySource = null;
   try {
-    const astLocal = (node &amp;&amp; node._ast) || (<span class="branch-2 cbranch-no" title="branch not covered" >readme ? parseReadme.parseMarkdown(readme) : null)</span>;
+    const astLocal = (node &amp;&amp; node._ast) || (readme ? parseReadme.parseMarkdown(readme) : null);
     const headingRegexes = [/\babout\b/i, /\bsummary\b/i, /\boverview\b/i, /\bdescription\b/i, /\bintro\b/i, /\bwhat\b/i];
     let sec = null;
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (astLocal) sec = parseReadme.findSectionText(astLocal, headingRegexes);
-    <span class="missing-if-branch" title="else path not taken" >E</span>if (!sec &amp;&amp; readme) sec = parseReadme.extractSectionWithRegex(readme, headingRegexes);
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (sec &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >sec.trim().length &gt; 30)</span> {
-      const paras = <span class="cstat-no" title="statement not covered" >sec.split(/\n\s*\n/).map(<span class="fstat-no" title="function not covered" >p </span>=&gt; <span class="cstat-no" title="statement not covered" >p.replace(/\s+/g, ' ').trim())</span>.filter(Boolean);</span>
-<span class="cstat-no" title="statement not covered" >      summary = paras.length ? paras[0] : sec.replace(/\s+/g, ' ').trim();</span>
-<span class="cstat-no" title="statement not covered" >      summarySource = 'heading';</span>
+    if (astLocal) sec = parseReadme.findSectionText(astLocal, headingRegexes);
+    if (!sec &amp;&amp; readme) sec = parseReadme.extractSectionWithRegex(readme, headingRegexes);
+    if (sec &amp;&amp; sec.trim().length &gt; 30) {
+      const paras = sec.split(/\n\s*\n/).map(p =&gt; p.replace(/\s+/g, ' ').trim()).filter(Boolean);
+      summary = paras.length ? paras[0] : <span class="branch-1 cbranch-no" title="branch not covered" >sec.replace(/\s+/g, ' ').trim();</span>
+      summarySource = 'heading';
     }
   } catch (e) { /* swallow - best-effort */ }
 &nbsp;
-  <span class="missing-if-branch" title="else path not taken" >E</span>if (!summary &amp;&amp; readme &amp;&amp; typeof readme === 'string') {
+  if (!summary &amp;&amp; readme &amp;&amp; typeof readme === 'string') {
     const paragraphs = readme.split(/\n\s*\n/).map(p =&gt; p.replace(/\r/g, '').trim()).filter(Boolean);
-    summary = paragraphs.length &gt; 0 ? paragraphs[0].replace(/\s+/g, ' ').trim() : (<span class="branch-1 cbranch-no" title="branch not covered" >readme.replace(/\s+/g, ' ').trim().slice(0, 160))</span>;
-    summarySource = summarySource || (paragraphs.length &gt; 0 ? 'first-paragraph' : <span class="branch-1 cbranch-no" title="branch not covered" >'raw-truncate')</span>;
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (summary.length &gt; 160) <span class="cstat-no" title="statement not covered" >summary = summary.slice(0, 160);</span>
+    summary = paragraphs.length &gt; 0 ? paragraphs[0].replace(/\s+/g, ' ').trim() : (readme.replace(/\s+/g, ' ').trim().slice(0, 160));
+    summarySource = summarySource || (paragraphs.length &gt; 0 ? 'first-paragraph' : 'raw-truncate');
+    if (summary.length &gt; 160) summary = summary.slice(0, 160);
   }
 &nbsp;
-  const normalizedSummary = parseReadme.normalizeSummary(summary || <span class="branch-1 cbranch-no" title="branch not covered" >'')</span>;
-  const summaryRaw = (summary || <span class="branch-1 cbranch-no" title="branch not covered" >'')</span>.slice(0, 800);
-  return { summary: normalizedSummary || <span class="branch-1 cbranch-no" title="branch not covered" >'',</span> summarySource, summaryRaw };
+  const normalizedSummary = parseReadme.normalizeSummary(summary || '');
+  const summaryRaw = (summary || '').slice(0, 800);
+  return { summary: normalizedSummary || '', summarySource, summaryRaw };
 }
 &nbsp;
 module.exports = { extractSummaryFromNode };
@@ -166,7 +166,7 @@ module.exports = { extractSummaryFromNode };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-03T19:10:40.139Z
+                at 2026-06-05T12:06:45.458Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">78% </span>
+                <span class="strong">76% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>78/100</span>
+                <span class='fraction'>76/100</span>
             </div>
         
             
@@ -139,40 +139,40 @@
 <a name='L74'></a><a href='#L74'>74</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -205,10 +205,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">#!/usr/bin/env node
 // Encapsulate heuristics used to derive docsLink/docsTitle and to backfill from repoDocs
 function backfillDocsFromText(node) {
@@ -220,7 +220,7 @@ function backfillDocsFromText(node) {
         const m = txt.match(/\[([^\]]*doc[^\]]*)\]\((https?:\/\/[^)\s]+)\)/i);
         if (m) { node.docsTitle = m[1].trim(); node.docsLink = m[2].trim(); return node; }
         const dline = txt.match(/(?:^|\n)\s*documentation[:\s]+(https?:\/\/[^\s]+)/i);
-        if (dline) { node.docsTitle = 'Documentation'; node.docsLink = dline[1].trim(); return node; }
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (dline) { node.docsTitle = 'Documentation'; node.docsLink = dline[1].trim(); return node; }
       }
     }
   } catch (e) { /* ignore */ }
@@ -231,7 +231,7 @@ function backfillFromAstHeading(node) {
   try {
     if (!node || !node._ast || !Array.isArray(node._ast.children)) return node;
     const heading = node._ast.children.find(c =&gt; c &amp;&amp; c.type === 'heading' &amp;&amp; /doc|api|architectur/i.test((c.children||<span class="branch-1 cbranch-no" title="branch not covered" >[])</span>.map(ch=&gt;ch.value||<span class="branch-1 cbranch-no" title="branch not covered" >'')</span>.join('')));
-    if (heading) {
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (heading) {
       const titleText = (heading.children||<span class="branch-1 cbranch-no" title="branch not covered" >[])</span>.map(ch=&gt;ch.value||<span class="branch-1 cbranch-no" title="branch not covered" >'')</span>.join(' ').trim() || <span class="branch-1 cbranch-no" title="branch not covered" >'Documentation';</span>
       node.docsTitle = node.docsTitle || titleText;
       node.docsLink = node.docsLink || `https://github.com/keglev/${node.name}/blob/main/README.md`;
@@ -289,7 +289,7 @@ module.exports = { backfillDocsFromText, backfillFromAstHeading, postProcessDocs
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-03T19:10:40.081Z
+                at 2026-06-05T12:06:45.397Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
