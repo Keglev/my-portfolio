@@ -34,6 +34,11 @@
     "eject": "react-scripts eject",
     "docs:jsdoc": "jsdoc -c jsdoc.json"
   },
+  "jest": {
+    "moduleNameMapper": {
+      "^@vercel/speed-insights/react$": "<rootDir>/config/jest/speedInsightsMock.js"
+    }
+  },
   "eslintConfig": {
     "extends": [
       "react-app",
