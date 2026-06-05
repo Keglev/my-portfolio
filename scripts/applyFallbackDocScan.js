@@ -9,44 +9,56 @@
  */
 const fs = require('fs');
 const path = require('path');
-const normalizeTitle = require('./fetchProjects.js').normalizeTitle;
 
 const FILE = path.join(__dirname, '..', 'public', 'projects.json');
-// Ensure artifact exists before proceeding (this script operates on generated output)
-if (!fs.existsSync(FILE)) { console.error('public/projects.json not found'); process.exit(1); }
-const nodes = JSON.parse(fs.readFileSync(FILE, 'utf8'));
 
-// Walk every node and attempt to find likely API/docs links when repoDocs is missing
-for (const node of nodes) {
-  // Skip nodes that already have structured repoDocs
-  if (node.repoDocs) continue;
-  try {
-    const txt = (node.object && node.object.text) || '';
-    // linkRe matches markdown-style links, local .md links, and relative paths
-    const linkRe = /\[([^\]]+)\]\((https?:\/\/[^)\s]+|\.\/[^)\s]+|\/[^)\s]+|[^)]+\.md)\)/ig;
-    let m;
-    // Iterate all matches in the README text
-    while ((m = linkRe.exec(txt)) !== null) {
-      const label = (m[1]||'').trim();
-      let href = (m[2]||'').trim();
-      // Skip obviously local or unsafe links
-      if (/localhost|127\.0\.0\.1|docker|:/i.test(href)) continue;
-      // Heuristic: if the label or href looks doc-like, prefer it
-      if (/docs?|api|redoc|openapi|swagger|reDoc|documentation|api docs/i.test(label + ' ' + href)) {
-        // Normalize relative paths into a raw.githubusercontent absolute path
-        if (!/^https?:\/\//i.test(href)) href = href.replace(/^\.?\//,'').replace(/^\//,'');
-        const absolute = /^https?:\/\//i.test(href) ? href : `https://raw.githubusercontent.com/keglev/${node.name}/main/${href}`;
-        node.repoDocs = node.repoDocs || {};
-        node.repoDocs.apiDocumentation = node.repoDocs.apiDocumentation || { title: label || 'API Documentation', link: absolute, description: '' };
-        node.docsLink = node.docsLink || absolute;
-        node.docsTitle = node.docsTitle || normalizeTitle(label) || 'Documentation';
-        // Stop scanning this README once we've found a doc-like match
-        break;
+/**
+ * scanNodes(nodes, normalizeTitle)
+ * Pure business-logic: mutates each node in-place and returns the array.
+ * `normalizeTitle` is injected so callers (and tests) can provide their own.
+ */
+function scanNodes(nodes, normalizeTitle) {
+  for (const node of nodes) {
+    if (node.repoDocs) continue;
+    try {
+      const txt = (node.object && node.object.text) || '';
+      const linkRe = /\[([^\]]+)\]\((https?:\/\/[^)\s]+|\.\/[^)\s]+|\/[^)\s]+|[^)]+\.md)\)/ig;
+      let m;
+      while ((m = linkRe.exec(txt)) !== null) {
+        const label = (m[1] || '').trim();
+        let href = (m[2] || '').trim();
+        if (/localhost|127\.0\.0\.1|docker/i.test(href)) continue;
+        if (/docs?|api|redoc|openapi|swagger|reDoc|documentation|api docs/i.test(label + ' ' + href)) {
+          if (!/^https?:\/\//i.test(href)) href = href.replace(/^\.?\//,'').replace(/^\//,'');
+          const absolute = /^https?:\/\//i.test(href)
+            ? href
+            : `https://raw.githubusercontent.com/keglev/${node.name}/main/${href}`;
+          node.repoDocs = node.repoDocs || {};
+          node.repoDocs.apiDocumentation = node.repoDocs.apiDocumentation || {
+            title: label || 'API Documentation',
+            link: absolute,
+            description: '',
+          };
+          node.docsLink = node.docsLink || absolute;
+          node.docsTitle = node.docsTitle || normalizeTitle(label) || 'Documentation';
+          break;
+        }
       }
-    }
-  } catch (e) { /* ignore per-node failures to keep scan resilient */ }
+    } catch (e) { /* ignore per-node failures to keep scan resilient */ }
+  }
+  return nodes;
 }
 
-// Persist the mutated artifact back to disk
-fs.writeFileSync(FILE, JSON.stringify(nodes, null, 2), 'utf8');
-console.log('Applied fallback doc-scan and wrote', FILE);
+module.exports = { scanNodes, FILE };
+
+if (require.main === module) {
+  if (!fs.existsSync(FILE)) {
+    console.error('public/projects.json not found');
+    process.exit(1);
+  }
+  const normalizeTitle = require('./fetchProjects.js').normalizeTitle;
+  const nodes = JSON.parse(fs.readFileSync(FILE, 'utf8'));
+  scanNodes(nodes, normalizeTitle);
+  fs.writeFileSync(FILE, JSON.stringify(nodes, null, 2), 'utf8');
+  console.log('Applied fallback doc-scan and wrote', FILE);
+}

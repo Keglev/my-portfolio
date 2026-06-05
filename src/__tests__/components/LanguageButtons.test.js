@@ -52,4 +52,21 @@ describe('LanguageButtons component', () => {
     expect(screen.getByText('German')).toHaveClass('active');
     expect(screen.getByText('English')).not.toHaveClass('active');
   });
+
+  it('calls changeLanguage and activates German on click', () => {
+    const changeMock = jest.fn();
+    useTranslation.mockReturnValue({
+      i18n: { language: 'en', changeLanguage: changeMock },
+      t: (k) => (k === 'language.english' ? 'English' : 'German'),
+    });
+
+    const LanguageButtons = require('../../components/LanguageButtons/LanguageButtons').default;
+    render(<LanguageButtons />);
+
+    const deBtn = screen.getByText('German');
+    expect(deBtn).not.toHaveClass('active');
+    fireEvent.click(deBtn);
+    expect(changeMock).toHaveBeenCalledWith('de');
+    expect(deBtn).toHaveClass('active');
+  });
 });
