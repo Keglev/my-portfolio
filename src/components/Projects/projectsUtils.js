@@ -117,3 +117,11 @@ function normalizeTechToken(raw) {
   token = token.trim();
   return token || null;
 }
+
+export const convertRawToBlob = (link) => {
+  if (!link) return link;
+  const m = link.match(/^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/i);
+  if (!m) return link;
+  const [, user, repo, branch, path] = m;
+  return `https://github.com/${user}/${repo}/blob/${branch}/${path}`;
+};

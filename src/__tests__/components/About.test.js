@@ -24,15 +24,15 @@ describe('About component', () => {
     expect(screen.getByText('Intro three')).toBeInTheDocument();
   });
 
-  it('renders tech stack items and profile image', () => {
+  it('renders the expected tech stack items in the About section', () => {
     render(<About />);
-
-    // A few representative tech entries
     expect(screen.getByText(/Java 17/)).toBeInTheDocument();
     expect(screen.getByText(/React.js/)).toBeInTheDocument();
     expect(screen.getByText(/Docker & Docker Compose/)).toBeInTheDocument();
+  });
 
-    // Profile image should be present with alt text
+  it('renders the profile image with an src and accessible alt text', () => {
+    render(<About />);
     const img = screen.getByAltText('Carlos Keglevich Profile');
     expect(img).toBeInTheDocument();
     expect(img).toHaveAttribute('src');

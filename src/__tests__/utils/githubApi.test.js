@@ -1,10 +1,15 @@
 jest.mock('axios', () => ({ post: jest.fn() }));
 
 describe('githubApi.fetchPinnedRepositories', () => {
+  let consoleErrorSpy;
+
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
+
+  afterEach(() => consoleErrorSpy.mockRestore());
 
   const loadModule = () => require('../../utils/githubApi');
 
@@ -32,7 +37,6 @@ describe('githubApi.fetchPinnedRepositories', () => {
 
   it('returns an empty array and logs a token error for 401 responses', async () => {
     const axios = require('axios');
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     axios.post.mockRejectedValue({ response: { status: 401 } });
 
     const { fetchPinnedRepositories } = loadModule();
@@ -40,12 +44,10 @@ describe('githubApi.fetchPinnedRepositories', () => {
 
     expect(nodes).toEqual([]);
     expect(consoleErrorSpy).toHaveBeenCalledWith('GitHub token is expired or invalid.');
-    consoleErrorSpy.mockRestore();
   });
 
   it('returns an empty array and logs a generic error for other failures', async () => {
     const axios = require('axios');
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     axios.post.mockRejectedValue(new Error('boom'));
 
     const { fetchPinnedRepositories } = loadModule();
@@ -53,7 +55,6 @@ describe('githubApi.fetchPinnedRepositories', () => {
 
     expect(nodes).toEqual([]);
     expect(consoleErrorSpy).toHaveBeenCalledWith('Error fetching pinned repositories:', expect.any(Error));
-    consoleErrorSpy.mockRestore();
   });
 });
 
@@ -67,6 +68,8 @@ describe('githubApi – axios.default branch', () => {
     jest.clearAllMocks();
   });
 
+  afterEach(() => jest.unmock('axios'));
+
   it('uses axios.default when the required module exposes a .default export', async () => {
     const mockPost = jest.fn().mockResolvedValue({
       data: {
@@ -78,7 +81,6 @@ describe('githubApi – axios.default branch', () => {
     const { fetchPinnedRepositories } = require('../../utils/githubApi');
     const nodes = await fetchPinnedRepositories();
 
-    jest.unmock('axios');
     expect(mockPost).toHaveBeenCalledTimes(1);
     expect(nodes).toEqual([{ name: 'repo-default' }]);
   });
@@ -90,7 +92,6 @@ describe('githubApi – axios.default branch', () => {
     const { fetchPinnedRepositories } = require('../../utils/githubApi');
     const nodes = await fetchPinnedRepositories();
 
-    jest.unmock('axios');
     consoleSpy.mockRestore();
     expect(nodes).toEqual([]);
   });

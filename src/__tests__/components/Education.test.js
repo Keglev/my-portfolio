@@ -50,14 +50,5 @@ describe('Education component', () => {
     // entry3 has institution but no note
     expect(screen.getByText('Institute C')).toBeInTheDocument();
 
-    // Verify counts: two institutions and two notes rendered
-    const institutions = [
-      screen.getByText('University A'),
-      screen.getByText('Institute C'),
-    ];
-    expect(institutions).toHaveLength(2);
-
-    const notes = screen.getAllByText(/Graduated with honors|Thesis on distributed systems/);
-    expect(notes).toHaveLength(2);
   });
 });

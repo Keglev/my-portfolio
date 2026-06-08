@@ -7,6 +7,14 @@ function Bomb() {
 }
 
 describe('ErrorBoundary', () => {
+  let consoleErrorSpy;
+
+  beforeEach(() => {
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => consoleErrorSpy.mockRestore());
+
   it('renders children when nothing throws', () => {
     render(
       <ErrorBoundary>
@@ -18,8 +26,6 @@ describe('ErrorBoundary', () => {
   });
 
   it('renders a fallback when a child throws', () => {
-    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
     render(
       <ErrorBoundary>
         <Bomb />
@@ -29,7 +35,5 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText('Something went wrong while rendering the app.')).toBeInTheDocument();
     expect(screen.getByText(/Error: boom/)).toBeInTheDocument();
     expect(consoleErrorSpy).toHaveBeenCalled();
-
-    consoleErrorSpy.mockRestore();
   });
 });

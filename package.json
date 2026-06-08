@@ -39,30 +39,12 @@
       "^@vercel/speed-insights/react$": "<rootDir>/config/jest/speedInsightsMock.js"
     }
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
   "overrides": {
     "@pmmmwh/react-refresh-webpack-plugin": "0.5.3",
     "nth-check": "^2.0.1",
     "postcss": "^8.4.31",
     "svgo": "^2.8.0",
     "resolve-url-loader": "^4.0.0"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "devDependencies": {
     "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",

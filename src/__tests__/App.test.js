@@ -42,43 +42,47 @@ jest.mock('../components/RepoDocs/RepoDocs', () => {
 });
 
 describe('App', () => {
-  test('renders the outer container div', () => {
+  function setup() {
     render(<App />);
+  }
+
+  test('renders the outer container div', () => {
+    setup();
     expect(document.querySelector('.container')).toBeInTheDocument();
   });
 
   test('renders the main-content scroll container', () => {
-    render(<App />);
+    setup();
     expect(document.getElementById('scroll-container')).toBeInTheDocument();
   });
 
   test('renders the About section', () => {
-    render(<App />);
+    setup();
     expect(document.getElementById('About')).toBeInTheDocument();
   });
 
   test('renders the Education section', () => {
-    render(<App />);
+    setup();
     expect(document.getElementById('Education')).toBeInTheDocument();
   });
 
   test('renders the Projects section', () => {
-    render(<App />);
+    setup();
     expect(document.getElementById('Projects')).toBeInTheDocument();
   });
 
   test('renders the RepoDocs section', () => {
-    render(<App />);
+    setup();
     expect(document.getElementById('RepoDocs')).toBeInTheDocument();
   });
 
   test('renders the Experience section', () => {
-    render(<App />);
+    setup();
     expect(document.getElementById('Experience')).toBeInTheDocument();
   });
 
   test('renders the Legal section', () => {
-    render(<App />);
+    setup();
     expect(document.getElementById('Legal')).toBeInTheDocument();
   });
 });

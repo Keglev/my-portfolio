@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { getAxios } = require('../axiosLoader');
 
 /**
  * mediaDownloader
@@ -32,9 +33,7 @@ function md5(text) {
 async function downloadIfNeeded(repoName, url, opts = {}) {
   try {
     if (!url) return null;
-    // Lazy-load axios to avoid ESM/require issues in test environments.
-    let axios;
-    try { axios = require('axios'); } catch (e) { if (DEBUG_FETCH) console.log('mediaDownloader: axios require failed', e && e.message); }
+    const axios = getAxios();
     // Normalize the url (drop querystring for stable filename derivation)
     const u = String(url).split('?')[0];
     let ext = path.extname(u).toLowerCase();

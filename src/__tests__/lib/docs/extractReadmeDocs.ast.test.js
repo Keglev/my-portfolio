@@ -1,4 +1,4 @@
-const { extractRepoDocsDetailed, shouldTranslateUI } = require('../../../../scripts/lib/docs/extractReadmeDocs');
+const { extractRepoDocsDetailed, shouldTranslateUI, stripAstJsonFragments } = require('../../../../scripts/lib/docs/extractReadmeDocs');
 
 describe('extractReadmeDocs AST paths', () => {
   let originalGithubToken;
@@ -182,5 +182,14 @@ describe('extractReadmeDocs AST paths', () => {
     // Final scan: hasApiInUrl = true (api.html)
     expect(result.apiDocumentation).toBeDefined();
     expect(result.apiDocumentation.link).toBe('https://keglev.github.io/repo-api-url/docs/api.html');
+  });
+});
+
+describe('stripAstJsonFragments', () => {
+  it('returns the original value for non-strings and cleans JSON fragments from strings', () => {
+    expect(stripAstJsonFragments(null)).toBeNull();
+    expect(stripAstJsonFragments(undefined)).toBeUndefined();
+    expect(stripAstJsonFragments('Intro {"type":"paragraph"} text')).toBe('Intro text');
+    expect(stripAstJsonFragments('   ')).toBeNull();
   });
 });

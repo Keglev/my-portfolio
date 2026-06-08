@@ -8,12 +8,12 @@ jest.mock('axios', () => ({
   post: jest.fn(),
   default: { post: jest.fn() },
 }));
-jest.mock('../../../scripts/lib/translation/translationOrchestrator', () => ({}));
+jest.mock('../../../../scripts/lib/translation/translationOrchestrator', () => ({}));
 
 const crypto = require('crypto');
 
 // Load module and mocks once — resetModules would invalidate the axiosPost reference
-const translate = require('../../../scripts/lib/translation/translate');
+const translate = require('../../../../scripts/lib/translation/translate');
 const axiosPost = require('axios').default.post; // getAxios() uses _a.default when present
 const fsMock = require('fs');
 
@@ -159,7 +159,7 @@ describe('translate', () => {
       process.env.DEEPL_API_KEY = 'test-key';
       jest.resetModules();
       jest.doMock('axios', () => { throw new Error('not found'); });
-      const { translateToGermanDetailed } = require('../../../scripts/lib/translation/translate');
+      const { translateToGermanDetailed } = require('../../../../scripts/lib/translation/translate');
 
       const result = await translateToGermanDetailed('Hello');
 

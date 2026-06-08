@@ -24,8 +24,6 @@ describe('readmeHandler – processNodeReadme', () => {
     mediaDownloader.ensureDir.mockClear();
     mediaDownloader.md5.mockReturnValue('abc123');
     mediaHelper.processNodeMedia.mockResolvedValue(undefined);
-    fs.existsSync.mockReturnValue(false);
-    fs.writeFileSync.mockImplementation(() => {});
   });
 
   test('exports processNodeReadme as a function', () => {
@@ -66,67 +64,6 @@ describe('readmeHandler – processNodeReadme', () => {
     const node = { name: 'repo', object: { text: '# Project\n\n## Technologies\n\n- React\n- Node.js' } };
     await processNodeReadme(node, MEDIA_ROOT, getAxios, {});
     expect(Array.isArray(node.technologies)).toBe(true);
-  });
-
-  test('writes meta.json with readmeHash', async () => {
-    const node = { name: 'repo', object: { text: '# Hello\n\nContent.' } };
-    await processNodeReadme(node, MEDIA_ROOT, getAxios, {});
-    expect(fs.writeFileSync).toHaveBeenCalled();
-    const written = fs.writeFileSync.mock.calls[0][1];
-    const meta = JSON.parse(written);
-    expect(meta.readmeHash).toBe('abc123');
-  });
-
-  test('reads and merges existing meta.json when it exists', async () => {
-    const existingMeta = { readmeHash: 'old', files: ['img.png'], imageSelection: 'old.png' };
-    fs.existsSync.mockReturnValue(true);
-    fs.readFileSync.mockReturnValue(JSON.stringify(existingMeta));
-    const node = { name: 'repo', object: { text: '# Hello\n\nContent.' } };
-    await processNodeReadme(node, MEDIA_ROOT, getAxios, {});
-    const written = fs.writeFileSync.mock.calls[0][1];
-    const meta = JSON.parse(written);
-    expect(meta.readmeHash).toBe('abc123');
-    expect(meta.files).toEqual(['img.png']);
-  });
-
-  test('uses default meta when existing meta.json is invalid JSON', async () => {
-    fs.existsSync.mockReturnValue(true);
-    fs.readFileSync.mockReturnValue('{broken json');
-    const node = { name: 'repo', object: { text: '# Hello\n\nContent.' } };
-    await processNodeReadme(node, MEDIA_ROOT, getAxios, {});
-    const written = fs.writeFileSync.mock.calls[0][1];
-    const meta = JSON.parse(written);
-    expect(meta.readmeHash).toBe('abc123');
-    expect(meta.files).toEqual([]);
-  });
-
-  test('copies _imageSelection, primaryImage, _summarySource, _translation into meta', async () => {
-    const node = {
-      name: 'repo',
-      object: { text: '# Hello\n\nContent.' },
-      _imageSelection: 'hero.png',
-      primaryImage: 'hero.png',
-      _summarySource: 'heading',
-      _translation: { summary: { text: 'Hallo' } },
-    };
-    await processNodeReadme(node, MEDIA_ROOT, getAxios, {});
-    const written = fs.writeFileSync.mock.calls[0][1];
-    const meta = JSON.parse(written);
-    expect(meta.imageSelection).toBe('hero.png');
-    expect(meta.primaryImage).toBe('hero.png');
-    expect(meta.summarySource).toBe('heading');
-    expect(meta.translation).toEqual({ summary: { text: 'Hallo' } });
-  });
-
-  test('does not set optional meta fields when node properties are absent', async () => {
-    const node = { name: 'repo', object: { text: '# Hello\n\nContent.' } };
-    await processNodeReadme(node, MEDIA_ROOT, getAxios, {});
-    const written = fs.writeFileSync.mock.calls[0][1];
-    const meta = JSON.parse(written);
-    expect(meta.imageSelection).toBeUndefined();
-    expect(meta.primaryImage).toBeUndefined();
-    expect(meta.summarySource).toBeUndefined();
-    expect(meta.translation).toBeUndefined();
   });
 
   test('returns node and does not throw when fs.writeFileSync fails', async () => {

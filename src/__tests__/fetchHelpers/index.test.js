@@ -29,28 +29,13 @@ describe('fetchProjects helpers', () => {
     expect(isBadgeLike('https://github.com/actions/workflows/ci.yml/badge.svg')).toBe(true);
   });
 
-  // ── extractRepoDocsDetailed re-export ────────────────────────────────────
+  // ── AST helper re-exports ────────────────────────────────────────────────
 
-  test('module.exports includes extractRepoDocsDetailed when docs module is available', () => {
+  test('exports all expected AST helper functions', () => {
     const mod = require('../../../scripts/fetchProjects');
-    expect(typeof mod.extractRepoDocsDetailed).toBe('function');
-  });
-
-  // ── findImageCandidateFromAst and extractDocsFromAst re-exports ───────────
-
-  test('module.exports includes findImageCandidateFromAst', () => {
-    const mod = require('../../../scripts/fetchProjects');
-    expect(typeof mod.findImageCandidateFromAst).toBe('function');
-  });
-
-  test('module.exports includes extractDocsFromAst', () => {
-    const mod = require('../../../scripts/fetchProjects');
-    expect(typeof mod.extractDocsFromAst).toBe('function');
-  });
-
-  test('module.exports includes extractTechnologiesFromAst', () => {
-    const mod = require('../../../scripts/fetchProjects');
-    expect(typeof mod.extractTechnologiesFromAst).toBe('function');
+    for (const name of ['extractRepoDocsDetailed', 'findImageCandidateFromAst', 'extractDocsFromAst', 'extractTechnologiesFromAst']) {
+      expect(typeof mod[name]).toBe('function');
+    }
   });
 
   // ── normalizeSummary edge cases ───────────────────────────────────────────

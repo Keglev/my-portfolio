@@ -195,7 +195,7 @@ describe('nodeProcessor – processNode', () => {
   });
 
   test('logs when github.io prefer throws with DEBUG_FETCH=true', async () => {
-    jest.spyOn(githubIoPreferer, 'tryGithubIo').mockRejectedValue(new Error('probe boom'));
+    jest.spyOn(githubIoPreferer, 'applyGithubIoToNode').mockRejectedValue(new Error('probe boom'));
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     const rawUrl = 'https://raw.githubusercontent.com/keglev/repo/main/docs/index.html';
     const node = { name: 'repo', object: { text: '# Hi' }, docsLink: rawUrl };

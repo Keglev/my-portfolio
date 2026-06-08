@@ -1,139 +1,121 @@
-/* Container for the project section */
 .project-container {
-  padding: 5rem 2rem;
-  background-color: #0a192f; /* Dark background */
-  color: #ccd6f6; /* Light text color */
+  padding: var(--padding-section);
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
-/* Section heading */
 .project-container h2 {
   font-size: 2rem;
   margin-bottom: 2rem;
-  color: #64ffda; /* Accent color */
+  color: var(--color-accent);
 }
 
-/* Grid layout for project cards */
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
-  gap: 2rem; /* Space between grid items */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
 }
 
-/* Styling for individual project cards */
 .project-card {
-  background-color: #112240; /* Darker card background */
-  padding: 1.5rem;
-  border-radius: 8px; /* Rounded corners */
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, opacity 300ms ease, transform 300ms ease; /* Smooth hover effects + entrance */
-  /* Reserve vertical space to avoid layout shift while async content loads */
+  background-color: var(--color-bg-card);
+  padding: var(--padding-card);
+  border-radius: var(--radius-card);
+  transition: var(--transition-card), opacity 300ms ease, transform 300ms ease;
   min-height: 220px;
   opacity: 0;
   transform: translateY(6px);
 }
 
-/* Hover effect for project cards */
 .project-card:hover {
-  background-color: #1f4068; /* Lighter background on hover */
-  box-shadow: 0px 8px 15px rgba(0, 255, 150, 0.5); /* Green shadow effect */
+  background-color: var(--color-bg-card-hover);
+  box-shadow: 0px 8px 15px var(--shadow-accent);
 }
 
-/* When the card is ready (image loaded or fallback), fade it in */
 .project-card.visible {
   opacity: 1;
   transform: none;
 }
 
-/* Image container and image styling to reserve space and avoid layout shifts */
 .image-wrap {
   width: 100%;
-  height: 180px; /* Fixed image height to reserve space */
+  height: 180px;
   margin-bottom: 1rem;
   overflow: hidden;
-  border-radius: 8px;
-  border: 3px solid #64ffda; /* Accent color border */
+  border-radius: var(--radius-card);
+  border: 3px solid var(--color-accent);
   box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
-  background-color: #0f2238; /* subtle placeholder background */
+  background-color: var(--color-bg-subtle);
 }
 
 .project-image {
   width: 100%;
   height: 100%;
   display: block;
-  object-fit: cover; /* Ensure image fits without distortion */
+  object-fit: cover;
   transform-origin: center center;
   transition: opacity 300ms ease, transform 300ms ease;
-  opacity: 0; /* start invisible, fade in on load */
+  opacity: 0;
 }
 
-/* When the image has loaded successfully apply the visible state */
 .project-image.loaded {
   opacity: 1;
   transform: none;
 }
 
-/* Styling for project titles */
 .project-content h3 {
-  color: #64ffda; /* Accent color */
+  color: var(--color-accent);
   margin-bottom: 0.5rem;
 }
 
-/* Paragraph styling for project descriptions */
 .project-content p {
-  color: #ccd6f6;
+  color: var(--color-text);
   margin-bottom: 1rem;
 }
 
-/* Container for technology tags */
 .technologies {
   margin-top: 1rem;
   display: flex;
-  flex-wrap: wrap; /* Wrap technologies on small screens */
+  flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 2rem; /* Space between technologies and the GitHub link */
+  margin-bottom: 2rem;
 }
 
-/* Styling for individual technology tags */
 .tech-box {
-  background-color: #2b3a59; /* Slightly lighter background */
-  color: #ccd6f6; /* Light text color */
+  background-color: var(--color-bg-tag);
+  color: var(--color-text);
   padding: 0.3rem 0.6rem;
-  border-radius: 12px; /* Rounded corners */
+  border-radius: 12px;
   font-size: 0.9rem;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition: var(--transition-card);
 }
 
-/* Hover effect for technology tags */
 .tech-box:hover {
-  background-color: #64ffda;
-  color: #0a192f; /* Dark text color */
-  box-shadow: 0px 4px 10px rgba(0, 255, 150, 0.5); /* Green shadow */
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  box-shadow: 0px 4px 10px var(--shadow-accent);
 }
 
-/* GitHub link styling */
 .project-link {
   display: inline-block;
   margin-top: 1rem;
-  color: #64ffda; /* Accent color */
+  color: var(--color-accent);
   text-decoration: none;
 }
 
-/* Hover effect for GitHub link */
 .project-link:hover {
-  color: #ccd6f6;
+  color: var(--color-text);
 }
 
-/* Responsive styles */
 @media (max-width: 768px) {
   .project-container {
     padding: 2rem;
   }
 
   .project-grid {
-    grid-template-columns: 1fr; /* Single column layout for mobile */
+    grid-template-columns: 1fr;
   }
 }
 
-/* Skeleton loading styles */
 .skeleton {
   animation: pulse 1.5s ease-in-out infinite;
 }
@@ -141,21 +123,21 @@
 .skeleton-image {
   width: 100px;
   height: 100px;
-  border-radius: 8px;
-  background-color: #2b3a59;
+  border-radius: var(--radius-card);
+  background-color: var(--color-bg-tag);
   margin-bottom: 1rem;
 }
 
 .skeleton-title {
   height: 1.5rem;
-  background-color: #2b3a59;
+  background-color: var(--color-bg-tag);
   border-radius: 4px;
   margin-bottom: 0.5rem;
 }
 
 .skeleton-description {
   height: 3rem;
-  background-color: #2b3a59;
+  background-color: var(--color-bg-tag);
   border-radius: 4px;
   margin-bottom: 1rem;
 }
@@ -169,29 +151,24 @@
 .skeleton-tech {
   height: 1.5rem;
   width: 60px;
-  background-color: #2b3a59;
+  background-color: var(--color-bg-tag);
   border-radius: 12px;
 }
 
 .skeleton-link {
   height: 1.5rem;
   width: 100px;
-  background-color: #2b3a59;
+  background-color: var(--color-bg-tag);
   border-radius: 4px;
 }
 
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
-/* Error message styling */
 .error-message {
-  color: #64ffda;
+  color: var(--color-accent);
   font-size: 1.2rem;
   text-align: center;
   padding: 2rem;

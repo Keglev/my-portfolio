@@ -1,17 +1,31 @@
-/* Reset default browser styles and apply the default font family */
+:root {
+  --color-bg: #0a192f;
+  --color-bg-card: #112240;
+  --color-bg-card-hover: #1f4068;
+  --color-bg-tag: #2b3a59;
+  --color-bg-subtle: #0f2238;
+  --color-accent: #64ffda;
+  --color-text: #ccd6f6;
+  --color-text-muted: #8892b0;
+  --shadow-accent: rgba(0, 255, 150, 0.5);
+  --shadow-accent-hover: rgba(0, 255, 150, 0.6);
+  --radius-card: 8px;
+  --transition-card: background-color 0.3s ease, box-shadow 0.3s ease;
+  --padding-section: 5rem 2rem;
+  --padding-card: 1.5rem;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased; /* Smooth fonts in WebKit-based browsers */
-  -moz-osx-font-smoothing: grayscale; /* Smooth fonts for Firefox on macOS */
-  background-color: #0a192f; /* Dark background */
-  color: #ccd6f6; /* Light text color */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
-/* Style for <code> elements */
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace; /* Use monospaced fonts for code blocks */
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

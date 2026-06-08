@@ -46,7 +46,6 @@ describe('Projects component', () => {
     const Projects = require('../../components/Projects/Projects').default;
     render(<Projects />);
 
-    await new Promise(r => setTimeout(r, 50));
-    expect(screen.queryByTestId('project-card')).toBeNull();
+    await waitFor(() => expect(screen.queryByTestId('project-card')).toBeNull());
   });
 });

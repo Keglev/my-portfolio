@@ -1,75 +1,50 @@
-/* ==========================================================================
-   Component: Education Section
-   ========================================================================== */
-
-/* ==========================================================================
-   Layout: Container & Card Grid
-   ========================================================================== */
-
 .education-container {
-  padding: 5rem 2rem;
-  background-color: #0a192f;
-  color: #ccd6f6;
+  padding: var(--padding-section);
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 .education-container h2 {
   font-size: 2rem;
-  color: #64ffda;
+  color: var(--color-accent);
   margin-bottom: 2rem;
   text-align: center;
 }
 
-/* Vertical stack with 1.5rem gaps maintains visual breathing room */
 .education-list {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* ==========================================================================
-   Cards: Individual Entry Styling
-   ========================================================================== */
-
-/* Card base: slightly raised from background, enables hover interactions */
 .education-card {
-  background-color: #112240;
-  padding: 1.5rem;
-  border-radius: 8px;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: var(--color-bg-card);
+  padding: var(--padding-card);
+  border-radius: var(--radius-card);
+  transition: var(--transition-card);
 }
 
-/* Hover state darkens and glows to signal interactivity */
 .education-card:hover {
-  background-color: #1f4068;
-  box-shadow: 0px 8px 15px rgba(0, 255, 150, 0.5);
+  background-color: var(--color-bg-card-hover);
+  box-shadow: 0px 8px 15px var(--shadow-accent);
 }
-
-/* ==========================================================================
-   Typography: Headings & Text Hierarchy
-   ========================================================================== */
 
 .education-card h3 {
-  color: #64ffda;
+  color: var(--color-accent);
   margin-bottom: 0.5rem;
 }
 
-/* Slightly smaller font (0.95rem) than body to denote secondary metadata */
 .education-institution {
-  color: #ccd6f6;
+  color: var(--color-text);
   font-size: 0.95rem;
   margin-bottom: 0.4rem;
 }
 
-/* Muted color for tertiary details; 0.9rem reinforces lower visual weight */
 .education-note {
-  color: #8892b0;
+  color: var(--color-text-muted);
   font-size: 0.9rem;
   margin-bottom: 0;
 }
-
-/* ==========================================================================
-   Responsive: Mobile & Tablet
-   ========================================================================== */
 
 @media (max-width: 768px) {
   .education-container {

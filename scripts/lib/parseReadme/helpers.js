@@ -1,17 +1,8 @@
-// Shared helper utilities for parseReadme extractors
 function flattenNodeText(node) {
   try {
     if (!node) return '';
     if (node.type === 'text') return node.value || '';
-    if (node.children && Array.isArray(node.children)) {
-      const out = node.children.map(flattenNodeText).join('');
-      try {
-        if (process.env.PARSE_README_TRACE === '1' || process.env.DEBUG_FETCH === 'true' || process.env.DEBUG_FETCH === '1') {
-          console.log('TRACE flattenNodeText ->', { nodeType: node.type, sample: String(out).slice(0,200) });
-        }
-      } catch (e) {}
-      return out;
-    }
+    if (node.children && Array.isArray(node.children)) return node.children.map(flattenNodeText).join('');
     return node.value || '';
   } catch (e) { return ''; }
 }
@@ -39,7 +30,6 @@ function extractLinkFromParagraphNode(node) {
   if (linkNode && linkNode.url) {
     const title = (linkNode.children && linkNode.children[0] && linkNode.children[0].value) || null;
     const desc = node.children.filter(c => c.type === 'text').map(c => c.value).join(' ').trim();
-    try { if (process.env.PARSE_README_TRACE === '1' || process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true') console.log('TRACE extractLinkFromParagraphNode', { title, link: linkNode.url, desc: String(desc).slice(0,200) }); } catch(e){}
     return { link: linkNode.url, title, description: desc };
   }
   return null;
@@ -47,43 +37,34 @@ function extractLinkFromParagraphNode(node) {
 
 function extractLinkFromListNode(li) {
   try {
-    // prefer AST-aware extraction instead of serializing the node
-    try {
-      // if this is a list item node, try to extract a link child first
-      if (li && Array.isArray(li.children)) {
-        const linkChild = (li.children||[]).flatMap(ch => (ch.children||[])).find(c => c && c.type === 'link');
-        if (linkChild && linkChild.url) {
-          const title = (linkChild.children && linkChild.children[0] && linkChild.children[0].value) || null;
-          return { title, link: linkChild.url };
-        }
+    if (li && Array.isArray(li.children)) {
+      const linkChild = (li.children || []).flatMap(ch => (ch.children || [])).find(c => c && c.type === 'link');
+      if (linkChild && linkChild.url) {
+        const title = (linkChild.children && linkChild.children[0] && linkChild.children[0].value) || null;
+        return { title, link: linkChild.url };
       }
-    } catch (e) { /* fall back to regex on flattened text below */ }
-    const flat = flattenNodeText(li || '').replace(/\r?\n/g,' ');
-    try { if (process.env.PARSE_README_TRACE === '1' || process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true') console.log('TRACE extractLinkFromListNode flat', String(flat).slice(0,300)); } catch(e){}
+    }
+    const flat = flattenNodeText(li || '').replace(/\r?\n/g, ' ');
     const mdMatch = flat.match(/\[([^\]]+)\]\(([^)]+)\)/);
     if (mdMatch) return { title: mdMatch[1] || null, link: mdMatch[2] || null };
   } catch (e) { /* ignore */ }
   return null;
 }
 
-module.exports = { flattenNodeText, extractTextFromListItem, extractLinkFromParagraphNode, extractLinkFromListNode };
-
 function extractSectionWithRegex(text, headingRegexes) {
   if (!text) return null;
   try {
     const lines = text.split(/\r?\n/);
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
       for (const re of headingRegexes) {
-        if (re.test(line)) {
+        if (re.test(lines[i])) {
           const parts = [];
           let j = i + 1;
           while (j < lines.length && !/^#{1,6}\s+/.test(lines[j])) {
             if (lines[j].trim()) parts.push(lines[j].trim());
             j++;
           }
-          if (parts.length) return parts.join('\n\n');
-          return null;
+          return parts.length ? parts.join('\n\n') : null;
         }
       }
     }
@@ -94,45 +75,39 @@ function extractSectionWithRegex(text, headingRegexes) {
 function findSectionText(ast, headingRegexes) {
   try {
     if (!ast || !Array.isArray(ast.children)) return null;
-    const flatten = flattenNodeText;
     for (let i = 0; i < ast.children.length; i++) {
       const n = ast.children[i];
-      if (n.type === 'heading') {
-        const headingText = (flatten(n) || '').toLowerCase();
-        for (const re of headingRegexes) {
-          if (re.test(headingText)) {
-            const currentDepth = n.depth || 2;
-            let j = i + 1;
-            const parts = [];
-            while (j < ast.children.length) {
-              const nn = ast.children[j];
-              if (nn && nn.type === 'heading' && typeof nn.depth === 'number' && nn.depth <= currentDepth) break;
-              if (nn.type === 'paragraph') {
-                const txt = (nn.children||[]).map(c=>c.value||'').join(' ').trim();
-                if (txt) parts.push(txt);
-              }
-              if (nn.type === 'list' && Array.isArray(nn.children)) {
-                for (const li of nn.children) {
-                  const txt = (li.children||[]).map(ch => (ch.children||[]).map(cc=>cc.value||'').join(' ') || ch.value || '').join(' ').trim();
-                  if (txt) parts.push(txt);
-                }
-              }
-              if (nn.type === 'html' && typeof nn.value === 'string') {
-                const cleaned = nn.value.replace(/<[^>]+>/g, ' ').replace(/\s+/g,' ').trim();
-                if (cleaned) parts.push(cleaned);
-              }
-              j++;
-            }
-            if (parts.length) return parts.join('\n\n');
-            return null;
+      if (n.type !== 'heading') continue;
+      const headingText = (flattenNodeText(n) || '').toLowerCase();
+      for (const re of headingRegexes) {
+        if (!re.test(headingText)) continue;
+        const depth = n.depth || 2;
+        let j = i + 1;
+        const parts = [];
+        while (j < ast.children.length) {
+          const nn = ast.children[j];
+          if (nn && nn.type === 'heading' && typeof nn.depth === 'number' && nn.depth <= depth) break;
+          if (nn.type === 'paragraph') {
+            const txt = (nn.children || []).map(c => c.value || '').join(' ').trim();
+            if (txt) parts.push(txt);
           }
+          if (nn.type === 'list' && Array.isArray(nn.children)) {
+            for (const li of nn.children) {
+              const txt = (li.children || []).map(ch => (ch.children || []).map(cc => cc.value || '').join(' ') || ch.value || '').join(' ').trim();
+              if (txt) parts.push(txt);
+            }
+          }
+          if (nn.type === 'html' && typeof nn.value === 'string') {
+            const cleaned = nn.value.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+            if (cleaned) parts.push(cleaned);
+          }
+          j++;
         }
+        return parts.length ? parts.join('\n\n') : null;
       }
     }
   } catch (e) { }
   return null;
 }
 
-module.exports = Object.assign(module.exports, { extractSectionWithRegex, findSectionText });
-
-
+module.exports = { flattenNodeText, extractTextFromListItem, extractLinkFromParagraphNode, extractLinkFromListNode, extractSectionWithRegex, findSectionText };

@@ -1,8 +1,6 @@
 import { getTechnologyWords } from '../../components/Projects/projectsUtils';
 
-describe('getTechnologyWords', () => {
-  test('extracts bold-only tokens from Tech Stack sample', () => {
-  const sample = `## Tech Stack
+const TECH_STACK_SAMPLE = `## Tech Stack
 ### Backend
 - **Java 17+** with **Spring Boot 3.5+**
 - **Spring Security** (OAuth2 + Role-based Access Control)
@@ -25,31 +23,33 @@ describe('getTechnologyWords', () => {
 - **Docker Compose** for local development environment
 - **JaCoCo** + **GitHub Pages** for live test coverage reporting`;
 
-    const expected = [
-      'Java 17+',
-      'Spring Boot 3.5+',
-      'Spring Security',
-      'Oracle Autonomous Database',
-      'REST APIs',
-      'Docker',
-      'JUnit 5',
-      'Mockito',
-      'React 19',
-      'TypeScript',
-      'Material-UI',
-      'Vite',
-      'Axios',
-      'React Router',
-      'Vitest',
-      'React Testing Library',
-      'TypeDoc',
-      'GitHub Actions',
-      'Docker Compose',
-      'JaCoCo',
-      'GitHub Pages',
-    ];
+const EXPECTED_TECH_TOKENS = [
+  'Java 17+',
+  'Spring Boot 3.5+',
+  'Spring Security',
+  'Oracle Autonomous Database',
+  'REST APIs',
+  'Docker',
+  'JUnit 5',
+  'Mockito',
+  'React 19',
+  'TypeScript',
+  'Material-UI',
+  'Vite',
+  'Axios',
+  'React Router',
+  'Vitest',
+  'React Testing Library',
+  'TypeDoc',
+  'GitHub Actions',
+  'Docker Compose',
+  'JaCoCo',
+  'GitHub Pages',
+];
 
-  expect(getTechnologyWords(sample)).toEqual(expected);
+describe('getTechnologyWords', () => {
+  test('extracts bold-only tokens from Tech Stack sample', () => {
+    expect(getTechnologyWords(TECH_STACK_SAMPLE)).toEqual(EXPECTED_TECH_TOKENS);
   });
 
   test('ignores malformed single-star tokens and extracts only proper **...** tokens', () => {

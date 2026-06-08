@@ -5,40 +5,48 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from '../../../i18n';
 
 describe('SidebarMenu', () => {
-  it('renders links and calls changeLanguage when buttons are clicked', () => {
-    const changeLanguage = jest.fn();
-    // Ensure i18n uses English so rendered link texts match expectations
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('renders the navigation links with the correct labels', () => {
     i18n.changeLanguage('en');
 
     render(
       <I18nextProvider i18n={i18n}>
-        <SidebarMenu activeSection="Projects" changeLanguage={changeLanguage} />
+        <SidebarMenu activeSection="Projects" />
       </I18nextProvider>
     );
 
-  // Links - use role/name queries to avoid ambiguous matches (e.g. "Projects Documentation")
-  expect(screen.getByRole('link', { name: /^projects$/i })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /about/i })).toBeInTheDocument();
-  expect(screen.getByRole('link', { name: /experience/i })).toBeInTheDocument();
+    // use role/name queries to avoid ambiguous matches (e.g. "Projects Documentation")
+    expect(screen.getByRole('link', { name: /^projects$/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /about/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /experience/i })).toBeInTheDocument();
+  });
 
-    // Language buttons
-    const enBtn = screen.getByRole('button', { name: /switch to english/i });
-    const deBtn = screen.getByRole('button', { name: /switch to german/i });
+  it('calls i18n.changeLanguage with the correct locale when a language button is clicked', () => {
+    i18n.changeLanguage('en');
+    const changeLanguageSpy = jest.spyOn(i18n, 'changeLanguage').mockImplementation(() => Promise.resolve());
 
-    fireEvent.click(enBtn);
-    fireEvent.click(deBtn);
+    render(
+      <I18nextProvider i18n={i18n}>
+        <SidebarMenu activeSection="Projects" />
+      </I18nextProvider>
+    );
 
-    expect(changeLanguage).toHaveBeenCalledWith('en');
-    expect(changeLanguage).toHaveBeenCalledWith('de');
+    fireEvent.click(screen.getByRole('button', { name: /switch to english/i }));
+    fireEvent.click(screen.getByRole('button', { name: /switch to german/i }));
+
+    expect(changeLanguageSpy).toHaveBeenCalledWith('en');
+    expect(changeLanguageSpy).toHaveBeenCalledWith('de');
   });
 
   it('renders the German CV label and file when the active language is de', () => {
-    const changeLanguage = jest.fn();
     i18n.changeLanguage('de');
 
     render(
       <I18nextProvider i18n={i18n}>
-        <SidebarMenu activeSection="About" changeLanguage={changeLanguage} />
+        <SidebarMenu activeSection="About" />
       </I18nextProvider>
     );
 
@@ -48,13 +56,12 @@ describe('SidebarMenu', () => {
     );
   });
 
-  it('evaluates the RepoDocs and Experience active branches', () => {
-    const changeLanguage = jest.fn();
+  it('renders the correct active link label for each recognized activeSection value', () => {
     i18n.changeLanguage('en');
 
     const { rerender } = render(
       <I18nextProvider i18n={i18n}>
-        <SidebarMenu activeSection="RepoDocs" changeLanguage={changeLanguage} />
+        <SidebarMenu activeSection="RepoDocs" />
       </I18nextProvider>
     );
 
@@ -62,7 +69,7 @@ describe('SidebarMenu', () => {
 
     rerender(
       <I18nextProvider i18n={i18n}>
-        <SidebarMenu activeSection="Experience" changeLanguage={changeLanguage} />
+        <SidebarMenu activeSection="Experience" />
       </I18nextProvider>
     );
 

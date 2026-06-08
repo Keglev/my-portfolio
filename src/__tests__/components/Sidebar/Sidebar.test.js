@@ -5,17 +5,12 @@ import Sidebar from '../../../components/Sidebar/Sidebar';
 jest.mock('react-i18next', () => ({ useTranslation: jest.fn() }));
 const { useTranslation } = require('react-i18next');
 
+// Sidebar passes only activeSection to SidebarMenu — no changeLanguage prop
 jest.mock('../../../components/Sidebar/SidebarMenu', () => ({
   __esModule: true,
-  default: ({ activeSection, changeLanguage }) => (
+  default: ({ activeSection }) => (
     <div data-testid="sidebar-menu">
       <span data-testid="active-section">{activeSection}</span>
-      <button type="button" onClick={() => changeLanguage('en')}>
-        change-en
-      </button>
-      <button type="button" onClick={() => changeLanguage('de')}>
-        change-de
-      </button>
     </div>
   ),
 }));
@@ -24,13 +19,6 @@ jest.mock('../../../components/Sidebar/SidebarSocial', () => ({
   __esModule: true,
   default: () => <div data-testid="sidebar-social" />,
 }));
-
-jest.mock('../../../i18n', () => ({
-  __esModule: true,
-  default: { changeLanguage: jest.fn() },
-}));
-
-const i18n = require('../../../i18n').default;
 
 describe('Sidebar', () => {
   let originalInnerHeight;
@@ -51,17 +39,9 @@ describe('Sidebar', () => {
     </>
   );
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-    useTranslation.mockReturnValue({ t: (k) => k });
-
-    originalInnerHeight = window.innerHeight;
-    originalOffsetTop = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetTop');
-    originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
-
+  function patchDomProperties() {
     Object.defineProperty(window, 'innerHeight', { configurable: true, value: 100 });
     Object.defineProperty(window, 'scrollY', { configurable: true, writable: true, value: 0 });
-
     Object.defineProperty(HTMLElement.prototype, 'offsetTop', {
       configurable: true,
       get() {
@@ -69,8 +49,16 @@ describe('Sidebar', () => {
         return offset ? Number(offset) : 0;
       },
     });
-
     HTMLElement.prototype.scrollIntoView = jest.fn();
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    useTranslation.mockReturnValue({ t: (k) => k });
+    originalInnerHeight = window.innerHeight;
+    originalOffsetTop = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetTop');
+    originalScrollIntoView = HTMLElement.prototype.scrollIntoView;
+    patchDomProperties();
   });
 
   afterEach(() => {
@@ -81,7 +69,7 @@ describe('Sidebar', () => {
     Object.defineProperty(window, 'innerHeight', { configurable: true, value: originalInnerHeight });
   });
 
-  it('updates the active section as the scroll position changes and cleans up listeners', async () => {
+  it('tracks scroll position while mounted and removes the scroll listener on unmount', async () => {
     const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
     const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
 
@@ -109,14 +97,8 @@ describe('Sidebar', () => {
     expect(removeEventListenerSpy).toHaveBeenCalledWith('scroll', expect.any(Function));
   });
 
-  it('switches language through SidebarMenu and scrolls to legal sections', () => {
+  it('scrolls to the correct legal section when the corresponding button is clicked', () => {
     renderWithSections();
-
-    fireEvent.click(screen.getByRole('button', { name: 'change-en' }));
-    fireEvent.click(screen.getByRole('button', { name: 'change-de' }));
-
-    expect(i18n.changeLanguage).toHaveBeenCalledWith('en');
-    expect(i18n.changeLanguage).toHaveBeenCalledWith('de');
 
     fireEvent.click(screen.getByRole('button', { name: /jump to impressum section/i }));
     fireEvent.click(screen.getByRole('button', { name: /jump to privacy policy section/i }));
@@ -125,7 +107,7 @@ describe('Sidebar', () => {
     expect(HTMLElement.prototype.scrollIntoView).toHaveBeenCalledTimes(2);
   });
 
-  it('keeps the default section and ignores missing legal targets', async () => {
+  it('defaults to the About section when no section element matches the current scroll position', async () => {
     render(
       <>
         <Sidebar />
@@ -138,6 +120,16 @@ describe('Sidebar', () => {
     fireEvent.scroll(window);
 
     await waitFor(() => expect(screen.getByTestId('active-section')).toHaveTextContent('About'));
+  });
+
+  it('does not call scrollIntoView when the target legal section is absent from the DOM', () => {
+    render(
+      <>
+        <Sidebar />
+        <div id="Education" data-offset-top="100" />
+        <div id="Projects" data-offset-top="200" />
+      </>
+    );
 
     fireEvent.click(screen.getByRole('button', { name: /jump to impressum section/i }));
     fireEvent.click(screen.getByRole('button', { name: /jump to privacy policy section/i }));

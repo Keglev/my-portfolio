@@ -19,6 +19,7 @@ jest.mock('../../../scripts/lib/normalize/normalize', () => ({
 }));
 jest.mock('../../../scripts/lib/normalize/githubIoPreferer', () => ({
   tryGithubIo: jest.fn(async () => null),
+  applyGithubIoToNode: jest.fn(async () => {}),
 }));
 jest.mock('../../../scripts/lib/output/writeProjects', () => ({
   writeProjectsJson: jest.fn(),
@@ -208,39 +209,37 @@ describe('fetchPinned', () => {
       );
     });
 
-    test('falls back to fs.writeFileSync when writeProjectsJson throws', async () => {
+    test('calls process.exit(3) when writeProjectsJson throws', async () => {
       const nodes = [{ __typename: 'Repository', name: 'repo1' }];
       const fetchPinned = setupNoToken(nodes);
       const writer = require('../../../scripts/lib/output/writeProjects');
       writer.writeProjectsJson.mockImplementation(() => { throw new Error('disk full'); });
-      const fs = require('fs');
 
       await fetchPinned();
 
-      expect(fs.writeFileSync).toHaveBeenCalledWith(
-        expect.stringContaining('projects.json'),
-        expect.any(String),
-        'utf8'
-      );
-      expect(exitSpy).not.toHaveBeenCalled();
+      expect(exitSpy).toHaveBeenCalledWith(3);
     });
   });
 
   // ─── github.io post-processing (tryGithubIo) ─────────────────────────────
 
   describe('github.io post-processing', () => {
-    test('calls tryGithubIo when docsLink contains raw.githubusercontent.com', async () => {
+    test('calls applyGithubIoToNode for each repository node', async () => {
       const nodes = [{
         __typename: 'Repository',
         name: 'repo1',
         docsLink: 'https://raw.githubusercontent.com/keglev/repo1/main/docs/index.html',
       }];
       const fetchPinned = setupNoToken(nodes);
-      const { tryGithubIo } = require('../../../scripts/lib/normalize/githubIoPreferer');
+      const { applyGithubIoToNode } = require('../../../scripts/lib/normalize/githubIoPreferer');
 
       await fetchPinned();
 
-      expect(tryGithubIo).toHaveBeenCalled();
+      expect(applyGithubIoToNode).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'repo1' }),
+        expect.any(Function),
+        expect.anything()
+      );
     });
 
     test('does not call tryGithubIo when docsLink has no raw.githubusercontent.com', async () => {
@@ -274,7 +273,7 @@ describe('fetchPinned', () => {
       expect(written[0].docsLink).toBe('https://keglev.github.io/repo1/docs/index.html');
     });
 
-    test('calls tryGithubIo for repoDocs.apiDocumentation.link with raw url', async () => {
+    test('calls applyGithubIoToNode for nodes with repoDocs raw links', async () => {
       const nodes = [{
         __typename: 'Repository',
         name: 'repo1',
@@ -285,13 +284,12 @@ describe('fetchPinned', () => {
         },
       }];
       const fetchPinned = setupNoToken(nodes);
-      const { tryGithubIo } = require('../../../scripts/lib/normalize/githubIoPreferer');
+      const { applyGithubIoToNode } = require('../../../scripts/lib/normalize/githubIoPreferer');
 
       await fetchPinned();
 
-      expect(tryGithubIo).toHaveBeenCalledWith(
+      expect(applyGithubIoToNode).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'repo1' }),
-        expect.stringContaining('raw.githubusercontent.com'),
         expect.any(Function),
         expect.anything()
       );

@@ -1,22 +1,9 @@
 #!/usr/bin/env node
-/**
- * scripts/applyFallbackDocScan.js
- * -------------------------------
- * Quick utility that scans `public/projects.json` for inline README links
- * that look like API / documentation references and backfills `node.repoDocs`
- * and legacy `docsLink`/`docsTitle` fields when missing. Intended for
- * occasional local runs to repair incomplete artifacts.
- */
 const fs = require('fs');
 const path = require('path');
 
 const FILE = path.join(__dirname, '..', 'public', 'projects.json');
 
-/**
- * scanNodes(nodes, normalizeTitle)
- * Pure business-logic: mutates each node in-place and returns the array.
- * `normalizeTitle` is injected so callers (and tests) can provide their own.
- */
 function scanNodes(nodes, normalizeTitle) {
   for (const node of nodes) {
     if (node.repoDocs) continue;
@@ -44,7 +31,7 @@ function scanNodes(nodes, normalizeTitle) {
           break;
         }
       }
-    } catch (e) { /* ignore per-node failures to keep scan resilient */ }
+    } catch (e) { /* ignore */ }
   }
   return nodes;
 }

@@ -1,12 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { getAxios } = require('../axiosLoader');
 const DEBUG_FETCH = process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true';
-let axios = null;
-function getAxios() {
-  if (axios) return axios;
-  try { const _a = require('axios'); axios = _a && _a.default ? _a.default : _a; return axios; } catch (e) { axios = null; return null; }
-}
 async function translateToGermanDetailed(text) {
   const DEEPL_KEY = process.env.DEEPL_API_KEY || process.env.DEEPL_KEY || process.env.DEEPL_SECRET;
   if (!DEEPL_KEY || !text) return { text: null, status: 'no-key-or-text' };

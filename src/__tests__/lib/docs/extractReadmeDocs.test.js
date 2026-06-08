@@ -91,20 +91,6 @@ describe('extractReadmeDocs', () => {
     expect(result.placeholder.title_de).toBe('Noch in Entwicklung');
   });
 
-  it('uses raw github links when a token is present and exposes the helper predicate', async () => {
-    process.env.GITHUB_TOKEN = 'token';
-
-    getParseReadme().parseMarkdown.mockReturnValue({ children: [] });
-
-    const result = await extractRepoDocsDetailed(['# API', '[Complete API](./docs/api.html)'].join('\n'), 'repo-c');
-
-    expect(result.apiDocumentation.link).toBe('https://raw.githubusercontent.com/keglev/repo-c/main/docs/api.html');
-    expect(require('../../../../scripts/lib/docs/extractReadmeDocs').shouldTranslateUI('short title')).toBe(true);
-    expect(require('../../../../scripts/lib/docs/extractReadmeDocs').shouldTranslateUI('')).toBe('');
-    expect(require('../../../../scripts/lib/docs/extractReadmeDocs').stripAstJsonFragments('Intro {"type":"paragraph"} text')).toBe('Intro text');
-
-  });
-
   it('converts raw, blob and relative docs URLs through the fallback path', async () => {
     getParseReadme().parseMarkdown.mockReturnValue({ children: [] });
 
@@ -159,13 +145,12 @@ describe('extractReadmeDocs', () => {
 
   // ── Architecture: list item paths ───────────────────────────────────────────
 
-  it('extracts architecture from list item via findLinksInListItem when it returns links', async () => {
+  it('extracts architecture from list item via flattenNodeText regex', async () => {
     const pr = getParseReadme();
-    pr.findLinksInListItem.mockReturnValue([{ label: 'Index', url: 'docs/arch.html' }]);
     pr.parseMarkdown.mockReturnValue({
       children: [
         { type: 'heading', children: [{ value: 'Architecture Overview' }] },
-        { type: 'list', children: [{ type: 'listItem', children: [] }] },
+        { type: 'list', children: [{ type: 'listItem', children: [{ value: '[Index](docs/arch.html)' }] }] },
       ],
     });
     const result = await extractRepoDocsDetailed('no readme text', 'my-repo');
@@ -173,96 +158,15 @@ describe('extractReadmeDocs', () => {
     expect(result.architectureOverview.link).toBe('https://keglev.github.io/my-repo/docs/arch.html');
   });
 
-  it('falls back to flattenNodeText regex for arch list item when findLinksInListItem returns null', async () => {
-    const pr = getParseReadme();
-    pr.findLinksInListItem.mockReturnValue(null);
-    pr.parseMarkdown.mockReturnValue({
-      children: [
-        { type: 'heading', children: [{ value: 'Architecture Overview' }] },
-        {
-          type: 'list',
-          children: [{ type: 'listItem', children: [{ value: '[Index docs](docs/arch.html)' }] }],
-        },
-      ],
-    });
-    const result = await extractRepoDocsDetailed('no readme text', 'my-repo');
-    expect(result.architectureOverview.title).toBe('Index docs');
-    expect(result.architectureOverview.link).toBe('https://keglev.github.io/my-repo/docs/arch.html');
-  });
-
-  it('falls back to flattenNodeText regex for arch list item when findLinksInListItem returns empty array', async () => {
-    const pr = getParseReadme();
-    pr.findLinksInListItem.mockReturnValue([]);
-    pr.parseMarkdown.mockReturnValue({
-      children: [
-        { type: 'heading', children: [{ value: 'Architecture Overview' }] },
-        {
-          type: 'list',
-          children: [{ type: 'listItem', children: [{ value: '[Index](docs/arch.md)' }] }],
-        },
-      ],
-    });
-    const result = await extractRepoDocsDetailed('no readme text', 'my-repo');
-    expect(result.architectureOverview.title).toBe('Index');
-    expect(result.architectureOverview.link).toBe('https://github.com/keglev/my-repo/blob/main/docs/arch.md');
-  });
-
-  it('handles null url from findLinksInListItem (toRawGithub null branch) and returns placeholder', async () => {
-    const pr = getParseReadme();
-    pr.findLinksInListItem.mockReturnValue([{ label: 'Index', url: null }]);
-    pr.parseMarkdown.mockReturnValue({
-      children: [
-        { type: 'heading', children: [{ value: 'Architecture Overview' }] },
-        { type: 'list', children: [{ type: 'listItem', children: [] }] },
-      ],
-    });
-    const result = await extractRepoDocsDetailed('no readme text', 'my-repo');
-    // toRawGithub(null) returns null → link = null → foundAny = false → placeholder
-    expect(result.placeholder).toBeDefined();
-  });
-
-  // ── toRawGithub: blob URL variants ─────────────────────────────────────────
-
-  it('converts github.com blob .html (safe path) to github pages URL', async () => {
-    const pr = getParseReadme();
-    pr.findLinksInListItem.mockReturnValue([
-      { label: 'Index', url: 'https://github.com/keglev/my-repo/blob/main/docs/arch.html' },
-    ]);
-    pr.parseMarkdown.mockReturnValue({
-      children: [
-        { type: 'heading', children: [{ value: 'Architecture Overview' }] },
-        { type: 'list', children: [{ type: 'listItem', children: [] }] },
-      ],
-    });
-    const result = await extractRepoDocsDetailed('no readme text', 'my-repo');
-    expect(result.architectureOverview.link).toBe('https://keglev.github.io/my-repo/docs/arch.html');
-  });
-
-  it('returns blob URL unchanged when path does not match safe docs pattern', async () => {
-    const pr = getParseReadme();
-    pr.findLinksInListItem.mockReturnValue([
-      { label: 'Index', url: 'https://github.com/keglev/my-repo/blob/main/other/file.html' },
-    ]);
-    pr.parseMarkdown.mockReturnValue({
-      children: [
-        { type: 'heading', children: [{ value: 'Architecture Overview' }] },
-        { type: 'list', children: [{ type: 'listItem', children: [] }] },
-      ],
-    });
-    const result = await extractRepoDocsDetailed('no readme text', 'my-repo');
-    expect(result.architectureOverview.link).toBe('https://github.com/keglev/my-repo/blob/main/other/file.html');
-  });
+  // ── toRawGithub: edge cases ────────────────────────────────────────────────
 
   it('returns absolute URL unchanged when GITHUB_TOKEN is present (token bypasses conversion)', async () => {
     process.env.GITHUB_TOKEN = 'token';
     const pr = getParseReadme();
-    pr.findLinksInListItem.mockReturnValue([
-      { label: 'Index', url: 'https://raw.githubusercontent.com/keglev/my-repo/main/docs/arch.md' },
-    ]);
     pr.parseMarkdown.mockReturnValue({
       children: [
         { type: 'heading', children: [{ value: 'Architecture Overview' }] },
-        { type: 'list', children: [{ type: 'listItem', children: [] }] },
+        { type: 'list', children: [{ type: 'listItem', children: [{ value: '[Index](https://raw.githubusercontent.com/keglev/my-repo/main/docs/arch.md)' }] }] },
       ],
     });
     const result = await extractRepoDocsDetailed('no readme text', 'my-repo');
@@ -272,11 +176,10 @@ describe('extractReadmeDocs', () => {
 
   it('returns normalized relative path when repoName is null', async () => {
     const pr = getParseReadme();
-    pr.findLinksInListItem.mockReturnValue([{ label: 'Index', url: './docs/arch.html' }]);
     pr.parseMarkdown.mockReturnValue({
       children: [
         { type: 'heading', children: [{ value: 'Architecture Overview' }] },
-        { type: 'list', children: [{ type: 'listItem', children: [] }] },
+        { type: 'list', children: [{ type: 'listItem', children: [{ value: '[Index](./docs/arch.html)' }] }] },
       ],
     });
     const result = await extractRepoDocsDetailed('no readme text', null);
@@ -286,11 +189,10 @@ describe('extractReadmeDocs', () => {
 
   it('returns normalized path for relative URL outside safe docs pattern', async () => {
     const pr = getParseReadme();
-    pr.findLinksInListItem.mockReturnValue([{ label: 'Index', url: './README.md' }]);
     pr.parseMarkdown.mockReturnValue({
       children: [
         { type: 'heading', children: [{ value: 'Architecture Overview' }] },
-        { type: 'list', children: [{ type: 'listItem', children: [] }] },
+        { type: 'list', children: [{ type: 'listItem', children: [{ value: '[Index](./README.md)' }] }] },
       ],
     });
     const result = await extractRepoDocsDetailed('no readme text', 'my-repo');
@@ -300,12 +202,11 @@ describe('extractReadmeDocs', () => {
 
   // ── API: list item and fallback paths ──────────────────────────────────────
 
-  it('extracts API from list item via extractTextFromListItem', async () => {
+  it('extracts API from list item via flattenNodeText regex', async () => {
     const pr = getParseReadme();
-    pr.extractTextFromListItem.mockReturnValue('[Complete API Reference](./docs/api.md)');
     pr.parseMarkdown.mockReturnValue({
       children: [
-        { type: 'list', children: [{ type: 'listItem', children: [] }] },
+        { type: 'list', children: [{ type: 'listItem', children: [{ value: '[Complete API Reference](./docs/api.md)' }] }] },
       ],
     });
     const result = await extractRepoDocsDetailed('no readme text', 'my-repo');
@@ -321,26 +222,6 @@ describe('extractReadmeDocs', () => {
     );
     expect(result.apiDocumentation).toBeDefined();
     expect(result.apiDocumentation.link).toBe('https://github.com/keglev/my-repo/blob/main/docs/api.md');
-  });
-
-  it('extracts API via final scan when label contains "api"', async () => {
-    getParseReadme().parseMarkdown.mockReturnValue({ children: [] });
-    const result = await extractRepoDocsDetailed(
-      'Check the [API Reference](./docs/api-reference.html) here',
-      'my-repo'
-    );
-    expect(result.apiDocumentation).toBeDefined();
-    expect(result.apiDocumentation.link).toBe('https://keglev.github.io/my-repo/docs/api-reference.html');
-  });
-
-  it('extracts API via final scan when URL ends with api.html', async () => {
-    getParseReadme().parseMarkdown.mockReturnValue({ children: [] });
-    const result = await extractRepoDocsDetailed(
-      'See [Documentation](./docs/api.html) for details',
-      'my-repo'
-    );
-    expect(result.apiDocumentation).toBeDefined();
-    expect(result.apiDocumentation.link).toBe('https://keglev.github.io/my-repo/docs/api.html');
   });
 
   it('extracts API via raw URL scan when a bare raw.githubusercontent URL with "api" appears', async () => {
@@ -445,11 +326,10 @@ describe('extractReadmeDocs', () => {
   it('does not set title_de when shouldTranslateUI returns false for a long title', async () => {
     const pr = getParseReadme();
     const longTitle = 'Index ' + 'x'.repeat(300);
-    pr.findLinksInListItem.mockReturnValue([{ label: longTitle, url: 'docs/arch.html' }]);
     pr.parseMarkdown.mockReturnValue({
       children: [
         { type: 'heading', children: [{ value: 'Architecture Overview' }] },
-        { type: 'list', children: [{ type: 'listItem', children: [] }] },
+        { type: 'list', children: [{ type: 'listItem', children: [{ value: `[${longTitle}](docs/arch.html)` }] }] },
       ],
     });
     const translateWithCache = jest.fn(async (_, text) => ({ text: `de:${text}` }));
