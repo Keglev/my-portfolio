@@ -171,4 +171,47 @@ describe('applyFallbackDocScan – scanNodes', () => {
     expect(() => scanNodes([badNode, goodNode], identity)).not.toThrow();
     expect(goodNode.repoDocs).toBeDefined();
   });
+
+  // ── docker hostname filter ────────────────────────────────────────────────
+
+  test('skips links containing a docker hostname', () => {
+    const node = {
+      name: 'repo',
+      object: { text: '[API docs](http://docker:8080/swagger)' },
+    };
+    scanNodes([node], identity);
+    expect(node.repoDocs).toBeUndefined();
+  });
+
+  // ── docsTitle fallback to "Documentation" ─────────────────────────────────
+
+  test('uses "Documentation" when normalizeTitle returns an empty string', () => {
+    const node = {
+      name: 'repo',
+      object: { text: '[API docs](https://example.com/api)' },
+    };
+    scanNodes([node], () => '');
+    expect(node.docsTitle).toBe('Documentation');
+  });
+
+  test('uses "Documentation" when normalizeTitle returns null', () => {
+    const node = {
+      name: 'repo',
+      object: { text: '[API docs](https://example.com/api)' },
+    };
+    scanNodes([node], () => null);
+    expect(node.docsTitle).toBe('Documentation');
+  });
+
+  // ── pre-existing docsTitle is not overwritten ─────────────────────────────
+
+  test('does not overwrite a pre-existing docsTitle', () => {
+    const node = {
+      name: 'repo',
+      docsTitle: 'Pre-existing Title',
+      object: { text: '[API docs](https://new.example.com/api)' },
+    };
+    scanNodes([node], identity);
+    expect(node.docsTitle).toBe('Pre-existing Title');
+  });
 });

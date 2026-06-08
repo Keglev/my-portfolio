@@ -254,4 +254,91 @@ describe('main', () => {
     expect(node.repoDocs.testing.testingDocs.link).toMatch(/keglev\.github\.io\/repo/);
   });
 
+  // ── github.io probe for node.docsLink ─────────────────────────────────────
+
+  test('probes github.io for a raw node.docsLink and updates it when reachable', async () => {
+    axios.head = jest.fn(async () => ({
+      status: 200,
+      headers: { 'content-type': 'text/html' },
+    }));
+    const node = {
+      name: 'repo',
+      docsLink: 'https://raw.githubusercontent.com/keglev/repo/main/docs/index.html',
+    };
+    await main([node]);
+    expect(node.docsLink).toMatch(/keglev\.github\.io\/repo/);
+  });
+
+  test('does not mutate node.docsLink when probe returns non-200', async () => {
+    axios.head = jest.fn(async () => ({ status: 404, headers: {} }));
+    const node = {
+      name: 'repo',
+      docsLink: 'https://raw.githubusercontent.com/keglev/repo/main/docs/index.html',
+    };
+    const originalLink = node.docsLink;
+    await main([node]);
+    expect(node.docsLink).toBe(originalLink);
+  });
+
+  // ── github.io probe for repoDocs.apiDocumentation.link ────────────────────
+
+  test('probes github.io for repoDocs.apiDocumentation.link when it is a raw URL', async () => {
+    axios.head = jest.fn(async () => ({
+      status: 200,
+      headers: { 'content-type': 'text/html' },
+    }));
+    const node = {
+      name: 'repo',
+      repoDocs: {
+        apiDocumentation: {
+          link: 'https://raw.githubusercontent.com/keglev/repo/main/docs/api.html',
+          title: 'API Reference',
+        },
+      },
+    };
+    await main([node]);
+    expect(node.repoDocs.apiDocumentation.link).toMatch(/keglev\.github\.io\/repo/);
+  });
+
+  // ── github.io probe for repoDocs.architectureOverview.link ────────────────
+
+  test('probes github.io for repoDocs.architectureOverview.link when it is a raw URL', async () => {
+    axios.head = jest.fn(async () => ({
+      status: 200,
+      headers: { 'content-type': 'text/html' },
+    }));
+    const node = {
+      name: 'repo',
+      repoDocs: {
+        architectureOverview: {
+          link: 'https://raw.githubusercontent.com/keglev/repo/main/docs/arch.html',
+          title: 'Architecture',
+        },
+      },
+    };
+    await main([node]);
+    expect(node.repoDocs.architectureOverview.link).toMatch(/keglev\.github\.io\/repo/);
+  });
+
+  // ── null / undefined entries in technologies ──────────────────────────────
+
+  test('silently skips null and undefined tokens in technologies array', async () => {
+    const node = { name: 'repo', technologies: [null, undefined, 'React', ''] };
+    await main([node]);
+    expect(node.technologies).toEqual(['React']);
+  });
+
+  // ── repoDocs.documentation title fallback ─────────────────────────────────
+
+  test('uses repoDocs.documentation.title as fallback when apiDocumentation is absent', async () => {
+    const node = {
+      name: 'repo',
+      docsTitle: null,
+      docsLink: 'https://example.com',
+      repoDocs: { documentation: { title: 'Full Reference', link: 'https://docs.example.com' } },
+    };
+    await main([node]);
+    expect(node.docsTitle).toBe('Full Reference');
+  });
+
 });
