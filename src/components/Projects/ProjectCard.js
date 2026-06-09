@@ -8,6 +8,17 @@ import {
 } from './projectsUtils';
 import ProjectSummary from './ProjectSummary';
 
+/**
+ * Renders a single project card with image, summary, technologies, and links.
+ * Handles progressive image loading and a multi-step fallback chain when images fail.
+ *
+ * @param {object} project - Project data object from projects.json
+ * @param {string} image - Primary image URL resolved by the parent
+ * @param {number} index - Position in the projects array, used as the loadedImages key
+ * @param {object} loadedImages - Map of index → boolean tracking which images have loaded
+ * @param {Function} setLoadedImages - Setter for loadedImages state
+ * @returns {JSX.Element}
+ */
 const ProjectCard = ({ project, index, loadedImages = {}, setLoadedImages = () => {}, image }) => {
   const { t, i18n } = useTranslation();
   const initialSrc = image || `/projects_media/${project.name}/project-image.png`;
@@ -16,6 +27,7 @@ const ProjectCard = ({ project, index, loadedImages = {}, setLoadedImages = () =
     const img = e.currentTarget;
     const tries = parseInt(img.getAttribute('data-try') || '0', 10);
 
+    // Three-step fallback: local asset → main branch → master branch → SVG placeholder
     if (tries === 0) {
       img.setAttribute('data-try', '1');
       img.src = getProjectImageUrl(project.name, 'main');
@@ -32,6 +44,7 @@ const ProjectCard = ({ project, index, loadedImages = {}, setLoadedImages = () =
     setLoadedImages(prev => ({ ...prev, [index]: true }));
   };
 
+  // Prefer explicit technologies list; fall back to parsing bold tokens from the README
   const technologies = project.technologies?.length > 0
     ? project.technologies
     : getTechnologyWords(project.object?.text);

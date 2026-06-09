@@ -10,6 +10,13 @@ const NAV_ITEMS = [
   { id: 'Experience', key: 'experience.jobExperiences' },
 ];
 
+/**
+ * Renders the sidebar navigation links, language switcher, and CV download button.
+ * The CV filename and label are both locale-driven to serve the correct language version.
+ *
+ * @param {string} activeSection - Id of the section currently in view
+ * @returns {JSX.Element}
+ */
 const SidebarMenu = ({ activeSection }) => {
   const { t, i18n } = useTranslation();
 
@@ -30,6 +37,7 @@ const SidebarMenu = ({ activeSection }) => {
             spy={true}
             activeClass={activeSection === id ? 'active' : ''}
             containerId="scroll-container"
+            // Offset keeps the section heading clear of the mobile top bar
             offset={70}
           >
             {t(key)}

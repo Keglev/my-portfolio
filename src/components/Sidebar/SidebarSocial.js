@@ -3,6 +3,11 @@ import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 import { SiXing } from 'react-icons/si';
 import { SocialLinksWrapper, SocialLinks } from './SidebarStyles';
 
+/**
+ * Renders the social media and contact icon links for the sidebar.
+ *
+ * @returns {JSX.Element}
+ */
 const SidebarSocial = () => {
   return (
     <SocialLinksWrapper>

@@ -1,3 +1,5 @@
+/* ─── Container ─────────────────────────────────── */
+
 .experience-container {
   padding: var(--padding-section);
   background-color: var(--color-bg);
@@ -10,6 +12,8 @@
   margin-bottom: 2rem;
   text-align: center;
 }
+
+/* ─── Card List ──────────────────────────────────── */
 
 .experience-list {
   display: flex;
@@ -43,6 +47,8 @@
 .experience-card p {
   color: var(--color-text);
 }
+
+/* ─── Responsive ─────────────────────────────────── */
 
 @media (max-width: 768px) {
   .experience-container {

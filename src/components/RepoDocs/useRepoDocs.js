@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+// Filters out generic GitHub CTA headings that bleed into title fields when READMEs are parsed
 const isBadTitle = (s) => !s || /open an issue|question|contribut/i.test(String(s));
 
 const safeTitle = (p) => {
@@ -24,6 +25,7 @@ const hasRepoDocs = (p) => !!(
   (p.docs?.apiDocumentation?.link) ||
   (p.docs?.documentation?.link) ||
   p.docsLink ||
+  // _ast is the parsed README abstract syntax tree; scan its headings as a last resort
   (p._ast?.children && Array.isArray(p._ast.children) && p._ast.children.some(
     c => c?.type === 'heading' && c.children?.length &&
       /doc|api|architectur/i.test(String(c.children[0]?.value || ''))
@@ -40,6 +42,12 @@ const enrichProject = (p) => ({
   hasDocs: hasRepoDocs(p),
 });
 
+/**
+ * Fetches projects.json and returns only entries that have linked documentation.
+ * Enriches each project with a normalized docs shape via enrichProject.
+ *
+ * @returns {object[]} Array of enriched project objects where hasDocs is true
+ */
 const useRepoDocs = () => {
   const [projectsWithDocs, setProjectsWithDocs] = useState([]);
 

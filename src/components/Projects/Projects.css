@@ -1,3 +1,5 @@
+/* ─── Container ─────────────────────────────────── */
+
 .project-container {
   padding: var(--padding-section);
   background-color: var(--color-bg);
@@ -10,12 +12,17 @@
   color: var(--color-accent);
 }
 
+/* ─── Grid ───────────────────────────────────────── */
+
 .project-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
 }
 
+/* ─── Card ───────────────────────────────────────── */
+
+/* Cards render hidden and slightly offset; .visible class triggers the entrance transition */
 .project-card {
   background-color: var(--color-bg-card);
   padding: var(--padding-card);
@@ -36,6 +43,8 @@
   transform: none;
 }
 
+/* ─── Project Image ──────────────────────────────── */
+
 .image-wrap {
   width: 100%;
   height: 180px;
@@ -47,6 +56,7 @@
   background-color: var(--color-bg-subtle);
 }
 
+/* Image hidden until loaded to prevent a broken-src flash before the fallback fires */
 .project-image {
   width: 100%;
   height: 100%;
@@ -62,6 +72,8 @@
   transform: none;
 }
 
+/* ─── Project Content ────────────────────────────── */
+
 .project-content h3 {
   color: var(--color-accent);
   margin-bottom: 0.5rem;
@@ -71,6 +83,8 @@
   color: var(--color-text);
   margin-bottom: 1rem;
 }
+
+/* ─── Tech Tags ──────────────────────────────────── */
 
 .technologies {
   margin-top: 1rem;
@@ -95,6 +109,8 @@
   box-shadow: 0px 4px 10px var(--shadow-accent);
 }
 
+/* ─── Project Links ──────────────────────────────── */
+
 .project-link {
   display: inline-block;
   margin-top: 1rem;
@@ -106,6 +122,8 @@
   color: var(--color-text);
 }
 
+/* ─── Responsive ─────────────────────────────────── */
+
 @media (max-width: 768px) {
   .project-container {
     padding: 2rem;
@@ -115,6 +133,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ─── Skeleton Loader ────────────────────────────── */
 
 .skeleton {
   animation: pulse 1.5s ease-in-out infinite;
@@ -166,6 +186,8 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
 }
+
+/* ─── Error State ────────────────────────────────── */
 
 .error-message {
   color: var(--color-accent);

@@ -5,6 +5,12 @@ import { getPrimaryImage } from './projectsUtils';
 import useProjects from './useProjects';
 import './Projects.css';
 
+/**
+ * Renders the portfolio's Projects section.
+ * Fetches project data via useProjects and delegates card rendering to ProjectCard.
+ *
+ * @returns {JSX.Element} Grid of project cards loaded from projects.json.
+ */
 const Projects = () => {
   const { t } = useTranslation();
   const { projects, loadedImages, setLoadedImages } = useProjects();

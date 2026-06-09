@@ -1,6 +1,9 @@
 import React from 'react';
 
-// Simple error boundary to catch rendering errors and surface them in the DOM
+/**
+ * Catches unhandled React rendering errors and displays a fallback UI
+ * instead of a blank page. Wrap any subtree that may throw during render.
+ */
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -12,7 +15,6 @@ export default class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, info) {
-    // Log full error to console for debugging
     console.error('ErrorBoundary caught an error:', error, info);
   }
 

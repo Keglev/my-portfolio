@@ -4,6 +4,12 @@ import useRepoDocs from './useRepoDocs';
 import RepoDocLinks from './RepoDocLinks';
 import './RepoDocs.css';
 
+/**
+ * Renders the RepoDocs section listing projects that have linked documentation.
+ * Shows an empty-state card when no projects with docs are found.
+ *
+ * @returns {JSX.Element}
+ */
 const RepoDocs = () => {
   const { t } = useTranslation();
   const projectsWithDocs = useRepoDocs();

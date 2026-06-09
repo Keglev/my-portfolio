@@ -1,8 +1,9 @@
 import styled from 'styled-components';
-import { Link } from 'react-scroll'; // Importing Link from react-scroll for smooth scrolling
+import { Link } from 'react-scroll';
 
 /**
- * Styled container for the sidebar
+ * Fixed full-height column that holds all sidebar content.
+ * Becomes a static block on mobile so it doesn't obscure the scrollable content area.
  */
 export const SidebarContainer = styled.div`
   width: 350px;
@@ -29,7 +30,8 @@ export const SidebarContainer = styled.div`
 `;
 
 /**
- * Styled link component for navigation, includes hover and active state
+ * Navigation link powered by react-scroll.
+ * Slides right on hover/active to signal the current section without a full page change.
  */
 export const StyledLink = styled(Link)`
   display: flex;
@@ -42,18 +44,20 @@ export const StyledLink = styled(Link)`
 
   &:hover,
   &.active {
-    transform: translateX(10px); /* Shift to the right when hovered or active */
-    color: #64ffda; /* Highlight color */
+    transform: translateX(10px);
+    color: #64ffda;
   }
 `;
 
 /**
- * Name and title section styling
+ * Name and job title block at the top of the sidebar.
+ * Uses clamp() on h1 so the name stays on one line within the fixed sidebar width.
  */
 export const NameTitle = styled.div`
   text-align: center;
 
   h1 {
+    /* clamp keeps the name on one line without overflowing the fixed sidebar width */
     font-size: clamp(1.4rem, 4.8vw, 1.9rem);
     margin-bottom: 0.3rem;
     color: #64ffda;
@@ -78,7 +82,8 @@ export const NameTitle = styled.div`
 `;
 
 /**
- * Menu wrapper for the links
+ * Navigation link column. Hidden on mobile because the sidebar
+ * collapses to a top header bar where vertical links don't fit.
  */
 export const Menu = styled.div`
   margin-top: 1rem;
@@ -87,12 +92,12 @@ export const Menu = styled.div`
   gap: 1.2rem;
 
   @media (max-width: 768px) {
-    display: none; /* Hide menu on smaller screens */
+    display: none;
   }
 `;
 
 /**
- * Wrapper for social links like GitHub, LinkedIn, and Email
+ * Centering wrapper for the social icon row.
  */
 export const SocialLinksWrapper = styled.div`
   display: flex;
@@ -101,7 +106,7 @@ export const SocialLinksWrapper = styled.div`
 `;
 
 /**
- * Social links container with hover effects
+ * Social icon links with scale-and-color hover effect.
  */
 export const SocialLinks = styled.div`
   display: flex;
@@ -113,8 +118,8 @@ export const SocialLinks = styled.div`
     transition: color 0.3s ease, transform 0.3s ease;
 
     &:hover {
-      color: #64ffda; /* Change color on hover */
-      transform: scale(1.2); /* Slight zoom effect */
+      color: #64ffda;
+      transform: scale(1.2);
     }
   }
 
@@ -128,7 +133,7 @@ export const SocialLinks = styled.div`
 `;
 
 /**
- * Footer message at the bottom of the sidebar
+ * Footer area at the bottom of the sidebar containing the tagline and legal links.
  */
 export const FooterMessage = styled.div`
   margin-bottom: 0;
@@ -146,7 +151,8 @@ export const FooterMessage = styled.div`
 `;
 
 /**
- * Wrapper for language buttons area
+ * Language toggle button group. Subtle background separates it visually
+ * from the navigation links above.
  */
 export const LanguageWrapper = styled.div`
   margin-bottom: 1rem;
@@ -165,7 +171,7 @@ export const LanguageWrapper = styled.div`
     transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease, box-shadow 0.12s ease;
   }
   button:hover {
-    /* copy tech-box hover: brighter, green background and shadow */
+    /* Matches tech-box hover: solid accent background with lift shadow */
     background: #64ffda;
     color: #0a192f;
     transform: translateY(-3px) scale(1.06);
@@ -180,6 +186,10 @@ export const LanguageWrapper = styled.div`
   }
 `;
 
+/**
+ * Ghost button used for Impressum and Datenschutz footer links.
+ * Styled to look like a text link while keeping button semantics for accessibility.
+ */
 export const LegalButton = styled.button`
   background: none;
   border: none;
@@ -191,7 +201,7 @@ export const LegalButton = styled.button`
 `;
 
 /**
- * Wrapper for the CV download button
+ * Centering wrapper for the CV download link.
  */
 export const CVDownloadWrapper = styled.div`
   margin-top: 1rem;
@@ -201,7 +211,8 @@ export const CVDownloadWrapper = styled.div`
 `;
 
 /**
- * Styled anchor for downloading the CV, matches the language button effect
+ * Styled CV download link. Matches the language button appearance
+ * so both actions feel like peers in the sidebar footer.
  */
 export const CVDownloadLink = styled.a`
   display: inline-block;

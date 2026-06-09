@@ -2,6 +2,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './Legal.css';
 
+/**
+ * Renders the German legal pages: Impressum and Datenschutzerklärung.
+ * Both sections reuse the project-card layout for visual consistency with the rest of the site.
+ *
+ * @returns {JSX.Element} Fragment containing Impressum and Datenschutz sections.
+ */
 const Legal = () => {
   const { t } = useTranslation();
   return (
@@ -11,6 +17,7 @@ const Legal = () => {
         <div className="project-grid">
           <div className="project-card visible">
             <div className="project-content legal-content">
+              {/* Legal text contains links and line-break tags authored in the locale files */}
               <div dangerouslySetInnerHTML={{ __html: t('legal.impressumContent') }} />
             </div>
           </div>
@@ -22,6 +29,7 @@ const Legal = () => {
         <div className="project-grid">
           <div className="project-card visible">
             <div className="project-content legal-content">
+              {/* Legal text contains links and line-break tags authored in the locale files */}
               <div dangerouslySetInnerHTML={{ __html: t('legal.datenschutzContent') }} />
             </div>
           </div>

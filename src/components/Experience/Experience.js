@@ -10,7 +10,6 @@ import './Experience.css';
  */
 const Experience = () => {
   const { t } = useTranslation();
-  /* Entries pulled from locales directory in the language selected by the user */
   const experiences = [
     {
       title: t('experienceSection.experience1.title'),

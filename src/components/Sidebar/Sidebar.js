@@ -9,8 +9,16 @@ import {
 import SidebarMenu from './SidebarMenu';
 import SidebarSocial from './SidebarSocial';
 
+// Ordered bottom-to-top so the first match is always the deepest section currently in view
 const SECTIONS = ['Legal', 'RepoDocs', 'Experience', 'Projects', 'Education'];
 
+/**
+ * Returns the id of the section currently most visible in the viewport.
+ * Iterates from bottom to top so the deepest section the user has scrolled past wins.
+ *
+ * @param {number} scrollPosition - window.scrollY plus half the viewport height
+ * @returns {string} Section id, defaulting to 'About' when scroll is near the top
+ */
 const getActiveSection = (scrollPosition) => {
   for (const id of SECTIONS) {
     const el = document.getElementById(id);
@@ -19,12 +27,20 @@ const getActiveSection = (scrollPosition) => {
   return 'About';
 };
 
+/**
+ * Fixed left-hand navigation sidebar.
+ * Tracks the active section via scroll position and exposes language switching,
+ * CV download, and links to German legal pages.
+ *
+ * @returns {JSX.Element}
+ */
 const Sidebar = () => {
   const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState('About');
 
   useEffect(() => {
     const handleScroll = () => {
+      // Midpoint of the viewport keeps the active item stable as the user scrolls through sections
       const scrollPosition = window.scrollY + window.innerHeight / 2;
       setActiveSection(getActiveSection(scrollPosition));
     };

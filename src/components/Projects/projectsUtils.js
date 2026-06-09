@@ -1,8 +1,23 @@
-// Utility helpers for Projects component
+/**
+ * Builds the raw GitHub URL for a project's preview image.
+ * Used as a fallback when the local /projects_media/ copy is absent.
+ *
+ * @param {string} repoName - Repository name on GitHub
+ * @param {string} [branch='main'] - Branch to read the image from
+ * @returns {string} Raw GitHub content URL
+ */
 export const getProjectImageUrl = (repoName, branch = 'main') => {
   return `https://raw.githubusercontent.com/keglev/${repoName}/${branch}/src/assets/imgs/project-image.png`;
 };
 
+/**
+ * Resolves the best available preview image for a project.
+ * Prefers an explicit primaryImage field, then a /projects_media/ path found in
+ * the README, and finally falls back to the raw GitHub URL.
+ *
+ * @param {object} project - Project data object from projects.json
+ * @returns {string} Image URL or raw GitHub fallback
+ */
 export const getPrimaryImage = (project) => {
   try {
     if (project && project.primaryImage) return project.primaryImage;
@@ -18,12 +33,26 @@ export const getPrimaryImage = (project) => {
   return getProjectImageUrl(project.name);
 };
 
+/**
+ * Generates an inline SVG data URI to show when no real project image is found.
+ * Escapes the title to prevent SVG text injection.
+ *
+ * @param {string} title - Project name displayed inside the placeholder
+ * @returns {string} data:image/svg+xml URI
+ */
 export const generatePlaceholderSVGDataUrl = (title) => {
   const safe = (title || 'Project').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const svg = `<?xml version="1.0" encoding="UTF-8"?><svg xmlns='http://www.w3.org/2000/svg' width='1200' height='675' viewBox='0 0 1200 675'><rect width='100%' height='100%' fill='%230f2238' rx='8'/><text x='50%' y='45%' fill='%239ec7ef' font-family='Arial, Helvetica, sans-serif' font-size='36' font-weight='600' text-anchor='middle'>Image not available</text><text x='50%' y='58%' fill='%237aa7d9' font-family='Arial, Helvetica, sans-serif' font-size='20' text-anchor='middle'>${safe}</text></svg>`;
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
 };
 
+/**
+ * Extracts and sanitizes the text under an "About" heading in a README.
+ * Strips Markdown syntax so the result can render as plain text in a card summary.
+ *
+ * @param {string|null} readmeText - Raw README content
+ * @returns {string|null} Truncated plain-text excerpt, or null if no About heading exists
+ */
 export const getAboutSection = (readmeText) => {
   if (!readmeText) return null;
   const match = readmeText.match(/(^|\n)#{1,6}\s*about\b/i);
@@ -50,10 +79,17 @@ export const getAboutSection = (readmeText) => {
   return about.length > MAX ? about.slice(0, MAX).trim() + '...' : about;
 };
 
+/**
+ * Parses **bold** technology names from the Technologies section of a README.
+ * Stops collecting at the next heading that is the same level or higher than the
+ * Technologies heading, so sibling sections are not included.
+ *
+ * @param {string|null} readmeText - Raw README content
+ * @returns {string[]} Deduplicated list of normalized technology names
+ */
 export const getTechnologyWords = (readmeText) => {
   if (!readmeText) return [];
   const lines = readmeText.split(/\r?\n/);
-  // locate start of technologies section
   let startIndex = -1;
   let headingLevel = 0;
   for (let i = 0; i < lines.length; i++) {
@@ -71,7 +107,6 @@ export const getTechnologyWords = (readmeText) => {
   }
   if (startIndex === -1) return [];
 
-  // find end of section
   let endIndex = lines.length;
   for (let i = startIndex; i < lines.length; i++) {
     const h = lines[i].trim();
@@ -91,7 +126,6 @@ export const getTechnologyWords = (readmeText) => {
   const boldRe = /\*\*([^*]+?)\*\*/g;
   for (const l of sectionLines) {
     if (!l || !l.trim()) continue;
-    // find all strict **...** occurrences on this line
     const matches = Array.from(l.matchAll(boldRe));
     for (const m of matches) {
       const raw = (m && m[1]) ? m[1].trim() : '';
@@ -107,10 +141,8 @@ export const getTechnologyWords = (readmeText) => {
 function normalizeTechToken(raw) {
   if (!raw) return null;
   let token = String(raw).trim();
-  // remove any trailing parenthetical piece
   const p = token.indexOf('(');
   if (p !== -1) token = token.slice(0, p).trim();
-  // trim common surrounding punctuation
   const stripChars = new Set(['-', ':', '(', ')', '[', ']', '"', "'", ',', '.', ';']);
   while (token.length && (token[0].trim() === '' || stripChars.has(token[0]))) token = token.slice(1);
   while (token.length && (token[token.length - 1].trim() === '' || stripChars.has(token[token.length - 1]))) token = token.slice(0, -1);
@@ -118,6 +150,14 @@ function normalizeTechToken(raw) {
   return token || null;
 }
 
+/**
+ * Converts a raw.githubusercontent.com URL to its GitHub blob viewer equivalent.
+ * Raw URLs serve plain text; blob URLs render with GitHub's syntax highlighting
+ * and standard file navigation UI.
+ *
+ * @param {string} link
+ * @returns {string} GitHub blob URL, or the original link unchanged if it doesn't match the pattern
+ */
 export const convertRawToBlob = (link) => {
   if (!link) return link;
   const m = link.match(/^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)\/(.+)$/i);

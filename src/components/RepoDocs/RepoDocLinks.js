@@ -8,6 +8,14 @@ const DocLink = ({ href, label }) => (
   </a>
 );
 
+/**
+ * Renders documentation links for a single project in the RepoDocs section.
+ * Checks fields in priority order: placeholder → API docs → architecture overview →
+ * production URL → test coverage → generic docsLink fallback.
+ *
+ * @param {object} project - Enriched project object from useRepoDocs
+ * @returns {JSX.Element}
+ */
 const RepoDocLinks = ({ project: p }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
@@ -61,6 +69,7 @@ const RepoDocLinks = ({ project: p }) => {
     });
   }
 
+  // Only fall back to the generic docsLink when no structured doc fields exist
   const hasStructuredLinks = !!(p.repoDocs?.apiDocumentation || p.repoDocs?.architectureOverview || p.docs?.documentation);
   if (!hasStructuredLinks && p.docsLink) {
     return <p><DocLink href={convertRawToBlob(p.docsLink)} label={t('viewDocs')} /></p>;
