@@ -1,10 +1,23 @@
+############################################################
+# CI — Lint, Test, Coverage
+#
+# Purpose
+# - Lint source files to catch issues before tests run
+# - Run the full test suite and collect coverage
+# - Upload coverage as a pipeline artifact for docs-refresh
+#
+# Triggers
+# - Push to main when source, test, or config files change
+# - Pull requests to main
+#
+# Does NOT deploy anything. Deployment is handled by
+# build-and-fetch.yml, which runs only after this job succeeds.
+############################################################
 name: CI
 
 on:
   push:
     branches: [ main ]
-    # Run when source, test, or config files change.
-    # Docs-only changes are handled directly by docs-refresh.yml.
     paths:
       - 'src/**'
       - 'scripts/**'
@@ -12,40 +25,51 @@ on:
       - 'jest.node.config.js'
       - 'package.json'
       - '.github/workflows/ci.yml'
-      - '.github/workflows/docs-refresh.yml'
   pull_request:
     branches: [ main ]
+
+# One pipeline at a time. Queues instead of cancelling.
+concurrency:
+  group: portfolio-pipeline
+  cancel-in-progress: false
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x]
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-      - name: Install dependencies
-        run: npm ci
-      - name: Run CI tests
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node setup
+        uses: ./.github/actions/node-setup
+
+      # Fail fast: lint before running tests.
+      - name: Lint
+        run: npm run lint
+
+      - name: Run tests with coverage
         env:
           CI: true
-        run: npm run test:ci
-      # Debug README artifact upload removed from CI to avoid storing raw README samples in workflow artifacts.
+        # --runInBand: runs tests serially to avoid resource contention in CI
+        run: npx jest --config=jest.node.config.js --runInBand --coverage
 
-  # Runs once after all matrix test jobs pass, on pushes to main only (not PRs).
-  # This ensures docs-refresh (and its coverage report) always reflects passing code.
-  trigger-docs-refresh:
+      # Upload coverage so docs-refresh can consume it without re-running tests.
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+  # Runs only on push to main after test job passes.
+  trigger-build:
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       actions: write
     steps:
-      - name: Trigger docs-refresh workflow
-        run: gh workflow run docs-refresh.yml --repo ${{ github.repository }} --ref main
+      - name: Trigger build-and-fetch workflow
+        run: gh workflow run build-and-fetch.yml --repo ${{ github.repository }} --ref main
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

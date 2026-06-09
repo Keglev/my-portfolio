@@ -1,20 +1,35 @@
-name: Docs refresh
+############################################################
+# Docs Refresh
+#
+# Purpose
+# - Generate JSDoc API documentation
+# - Generate Mermaid diagrams (placeholder until .mmd files exist)
+# - Apply HTML/CSS doc templates (placeholder until templates exist)
+# - Download coverage report from CI artifact (no re-running tests)
+# - Publish everything to gh-pages
+#
+# Triggers
+# - Dispatched by build-and-fetch.yml after successful Vercel deployment
+# - Directly on docs/** changes (docs-only edits bypass the full pipeline)
+# - Manual via workflow_dispatch
+#
+# Docs are published to gh-pages only.
+# Nothing here is deployed to Vercel.
+############################################################
+name: Docs Refresh
 
 on:
   push:
     branches: [ main ]
-    # Trigger directly only for docs changes.
-    # Code/test changes are handled by ci.yml, which dispatches this workflow
-    # after all tests pass.
     paths:
       - 'docs/**'
   workflow_dispatch:
 
-# Prevent concurrent runs. If docs/** and src/** both change in the same commit,
-# the docs-triggered run is cancelled in favour of the CI-dispatched one.
+# Full pipeline runs use the shared group — queues behind build-and-fetch.
+# Docs-only pushes use a separate group so they never queue behind a full run.
 concurrency:
-  group: docs-refresh
-  cancel-in-progress: true
+  group: ${{ (github.event_name == 'push') && 'docs-only' || 'portfolio-pipeline' }}
+  cancel-in-progress: false
 
 jobs:
   refresh-docs:
@@ -25,53 +40,67 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - name: Node setup
+        uses: ./.github/actions/node-setup
+
+      # Download coverage from CI artifact instead of re-running tests.
+      # If the artifact is missing (docs-only trigger), this step is skipped
+      # and the previous coverage on gh-pages remains unchanged.
+      - name: Download coverage artifact
+        uses: actions/download-artifact@v4
         with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-
-      - name: Run tests with coverage (full test suite)
-        run: |
-          echo "Running full test suite to collect complete coverage"
-          npx jest --config=jest.node.config.js --runInBand --coverage
-
-      - name: Fetch projects (docs-only run)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
-          DEEPL_SECRET: ${{ secrets.DEEPL_SECRET }}
-          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
-        run: |
-          echo "Docs refresh: running fetchProjects.js (DeepL used only if secret present)"
-          node scripts/fetchProjects.js
-
-      - name: Post-process & fallback scan
-        run: |
-          node scripts/postprocessProjects.js
-          node scripts/applyFallbackDocScan.js
-
-      - name: Build
-        run: npm run build
+          name: coverage-report
+          path: coverage/
+        continue-on-error: true
 
       - name: Generate JSDoc API docs
         run: |
           echo "Generating JSDoc into docs/jsdoc"
           npm run docs:jsdoc
 
+      # Placeholder: runs once .mmd diagram files exist in the repo.
+      - name: Generate Mermaid diagrams
+        run: |
+          echo "No Mermaid sources yet — skipping"
+          # When ready, replace with:
+          # npx @mermaid-js/mermaid-cli -i docs/diagrams/*.mmd -o docs/diagrams/
+
+      # Placeholder: runs once HTML/CSS doc templates are created.
+      - name: Apply doc templates
+        run: |
+          echo "No templates yet — skipping"
+          # When ready, replace with the script that merges templates into docs/
+
       - name: Copy coverage report into docs
         run: |
-          rm -rf docs/coverage
-          cp -r coverage docs/coverage
+          if [ -d coverage ]; then
+            rm -rf docs/coverage
+            cp -r coverage docs/coverage
+            echo "Coverage report copied into docs/"
+          else
+            echo "No coverage artifact found — skipping coverage copy"
+          fi
 
-      - name: Deploy docs to gh-pages branch
+      # peaceiris/actions-gh-pages@v4 — v3 has a known token scope bug
+      - name: Deploy docs to gh-pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs
           publish_branch: gh-pages
-          keep_files: false
-          force_orphan: false
+          keep_files: false   # replaces all docs on each deploy; old files do not accumulate
+          force_orphan: false # preserves git history on gh-pages branch
           commit_message: "docs: update coverage and jsdoc [${{ github.sha }}]"
+
+      # Confirm gh-pages is reachable after publish.
+      - name: Smoke test gh-pages
+        run: |
+          echo "Checking gh-pages is reachable..."
+          sleep 15
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://keglev.github.io/my-portfolio)
+          echo "HTTP status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "WARNING: gh-pages returned $STATUS — may still be propagating"
+          fi
+        # Non-blocking warning only: gh-pages propagation can take up to 60s.
+        # Exit 0 always to avoid failing the workflow on a timing issue.

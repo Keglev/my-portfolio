@@ -1,0 +1,28 @@
+name: Node 20 Setup
+description: Set up Node 20, restore npm cache, install dependencies (run after checkout)
+
+runs:
+  using: composite
+  steps:
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Cache node_modules
+      uses: actions/cache@v4
+      with:
+        # ~/.npm is the npm download cache (tarballs), not node_modules itself —
+        # portable across OSes and safe to share between jobs.
+        path: ~/.npm
+        key: ${{ runner.os }}-node-20-${{ hashFiles('package-lock.json') }}
+        # Partial-match fallback: allows cache reuse when only some deps changed
+        # and the lockfile hash no longer matches exactly.
+        restore-keys: |
+          ${{ runner.os }}-node-20-
+
+    - name: Install dependencies
+      # --legacy-peer-deps: react-scripts v5 conflicts with newer peer dep resolution
+      run: npm ci --legacy-peer-deps
+      # shell: required — composite action run steps don't inherit a default shell
+      shell: bash

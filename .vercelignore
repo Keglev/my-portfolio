@@ -1,0 +1,6 @@
+src/**/*.test.js
+src/**/*.test.jsx
+coverage/
+docs/
+scripts/
+config/
