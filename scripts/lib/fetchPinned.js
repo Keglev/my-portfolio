@@ -17,6 +17,7 @@ const QUERY = `query getPinned($login: String!) { user(login: $login) { pinnedIt
 
 async function fetchGraphQL() {
   if (!TOKEN) {
+    // No token in this environment; fall back to the existing projects.json for local dev
     try {
       const raw = fs.readFileSync(OUT_PATH, 'utf8');
       const nodes = JSON.parse(raw);
@@ -82,11 +83,19 @@ function runNormalizationPass(nodes) {
   }
 }
 
+/**
+ * Fetches pinned repositories from GitHub, runs the full per-node processing pipeline
+ * (README parsing, doc extraction, translation, media download), then writes projects.json.
+ * Filters GraphQL results to Repository nodes only — gists and other pinnedItem types are excluded.
+ *
+ * @returns {Promise<void>}
+ */
 async function fetchPinned() {
   try {
     const nodes = await fetchGraphQL();
     if (!Array.isArray(nodes)) throw new Error('Invalid response from GraphQL');
     mediaDownloader.ensureDir(MEDIA_ROOT);
+    // Filter to Repository items; pinnedItems may also contain Gists
     const repoNodes = nodes.filter(n => n && n.__typename === 'Repository');
     const nodeProcessor = require('./pipeline/nodeProcessor');
     for (const node of repoNodes) {

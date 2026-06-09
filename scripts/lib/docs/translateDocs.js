@@ -42,6 +42,16 @@ async function translateTitles(out, repoName, translateFn) {
   }
 }
 
+/**
+ * Translates all description and title fields in the repoDocs object to German.
+ * Operates in two sequential passes (descriptions, then titles) so DeepL API
+ * calls are batched by type rather than interleaved per-field.
+ *
+ * @param {object} out - repoDocs object with architectureOverview, apiDocumentation, testing fields
+ * @param {string} repoName - Repository name passed through to the translation cache
+ * @param {Function} translateFn - translateWithCache(repo, text) → Promise<{ text, status }>
+ * @returns {Promise<void>}
+ */
 async function translateDocFields(out, repoName, translateFn) {
   try {
     await translateDescriptions(out, repoName, translateFn);

@@ -7,6 +7,14 @@ const { getAxios } = require('./lib/axiosLoader');
 const FILE = path.join(__dirname, '..', 'public', 'projects.json');
 const DEBUG = process.env.DEBUG_FETCH === '1' || false;
 
+/**
+ * Probes whether a raw.githubusercontent.com docs URL has a rendered GitHub Pages equivalent.
+ * Rejects candidates whose X-Frame-Options header is DENY, since those won't embed in the site.
+ *
+ * @param {object} node - Repository node (used only for debug logging)
+ * @param {string} href - raw.githubusercontent.com URL to probe
+ * @returns {Promise<string|null>} GitHub Pages URL when reachable and embeddable, otherwise null
+ */
 async function tryGithubIo(node, href) {
   try {
     if (!href) return null;
@@ -32,11 +40,19 @@ async function tryGithubIo(node, href) {
   return null;
 }
 
+/**
+ * Splits a compound technology string and strips surrounding punctuation from each token.
+ * Handles entries like "Spring Boot and React" or "Java, Kotlin" as separate technologies.
+ *
+ * @param {string} token - Raw technology string from a README
+ * @returns {string[]|null} Cleaned token array, or null if nothing usable remains
+ */
 function normalizeTech(token) {
   if (!token) return null;
   let t = String(token).trim().replace(/\*\*/g, '').replace(/\s+for\b[\s\S]*$/i, '').trim();
   const p = t.indexOf('(');
   if (p !== -1) t = t.slice(0, p).trim();
+  // split "Spring Boot and React", "Java / Kotlin", "A + B", "A & B", "A, B"
   const parts = String(t).split(/\s*(?:,|\bwith\b|\band\b|\s+\/\s+|\s+&\s+|\s+\+\s+)\s*/i).map(s => s && s.trim()).filter(Boolean);
   const strip = new Set(['-', ':', '(', ')', '[', ']', '"', "'", ',', '.', ';']);
   const cleaned = parts.map(part => {
@@ -51,6 +67,7 @@ function normalizeTech(token) {
 async function probeGithubIoLinks(nodes) {
   for (const node of nodes) {
     try {
+      // Only probe raw GitHub URLs; already-preferred github.io links are skipped
       if (node.docsLink && /raw\.githubusercontent\.com/i.test(node.docsLink)) {
         const p = await tryGithubIo(node, node.docsLink); if (p) node.docsLink = p;
       }
@@ -121,6 +138,13 @@ function normalizeTechTokens(nodes) {
   }
 }
 
+/**
+ * Runs all post-processing passes on the projects array and writes the result to projects.json.
+ * Passes execute in order: GitHub Pages probing → legacy docs backfill → bad-title fix → tech normalization.
+ *
+ * @param {object[]} nodes - Enriched project objects loaded from projects.json
+ * @returns {Promise<void>}
+ */
 async function main(nodes) {
   await probeGithubIoLinks(nodes);
   backfillLegacyDocs(nodes);

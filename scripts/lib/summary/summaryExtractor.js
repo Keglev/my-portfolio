@@ -1,5 +1,14 @@
 #!/usr/bin/env node
-// Extract a short summary and metadata from a node's README text/AST
+
+/**
+ * Extracts a short plain-text summary from a repository node's README.
+ * Strategy: look for a named section (About, Overview, etc.) first; fall back
+ * to the first non-empty paragraph; truncate to 160 characters as a last resort.
+ *
+ * @param {object} node - Repository node with optional `_ast` and `object.text`
+ * @param {object} parseReadme - parseReadme module (injected to avoid circular deps)
+ * @returns {{ summary: string, summarySource: string|null, summaryRaw: string }}
+ */
 function extractSummaryFromNode(node, parseReadme) {
   const readme = node && node.object && node.object.text;
   let summary = '';

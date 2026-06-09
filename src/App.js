@@ -11,6 +11,12 @@ import { GlobalStyles } from './styles/GlobalStyles';
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import "./i18n"; // must be imported before any translated component renders
 
+/**
+ * Root application component.
+ * Composes the fixed sidebar with the scrollable main content column.
+ *
+ * @returns {JSX.Element}
+ */
 function App() {
   return (
     <>
@@ -18,6 +24,7 @@ function App() {
       <GlobalStyles />
       <div className="container">
         <Sidebar />
+        {/* id matches the containerId prop used by react-scroll in SidebarMenu */}
         <div className="main-content" id="scroll-container">
           <div className="section" id="About"><About /></div>
           <div className="section" id="Education"><Education /></div>

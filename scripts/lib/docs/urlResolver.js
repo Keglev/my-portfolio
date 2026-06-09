@@ -1,3 +1,13 @@
+/**
+ * Converts a docs href to an absolute URL. When no GitHub token is present the
+ * function prefers public GitHub Pages or blob URLs over raw.githubusercontent.com,
+ * because raw URLs require authentication for private repos and trigger CORS issues
+ * in the browser. When a token is available, raw URLs are always safe to use.
+ *
+ * @param {string} href - Link extracted from a README (may be relative)
+ * @param {string} repoName - Repository name used to build absolute URLs
+ * @returns {string} Absolute URL suitable for the current environment
+ */
 function toRawGithub(href, repoName) {
   if (!href) return href;
   if (/^https?:\/\//i.test(href)) {
@@ -34,6 +44,13 @@ function toRawGithub(href, repoName) {
   return p;
 }
 
+/**
+ * Passes absolute URLs through unchanged; converts relative paths via toRawGithub.
+ *
+ * @param {string} href - Link to normalize
+ * @param {string} repoName - Repository name for building absolute URLs
+ * @returns {string} Absolute URL
+ */
 function normalizeIfRelative(href, repoName) {
   if (!href) return href;
   if (/^https?:\/\//i.test(href)) return href;

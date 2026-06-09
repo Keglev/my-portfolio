@@ -1,23 +1,14 @@
 /**
- * mediaHelper.processNodeMedia
+ * Selects and downloads the best representative image for a repository node.
+ * Priority: explicit `src/assets/imgs/project-image.png` probe → AST-derived
+ * candidate → first inline markdown image. Rewrites the README text so all
+ * badge-like and SVG image references point to the chosen local path.
  *
- * High-level orchestration for README image selection and persistence.
- * Steps:
- * 1. Ensure media directory exists under `mediaRoot/<repo>`.
- * 2. Prefer an explicit `src/assets/imgs/project-image.png` on main/master.
- * 3. Fall back to an AST-derived candidate or the first inline markdown image.
- * 4. Sanitize the candidate URL/path and attempt deterministic download via mediaDownloader.
- * 5. If a file is written, update `node.primaryImage`, rewrite README image
- *    occurrences to reference `/projects_media/<repo>/<file>` and populate
- *    `_imageSelection` metadata.
- *
- * Parameters:
- * - node: repository node object with `name` and optionally `object.text` (README)
- * - mediaRoot: absolute filesystem root where project media folders will be created
- * - getAxios: a factory function that returns an axios-like client for probing
- * - opts: optional overrides (parseReadme, isBadgeLike, mediaDownloader, readme, ast)
- *
- * Returns: Promise<string|null> filename (relative to the repo media dir) or null
+ * @param {object} node - Repository node with `name` and optionally `object.text`
+ * @param {string} mediaRoot - Absolute filesystem path where media folders are created
+ * @param {Function} getAxios - Factory returning an axios-like HTTP client
+ * @param {object} [opts] - Overrides: { parseReadme, isBadgeLike, mediaDownloader, readme, ast }
+ * @returns {Promise<string|null>} Filename relative to the repo media dir, or null
  */
 async function processNodeMedia(node, mediaRoot, getAxios, opts = {}) {
   const parseReadme = opts.parseReadme || require('../parseReadme');
@@ -27,12 +18,10 @@ async function processNodeMedia(node, mediaRoot, getAxios, opts = {}) {
   const ast = opts.ast || (readme ? (parseReadme.parseMarkdown ? parseReadme.parseMarkdown(readme) : null) : null);
 
   try {
-    // ensure media root exists
     try { mediaDownloader.ensureDir(mediaRoot); } catch (e) {}
 
-    // candidate image
     let candidate = null;
-    // prefer explicit project-image path if available on main/master
+    // Prefer explicit project-image path if available on main/master
     const explicitPaths = [`https://raw.githubusercontent.com/keglev/${node.name}/main/src/assets/imgs/project-image.png`, `https://raw.githubusercontent.com/keglev/${node.name}/master/src/assets/imgs/project-image.png`];
     for (const p of explicitPaths) {
       try {
@@ -49,7 +38,6 @@ async function processNodeMedia(node, mediaRoot, getAxios, opts = {}) {
     }
     if (!candidate) return null;
 
-    // sanitize candidate (remove title or angle brackets)
     let img = candidate;
     const sp = img.indexOf(' '); if (sp !== -1 && !img.startsWith('<')) img = img.slice(0, sp);
     if (img.startsWith('<') && img.endsWith('>')) img = img.slice(1, -1);
@@ -61,9 +49,8 @@ async function processNodeMedia(node, mediaRoot, getAxios, opts = {}) {
         if (fn) {
           try { node._imageSelection = node._imageSelection || {}; node._imageSelection.chosenUrl = u; node._imageSelection.filename = fn; node._imageSelection.reason = node._imageSelection.reason || 'downloaded'; } catch (e) {}
           node.primaryImage = `/projects_media/${node.name}/${fn}`;
-          // Replace the specific candidate occurrence with the primaryImage in README text
           try { node.object.text = node.object.text.split(candidate).join(node.primaryImage); } catch (e) {}
-          // Additionally, rewrite any badge-like or SVG image references in the README to use the chosen primary image
+          // Rewrite badge and SVG image refs so the UI always renders the downloaded raster image
           try {
             const pi = node.primaryImage;
             if (pi && typeof node.object.text === 'string') {

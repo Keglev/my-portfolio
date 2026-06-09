@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 const { exec } = require('child_process');
 
+// 5 MB buffer: npm audit --json output for large dependency trees can exceed the default 1 MB limit
 exec('npm audit --json', { maxBuffer: 1024 * 1024 * 5 }, (err, stdout) => {
   if (err && !stdout) {
     console.error('Failed to run npm audit:', err);

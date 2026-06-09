@@ -8,6 +8,13 @@ const { translateDocFields } = require('./translateDocs');
 
 const DEBUG_FETCH = process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true';
 
+/**
+ * Strips accidental AST JSON fragments that leak into description strings
+ * when the README parser emits raw node objects instead of plain text.
+ *
+ * @param {string} s - Raw description string
+ * @returns {string|null} Cleaned string, or null if nothing remains
+ */
 function stripAstJsonFragments(s) {
   try {
     if (!s || typeof s !== 'string') return s;
@@ -17,6 +24,17 @@ function stripAstJsonFragments(s) {
   } catch (e) { return s; }
 }
 
+/**
+ * Parses a README and extracts structured doc fields: architecture overview,
+ * API documentation, testing links, and production URL. Translates field values
+ * to German when translateWithCache is provided. When no doc links are found,
+ * returns a placeholder object so the UI always has something to render.
+ *
+ * @param {string} readmeText - Raw README markdown
+ * @param {string} repoName - Repository name (used for URL resolution)
+ * @param {Function} [translateWithCache] - Optional translation function(repo, text) → Promise
+ * @returns {Promise<object|null>} Structured repoDocs object, or null for empty READMEs
+ */
 async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache) {
   if (!readmeText || !readmeText.length) return null;
   const out = { architectureOverview: null, apiDocumentation: null, testing: null, productionUrl: null };
@@ -40,6 +58,7 @@ async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache)
     || (out.productionUrl && out.productionUrl.link);
 
   if (!foundAny) {
+    // Return a placeholder so the RepoDocs UI always has a fallback to render
     return {
       architectureOverview: null, apiDocumentation: null, testing: null,
       placeholder: { title: 'Under Construction', title_de: 'Noch in Entwicklung', description: 'Documentation will be developed soon', description_de: 'Dokumentation wird bald entwickelt' }
@@ -48,6 +67,13 @@ async function extractRepoDocsDetailed(readmeText, repoName, translateWithCache)
   return out;
 }
 
+/**
+ * Returns true for strings short enough to send to DeepL without exceeding
+ * the free-tier per-request limit (300 characters).
+ *
+ * @param {string} s
+ * @returns {boolean}
+ */
 function shouldTranslateUI(s) {
   try { return s && typeof s === 'string' && s.trim().length > 0 && s.trim().length <= 300; } catch (e) { return false; }
 }

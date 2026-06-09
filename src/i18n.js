@@ -10,10 +10,10 @@ i18n
       en: { translation: enTranslation },
       de: { translation: deTranslation }
     },
-    lng: 'de',
+    lng: 'de',                              // default locale is German; portfolio targets a German-speaking market
     fallbackLng: 'en',
-    interpolation: { escapeValue: false },
-    compatibilityJSON: 'v3'
+    interpolation: { escapeValue: false },  // React already escapes values; this prevents double-escaping
+    compatibilityJSON: 'v3'                 // matches the plural-key format used in the locale JSON files
   });
 
 export default i18n;

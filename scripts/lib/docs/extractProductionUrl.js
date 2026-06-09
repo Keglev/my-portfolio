@@ -42,6 +42,15 @@ function findProductionInText(readmeText) {
   return null;
 }
 
+/**
+ * Finds a "Production URL" link in the README. Scans AST paragraph and list nodes,
+ * then falls back to a line-by-line text scan. Returns the first match or null.
+ *
+ * @param {object} ast - Parsed README AST
+ * @param {string} readmeText - Raw README string (fallback)
+ * @param {object} ctx - Shared context: { toRawGithub, parseReadme, strip }
+ * @returns {{ title: string, link: string, description: string }|null}
+ */
 function extractProductionUrl(ast, readmeText, ctx) {
   try {
     if (ast && Array.isArray(ast.children)) {

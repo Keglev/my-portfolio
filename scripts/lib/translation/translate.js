@@ -3,6 +3,15 @@ const path = require('path');
 const crypto = require('crypto');
 const { getAxios } = require('../axiosLoader');
 const DEBUG_FETCH = process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true';
+
+/**
+ * Sends a single string to the DeepL free-tier API and returns the German translation.
+ * Returns `{ text: null, status: 'no-key-or-text' }` when the API key is absent so
+ * callers can distinguish a missing key from a network failure.
+ *
+ * @param {string} text - English text to translate
+ * @returns {Promise<{ text: string|null, status: string|number, raw?: object, error?: string }>}
+ */
 async function translateToGermanDetailed(text) {
   const DEEPL_KEY = process.env.DEEPL_API_KEY || process.env.DEEPL_KEY || process.env.DEEPL_SECRET;
   if (!DEEPL_KEY || !text) return { text: null, status: 'no-key-or-text' };
@@ -25,6 +34,15 @@ async function translateToGermanDetailed(text) {
   }
 }
 
+/**
+ * Returns true for strings that are safe to send to DeepL (non-empty, ≤ maxLen chars).
+ * Strings longer than maxLen are likely full paragraphs; those are not translated to
+ * avoid exceeding the DeepL free-tier per-request limit.
+ *
+ * @param {string} s
+ * @param {number} [maxLen=300]
+ * @returns {boolean}
+ */
 function shouldTranslateUI(s, maxLen = 300) {
   try { return s && typeof s === 'string' && s.trim().length > 0 && s.trim().length <= maxLen; } catch (e) { return false; }
 }
@@ -56,12 +74,23 @@ function _md5(s) {
   try { return crypto.createHash('md5').update(String(s||'')).digest('hex'); } catch (e) { return null; }
 }
 
+/**
+ * Translates a string to German, reading from and writing to a per-repo meta.json cache.
+ * The cache key is md5(text), so identical strings across fields share a single DeepL call.
+ * Uses `module.exports.translateToGermanDetailed` (not the local binding) so tests can
+ * mock the DeepL call without replacing the whole module.
+ *
+ * @param {string} repo - Repository name used to locate the meta.json cache file
+ * @param {string} text - Text to translate
+ * @returns {Promise<{ text: string|null, status: string }>}
+ */
 async function translateWithCache(repo, text) {
   if (!text) return { text: null, status: 'no-text' };
   try {
     const meta = _readMeta(repo) || {};
     meta.translation = meta.translation || {};
     meta.translation.cache = meta.translation.cache || {};
+    // md5(text) as the cache key so identical strings across fields share one DeepL call
     const key = _md5(text);
     if (!key) return { text: null, status: 'hash-failed' };
     const cached = meta.translation.cache[key];

@@ -3,13 +3,6 @@ const path = require('path');
 const crypto = require('crypto');
 const { getAxios } = require('../axiosLoader');
 
-/**
- * mediaDownloader
- * - Persists remote images under `public/projects_media/<repo>/` with a
- *   deterministic filename derived from a sanitized basename + md5(url) suffix.
- * - Enforces a maximum file size (2MB by default) and checks Content-Type to
- *   avoid storing non-image assets.
- */
 const MEDIA_ROOT = path.join(__dirname, '..', '..', 'public', 'projects_media');
 const MAX = 2 * 1024 * 1024; // 2 MB
 const DEBUG_FETCH = process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true';
@@ -23,22 +16,22 @@ function md5(text) {
 }
 
 /**
- * downloadIfNeeded(repoName, url, opts)
- * - repoName: GitHub repo name used as the media subfolder
- * - url: absolute URL to download
- * - opts: reserved for future options (currently unused)
+ * Downloads a remote image into `public/projects_media/<repoName>/` with a
+ * deterministic filename (sanitized basename + md5(url) suffix).
+ * Skips files already on disk, enforces a 2 MB cap, and rejects non-image Content-Types.
  *
- * Returns: filename (relative to repo media dir) when successful, otherwise null.
+ * @param {string} repoName - GitHub repo name; used as the media subfolder
+ * @param {string} url - Absolute URL of the image to download
+ * @param {object} [opts] - Reserved for future overrides (currently unused)
+ * @returns {Promise<string|null>} Filename relative to the repo media dir, or null on failure
  */
 async function downloadIfNeeded(repoName, url, opts = {}) {
   try {
     if (!url) return null;
     const axios = getAxios();
-    // Normalize the url (drop querystring for stable filename derivation)
     const u = String(url).split('?')[0];
     let ext = path.extname(u).toLowerCase();
     if (!ext || ext.length > 6) ext = '.png';
-    // Create a safe basename and append a short md5 of the original url
     const safeBase = path.basename(u).replace(/[^a-z0-9._-]/gi, '-').replace(/^-+|-+$/g, '');
     const hash = crypto.createHash('md5').update(String(url)).digest('hex').slice(0, 8);
     const fn = `${safeBase}-${hash}${ext}`;

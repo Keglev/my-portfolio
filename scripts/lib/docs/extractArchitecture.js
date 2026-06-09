@@ -28,6 +28,16 @@ function scanArchList(nn, ctx) {
   return null;
 }
 
+/**
+ * Finds a link labelled "Index" under an "Architecture Overview" heading in the README.
+ * "Index" is the canonical label used for architecture HTML docs in this project's READMEs.
+ * Falls back to a raw-text scan when the AST contains no matching heading.
+ *
+ * @param {object} ast - Parsed README AST
+ * @param {string} readmeText - Raw README string (fallback)
+ * @param {object} ctx - Shared context: { toRawGithub, parseReadme, strip }
+ * @returns {{ title: string, link: string, description: string }|null}
+ */
 function extractArchitectureOverview(ast, readmeText, ctx) {
   try {
     if (ast && Array.isArray(ast.children)) {

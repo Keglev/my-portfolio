@@ -4,6 +4,15 @@ const path = require('path');
 
 const FILE = path.join(__dirname, '..', 'public', 'projects.json');
 
+/**
+ * Regex-scans README text for doc-like markdown links and attaches the first match
+ * as repoDocs.apiDocumentation. Only runs on nodes that have no repoDocs yet, so
+ * structured extraction results are never overwritten.
+ *
+ * @param {object[]} nodes - Project nodes from projects.json
+ * @param {Function} normalizeTitle - Title sanitizer from fetchProjects
+ * @returns {object[]} The same nodes array, mutated in place
+ */
 function scanNodes(nodes, normalizeTitle) {
   for (const node of nodes) {
     if (node.repoDocs) continue;

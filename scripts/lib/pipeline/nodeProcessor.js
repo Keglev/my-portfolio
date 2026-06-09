@@ -49,6 +49,16 @@ async function runPersistenceStage(node, svc) {
   try { const fs = require('fs'); const dir = path.join(MEDIA_ROOT, node.name); node.mediaDownloaded = fs.existsSync(dir) && fs.readdirSync(dir).filter(f => f !== 'meta.json').length > 0; } catch (e) { node.mediaDownloaded = false; }
 }
 
+/**
+ * Runs the full fetch pipeline for a single repository node in three isolated stages:
+ * doc extraction, translation, then media/meta persistence.
+ * Each stage is wrapped so a failure in one does not abort the others.
+ * Services can be injected via the second argument for unit testing.
+ *
+ * @param {object} node - Raw repository node from the GitHub GraphQL response
+ * @param {object} [services] - Injectable overrides: { getAxios, MEDIA_ROOT, parseReadme, translateWithCache, shouldTranslateUI, DEBUG_FETCH }
+ * @returns {Promise<object>} The mutated node with all enriched fields attached
+ */
 async function processNode(node, services = {}) {
   const svc = resolveServices(services);
   try {

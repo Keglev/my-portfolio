@@ -66,6 +66,14 @@ function collectLegacyTokens(ast, startIdx, depth) {
   return legacy.filter(Boolean).map(s => normalize(s)).filter(Boolean);
 }
 
+/**
+ * Extracts the technology list from the "Technologies" / "Tech Stack" section of a README AST.
+ * Prefers `**bold**` tokens (structured entries) over the legacy comma-separated list format,
+ * because bold tokens are more reliably scoped to a single technology name.
+ *
+ * @param {object} ast - Parsed README AST
+ * @returns {string[]} Normalized technology names, or an empty array if no section is found
+ */
 function extractTechnologiesFromAst(ast) {
   try {
     const bounds = findTechSectionBounds(ast);

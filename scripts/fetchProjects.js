@@ -9,6 +9,8 @@ if (require.main === module) {
   });
 }
 
+// Dual-use: CLI entry point when run directly, and a re-export surface for other
+// scripts (e.g. applyFallbackDocScan.js) that need parseReadme utilities.
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     parseMarkdown: parseReadme.parseMarkdown,

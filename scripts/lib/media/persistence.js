@@ -1,15 +1,3 @@
-/**
- * media/persistence.js
- * Write per-repo `meta.json` files under `public/projects_media/<repo>/meta.json`.
- * The meta file stores a readmeHash and selected metadata about persisted media
- * so consumers can decide whether to re-download on subsequent runs.
- *
- * meta.json fields (partial):
- * - readmeHash: md5 hash of the README text used to detect changes
- * - files: array of filenames currently tracked (reserved for future use)
- * - primaryImage: the chosen primaryImage path (string)
- * - imageSelection: object describing the original candidate URL and chosen filename
- */
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -25,6 +13,14 @@ function md5(text) {
   try { return crypto.createHash('md5').update(String(text || '')).digest('hex'); } catch (e) { return null; }
 }
 
+/**
+ * Writes (or merges into) `public/projects_media/<repo>/meta.json` for a repository node.
+ * meta.json carries readmeHash, imageSelection, primaryImage, summarySource, and translation
+ * so subsequent pipeline runs can detect whether the README changed and skip redundant work.
+ *
+ * @param {object} node - Enriched repository node (must have at least `node.name`)
+ * @returns {void}
+ */
 function persistMetaForNode(node) {
   try {
     const mediaDir = path.join(MEDIA_ROOT, node.name);
@@ -32,8 +28,7 @@ function persistMetaForNode(node) {
     const metaPath = path.join(mediaDir, 'meta.json');
     let meta = { readmeHash: null, files: [] };
     try { if (fs.existsSync(metaPath)) meta = JSON.parse(fs.readFileSync(metaPath, 'utf8')) || meta; } catch (e) { meta = { readmeHash: null, files: [] }; }
-    // Update the readmeHash so subsequent runs can decide whether the README
-    // changed and if media should be re-fetched.
+    // Update so subsequent runs can detect whether the README changed and skip re-fetching media
     meta.readmeHash = md5((node.object && node.object.text) || '');
     meta.files = meta.files || [];
     if (node._imageSelection) meta.imageSelection = node._imageSelection;

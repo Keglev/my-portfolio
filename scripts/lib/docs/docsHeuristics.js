@@ -1,5 +1,13 @@
 #!/usr/bin/env node
-// Encapsulate heuristics used to derive docsLink/docsTitle and to backfill from repoDocs
+
+/**
+ * Scans raw README text for a markdown link whose label contains "doc" and
+ * attaches the first match as docsLink/docsTitle. Only runs when the node has
+ * no docsLink yet, so structured extraction results are never overwritten.
+ *
+ * @param {object} node - Repository node; mutated in place
+ * @returns {object} The same node
+ */
 function backfillDocsFromText(node) {
   try {
     if (!node) return node;
@@ -16,6 +24,14 @@ function backfillDocsFromText(node) {
   return node;
 }
 
+/**
+ * Falls back to a README heading that mentions "doc", "api", or "architecture"
+ * when no structured docs link was found. Uses the heading text as docsTitle and
+ * points docsLink to the README itself.
+ *
+ * @param {object} node - Repository node with optional `_ast`
+ * @returns {object} The same node
+ */
 function backfillFromAstHeading(node) {
   try {
     if (!node || !node._ast || !Array.isArray(node._ast.children)) return node;
@@ -29,6 +45,16 @@ function backfillFromAstHeading(node) {
   return node;
 }
 
+/**
+ * Replaces a docsLink that points to a GitHub issue or PR with a better candidate
+ * from repoDocs or a doc-like link in the README text.
+ * Issue URLs end up as docsLink when READMEs contain "open an issue" links
+ * near their documentation sections.
+ *
+ * @param {object} node - Repository node; mutated in place
+ * @param {boolean} [DEBUG_FETCH] - When true, logs heuristic failures
+ * @returns {object} The same node
+ */
 function postProcessDocsLinkCandidates(node, DEBUG_FETCH) {
   try {
     const txt = (node.object && node.object.text) || '';

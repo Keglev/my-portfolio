@@ -18,6 +18,14 @@ function parseParagraphLines(lines) {
   return { type: 'paragraph', children: parts.length ? parts : [{ type: 'text', value: text }] };
 }
 
+/**
+ * Minimal synchronous AST builder used when remark is not installed.
+ * Produces a root node with heading, paragraph, list, image, and html children.
+ * Does not handle nested block elements — intentionally simple to stay dependency-free.
+ *
+ * @param {string} text - Raw markdown string
+ * @returns {{ type: 'root', children: object[] }}
+ */
 function buildFallbackAst(text) {
   const lines = String(text || '').split(/\r?\n/);
   const children = [];
@@ -53,6 +61,14 @@ function buildFallbackAst(text) {
   return { type: 'root', children };
 }
 
+/**
+ * Parses a README markdown string into a unified/remark AST.
+ * Attempts unified → remark → buildFallbackAst in that order so parsing
+ * succeeds even when the optional remark packages are not installed.
+ *
+ * @param {string} text - Raw markdown string
+ * @returns {{ type: 'root', children: object[] }|null}
+ */
 function parseMarkdown(text) {
   if (!text) return null;
   if (parserFactory) {

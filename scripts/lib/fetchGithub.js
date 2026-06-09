@@ -12,12 +12,24 @@ async function runAuthTest(axios, token, debug, timeout) {
   }
 }
 
+/**
+ * Runs a GitHub GraphQL query, preceded by a lightweight auth test to surface
+ * token errors with a clear message before the real query fires.
+ * Extracts repository nodes from either a pinnedItems or repositories response shape.
+ *
+ * @param {string} token - GitHub personal access token
+ * @param {string} query - GraphQL query string
+ * @param {object} [variables] - Query variables; only attached to the payload when the query uses '$' parameters
+ * @param {object} [opts] - Optional overrides: { timeout }
+ * @returns {Promise<object[]>} Array of repository nodes
+ */
 async function runGraphQL(token, query, variables = { login: 'keglev' }, opts = {}) {
   const axios = getAxios();
   if (!axios) throw new Error('fetchGithub: failed to require axios (is it installed?)');
 
   const DEBUG = process.env.DEBUG_FETCH === '1' || process.env.DEBUG_FETCH === 'true';
   const timeout = (opts && opts.timeout) || 10000;
+  // Only include variables when the query declares parameters; bare queries reject extra variables
   const payload = (typeof query === 'string' && query.includes('$')) ? { query, variables } : { query };
 
   try {

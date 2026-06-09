@@ -1,5 +1,9 @@
 import { createGlobalStyle } from 'styled-components';
 
+/**
+ * CSS reset and base typography applied globally across the entire app.
+ * Injected once at the root so all components inherit consistent defaults.
+ */
 export const GlobalStyles = createGlobalStyle`
   * {
     margin: 0;

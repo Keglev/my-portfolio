@@ -20,6 +20,12 @@ function getAxios() {
   return mod.default ? mod.default : mod;
 }
 
+/**
+ * Fetches the six pinned GitHub repositories for the portfolio owner via the GraphQL API.
+ * Returns an empty array on any network or auth failure so the UI degrades gracefully.
+ *
+ * @returns {Promise<object[]>} Array of repository nodes from the GitHub GraphQL API
+ */
 export const fetchPinnedRepositories = async () => {
   try {
     const axios = getAxios();

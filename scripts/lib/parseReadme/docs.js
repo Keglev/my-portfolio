@@ -73,12 +73,22 @@ function extractApiSection(ast, repo) {
   return null;
 }
 
+/**
+ * Extracts documentation and API documentation links from a README AST.
+ * Also populates `docs.legacy` with the first available link and title so
+ * older consumers that read `docsLink`/`docsTitle` directly continue to work.
+ *
+ * @param {object} ast - Parsed README AST
+ * @param {string} repo - Repository name (used to resolve relative links)
+ * @returns {{ documentation: object|null, apiDocumentation: object|null, legacy: { docsLink: string|null, docsTitle: string|null } }}
+ */
 function extractDocsFromAst(ast, repo) {
   try {
     const docs = { documentation: null, apiDocumentation: null };
     if (!ast || !Array.isArray(ast.children)) return docs;
     docs.documentation = extractDocSection(ast, /\bdocumentation\b/, 'Documentation', repo);
     docs.apiDocumentation = extractApiSection(ast, repo);
+    // legacy fields maintain backward compatibility with consumers that read docsLink/docsTitle directly
     if (docs.documentation) docs.legacy = { docsLink: docs.documentation.link, docsTitle: docs.documentation.title };
     else if (docs.apiDocumentation) docs.legacy = { docsLink: docs.apiDocumentation.link, docsTitle: docs.apiDocumentation.title };
     else docs.legacy = { docsLink: null, docsTitle: null };

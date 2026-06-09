@@ -1,3 +1,9 @@
+/**
+ * Recursively concatenates all `value` strings in an AST node tree into plain text.
+ *
+ * @param {object} node - Any AST node
+ * @returns {string}
+ */
 function flattenNodeText(node) {
   try {
     if (!node) return '';
@@ -7,6 +13,13 @@ function flattenNodeText(node) {
   } catch (e) { return ''; }
 }
 
+/**
+ * Extracts plain text from a list item node, joining paragraph and child text
+ * and stripping the leading bullet character.
+ *
+ * @param {object} li - AST listItem node
+ * @returns {string}
+ */
 function extractTextFromListItem(li) {
   try {
     if (!li) return '';
@@ -24,6 +37,13 @@ function extractTextFromListItem(li) {
   } catch (e) { return ''; }
 }
 
+/**
+ * Returns the first link found in an AST paragraph node, together with any
+ * surrounding text as the description.
+ *
+ * @param {object} node - AST paragraph node
+ * @returns {{ link: string, title: string|null, description: string }|null}
+ */
 function extractLinkFromParagraphNode(node) {
   if (!node || !Array.isArray(node.children)) return null;
   const linkNode = node.children.find(c => c && c.type === 'link');
@@ -35,6 +55,13 @@ function extractLinkFromParagraphNode(node) {
   return null;
 }
 
+/**
+ * Returns the first link found in an AST list item, checking child nodes first
+ * then falling back to a markdown-link regex on the flattened text.
+ *
+ * @param {object} li - AST listItem node
+ * @returns {{ title: string|null, link: string }|null}
+ */
 function extractLinkFromListNode(li) {
   try {
     if (li && Array.isArray(li.children)) {
@@ -51,6 +78,14 @@ function extractLinkFromListNode(li) {
   return null;
 }
 
+/**
+ * Finds the first section under a matching heading using a plain-text regex scan.
+ * Used as a fallback when the AST is not available.
+ *
+ * @param {string} text - Raw README string
+ * @param {RegExp[]} headingRegexes - Ordered list of regexes to match heading lines
+ * @returns {string|null} Section body text, or null if no heading matched
+ */
 function extractSectionWithRegex(text, headingRegexes) {
   if (!text) return null;
   try {
@@ -72,6 +107,14 @@ function extractSectionWithRegex(text, headingRegexes) {
   return null;
 }
 
+/**
+ * Finds the body text of the first AST heading whose text matches any of the
+ * provided regexes. Stops collecting at the next heading of equal or lesser depth.
+ *
+ * @param {object} ast - Parsed README AST
+ * @param {RegExp[]} headingRegexes - Ordered list of regexes to match heading text
+ * @returns {string|null} Section body text, or null if no heading matched
+ */
 function findSectionText(ast, headingRegexes) {
   try {
     if (!ast || !Array.isArray(ast.children)) return null;

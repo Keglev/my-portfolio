@@ -1,3 +1,13 @@
+/**
+ * Probes whether a raw.githubusercontent.com docs URL has a rendered GitHub Pages equivalent.
+ * Rejects candidates whose X-Frame-Options header is DENY — those won't embed in the portfolio.
+ *
+ * @param {object} node - Repository node (name used for logging and URL construction)
+ * @param {string} href - raw.githubusercontent.com URL to probe
+ * @param {Function} getAxios - Factory returning an axios-like HTTP client
+ * @param {boolean} [DEBUG_FETCH] - When true, logs probe attempts and failures
+ * @returns {Promise<string|null>} GitHub Pages URL when reachable and embeddable, otherwise null
+ */
 async function tryGithubIo(node, href, getAxios, DEBUG_FETCH) {
   try {
     if (!href) return null;
@@ -22,6 +32,15 @@ async function tryGithubIo(node, href, getAxios, DEBUG_FETCH) {
   return null;
 }
 
+/**
+ * Replaces raw.githubusercontent.com doc links on a node with their GitHub Pages equivalents
+ * whenever tryGithubIo finds an embeddable match. Checks docsLink and all repoDocs link fields.
+ *
+ * @param {object} node - Repository node to update in place
+ * @param {Function} getAxios - Factory returning an axios-like HTTP client
+ * @param {boolean} [debug] - Passed through to tryGithubIo for verbose logging
+ * @returns {Promise<void>}
+ */
 async function applyGithubIoToNode(node, getAxios, debug) {
   if (node.docsLink && /raw\.githubusercontent\.com/i.test(node.docsLink)) {
     const p = await tryGithubIo(node, node.docsLink, getAxios, debug);

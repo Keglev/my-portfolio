@@ -1,35 +1,38 @@
-/* Container that holds both the sidebar and the main content */
+/* ─── Layout Shell ───────────────────────────────── */
+
 .container {
   display: flex;
-  height: 100vh; /* Full viewport height */
+  height: 100vh;
 }
 
 @media (max-width: 768px) {
-  /* On smaller screens, stack sidebar and main content vertically */
   .container {
     flex-direction: column;
   }
 }
 
-/* Main content area with scrollable content */
+/* ─── Main Content ───────────────────────────────── */
+
 .main-content {
-  flex: 1; /* Take up remaining space */
-  overflow-y: auto; /* Enable vertical scrolling */
-  padding: 2rem; /* Padding around the content */
-  margin-left: 350px; /* Space for the fixed sidebar */
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+  /* Must match the fixed sidebar width declared in SidebarStyles.js */
+  margin-left: 350px;
 }
 
 @media (max-width: 768px) {
-  /* Adjust for smaller screens */
   .main-content {
-    margin-left: 0; /* Remove space for sidebar */
-    padding: 1rem; /* Reduce padding for smaller viewports */
+    margin-left: 0;
+    padding: 1rem;
   }
 }
 
-/* Section padding and scroll margin */
+/* ─── Section ────────────────────────────────────── */
+
 .section {
-  padding: 2rem 0; /* Vertical padding for sections */
+  padding: 2rem 0;
   min-height: auto; /* Sections are as tall as their content — no artificial gaps */
-  scroll-margin-top: 70px; /* Offset for scrolling behavior */
+  /* Must match the mobile top bar height so scroll-to-section lands below it */
+  scroll-margin-top: 70px;
 }

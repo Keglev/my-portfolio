@@ -57,6 +57,16 @@ function findAnyApiLink(readmeText, toRawGithub) {
   return null;
 }
 
+/**
+ * Finds the first "Complete API" or any API-related link in the README.
+ * Search order: AST paragraph nodes → AST list items → raw text scan.
+ * "Complete API" is the canonical label used in project READMEs for the full API reference.
+ *
+ * @param {object} ast - Parsed README AST
+ * @param {string} readmeText - Raw README string (fallback when AST scan finds nothing)
+ * @param {object} ctx - Shared context: { toRawGithub, parseReadme, strip }
+ * @returns {{ title: string, link: string, description: string }|null}
+ */
 function extractApiDocumentation(ast, readmeText, ctx) {
   try {
     return findCompleteApiInAst(ast, ctx) || findCompleteApiInText(readmeText) || findAnyApiLink(readmeText, ctx.toRawGithub);

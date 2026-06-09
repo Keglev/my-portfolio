@@ -25,6 +25,15 @@ function findCoverageInAst(ast, ctx) {
   return links;
 }
 
+/**
+ * Finds "Test Coverage" links in the README. Scans AST nodes first, then falls
+ * back to a raw-text regex. Returns a `{ coverage: [...] }` object or null.
+ *
+ * @param {object} ast - Parsed README AST
+ * @param {string} readmeText - Raw README string (fallback)
+ * @param {object} ctx - Shared context: { toRawGithub, parseReadme, strip }
+ * @returns {{ coverage: Array }|null}
+ */
 function extractTestingLinks(ast, readmeText, ctx) {
   try {
     let links = findCoverageInAst(ast, ctx);

@@ -1,5 +1,10 @@
-// images.js: focused on image candidate heuristics
-
+/**
+ * Returns true when a URL looks like a CI badge or shield rather than a real image.
+ * Used to skip badge images when selecting the representative project image.
+ *
+ * @param {string} u - Image URL to test
+ * @returns {boolean}
+ */
 function isBadgeLike(u) {
   if (!u) return false;
   const s = String(u).toLowerCase();
@@ -7,6 +12,14 @@ function isBadgeLike(u) {
   return false;
 }
 
+/**
+ * Selects the best image URL from a parsed README AST.
+ * Priority: image under a screenshots/gallery heading → explicit project-image path →
+ * any raster image that is not badge-like → any non-SVG image → first image found.
+ *
+ * @param {object} ast - Parsed README AST
+ * @returns {string|null} Image URL, or null if no candidate exists
+ */
 function findImageCandidateFromAst(ast) {
   if (!ast || !ast.children) return null;
   const candidates = [];

@@ -1,8 +1,19 @@
-// Encapsulates batching of short UI strings to translate and maps results back onto node
+/**
+ * Batches all translatable short strings from a repository node into a single
+ * Promise.all call, then maps results back onto the node using a parallel index array.
+ * mapToResultIndex mirrors titleTasks: entry i is the dot-path describing where
+ * result i should be written, so the two arrays must always stay in sync.
+ *
+ * @param {object} node - Repository node; mutated in place with _de fields
+ * @param {Function} translateWithCache - translateWithCache(repo, text) → Promise
+ * @param {Function} shouldTranslateUI - Guard that filters out strings too long for DeepL
+ * @returns {Promise<void>}
+ */
 async function translateTitlesBatch(node, translateWithCache, shouldTranslateUI) {
   if (!node || !translateWithCache || !shouldTranslateUI) return;
   try {
     const titleTasks = [];
+    // Parallel index: titleTasks[i] maps to the node path in mapToResultIndex[i]
     const mapToResultIndex = [];
     const summaryForTranslation = (node.summary && typeof node.summary === 'string') ? node.summary : '';
     const docsTitleForTranslation = (node.docsTitle && typeof node.docsTitle === 'string') ? node.docsTitle : '';
