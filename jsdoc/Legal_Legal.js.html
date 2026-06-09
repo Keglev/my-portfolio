@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: Experience/Experience.js</title>
+    <title>JSDoc: Source: Legal/Legal.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: Experience/Experience.js</h1>
+    <h1 class="page-title">Source: Legal/Legal.js</h1>
 
     
 
@@ -28,67 +28,46 @@
         <article>
             <pre class="prettyprint source linenums"><code>import React from 'react';
 import { useTranslation } from 'react-i18next';
-import './Experience.css';
+import './Legal.css';
 
 /**
- * Displays a timeline of professional work experience.
- * Renders job titles, employment dates, and position summaries from i18n resources.
+ * Renders the German legal pages: Impressum and Datenschutzerklärung.
+ * Both sections reuse the project-card layout for visual consistency with the rest of the site.
  *
- * @returns {JSX.Element} Experience section with a list of job cards.
+ * @returns {JSX.Element} Fragment containing Impressum and Datenschutz sections.
  */
-const Experience = () => {
+const Legal = () => {
   const { t } = useTranslation();
-  const experiences = [
-    {
-      title: t('experienceSection.experience1.title'),
-      date: t('experienceSection.experience1.date'),
-      summary: t('experienceSection.experience1.summary'),
-    },
-    {
-      title: t('experienceSection.experience2.title'),
-      date: t('experienceSection.experience2.date'),
-      summary: t('experienceSection.experience2.summary'),
-    },
-    {
-      title: t('experienceSection.experience3.title'),
-      date: t('experienceSection.experience3.date'),
-      summary: t('experienceSection.experience3.summary'),
-    },
-    {
-      title: t('experienceSection.experience4.title'),
-      date: t('experienceSection.experience4.date'),
-      summary: t('experienceSection.experience4.summary'),
-    },
-    {
-      title: t('experienceSection.experience5.title'),
-      date: t('experienceSection.experience5.date'),
-      summary: t('experienceSection.experience5.summary'),
-    },
-    {
-      title: t('experienceSection.experience6.title'),
-      date: t('experienceSection.experience6.date'),
-      summary: t('experienceSection.experience6.summary'),
-    },
-  ];
-
   return (
-    &lt;div className="experience-container" id="Experience">
-      &lt;h2>{t('experience.jobExperiences')}&lt;/h2>
-      
-      &lt;div className="experience-list">
-        {experiences.map((exp, index) => (
-          &lt;div className="experience-card" key={index}>
-            &lt;h3>{exp.title}&lt;/h3>
-            &lt;p className="date">{exp.date}&lt;/p>
-            &lt;p>{exp.summary}&lt;/p>
+    &lt;>
+      &lt;div className="project-container" id="Impressum">
+        &lt;h2>{t('legal.impressumHeading')}&lt;/h2>
+        &lt;div className="project-grid">
+          &lt;div className="project-card visible">
+            &lt;div className="project-content legal-content">
+              {/* Legal text contains links and line-break tags authored in the locale files */}
+              &lt;div dangerouslySetInnerHTML={{ __html: t('legal.impressumContent') }} />
+            &lt;/div>
           &lt;/div>
-        ))}
+        &lt;/div>
       &lt;/div>
-    &lt;/div>
+
+      &lt;div className="project-container" id="Datenschutz">
+        &lt;h2>{t('legal.datenschutzHeading')}&lt;/h2>
+        &lt;div className="project-grid">
+          &lt;div className="project-card visible">
+            &lt;div className="project-content legal-content">
+              {/* Legal text contains links and line-break tags authored in the locale files */}
+              &lt;div dangerouslySetInnerHTML={{ __html: t('legal.datenschutzContent') }} />
+            &lt;/div>
+          &lt;/div>
+        &lt;/div>
+      &lt;/div>
+    &lt;/>
   );
 };
 
-export default Experience;
+export default Legal;
 </code></pre>
         </article>
     </section>

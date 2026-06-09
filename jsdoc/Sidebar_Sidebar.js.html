@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: Experience/Experience.js</title>
+    <title>JSDoc: Source: Sidebar/Sidebar.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: Experience/Experience.js</h1>
+    <h1 class="page-title">Source: Sidebar/Sidebar.js</h1>
 
     
 
@@ -26,69 +26,89 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React from 'react';
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import './Experience.css';
+import {
+  SidebarContainer,
+  NameTitle,
+  FooterMessage,
+  LegalButton,
+} from './SidebarStyles';
+import SidebarMenu from './SidebarMenu';
+import SidebarSocial from './SidebarSocial';
+
+// Ordered bottom-to-top so the first match is always the deepest section currently in view
+const SECTIONS = ['Legal', 'RepoDocs', 'Experience', 'Projects', 'Education'];
 
 /**
- * Displays a timeline of professional work experience.
- * Renders job titles, employment dates, and position summaries from i18n resources.
+ * Returns the id of the section currently most visible in the viewport.
+ * Iterates from bottom to top so the deepest section the user has scrolled past wins.
  *
- * @returns {JSX.Element} Experience section with a list of job cards.
+ * @param {number} scrollPosition - window.scrollY plus half the viewport height
+ * @returns {string} Section id, defaulting to 'About' when scroll is near the top
  */
-const Experience = () => {
+const getActiveSection = (scrollPosition) => {
+  for (const id of SECTIONS) {
+    const el = document.getElementById(id);
+    if (el &amp;&amp; scrollPosition >= el.offsetTop) return id;
+  }
+  return 'About';
+};
+
+/**
+ * Fixed left-hand navigation sidebar.
+ * Tracks the active section via scroll position and exposes language switching,
+ * CV download, and links to German legal pages.
+ *
+ * @returns {JSX.Element}
+ */
+const Sidebar = () => {
   const { t } = useTranslation();
-  const experiences = [
-    {
-      title: t('experienceSection.experience1.title'),
-      date: t('experienceSection.experience1.date'),
-      summary: t('experienceSection.experience1.summary'),
-    },
-    {
-      title: t('experienceSection.experience2.title'),
-      date: t('experienceSection.experience2.date'),
-      summary: t('experienceSection.experience2.summary'),
-    },
-    {
-      title: t('experienceSection.experience3.title'),
-      date: t('experienceSection.experience3.date'),
-      summary: t('experienceSection.experience3.summary'),
-    },
-    {
-      title: t('experienceSection.experience4.title'),
-      date: t('experienceSection.experience4.date'),
-      summary: t('experienceSection.experience4.summary'),
-    },
-    {
-      title: t('experienceSection.experience5.title'),
-      date: t('experienceSection.experience5.date'),
-      summary: t('experienceSection.experience5.summary'),
-    },
-    {
-      title: t('experienceSection.experience6.title'),
-      date: t('experienceSection.experience6.date'),
-      summary: t('experienceSection.experience6.summary'),
-    },
-  ];
+  const [activeSection, setActiveSection] = useState('About');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      // Midpoint of the viewport keeps the active item stable as the user scrolls through sections
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+      setActiveSection(getActiveSection(scrollPosition));
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    &lt;div className="experience-container" id="Experience">
-      &lt;h2>{t('experience.jobExperiences')}&lt;/h2>
-      
-      &lt;div className="experience-list">
-        {experiences.map((exp, index) => (
-          &lt;div className="experience-card" key={index}>
-            &lt;h3>{exp.title}&lt;/h3>
-            &lt;p className="date">{exp.date}&lt;/p>
-            &lt;p>{exp.summary}&lt;/p>
-          &lt;/div>
-        ))}
-      &lt;/div>
-    &lt;/div>
+    &lt;SidebarContainer>
+      &lt;NameTitle>
+        &lt;h1>{t('name')}&lt;/h1>
+        &lt;h2>{t('title')}&lt;/h2>
+      &lt;/NameTitle>
+      &lt;SidebarMenu activeSection={activeSection} />
+      &lt;SidebarSocial />
+      &lt;FooterMessage>
+        &lt;p>{t('footerMessage')}&lt;/p>
+        &lt;div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          &lt;LegalButton
+            type="button"
+            aria-label="Jump to Impressum section"
+            onClick={() => document.getElementById('Impressum')?.scrollIntoView({ behavior: 'smooth' })}
+          >
+            {t('impressumLink')}
+          &lt;/LegalButton>
+          &lt;span style={{ color: '#8892b0' }}>|&lt;/span>
+          &lt;LegalButton
+            type="button"
+            aria-label="Jump to privacy policy section"
+            onClick={() => document.getElementById('Datenschutz')?.scrollIntoView({ behavior: 'smooth' })}
+          >
+            {t('datenschutzLink')}
+          &lt;/LegalButton>
+        &lt;/div>
+      &lt;/FooterMessage>
+    &lt;/SidebarContainer>
   );
 };
 
-export default Experience;
+export default Sidebar;
 </code></pre>
         </article>
     </section>

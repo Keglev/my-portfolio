@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: Experience/Experience.js</title>
+    <title>JSDoc: Source: Sidebar/SidebarSocial.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: Experience/Experience.js</h1>
+    <h1 class="page-title">Source: Sidebar/SidebarSocial.js</h1>
 
     
 
@@ -27,68 +27,37 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import React from 'react';
-import { useTranslation } from 'react-i18next';
-import './Experience.css';
+import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
+import { SiXing } from 'react-icons/si';
+import { SocialLinksWrapper, SocialLinks } from './SidebarStyles';
 
 /**
- * Displays a timeline of professional work experience.
- * Renders job titles, employment dates, and position summaries from i18n resources.
+ * Renders the social media and contact icon links for the sidebar.
  *
- * @returns {JSX.Element} Experience section with a list of job cards.
+ * @returns {JSX.Element}
  */
-const Experience = () => {
-  const { t } = useTranslation();
-  const experiences = [
-    {
-      title: t('experienceSection.experience1.title'),
-      date: t('experienceSection.experience1.date'),
-      summary: t('experienceSection.experience1.summary'),
-    },
-    {
-      title: t('experienceSection.experience2.title'),
-      date: t('experienceSection.experience2.date'),
-      summary: t('experienceSection.experience2.summary'),
-    },
-    {
-      title: t('experienceSection.experience3.title'),
-      date: t('experienceSection.experience3.date'),
-      summary: t('experienceSection.experience3.summary'),
-    },
-    {
-      title: t('experienceSection.experience4.title'),
-      date: t('experienceSection.experience4.date'),
-      summary: t('experienceSection.experience4.summary'),
-    },
-    {
-      title: t('experienceSection.experience5.title'),
-      date: t('experienceSection.experience5.date'),
-      summary: t('experienceSection.experience5.summary'),
-    },
-    {
-      title: t('experienceSection.experience6.title'),
-      date: t('experienceSection.experience6.date'),
-      summary: t('experienceSection.experience6.summary'),
-    },
-  ];
-
+const SidebarSocial = () => {
   return (
-    &lt;div className="experience-container" id="Experience">
-      &lt;h2>{t('experience.jobExperiences')}&lt;/h2>
-      
-      &lt;div className="experience-list">
-        {experiences.map((exp, index) => (
-          &lt;div className="experience-card" key={index}>
-            &lt;h3>{exp.title}&lt;/h3>
-            &lt;p className="date">{exp.date}&lt;/p>
-            &lt;p>{exp.summary}&lt;/p>
-          &lt;/div>
-        ))}
-      &lt;/div>
-    &lt;/div>
+    &lt;SocialLinksWrapper>
+      &lt;SocialLinks>
+        &lt;a href="https://github.com/keglev" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          &lt;FaGithub />
+        &lt;/a>
+        &lt;a href="https://linkedin.com/in/carloskeglevich" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          &lt;FaLinkedin />
+        &lt;/a>
+        &lt;a href="https://www.xing.com/profile/Carlos_Keglevich" target="_blank" rel="noopener noreferrer" aria-label="Xing">
+          &lt;SiXing />
+        &lt;/a>
+        &lt;a href="mailto:carlos.keglevich@gmail.com" target="_blank" rel="noopener noreferrer" aria-label="Email">
+          &lt;FaEnvelope />
+        &lt;/a>
+      &lt;/SocialLinks>
+    &lt;/SocialLinksWrapper>
   );
 };
 
-export default Experience;
+export default SidebarSocial;
 </code></pre>
         </article>
     </section>

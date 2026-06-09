@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: Experience/Experience.js</title>
+    <title>JSDoc: Source: RepoDocs/useRepoDocs.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: Experience/Experience.js</h1>
+    <h1 class="page-title">Source: RepoDocs/useRepoDocs.js</h1>
 
     
 
@@ -26,69 +26,81 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React from 'react';
-import { useTranslation } from 'react-i18next';
-import './Experience.css';
+            <pre class="prettyprint source linenums"><code>import { useState, useEffect } from 'react';
 
-/**
- * Displays a timeline of professional work experience.
- * Renders job titles, employment dates, and position summaries from i18n resources.
- *
- * @returns {JSX.Element} Experience section with a list of job cards.
- */
-const Experience = () => {
-  const { t } = useTranslation();
-  const experiences = [
-    {
-      title: t('experienceSection.experience1.title'),
-      date: t('experienceSection.experience1.date'),
-      summary: t('experienceSection.experience1.summary'),
-    },
-    {
-      title: t('experienceSection.experience2.title'),
-      date: t('experienceSection.experience2.date'),
-      summary: t('experienceSection.experience2.summary'),
-    },
-    {
-      title: t('experienceSection.experience3.title'),
-      date: t('experienceSection.experience3.date'),
-      summary: t('experienceSection.experience3.summary'),
-    },
-    {
-      title: t('experienceSection.experience4.title'),
-      date: t('experienceSection.experience4.date'),
-      summary: t('experienceSection.experience4.summary'),
-    },
-    {
-      title: t('experienceSection.experience5.title'),
-      date: t('experienceSection.experience5.date'),
-      summary: t('experienceSection.experience5.summary'),
-    },
-    {
-      title: t('experienceSection.experience6.title'),
-      date: t('experienceSection.experience6.date'),
-      summary: t('experienceSection.experience6.summary'),
-    },
-  ];
+// Filters out generic GitHub CTA headings that bleed into title fields when READMEs are parsed
+const isBadTitle = (s) => !s || /open an issue|question|contribut/i.test(String(s));
 
+const safeTitle = (p) => {
+  const valid = (s) => (isBadTitle(s) ? null : s);
   return (
-    &lt;div className="experience-container" id="Experience">
-      &lt;h2>{t('experience.jobExperiences')}&lt;/h2>
-      
-      &lt;div className="experience-list">
-        {experiences.map((exp, index) => (
-          &lt;div className="experience-card" key={index}>
-            &lt;h3>{exp.title}&lt;/h3>
-            &lt;p className="date">{exp.date}&lt;/p>
-            &lt;p>{exp.summary}&lt;/p>
-          &lt;/div>
-        ))}
-      &lt;/div>
-    &lt;/div>
+    valid(p.repoDocs?.apiDocumentation?.title_de) ||
+    valid(p.repoDocs?.architectureOverview?.title_de) ||
+    valid(p.docsTitle_de) ||
+    valid(p.repoDocs?.apiDocumentation?.title) ||
+    valid(p.repoDocs?.architectureOverview?.title) ||
+    valid(p.docs?.documentation?.title) ||
+    valid(p.docsTitle) ||
+    null
   );
 };
 
-export default Experience;
+const hasRepoDocs = (p) => !!(
+  p.repoDocs?.placeholder ||
+  (p.repoDocs?.apiDocumentation?.link) ||
+  (p.repoDocs?.architectureOverview?.link) ||
+  (p.repoDocs?.testing?.coverage?.length > 0) ||
+  (p.docs?.apiDocumentation?.link) ||
+  (p.docs?.documentation?.link) ||
+  p.docsLink ||
+  // _ast is the parsed README abstract syntax tree; scan its headings as a last resort
+  (p._ast?.children &amp;&amp; Array.isArray(p._ast.children) &amp;&amp; p._ast.children.some(
+    c => c?.type === 'heading' &amp;&amp; c.children?.length &amp;&amp;
+      /doc|api|architectur/i.test(String(c.children[0]?.value || ''))
+  )) ||
+  (p.text &amp;&amp; /documentation|api documentation|architecture|api integration/i.test(p.text))
+);
+
+const enrichProject = (p) => ({
+  name: p.name,
+  docs: p.docs || null,
+  repoDocs: p.repoDocs || null,
+  docsLink: p.docsLink || null,
+  docsTitle: safeTitle(p),
+  hasDocs: hasRepoDocs(p),
+});
+
+/**
+ * Fetches projects.json and returns only entries that have linked documentation.
+ * Enriches each project with a normalized docs shape via enrichProject.
+ *
+ * @returns {object[]} Array of enriched project objects where hasDocs is true
+ */
+const useRepoDocs = () => {
+  const [projectsWithDocs, setProjectsWithDocs] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await fetch('/projects.json');
+        if (!res.ok) return setProjectsWithDocs([]);
+        const data = await res.json();
+        if (!cancelled) {
+          setProjectsWithDocs(data.map(enrichProject).filter(e => e.hasDocs));
+        }
+      } catch (e) {
+        if (!cancelled) setProjectsWithDocs([]);
+      }
+    };
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
+  return projectsWithDocs;
+};
+
+export default useRepoDocs;
 </code></pre>
         </article>
     </section>

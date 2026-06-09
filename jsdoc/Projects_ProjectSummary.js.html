@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: Experience/Experience.js</title>
+    <title>JSDoc: Source: Projects/ProjectSummary.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: Experience/Experience.js</h1>
+    <h1 class="page-title">Source: Projects/ProjectSummary.js</h1>
 
     
 
@@ -27,68 +27,42 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import React from 'react';
-import { useTranslation } from 'react-i18next';
-import './Experience.css';
+import { getAboutSection } from './projectsUtils';
 
 /**
- * Displays a timeline of professional work experience.
- * Renders job titles, employment dates, and position summaries from i18n resources.
+ * Renders the descriptive summary for a single project card.
+ * Selects the best available text in priority order: German translation >
+ * README About section > default summary. Falls back to a skeleton placeholder
+ * while content is unavailable.
  *
- * @returns {JSX.Element} Experience section with a list of job cards.
+ * @param {object} project - Project data object
+ * @param {string} language - Active i18n locale code (e.g. 'en', 'de')
+ * @param {Function} t - i18next translation function
+ * @returns {JSX.Element}
  */
-const Experience = () => {
-  const { t } = useTranslation();
-  const experiences = [
-    {
-      title: t('experienceSection.experience1.title'),
-      date: t('experienceSection.experience1.date'),
-      summary: t('experienceSection.experience1.summary'),
-    },
-    {
-      title: t('experienceSection.experience2.title'),
-      date: t('experienceSection.experience2.date'),
-      summary: t('experienceSection.experience2.summary'),
-    },
-    {
-      title: t('experienceSection.experience3.title'),
-      date: t('experienceSection.experience3.date'),
-      summary: t('experienceSection.experience3.summary'),
-    },
-    {
-      title: t('experienceSection.experience4.title'),
-      date: t('experienceSection.experience4.date'),
-      summary: t('experienceSection.experience4.summary'),
-    },
-    {
-      title: t('experienceSection.experience5.title'),
-      date: t('experienceSection.experience5.date'),
-      summary: t('experienceSection.experience5.summary'),
-    },
-    {
-      title: t('experienceSection.experience6.title'),
-      date: t('experienceSection.experience6.date'),
-      summary: t('experienceSection.experience6.summary'),
-    },
-  ];
+const ProjectSummary = ({ project, language, t }) => {
+  const about = getAboutSection(project.object?.text);
+  const isGerman = language === 'de';
+  // Priority: explicit German summary > README About text > generic summary
+  const displaySummary = (isGerman &amp;&amp; project.summary_de) ? project.summary_de : (about || project.summary);
+
+  if (!displaySummary?.trim()) {
+    return &lt;div data-testid="project-summary-skeleton" className="skeleton-description short skeleton" style={{ width: '60%' }} />;
+  }
 
   return (
-    &lt;div className="experience-container" id="Experience">
-      &lt;h2>{t('experience.jobExperiences')}&lt;/h2>
-      
-      &lt;div className="experience-list">
-        {experiences.map((exp, index) => (
-          &lt;div className="experience-card" key={index}>
-            &lt;h3>{exp.title}&lt;/h3>
-            &lt;p className="date">{exp.date}&lt;/p>
-            &lt;p>{exp.summary}&lt;/p>
-          &lt;/div>
-        ))}
-      &lt;/div>
-    &lt;/div>
+    &lt;p>
+      {displaySummary}
+      {isGerman &amp;&amp; !project.summary_de &amp;&amp; (
+        &lt;span style={{ fontStyle: 'italic', marginLeft: '8px', color: '#666', fontSize: '0.9em' }}>
+          ({t('translationMissing') || 'Übersetzung fehlt'})
+        &lt;/span>
+      )}
+    &lt;/p>
   );
 };
 
-export default Experience;
+export default ProjectSummary;
 </code></pre>
         </article>
     </section>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: Experience/Experience.js</title>
+    <title>JSDoc: Source: Sidebar/SidebarMenu.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: Experience/Experience.js</h1>
+    <h1 class="page-title">Source: Sidebar/SidebarMenu.js</h1>
 
     
 
@@ -28,67 +28,72 @@
         <article>
             <pre class="prettyprint source linenums"><code>import React from 'react';
 import { useTranslation } from 'react-i18next';
-import './Experience.css';
+import { Menu, StyledLink, LanguageWrapper, CVDownloadWrapper, CVDownloadLink } from './SidebarStyles';
+
+const NAV_ITEMS = [
+  { id: 'About',      key: 'about' },
+  { id: 'Education',  key: 'education' },
+  { id: 'Projects',   key: 'projects' },
+  { id: 'RepoDocs',   key: 'repoDocs' },
+  { id: 'Experience', key: 'experience.jobExperiences' },
+];
 
 /**
- * Displays a timeline of professional work experience.
- * Renders job titles, employment dates, and position summaries from i18n resources.
+ * Renders the sidebar navigation links, language switcher, and CV download button.
+ * The CV filename and label are both locale-driven to serve the correct language version.
  *
- * @returns {JSX.Element} Experience section with a list of job cards.
+ * @param {string} activeSection - Id of the section currently in view
+ * @returns {JSX.Element}
  */
-const Experience = () => {
-  const { t } = useTranslation();
-  const experiences = [
-    {
-      title: t('experienceSection.experience1.title'),
-      date: t('experienceSection.experience1.date'),
-      summary: t('experienceSection.experience1.summary'),
-    },
-    {
-      title: t('experienceSection.experience2.title'),
-      date: t('experienceSection.experience2.date'),
-      summary: t('experienceSection.experience2.summary'),
-    },
-    {
-      title: t('experienceSection.experience3.title'),
-      date: t('experienceSection.experience3.date'),
-      summary: t('experienceSection.experience3.summary'),
-    },
-    {
-      title: t('experienceSection.experience4.title'),
-      date: t('experienceSection.experience4.date'),
-      summary: t('experienceSection.experience4.summary'),
-    },
-    {
-      title: t('experienceSection.experience5.title'),
-      date: t('experienceSection.experience5.date'),
-      summary: t('experienceSection.experience5.summary'),
-    },
-    {
-      title: t('experienceSection.experience6.title'),
-      date: t('experienceSection.experience6.date'),
-      summary: t('experienceSection.experience6.summary'),
-    },
-  ];
+const SidebarMenu = ({ activeSection }) => {
+  const { t, i18n } = useTranslation();
+
+  const cvFile = i18n.language === 'de'
+    ? '/Carlos_Keglevich_Lebenslauf_DE.pdf'
+    : '/Carlos_Keglevich_CV_EN.pdf';
+  const cvLabel = i18n.language === 'de' ? 'Lebenslauf herunterladen' : 'Download Resume';
 
   return (
-    &lt;div className="experience-container" id="Experience">
-      &lt;h2>{t('experience.jobExperiences')}&lt;/h2>
-      
-      &lt;div className="experience-list">
-        {experiences.map((exp, index) => (
-          &lt;div className="experience-card" key={index}>
-            &lt;h3>{exp.title}&lt;/h3>
-            &lt;p className="date">{exp.date}&lt;/p>
-            &lt;p>{exp.summary}&lt;/p>
-          &lt;/div>
+    &lt;>
+      &lt;Menu>
+        {NAV_ITEMS.map(({ id, key }) => (
+          &lt;StyledLink
+            key={id}
+            to={id}
+            smooth={true}
+            duration={500}
+            spy={true}
+            activeClass={activeSection === id ? 'active' : ''}
+            containerId="scroll-container"
+            // Offset keeps the section heading clear of the mobile top bar
+            offset={70}
+          >
+            {t(key)}
+          &lt;/StyledLink>
         ))}
-      &lt;/div>
-    &lt;/div>
+      &lt;/Menu>
+
+      &lt;LanguageWrapper role="group" aria-label="Language switch">
+        &lt;button onClick={() => i18n.changeLanguage('en')} aria-label="Switch to English">{t('language.english')}&lt;/button>
+        &lt;button onClick={() => i18n.changeLanguage('de')} aria-label="Switch to German">{t('language.german')}&lt;/button>
+      &lt;/LanguageWrapper>
+
+      &lt;CVDownloadWrapper>
+        &lt;CVDownloadLink
+          href={cvFile}
+          download
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={cvLabel}
+        >
+          {cvLabel}
+        &lt;/CVDownloadLink>
+      &lt;/CVDownloadWrapper>
+    &lt;/>
   );
 };
 
-export default Experience;
+export default SidebarMenu;
 </code></pre>
         </article>
     </section>
