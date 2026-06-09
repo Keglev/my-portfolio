@@ -1,3 +1,6 @@
+// Verifies run-eslint-dev: sets NODE_ENV to "development", invokes the expected
+// eslint command, and maps execSync exit codes to the correct process.exit code.
+//
 // run-eslint-dev.js runs synchronous code at require()-time (no exported API),
 // so each test resets modules and re-requires the script to trigger a fresh run.
 jest.mock('child_process', () => ({

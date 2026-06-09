@@ -1,3 +1,5 @@
+// Diagnostic test: verifies that extractRepoDocsDetailed strips embedded AST/JSON fragments
+// from description fields without discarding the surrounding readable text.
 const { extractRepoDocsDetailed } = require('../../../scripts/lib/docs');
 
 describe('extractRepoDocsDetailed diagnostic', () => {
@@ -7,9 +9,7 @@ describe('extractRepoDocsDetailed diagnostic', () => {
     const out = await extractRepoDocsDetailed(readme, 'some-repo');
     expect(out).toBeTruthy();
     expect(out.architectureOverview).toBeTruthy();
-    // The raw JSON-like fragment should be removed from the description
     expect(out.architectureOverview.description).not.toMatch(/\{"type"\s*:\s*"paragraph"/);
-    // description should be a readable short text or null
     expect(typeof out.architectureOverview.description === 'string' || out.architectureOverview.description === null).toBeTruthy();
   }, 10000);
 });

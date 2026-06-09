@@ -1,3 +1,5 @@
+// Verifies that App renders without crashing, mounts the correct top-level
+// sections (About, Projects, Education, Sidebar), and integrates with i18n.
 /* eslint-disable testing-library/no-node-access */
 import App from '../App';
 import React from 'react';

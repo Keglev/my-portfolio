@@ -1,3 +1,6 @@
+// Verifies that index.js calls ReactDOM.createRoot with the root DOM node and
+// invokes render with the App component wrapped in React.StrictMode.
+//
 // Track createRoot/render calls via a plain array in the factory closure.
 // This avoids two CRA Jest incompatibilities:
 //   1. jest.fn(impl) in factories — the impl is silently ignored in CRA's runner

@@ -1,3 +1,5 @@
+// Verifies AST helper re-exports from fetchProjects: findImageCandidateFromAst,
+// extractTechnologiesFromAst, and extractDocsFromAst against inline markdown fixtures.
 const { findImageCandidateFromAst, extractTechnologiesFromAst, extractDocsFromAst, parseMarkdown } = require('../../../scripts/fetchProjects');
 
 describe('more fetchProjects helpers', () => {

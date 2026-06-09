@@ -1,3 +1,6 @@
+// Verifies scanNodes: doc-link detection by label and href, localhost/docker filtering,
+// relative-path expansion, first-match stopping, pre-existing field preservation,
+// and resilience when a node property accessor throws.
 const { scanNodes } = require('../../../scripts/applyFallbackDocScan');
 
 // Identity normalizer — keeps label text as-is for easy assertions

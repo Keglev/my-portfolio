@@ -1,3 +1,6 @@
+// Verifies fetchProjects.js re-exports all parseReadme helpers and silently omits
+// extractRepoDocsDetailed when the optional lib/docs dependency is unavailable.
+//
 // CRA's bundled Jest (react-scripts test) does not execute jest.fn(impl) inside
 // jest.mock() factories — the implementation is silently dropped. Use plain
 // functions in all factories so both runners (jest.node.config.js and

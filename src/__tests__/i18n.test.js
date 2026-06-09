@@ -1,3 +1,5 @@
+// Verifies that i18n initializes correctly: default language, available locales,
+// and that both English and German translation namespaces are registered.
 import i18n from '../i18n';
 // Prevent react-i18next from running browser-specific plugin setup
 jest.mock('react-i18next', () => ({

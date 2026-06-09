@@ -1,3 +1,6 @@
+// Verifies postprocessProjects: normalizeTech token splitting and cleaning,
+// tryGithubIo GitHub Pages probing, docsLink/docsTitle backfill and bad-title
+// replacement, technology deduplication, and all branches in main().
 jest.mock('fs');
 jest.mock('axios');
 
