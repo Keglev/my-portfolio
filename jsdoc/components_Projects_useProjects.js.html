@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: components/Projects/useProjects.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,49 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: components/Projects/useProjects.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useState, useEffect } from 'react';
 
+/**
+ * Fetches and caches the project list from the static /projects.json endpoint.
+ * Also manages per-card image load tracking used for card entrance animations.
+ *
+ * @returns {{ projects: object[], loadedImages: object, setLoadedImages: Function }}
+ */
+const useProjects = () => {
+  const [projects, setProjects] = useState([]);
+  const [loadedImages, setLoadedImages] = useState({});
 
-    <h3> </h3>
+  useEffect(() => {
+    if (projects.length > 0) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/projects.json');
+        if (!res.ok) return;
+        const json = await res.json();
+        // cancelled guards against setting state after the component has unmounted
+        if (!cancelled &amp;&amp; Array.isArray(json) &amp;&amp; json.length > 0) setProjects(json);
+      } catch (e) {}
+    })();
+    return () => { cancelled = true; };
+  }, [projects]);
 
+  return { projects, loadedImages, setLoadedImages };
+};
 
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+export default useProjects;
+</code></pre>
+        </article>
+    </section>
 
 
 

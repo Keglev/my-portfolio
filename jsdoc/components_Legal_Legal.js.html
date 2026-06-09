@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: components/Legal/Legal.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,60 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: components/Legal/Legal.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { useTranslation } from 'react-i18next';
+import './Legal.css';
 
+/**
+ * Renders the German legal pages: Impressum and Datenschutzerklärung.
+ * Both sections reuse the project-card layout for visual consistency with the rest of the site.
+ *
+ * @returns {JSX.Element} Fragment containing Impressum and Datenschutz sections.
+ */
+const Legal = () => {
+  const { t } = useTranslation();
+  return (
+    &lt;>
+      &lt;div className="project-container" id="Impressum">
+        &lt;h2>{t('legal.impressumHeading')}&lt;/h2>
+        &lt;div className="project-grid">
+          &lt;div className="project-card visible">
+            &lt;div className="project-content legal-content">
+              {/* Legal text contains links and line-break tags authored in the locale files */}
+              &lt;div dangerouslySetInnerHTML={{ __html: t('legal.impressumContent') }} />
+            &lt;/div>
+          &lt;/div>
+        &lt;/div>
+      &lt;/div>
 
-    <h3> </h3>
+      &lt;div className="project-container" id="Datenschutz">
+        &lt;h2>{t('legal.datenschutzHeading')}&lt;/h2>
+        &lt;div className="project-grid">
+          &lt;div className="project-card visible">
+            &lt;div className="project-content legal-content">
+              {/* Legal text contains links and line-break tags authored in the locale files */}
+              &lt;div dangerouslySetInnerHTML={{ __html: t('legal.datenschutzContent') }} />
+            &lt;/div>
+          &lt;/div>
+        &lt;/div>
+      &lt;/div>
+    &lt;/>
+  );
+};
 
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+export default Legal;
+</code></pre>
+        </article>
+    </section>
 
 
 

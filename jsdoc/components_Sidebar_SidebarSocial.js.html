@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: components/Sidebar/SidebarSocial.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,50 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: components/Sidebar/SidebarSocial.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
+import { SiXing } from 'react-icons/si';
+import { SocialLinksWrapper, SocialLinks } from './SidebarStyles';
 
+/**
+ * Renders the social media and contact icon links for the sidebar.
+ *
+ * @returns {JSX.Element}
+ */
+const SidebarSocial = () => {
+  return (
+    &lt;SocialLinksWrapper>
+      &lt;SocialLinks>
+        &lt;a href="https://github.com/keglev" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          &lt;FaGithub />
+        &lt;/a>
+        &lt;a href="https://linkedin.com/in/carloskeglevich" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          &lt;FaLinkedin />
+        &lt;/a>
+        &lt;a href="https://www.xing.com/profile/Carlos_Keglevich" target="_blank" rel="noopener noreferrer" aria-label="Xing">
+          &lt;SiXing />
+        &lt;/a>
+        &lt;a href="mailto:carlos.keglevich@gmail.com" target="_blank" rel="noopener noreferrer" aria-label="Email">
+          &lt;FaEnvelope />
+        &lt;/a>
+      &lt;/SocialLinks>
+    &lt;/SocialLinksWrapper>
+  );
+};
 
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+export default SidebarSocial;
+</code></pre>
+        </article>
+    </section>
 
 
 

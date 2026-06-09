@@ -26,44 +26,22 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+            <pre class="prettyprint source linenums"><code>import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ProjectCard from './ProjectCard';
 import { getPrimaryImage } from './projectsUtils';
+import useProjects from './useProjects';
 import './Projects.css';
 
-// We intentionally do NOT require a build-time JSON file here because during
-// the production build that file may not exist and webpack would fail.
-// The pipeline writes `public/projects.json` which we fetch at runtime below.
-let ProjectsData = [];
-
 /**
- * Projects component
- * Renders a grid of ProjectCard components using pre-built data (deployed_projects.json).
+ * Renders the portfolio's Projects section.
+ * Fetches project data via useProjects and delegates card rendering to ProjectCard.
+ *
+ * @returns {JSX.Element} Grid of project cards loaded from projects.json.
  */
 const Projects = () => {
   const { t } = useTranslation();
-  const [projects, setProjects] = useState(() => ProjectsData || []);
-  // track loaded state per project so ProjectCard can toggle the `.visible` class
-  const [loadedImages, setLoadedImages] = useState({});
-
-  // If build-time `deployed_projects.json` is empty, try to fetch the runtime
-  // `public/projects.json` as a fallback so the Projects list renders during dev.
-  useEffect(() => {
-    if (projects &amp;&amp; projects.length > 0) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch('/projects.json');
-        if (!res.ok) return;
-        const json = await res.json();
-        if (!cancelled &amp;&amp; Array.isArray(json) &amp;&amp; json.length > 0) setProjects(json);
-      } catch (e) {
-        // ignore fetch errors
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [projects]);
+  const { projects, loadedImages, setLoadedImages } = useProjects();
 
   return (
     &lt;section className="project-container" id="Projects">
@@ -95,13 +73,13 @@ export default Projects;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#useProjects">useProjects</a></li><li><a href="global.html#useRepoDocs">useRepoDocs</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Oct 20 2025 19:07:06 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Jun 09 2026 10:59:49 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

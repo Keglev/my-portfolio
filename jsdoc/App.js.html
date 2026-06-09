@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: App.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,59 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: App.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import './App.css';
+import Projects from './components/Projects/Projects';
+import About from './components/About/About';
+import Education from './components/Education/Education';
+import Experience from './components/Experience/Experience';
+import Sidebar from './components/Sidebar/Sidebar';
+import RepoDocs from './components/RepoDocs/RepoDocs';
+import Legal from './components/Legal/Legal';
+import { GlobalStyles } from './styles/GlobalStyles';
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import "./i18n"; // must be imported before any translated component renders
 
+/**
+ * Root application component.
+ * Composes the fixed sidebar with the scrollable main content column.
+ *
+ * @returns {JSX.Element}
+ */
+function App() {
+  return (
+    &lt;>
+      &lt;SpeedInsights />
+      &lt;GlobalStyles />
+      &lt;div className="container">
+        &lt;Sidebar />
+        {/* id matches the containerId prop used by react-scroll in SidebarMenu */}
+        &lt;div className="main-content" id="scroll-container">
+          &lt;div className="section" id="About">&lt;About />&lt;/div>
+          &lt;div className="section" id="Education">&lt;Education />&lt;/div>
+          &lt;div className="section" id="Projects">&lt;Projects />&lt;/div>
+          &lt;div className="section" id="RepoDocs">&lt;RepoDocs />&lt;/div>
+          &lt;div className="section" id="Experience">&lt;Experience />&lt;/div>
+          &lt;div className="section" id="Legal">&lt;Legal />&lt;/div>
+        &lt;/div>
+      &lt;/div>
+    &lt;/>
+  );
+}
 
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+export default App;
+</code></pre>
+        </article>
+    </section>
 
 
 

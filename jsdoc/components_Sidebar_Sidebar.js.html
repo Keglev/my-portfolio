@@ -33,85 +33,74 @@ import {
   NameTitle,
   FooterMessage,
   LegalButton,
-} from './SidebarStyles'; // Importing styled components from a separate file
+} from './SidebarStyles';
 import SidebarMenu from './SidebarMenu';
 import SidebarSocial from './SidebarSocial';
 
-import i18n from '../../i18n'; // Import i18n configuration
+// Ordered bottom-to-top so the first match is always the deepest section currently in view
+const SECTIONS = ['Legal', 'RepoDocs', 'Experience', 'Projects', 'Education'];
 
 /**
- * Sidebar component that displays navigation links, social media icons, and contact information.
- * Tracks the active section based on the user's scroll position and highlights the corresponding link.
+ * Returns the id of the section currently most visible in the viewport.
+ * Iterates from bottom to top so the deepest section the user has scrolled past wins.
+ *
+ * @param {number} scrollPosition - window.scrollY plus half the viewport height
+ * @returns {string} Section id, defaulting to 'About' when scroll is near the top
+ */
+const getActiveSection = (scrollPosition) => {
+  for (const id of SECTIONS) {
+    const el = document.getElementById(id);
+    if (el &amp;&amp; scrollPosition >= el.offsetTop) return id;
+  }
+  return 'About';
+};
+
+/**
+ * Fixed left-hand navigation sidebar.
+ * Tracks the active section via scroll position and exposes language switching,
+ * CV download, and links to German legal pages.
+ *
+ * @returns {JSX.Element}
  */
 const Sidebar = () => {
-  const { t } = useTranslation(); // Translation function to translate text
-  const [activeSection, setActiveSection] = useState('About'); // State to track the active section
+  const { t } = useTranslation();
+  const [activeSection, setActiveSection] = useState('About');
 
-  // Hook to update the active section based on the user's scroll position
   useEffect(() => {
     const handleScroll = () => {
-  const projectsSection = document.getElementById('Projects');
-  const experienceSection = document.getElementById('Experience');
-  const repoDocsSection = document.getElementById('RepoDocs');
-  const legalSection = document.getElementById('Legal');
-
-      const scrollPosition = window.scrollY + window.innerHeight / 2; // Get scroll position relative to viewport height
-
-      // Set the active section based on the scroll position
-      if (legalSection &amp;&amp; scrollPosition >= legalSection.offsetTop) {
-        setActiveSection('Legal');
-      } else if (repoDocsSection &amp;&amp; scrollPosition >= repoDocsSection.offsetTop) {
-        setActiveSection('RepoDocs');
-      } else if (experienceSection &amp;&amp; scrollPosition >= experienceSection.offsetTop) {
-        setActiveSection('Experience');
-      } else if (projectsSection &amp;&amp; scrollPosition >= projectsSection.offsetTop) {
-        setActiveSection('Projects');
-      } else {
-        setActiveSection('About');
-      }
+      // Midpoint of the viewport keeps the active item stable as the user scrolls through sections
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+      setActiveSection(getActiveSection(scrollPosition));
     };
-
-    // Add scroll event listener when component mounts
     window.addEventListener('scroll', handleScroll);
-
-    // Clean up the event listener when component unmounts
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const changeLanguage = (lng) => {
-    i18n.changeLanguage(lng);
-  };
 
   return (
     &lt;SidebarContainer>
-      {/* Display name and title */}
       &lt;NameTitle>
         &lt;h1>{t('name')}&lt;/h1>
         &lt;h2>{t('title')}&lt;/h2>
       &lt;/NameTitle>
-
-      {/* Navigation menu */}
-      &lt;SidebarMenu activeSection={activeSection} changeLanguage={(lng) => changeLanguage(lng)} />
-
+      &lt;SidebarMenu activeSection={activeSection} />
       &lt;SidebarSocial />
-
-      {/* Language switch moved into SidebarMenu */}
-
-      {/* Footer message */}
       &lt;FooterMessage>
         &lt;p>{t('footerMessage')}&lt;/p>
-        &lt;div style={{ marginTop: '1rem' }}>
+        &lt;div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           &lt;LegalButton
             type="button"
-            aria-label="Jump to legal section"
-            onClick={() => {
-              const el = document.getElementById('Legal');
-              if (el) el.scrollIntoView({ behavior: 'smooth' });
-            }}
+            aria-label="Jump to Impressum section"
+            onClick={() => document.getElementById('Impressum')?.scrollIntoView({ behavior: 'smooth' })}
           >
-            {t('legalLink')}
+            {t('impressumLink')}
+          &lt;/LegalButton>
+          &lt;span style={{ color: '#8892b0' }}>|&lt;/span>
+          &lt;LegalButton
+            type="button"
+            aria-label="Jump to privacy policy section"
+            onClick={() => document.getElementById('Datenschutz')?.scrollIntoView({ behavior: 'smooth' })}
+          >
+            {t('datenschutzLink')}
           &lt;/LegalButton>
         &lt;/div>
       &lt;/FooterMessage>
@@ -130,13 +119,13 @@ export default Sidebar;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#useProjects">useProjects</a></li><li><a href="global.html#useRepoDocs">useRepoDocs</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Oct 20 2025 19:07:06 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Jun 09 2026 10:59:49 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

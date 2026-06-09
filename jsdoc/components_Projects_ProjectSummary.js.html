@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: components/Projects/ProjectSummary.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,55 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: components/Projects/ProjectSummary.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { getAboutSection } from './projectsUtils';
 
+/**
+ * Renders the descriptive summary for a single project card.
+ * Selects the best available text in priority order: German translation >
+ * README About section > default summary. Falls back to a skeleton placeholder
+ * while content is unavailable.
+ *
+ * @param {object} project - Project data object
+ * @param {string} language - Active i18n locale code (e.g. 'en', 'de')
+ * @param {Function} t - i18next translation function
+ * @returns {JSX.Element}
+ */
+const ProjectSummary = ({ project, language, t }) => {
+  const about = getAboutSection(project.object?.text);
+  const isGerman = language === 'de';
+  // Priority: explicit German summary > README About text > generic summary
+  const displaySummary = (isGerman &amp;&amp; project.summary_de) ? project.summary_de : (about || project.summary);
 
-    <h3> </h3>
+  if (!displaySummary?.trim()) {
+    return &lt;div data-testid="project-summary-skeleton" className="skeleton-description short skeleton" style={{ width: '60%' }} />;
+  }
 
+  return (
+    &lt;p>
+      {displaySummary}
+      {isGerman &amp;&amp; !project.summary_de &amp;&amp; (
+        &lt;span style={{ fontStyle: 'italic', marginLeft: '8px', color: '#666', fontSize: '0.9em' }}>
+          ({t('translationMissing') || 'Übersetzung fehlt'})
+        &lt;/span>
+      )}
+    &lt;/p>
+  );
+};
 
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+export default ProjectSummary;
+</code></pre>
+        </article>
+    </section>
 
 
 
