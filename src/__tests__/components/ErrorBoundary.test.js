@@ -1,3 +1,5 @@
+// Verifies that ErrorBoundary passes children through normally and catches render errors,
+// displaying a fallback UI that includes the error message text.
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import ErrorBoundary from '../../components/ErrorBoundary';
@@ -10,6 +12,7 @@ describe('ErrorBoundary', () => {
   let consoleErrorSpy;
 
   beforeEach(() => {
+    // Suppress React's uncaught error output; this test intentionally triggers render errors
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
   });
 

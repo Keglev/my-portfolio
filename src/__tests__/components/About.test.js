@@ -1,3 +1,5 @@
+// Verifies that About renders the translated heading, description paragraphs, tech stack items,
+// and the profile image with an accessible alt attribute.
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import About from '../../components/About/About';

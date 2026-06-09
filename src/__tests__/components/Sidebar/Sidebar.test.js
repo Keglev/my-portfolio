@@ -1,3 +1,5 @@
+// Verifies that Sidebar tracks scroll position to update the active section,
+// removes the scroll listener on unmount, and calls scrollIntoView for legal subsection buttons.
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Sidebar from '../../../components/Sidebar/Sidebar';

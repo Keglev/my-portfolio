@@ -1,3 +1,5 @@
+// Verifies projectsUtils helpers: URL construction, image fallback chain, SVG placeholder
+// generation, About section extraction, and technology keyword parsing.
 import {
   getProjectImageUrl,
   getPrimaryImage,

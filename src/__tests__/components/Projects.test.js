@@ -1,9 +1,10 @@
+// Verifies that Projects fetches projects.json, renders one ProjectCard per item,
+// and renders nothing when the fetch fails.
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-// Mock i18n
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k, def) => def || k }) }));
 
-// Stub ProjectCard to make assertions simple. Compute image from project name
+// Stub ProjectCard so tests can assert on data attributes without rendering the real card
 jest.mock('../../components/Projects/ProjectCard', () => ({
   __esModule: true,
   default: ({ project, image, index }) => (
@@ -15,8 +16,6 @@ jest.mock('../../components/Projects/ProjectCard', () => ({
     />
   ),
 }));
-
-// We'll require Projects inside each test with isolateModules so mocks are applied
 
 describe('Projects component', () => {
   beforeEach(() => {

@@ -1,3 +1,5 @@
+// Verifies getTechnologyWords against a multi-subsection Tech Stack fixture that mirrors
+// the real README format used across the portfolio's projects.
 import { getTechnologyWords } from '../../components/Projects/projectsUtils';
 
 const TECH_STACK_SAMPLE = `## Tech Stack

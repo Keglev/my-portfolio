@@ -1,3 +1,5 @@
+// Verifies that the Legal section renders both Impressum and Datenschutz headings
+// and correctly injects the HTML content strings supplied by the i18n layer via dangerouslySetInnerHTML.
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Legal from '../../components/Legal/Legal';
@@ -24,7 +26,6 @@ describe('Legal component', () => {
     expect(screen.getByRole('heading', { name: 'Impressum' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Datenschutz' })).toBeInTheDocument();
 
-    // The provided HTML strings should render their inner text
     expect(screen.getByText('Details')).toBeInTheDocument();
     expect(screen.getByText('Info')).toBeInTheDocument();
   });

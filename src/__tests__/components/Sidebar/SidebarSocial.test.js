@@ -1,3 +1,4 @@
+// Verifies that SidebarSocial renders all four platform links with correct hrefs and accessible names.
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import SidebarSocial from '../../../components/Sidebar/SidebarSocial';

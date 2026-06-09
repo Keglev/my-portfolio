@@ -1,3 +1,5 @@
+// Verifies that Education conditionally renders institution and note paragraphs
+// only when the i18n values for those fields are non-empty.
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Education from '../../components/Education/Education';
@@ -40,14 +42,11 @@ describe('Education component', () => {
   it('conditionally renders institution and note paragraphs', () => {
     render(<Education />);
 
-    // entry1 has institution & note
     expect(screen.getByText('University A')).toBeInTheDocument();
     expect(screen.getByText('Graduated with honors')).toBeInTheDocument();
 
-    // entry2 has no institution but has note
     expect(screen.getByText('Thesis on distributed systems')).toBeInTheDocument();
 
-    // entry3 has institution but no note
     expect(screen.getByText('Institute C')).toBeInTheDocument();
 
   });

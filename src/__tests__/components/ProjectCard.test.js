@@ -1,3 +1,5 @@
+// Verifies ProjectCard rendering across language variants, summary fallback logic,
+// image branch-retry behaviour, and production-URL rewriting.
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ProjectCard from '../../components/Projects/ProjectCard';

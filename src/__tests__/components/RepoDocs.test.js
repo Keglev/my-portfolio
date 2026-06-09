@@ -1,3 +1,6 @@
+// Verifies RepoDocs across all supported documentation data shapes: structured repoDocs,
+// legacy docsLink, AST-based detection, placeholder state, language switching, and
+// raw.githubusercontent.com link rewriting.
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import RepoDocs from '../../components/RepoDocs/RepoDocs';

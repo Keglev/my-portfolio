@@ -1,3 +1,5 @@
+// Verifies that the Experience section renders all job entries from translated locale data,
+// covering heading count, job titles, dates, and summaries.
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Experience from '../../components/Experience/Experience';
@@ -40,7 +42,6 @@ describe('Experience component', () => {
     render(<Experience />);
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('Work Experience');
 
-    // Six experience cards with h3 headings
     const entries = screen.getAllByRole('heading', { level: 3 });
     expect(entries).toHaveLength(6);
     expect(screen.getByText('Frontend Developer')).toBeInTheDocument();

@@ -1,3 +1,6 @@
+// Verifies that SidebarMenu renders navigation links with correct labels, fires
+// i18n.changeLanguage on language button clicks, and adapts the CV link and active
+// section label to the current locale.
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import SidebarMenu from '../../../components/Sidebar/SidebarMenu';
