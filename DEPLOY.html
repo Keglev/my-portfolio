@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deployment — my-portfolio docs</title>
+  <link rel="stylesheet" href="templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="DEPLOY.html">Deploy</a></li>
+          <li><a href="TESTS.html">Tests</a></li>
+          <li><a href="REFRESH.html">Refresh</a></li>
+          <li><a href="jsdoc/index.html">API</a></li>
+          <li><a href="https://github.com/Keglev/my-portfolio">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#contents">Contents</a></li>
+  <li><a href="#deployment-targets">Deployment targets</a></li>
+  <li><a href="#environment-variables">Environment variables</a></li>
+  <li><a href="#deploying-to-vercel">Deploying to Vercel</a></li>
+  <li><a href="#running-locally">Running locally</a></li>
+  <li><a href="#build-artifacts">Build artifacts</a></li>
+  <li><a href="#security">Security</a></li>
+  <li><a href="#troubleshooting">Troubleshooting</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="deployment">Deployment</h1>
+<p>This project deploys the React app to Vercel (live site). At build time, <code>scripts/fetchProjects.js</code> fetches GitHub data and writes static artifacts to <code>public/</code> before the React build starts. The generated API docs are published separately to GitHub Pages via the <code>gh-pages</code> branch.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#deployment-targets">Deployment targets</a></li>
+<li><a href="#environment-variables">Environment variables</a></li>
+<li><a href="#deploying-to-vercel">Deploying to Vercel</a></li>
+<li><a href="#running-locally">Running locally</a></li>
+<li><a href="#build-artifacts">Build artifacts</a></li>
+<li><a href="#security">Security</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="deployment-targets">Deployment targets</h2>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>URL</th>
+<th>Trigger</th>
+<th>Branch</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Vercel (live site)</td>
+<td><code>carloskeglevich.vercel.app</code></td>
+<td>Push to main</td>
+<td>main</td>
+</tr>
+<tr>
+<td>GitHub Pages (API docs)</td>
+<td><a href="https://keglev.github.io/my-portfolio/">https://keglev.github.io/my-portfolio/</a></td>
+<td>Workflow dispatch</td>
+<td>gh-pages</td>
+</tr>
+</tbody></table>
+<h2 id="environment-variables">Environment variables</h2>
+<p>Set these in the Vercel dashboard under <strong>Project → Settings → Environment Variables</strong>, targeting the <strong>Build</strong> step for both <strong>Production</strong> and <strong>Preview</strong> environments.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Required</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GH_PROJECTS_TOKEN</code></td>
+<td>Yes</td>
+<td>GitHub PAT. Use <code>public_repo</code> scope for public repos, <code>repo</code> for private</td>
+</tr>
+<tr>
+<td><code>DEEPL_API_KEY</code></td>
+<td>No</td>
+<td>If set, translates project summaries to German via DeepL</td>
+</tr>
+<tr>
+<td><code>DEBUG_FETCH</code></td>
+<td>No</td>
+<td>Set to <code>1</code> to emit extra debug logs. Disable in production</td>
+</tr>
+</tbody></table>
+<h2 id="deploying-to-vercel">Deploying to Vercel</h2>
+<p>Vercel runs <code>prebuild</code> automatically before <code>build</code>, so no manual intervention is required after the initial setup.</p>
+<ol>
+<li>Connect the GitHub repository to a Vercel project (first-time setup only).</li>
+<li>Set <code>GH_PROJECTS_TOKEN</code> in the Vercel dashboard, targeting the Build step.</li>
+<li>Optionally set <code>DEEPL_API_KEY</code> in the same location.</li>
+<li>Push to <code>main</code> — Vercel detects the push and starts a new deployment.</li>
+<li>Vercel runs <code>npm run prebuild</code> (<code>scripts/fetchProjects.js</code>), then <code>npm run build</code> (<code>react-scripts build</code>).</li>
+<li>Vercel publishes the output from <code>build/</code> to the live URL.</li>
+</ol>
+<div class="mermaid-wrapper"><pre class="mermaid">flowchart LR
+    A[Push to main] --&gt; B[Vercel build trigger]
+    B --&gt; C[npm run prebuild\nfetchProjects.js]
+    C --&gt; D[npm run build\nreact-scripts build]
+    D --&gt; E[Publish build/\nto Vercel CDN]
+</pre></div>
+<h2 id="running-locally">Running locally</h2>
+<p>Use these steps to preview generated artifacts before committing or deploying.</p>
+<ol>
+<li>Create a <code>.env.local</code> file at the repository root (gitignored by CRA):</li>
+</ol>
+<pre><code>GH_PROJECTS_TOKEN=your_github_pat_here
+DEEPL_API_KEY=optional_deepl_key
+</code></pre>
+<ol start="2">
+<li>Optionally enable debug output in the current shell only:</li>
+</ol>
+<pre><code class="language-powershell">$env:DEBUG_FETCH = &#39;1&#39;
+</code></pre>
+<ol start="3">
+<li>Run the fetch script to generate artifacts:</li>
+</ol>
+<pre><code class="language-powershell">node .\scripts\fetchProjects.js
+</code></pre>
+<ol start="4">
+<li>Run the React build:</li>
+</ol>
+<pre><code class="language-powershell">npm run build
+</code></pre>
+<ol start="5">
+<li>Optionally prepare and deploy a prebuilt Vercel output:</li>
+</ol>
+<pre><code class="language-powershell">Remove-Item -Recurse -Force .vercel\output -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force .vercel\output\static | Out-Null
+Copy-Item -Path build\* -Destination .vercel\output\static -Recurse -Force
+Copy-Item -Path public\projects.json -Destination .vercel\output\static\projects.json -Force
+Copy-Item -Path public\projects_media -Destination .vercel\output\static\projects_media -Recurse -Force
+
+@&quot;
+{
+  &quot;version&quot;: 3,
+  &quot;routes&quot;: [
+    { &quot;handle&quot;: &quot;filesystem&quot; },
+    { &quot;src&quot;: &quot;/(.*)&quot;, &quot;dest&quot;: &quot;/index.html&quot; }
+  ]
+}
+&quot;@ | Out-File -FilePath .vercel\output\config.json -Encoding utf8
+
+npx vercel --prebuilt . --token $env:VERCEL_TOKEN --yes
+</code></pre>
+<h2 id="build-artifacts">Build artifacts</h2>
+<p>The files <code>public/projects.json</code> and <code>public/projects_media/</code> are generated by <code>scripts/fetchProjects.js</code> and are intentionally excluded from version control. CI regenerates them on every build. If these files appear committed in the repository, remove them — committing them risks leaking tokens or including large binary blobs.</p>
+<h2 id="security">Security</h2>
+<ul>
+<li>Scope the GitHub PAT to the minimum required permissions and rotate it regularly.</li>
+<li>Do not commit tokens to source control — store them in Vercel environment variables or GitHub Actions secrets.</li>
+<li><code>DEBUG_FETCH</code> can expose sensitive request details in build logs; disable it after debugging.</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<ul>
+<li><strong>GraphQL errors during build</strong> — verify that <code>GH_PROJECTS_TOKEN</code> is valid and has the correct scope.</li>
+<li><strong>Missing artifacts after build</strong> — enable <code>DEBUG_FETCH=1</code> on a single preview deploy to inspect build logs, then remove it.</li>
+<li><strong>Prebuild failures blocking deployment</strong> — the default behaviour is fail-fast. To allow deployments to continue when the fetch fails, modify <code>prebuild</code> in <code>package.json</code> to: <code>node ./scripts/fetchProjects.js || echo &#39;fetch failed&#39;</code>.</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://vercel.com/docs">Vercel documentation</a></li>
+<li><a href="https://docs.github.com/en/pages">GitHub Pages documentation</a></li>
+<li><a href="https://create-react-app.dev/docs/adding-custom-environment-variables/">Create React App — environment variables</a></li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <p>
+      my-portfolio docs &mdash;
+      <a href="https://github.com/Keglev/my-portfolio">GitHub Repository</a>
+    </p>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

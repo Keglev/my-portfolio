@@ -1,75 +1,123 @@
-# Deployment notes — Vercel and build-time fetch
+# Deployment
 
-This project optionally fetches GitHub pinned repositories and README assets at build time. The fetch script writes static artifacts into `public/projects.json` and `public/projects_media/<repo>/` which the client uses at runtime.
+This project deploys the React app to Vercel (live site). At build time, `scripts/fetchProjects.js` fetches GitHub data and writes static artifacts to `public/` before the React build starts. The generated API docs are published separately to GitHub Pages via the `gh-pages` branch.
 
-Why build-time fetch?
-- Keeps your GitHub token out of the browser (the token is only used on the build host).
-- Produces deterministic static artifacts so the client can render without runtime GraphQL requests.
+## Contents
 
-Required environment variables (set in Vercel dashboard → Project → Settings → Environment Variables):
+- [Deployment targets](#deployment-targets)
+- [Environment variables](#environment-variables)
+- [Deploying to Vercel](#deploying-to-vercel)
+- [Running locally](#running-locally)
+- [Build artifacts](#build-artifacts)
+- [Security](#security)
+- [Troubleshooting](#troubleshooting)
+- [References](#references)
 
-- `GH_PROJECTS_TOKEN` — a GitHub personal access token. For public repositories `public_repo` scope is sufficient. For private repositories you need `repo` scope. Set this for the Production & Preview environments and target it for Build.
-- `DEEPL_API_KEY` — optional. If set, the build script will attempt to translate summaries/docs titles to German via DeepL.
+## Deployment targets
 
-Optional:
-- `DEBUG_FETCH` — when set to `1` or `true` the fetch script will emit extra debug logs during build. Do not enable in production by default.
+| Target | URL | Trigger | Branch |
+|--------|-----|---------|--------|
+| Vercel (live site) | `carloskeglevich.vercel.app` | Push to main | main |
+| GitHub Pages (API docs) | https://keglev.github.io/my-portfolio/ | Workflow dispatch | gh-pages |
 
-Running locally
+## Environment variables
 
-Create a `.env.local` file (gitignored by CRA) with:
+Set these in the Vercel dashboard under **Project → Settings → Environment Variables**, targeting the **Build** step for both **Production** and **Preview** environments.
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `GH_PROJECTS_TOKEN` | Yes | GitHub PAT. Use `public_repo` scope for public repos, `repo` for private |
+| `DEEPL_API_KEY` | No | If set, translates project summaries to German via DeepL |
+| `DEBUG_FETCH` | No | Set to `1` to emit extra debug logs. Disable in production |
+
+## Deploying to Vercel
+
+Vercel runs `prebuild` automatically before `build`, so no manual intervention is required after the initial setup.
+
+1. Connect the GitHub repository to a Vercel project (first-time setup only).
+2. Set `GH_PROJECTS_TOKEN` in the Vercel dashboard, targeting the Build step.
+3. Optionally set `DEEPL_API_KEY` in the same location.
+4. Push to `main` — Vercel detects the push and starts a new deployment.
+5. Vercel runs `npm run prebuild` (`scripts/fetchProjects.js`), then `npm run build` (`react-scripts build`).
+6. Vercel publishes the output from `build/` to the live URL.
+
+```mermaid
+flowchart LR
+    A[Push to main] --> B[Vercel build trigger]
+    B --> C[npm run prebuild\nfetchProjects.js]
+    C --> D[npm run build\nreact-scripts build]
+    D --> E[Publish build/\nto Vercel CDN]
+```
+
+## Running locally
+
+Use these steps to preview generated artifacts before committing or deploying.
+
+1. Create a `.env.local` file at the repository root (gitignored by CRA):
 
 ```
 GH_PROJECTS_TOKEN=your_github_pat_here
 DEEPL_API_KEY=optional_deepl_key
 ```
 
-Then run:
-
-```
-npm run prebuild
-npm run build
-```
-
-How the build step is wired
-
-- `package.json` contains a `prebuild` script that runs `node ./scripts/fetchProjects.js`.
-- Vercel runs `prebuild` automatically before `build`, so your static artifacts will be generated during deployment.
-
-Fail-fast vs fail-soft
-
-- The `prebuild` script is configured to run and fail the build if it errors. This is the recommended mode for correctness: you want to know promptly if the build-time fetch didn't run and artifacts are missing.
-- If you prefer deployments to continue even when the fetch fails (for example to preserve availability if GitHub has a transient outage), modify `prebuild` to swallow errors (e.g., `node ./scripts/fetchProjects.js || echo 'fetch failed'`).
-
-Security
-
-- Keep the PAT scoped minimally and rotate regularly.
-- Do not commit tokens to source control. Use Vercel environment variables instead.
-
-Troubleshooting
-
-- If builds fail with GraphQL errors, ensure `GH_PROJECTS_TOKEN` is valid and has the required scopes.
-- For more details enable `DEBUG_FETCH` for a single preview deploy to inspect the build logs (remove or disable it after debugging).
-
-Generated artifacts & recommended workflow
----------------------------------------
-
-The files `public/projects.json` and the folder `public/projects_media/` are generated by the build-time fetch script (`scripts/fetchProjects.js`). They are intentionally ignored by version control and should not be committed. In CI (GitHub Actions or Vercel) the build step will run the fetch script and populate those artifacts before publishing.
-
-If you see these files committed in the repository, remove them and prefer generating them in CI to avoid committing tokens or large binary blobs.
-
-Run the fetch script locally (Windows PowerShell)
-----------------------------------------------
-
-If you want to run the fetch locally to preview generated artifacts, create a local `.env` or `.env.local` with your secrets (do NOT commit it). Then run in PowerShell:
+2. Optionally enable debug output in the current shell only:
 
 ```powershell
-# set secrets in current shell (temporary)
-$env:GH_PROJECTS_TOKEN = 'your_github_pat_here'
-$env:DEEPL_API_KEY = 'your_deepl_key_if_any'
-# optionally enable debug output
 $env:DEBUG_FETCH = '1'
+```
 
+3. Run the fetch script to generate artifacts:
+
+```powershell
 node .\scripts\fetchProjects.js
 ```
 
-The script will write `public/projects.json` and `public/projects_media/<repo>/` locally. Disable `DEBUG_FETCH` or unset the env vars after debugging.
+4. Run the React build:
+
+```powershell
+npm run build
+```
+
+5. Optionally prepare and deploy a prebuilt Vercel output:
+
+```powershell
+Remove-Item -Recurse -Force .vercel\output -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force .vercel\output\static | Out-Null
+Copy-Item -Path build\* -Destination .vercel\output\static -Recurse -Force
+Copy-Item -Path public\projects.json -Destination .vercel\output\static\projects.json -Force
+Copy-Item -Path public\projects_media -Destination .vercel\output\static\projects_media -Recurse -Force
+
+@"
+{
+  "version": 3,
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
+}
+"@ | Out-File -FilePath .vercel\output\config.json -Encoding utf8
+
+npx vercel --prebuilt . --token $env:VERCEL_TOKEN --yes
+```
+
+## Build artifacts
+
+The files `public/projects.json` and `public/projects_media/` are generated by `scripts/fetchProjects.js` and are intentionally excluded from version control. CI regenerates them on every build. If these files appear committed in the repository, remove them — committing them risks leaking tokens or including large binary blobs.
+
+## Security
+
+- Scope the GitHub PAT to the minimum required permissions and rotate it regularly.
+- Do not commit tokens to source control — store them in Vercel environment variables or GitHub Actions secrets.
+- `DEBUG_FETCH` can expose sensitive request details in build logs; disable it after debugging.
+
+## Troubleshooting
+
+- **GraphQL errors during build** — verify that `GH_PROJECTS_TOKEN` is valid and has the correct scope.
+- **Missing artifacts after build** — enable `DEBUG_FETCH=1` on a single preview deploy to inspect build logs, then remove it.
+- **Prebuild failures blocking deployment** — the default behaviour is fail-fast. To allow deployments to continue when the fetch fails, modify `prebuild` in `package.json` to: `node ./scripts/fetchProjects.js || echo 'fetch failed'`.
+
+## References
+
+- [Vercel documentation](https://vercel.com/docs)
+- [GitHub Pages documentation](https://docs.github.com/en/pages)
+- [Create React App — environment variables](https://create-react-app.dev/docs/adding-custom-environment-variables/)

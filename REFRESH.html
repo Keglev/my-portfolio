@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Refresh — my-portfolio docs</title>
+  <link rel="stylesheet" href="templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="DEPLOY.html">Deploy</a></li>
+          <li><a href="TESTS.html">Tests</a></li>
+          <li><a href="REFRESH.html">Refresh</a></li>
+          <li><a href="jsdoc/index.html">API</a></li>
+          <li><a href="https://github.com/Keglev/my-portfolio">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#contents">Contents</a></li>
+  <li><a href="#when-to-run-a-refresh">When to run a refresh</a></li>
+  <li><a href="#quick-local-refresh">Quick local refresh</a></li>
+  <li class="toc-h3"><a href="#explicit-fetch-and-postprocess-commands">Explicit fetch and postprocess commands</a></li>
+  <li><a href="#re-run-via-github-actions">Re-run via GitHub Actions</a></li>
+  <li><a href="#triggering-only-code-or-only-docs">Triggering only code or only docs</a></li>
+  <li class="toc-h3"><a href="#path-filtered-workflows-single-repo">Path-filtered workflows (single repo)</a></li>
+  <li class="toc-h3"><a href="#separate-docs-repository">Separate docs repository</a></li>
+  <li><a href="#enterprise-approaches">Enterprise approaches</a></li>
+  <li class="toc-h3"><a href="#separate-code-and-docs-pipelines">Separate code and docs pipelines</a></li>
+  <li class="toc-h3"><a href="#artifact-store-and-deploy-hooks">Artifact store and deploy hooks</a></li>
+  <li class="toc-h3"><a href="#cross-repository-triggers">Cross-repository triggers</a></li>
+  <li class="toc-h3"><a href="#secret-handling-at-scale">Secret handling at scale</a></li>
+  <li class="toc-h3"><a href="#observability-and-approvals">Observability and approvals</a></li>
+  <li class="toc-h3"><a href="#caching-and-incremental-builds">Caching and incremental builds</a></li>
+  <li><a href="#recommended-minimal-setup">Recommended minimal setup</a></li>
+  <li><a href="#after-the-refresh">After the refresh</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="refresh">Refresh</h1>
+<p>A &quot;refresh&quot; means regenerating <code>public/projects.json</code> and <code>public/projects_media/</code> from GitHub data and then redeploying the site. It does not change application code — only the static data artifacts that the React app reads at runtime.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#when-to-run-a-refresh">When to run a refresh</a></li>
+<li><a href="#quick-local-refresh">Quick local refresh</a></li>
+<li><a href="#re-run-via-github-actions">Re-run via GitHub Actions</a></li>
+<li><a href="#triggering-only-code-or-only-docs">Triggering only code or only docs</a></li>
+<li><a href="#enterprise-approaches">Enterprise approaches</a></li>
+<li><a href="#recommended-minimal-setup">Recommended minimal setup</a></li>
+<li><a href="#after-the-refresh">After the refresh</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="when-to-run-a-refresh">When to run a refresh</h2>
+<p>Run a refresh when any of the following conditions are true:</p>
+<ul>
+<li>A README.md in one of your pinned GitHub repositories changed</li>
+<li>Documentation files in a linked project repository changed</li>
+<li>You added, removed, or reordered pinned repositories on GitHub</li>
+<li>You want to preview the regenerated content locally before pushing</li>
+</ul>
+<div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
+    A[Content changed] --&gt; B{Where?}
+    B --&gt;|Local machine preview| C[Quick local refresh]
+    B --&gt;|Production redeployment| D[Re-run GitHub Action]
+    C --&gt; E[Verify projects.json locally]
+    D --&gt; F[Verify live site]
+</pre></div>
+<h2 id="quick-local-refresh">Quick local refresh</h2>
+<p>These steps reproduce what CI does, so local output matches what Vercel will produce.</p>
+<ol>
+<li>Open PowerShell at the repository root (<code>my-portfolio</code>).</li>
+<li>Optionally set the DeepL secret for this session only:</li>
+</ol>
+<pre><code class="language-powershell"># $env:DEEPL_SECRET = &#39;your_deepl_secret_here&#39;   # do NOT commit this
+# $env:DEEPL_API_KEY = &#39;your_deepl_key_here&#39;     # alternative name supported
+</code></pre>
+<ol start="3">
+<li>Run the fetch, postprocess, and optional fallback scan:</li>
+</ol>
+<pre><code class="language-powershell">node .\scripts\fetchProjects.js
+node .\scripts\postprocessProjects.js
+node .\scripts\applyFallbackDocScan.js   # optional
+</code></pre>
+<ol start="4">
+<li>Build the React app:</li>
+</ol>
+<pre><code class="language-powershell">npm run build
+</code></pre>
+<ol start="5">
+<li>Optionally prepare the Vercel prebuilt output (only needed when deploying with <code>vercel --prebuilt</code>):</li>
+</ol>
+<pre><code class="language-powershell">Remove-Item -Recurse -Force .vercel\output -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force .vercel\output\static | Out-Null
+Copy-Item -Path build\* -Destination .vercel\output\static -Recurse -Force
+Copy-Item -Path public\projects.json -Destination .vercel\output\static\projects.json -Force
+Copy-Item -Path public\projects_media -Destination .vercel\output\static\projects_media -Recurse -Force
+
+@&quot;
+{
+  &quot;version&quot;: 3,
+  &quot;routes&quot;: [
+    { &quot;handle&quot;: &quot;filesystem&quot; },
+    { &quot;src&quot;: &quot;/(.*)&quot;, &quot;dest&quot;: &quot;/index.html&quot; }
+  ]
+}
+&quot;@ | Out-File -FilePath .vercel\output\config.json -Encoding utf8
+</code></pre>
+<ol start="6">
+<li>Deploy with the Vercel CLI (optional):</li>
+</ol>
+<pre><code class="language-powershell">npx vercel --prebuilt . --token $env:VERCEL_TOKEN --yes
+</code></pre>
+<h3 id="explicit-fetch-and-postprocess-commands">Explicit fetch and postprocess commands</h3>
+<p>If you only want the data regeneration steps without a full build, paste these into PowerShell from the repository root:</p>
+<pre><code class="language-powershell"># Optional: provide a GitHub token so the pipeline can read private or rate-limited repos
+$env:GH_PROJECTS_TOKEN = &#39;ghp_xxx&#39;
+
+# Fetch README data, media, and generate public/projects.json
+node .\scripts\fetchProjects.js
+
+# Normalize and prefer github.io doc links where available
+node .\scripts\postprocessProjects.js
+</code></pre>
+<p>If <code>GH_PROJECTS_TOKEN</code> is not set, <code>fetchProjects.js</code> skips network fetches and <code>postprocessProjects.js</code> operates on the existing <code>public/projects.json</code> if present. Never commit secrets.</p>
+<h2 id="re-run-via-github-actions">Re-run via GitHub Actions</h2>
+<p>Triggering the workflow from GitHub Actions is the recommended approach for regular production refreshes.</p>
+<ol>
+<li>Go to <strong>GitHub → Actions → &quot;Build and Fetch Projects&quot;</strong> (or your workflow name).</li>
+<li>Click <strong>Run workflow</strong> and select the <code>main</code> branch.</li>
+<li>Alternatively, use the GitHub CLI:</li>
+</ol>
+<pre><code class="language-bash">gh workflow run build-and-fetch.yml --repo Keglev/my-portfolio --ref main
+</code></pre>
+<p>If <code>DEEPL_SECRET</code> (or <code>DEEPL_API_KEY</code>) is set in repository secrets, the Action runs translations during the fetch step. The workflow creates the <code>.vercel/output</code> prebuilt artifact and deploys it with <code>vercel --prebuilt</code>.</p>
+<h2 id="triggering-only-code-or-only-docs">Triggering only code or only docs</h2>
+<p>If you want documentation updates to trigger a lighter pipeline than a full code build, two approaches work well.</p>
+<h3 id="path-filtered-workflows-single-repo">Path-filtered workflows (single repo)</h3>
+<p>Create two workflows in <code>.github/workflows/</code>:</p>
+<ul>
+<li><code>build-and-fetch.yml</code> — triggers on code changes (<code>src/**</code>, <code>package.json</code>, <code>public/**</code>)</li>
+<li><code>docs-refresh.yml</code> — triggers on README or docs changes</li>
+</ul>
+<p>Example <code>docs-refresh.yml</code> trigger:</p>
+<pre><code class="language-yaml">name: Docs refresh
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - &#39;**/README.md&#39;
+      - &#39;projects/**&#39;
+      - &#39;docs/**&#39;
+  workflow_dispatch:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install
+        run: npm ci --legacy-peer-deps
+      - name: Fetch and postprocess
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
+          DEEPL_SECRET: ${{ secrets.DEEPL_SECRET }}
+        run: |
+          node scripts/fetchProjects.js
+          node scripts/postprocessProjects.js
+          node scripts/applyFallbackDocScan.js
+      - name: Build and prepare prebuilt
+        run: npm run build
+</code></pre>
+<h3 id="separate-docs-repository">Separate docs repository</h3>
+<p>Move docs into a separate repository and use webhooks or <code>repository_dispatch</code> events to trigger the portfolio repository&#39;s docs workflow. This decouples permissions and allows different reviewers, CI quotas, and schedules.</p>
+<h2 id="enterprise-approaches">Enterprise approaches</h2>
+<p>For portfolios that span multiple repositories and require auditable, scalable pipelines, consider these patterns.</p>
+<h3 id="separate-code-and-docs-pipelines">Separate code and docs pipelines</h3>
+<ul>
+<li>Code pipeline: triggers on application code changes and performs a full build and deployment</li>
+<li>Docs pipeline: triggers on README or docs changes and produces only a data artifact (<code>projects.json</code>)</li>
+</ul>
+<p>Advantages:</p>
+<ul>
+<li>Reduced build time — docs builds can be lighter and run more frequently</li>
+<li>Lower blast radius — docs deploys do not change application code</li>
+<li>Simpler approvals — different deployment gates for docs versus code</li>
+</ul>
+<h3 id="artifact-store-and-deploy-hooks">Artifact store and deploy hooks</h3>
+<p>Produce deterministic artifacts in CI (upload <code>projects.json</code> and <code>projects_media</code> to an artifact store or S3). Use Vercel deploy hooks or the Vercel API to trigger a deploy when artifacts change, avoiding a full app rebuild.</p>
+<h3 id="cross-repository-triggers">Cross-repository triggers</h3>
+<p>Use <code>repository_dispatch</code> or a dedicated CI user with a PAT to call the portfolio workflow when docs change in other repositories. A GitHub App can orchestrate cross-repository events and maintain audit logs.</p>
+<h3 id="secret-handling-at-scale">Secret handling at scale</h3>
+<ul>
+<li>Store secrets in the CI provider&#39;s secret store. Avoid printing secrets in logs.</li>
+<li>Use <code>permissions</code> blocks and environment protections to limit which workflows can access which secrets.</li>
+</ul>
+<h3 id="observability-and-approvals">Observability and approvals</h3>
+<ul>
+<li>Add a verification step to print the number of repos and doc links before deploy.</li>
+<li>For production, add required approvals via GitHub Environments and Slack or Teams notifications on deploys.</li>
+</ul>
+<h3 id="caching-and-incremental-builds">Caching and incremental builds</h3>
+<p>Use content-hash-based caching — persist and compare <code>meta.json</code> per project (your scripts already write <code>projects_media/*/meta.json</code>) to skip expensive downloads or translations when content has not changed.</p>
+<h2 id="recommended-minimal-setup">Recommended minimal setup</h2>
+<p>Given the current project structure, the smallest change that adds meaningful separation between code and docs pipelines:</p>
+<ol>
+<li>Keep the current repository and workflows as-is.</li>
+<li>Add one <code>docs-refresh.yml</code> workflow that triggers on changes to <code>**/README.md</code> and <code>docs/**</code> (example above). This regenerates <code>projects.json</code> and runs a prebuilt Vercel deploy without touching the code-triggered workflow.</li>
+<li>Add <code>DEEPL_SECRET</code> as a GitHub Actions secret if translations are needed during docs runs.</li>
+</ol>
+<h2 id="after-the-refresh">After the refresh</h2>
+<p>After running either the local steps or the GitHub Action, verify the following:</p>
+<ol>
+<li>Open <code>public/projects.json</code> and confirm it contains the expected repositories and updated summaries.</li>
+<li>Check that <code>public/projects_media/&lt;repo&gt;/</code> directories exist for each project with a media asset.</li>
+<li>If deployed, open the live site and confirm the Projects section renders the refreshed data.</li>
+<li>For a quick API check from PowerShell:</li>
+</ol>
+<pre><code class="language-powershell">Invoke-RestMethod &#39;https://your-domain.example.com/projects.json&#39; | Select-Object -First 1
+</code></pre>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows">GitHub Actions — workflow triggers</a></li>
+<li><a href="https://vercel.com/docs/deployments/deploy-hooks">Vercel deploy hooks</a></li>
+<li><a href="https://docs.github.com/en/rest/repos/repos#create-a-repository-dispatch-event">GitHub — repository_dispatch event</a></li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <p>
+      my-portfolio docs &mdash;
+      <a href="https://github.com/Keglev/my-portfolio">GitHub Repository</a>
+    </p>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,33 +1,80 @@
-# Tests — Strategy and How-to
+# Tests
 
-This project uses two different Jest runners due to mixed runtime concerns:
+This project uses two separate Jest runners to handle the mixed runtime requirements of Node build scripts and React frontend components.
 
-1. Node-only scripts (scripts/):
-   - These are pure Node modules used for build-time tasks (README parsing, media downloads, etc.).
-   - They run under a dedicated Jest configuration (`jest.node.config.js`) which:
-     - Mocks CSS and static assets.
-     - Provides a small node setup (polyfills `fetch` via `node-fetch` v2) so code using `fetch` or other browser APIs can be tested.
-   - Run locally: `npm run test:node`
+## Contents
 
-2. React frontend (Create React App):
-   - Uses CRA's test runner to ensure CSS and asset imports are handled the same way as in development.
-   - Run locally: `npm run test:cra`
+- [Test runners](#test-runners)
+- [Coverage](#coverage)
+- [Running tests locally](#running-tests-locally)
+- [Reading the coverage report](#reading-the-coverage-report)
+- [What is tested and what is excluded](#what-is-tested-and-what-is-excluded)
+- [Troubleshooting](#troubleshooting)
+- [References](#references)
 
-Combined runs
-- Run both locally: `npm run test:all`
-- CI (non-interactive): `npm run test:ci`
+## Test runners
 
-Why two runners?
-- CRA injects its own Jest configuration and transform pipeline (Babel, CSS handling). Running CRA tests with raw Jest fails to parse CSS and static assets. To test node-only code without the CRA transforms, we use a separate jest config.
+Two runners are needed because CRA injects its own Babel and CSS transform pipeline; running CRA tests with raw Jest fails to parse CSS and static asset imports.
 
-Files and locations
-- `jest.node.config.js` — configuration used by `npm run test:node`.
-- `scripts/jest/*` — small mocks and setup used by node Jest runs.
-- `src/setupTests.js` — CRA test setup (loaded automatically by react-scripts).
+| Runner | Command | Config | Scope |
+|--------|---------|--------|-------|
+| Node | `npm run test:node` | `jest.node.config.js` | `src/__tests__/` |
+| CRA | `npm run test:cra` | CRA built-in | `src/**/*.test.{js,jsx}` |
 
-Troubleshooting
-- If React tests fail with CSS parsing errors when running raw `jest`, use `npm run test:cra` instead.
-- If node tests complain about missing `fetch`, ensure `node-fetch` is installed as a devDependency (v2 recommended for CommonJS environments).
+Combined commands:
 
-Next steps
-- We'll document test patterns and add targeted tests for the parsing modules as the code is refactored further.
+| Command | Description |
+|---------|-------------|
+| `npm run test:all` | Runs both runners sequentially |
+| `npm run test:ci` | Non-interactive CI mode for both runners |
+| `npm run test:helpers` | Runs only `src/__tests__/fetchHelpers` |
+
+## Coverage
+
+No minimum coverage thresholds are currently enforced. Run `npm run test:node -- --coverage` to generate a local HTML report and view current percentages.
+
+| Metric | Threshold | How to check |
+|--------|-----------|--------------|
+| Statements | Not enforced | `npm run test:node -- --coverage` |
+| Branches | Not enforced | `npm run test:node -- --coverage` |
+| Functions | Not enforced | `npm run test:node -- --coverage` |
+| Lines | Not enforced | `npm run test:node -- --coverage` |
+
+Coverage is collected from `config/jest/**/*.js`, `src/**/*.{js,jsx}`, and `scripts/**/*.js`.
+
+## Running tests locally
+
+1. Install dependencies: `npm install`
+2. Run the Node runner: `npm run test:node`
+3. Run the CRA runner: `npm run test:cra`
+4. Run both at once: `npm run test:all`
+5. For CI (non-interactive, no watch mode): `npm run test:ci`
+
+## Reading the coverage report
+
+After running `npm run test:node -- --coverage`, open `coverage/index.html` in a browser to see the full line-by-line HTML report. A machine-readable summary is also written to `coverage/coverage-summary.json`.
+
+## What is tested and what is excluded
+
+Tested source locations:
+
+- `src/**/*.{js,jsx}` — React components and hooks
+- `scripts/**/*.js` — build-time scripts (README parsing, media downloads, postprocessing)
+- `config/jest/**/*.js` — Jest configuration helpers
+
+Intentionally excluded from coverage:
+
+- Test files (`__tests__/`, `*.test.js`, `*.spec.js`)
+- CRA test setup (`setupTests.js`)
+- Standalone debug and audit scripts (`debugRepoDocs.js`, `audit-check.js`)
+
+## Troubleshooting
+
+- **CSS parsing errors when running raw `jest`** — use `npm run test:cra` instead, which uses CRA's transform pipeline.
+- **Missing `fetch` in Node tests** — confirm that `node-fetch` v2 is installed as a devDependency (`npm install --save-dev node-fetch@2`).
+
+## References
+
+- [Jest documentation](https://jestjs.io/docs/getting-started)
+- [Create React App — running tests](https://create-react-app.dev/docs/running-tests/)
+- [Testing Library documentation](https://testing-library.com/docs/)

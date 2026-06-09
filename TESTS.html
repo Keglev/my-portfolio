@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tests — my-portfolio docs</title>
+  <link rel="stylesheet" href="templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="DEPLOY.html">Deploy</a></li>
+          <li><a href="TESTS.html">Tests</a></li>
+          <li><a href="REFRESH.html">Refresh</a></li>
+          <li><a href="jsdoc/index.html">API</a></li>
+          <li><a href="https://github.com/Keglev/my-portfolio">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#contents">Contents</a></li>
+  <li><a href="#test-runners">Test runners</a></li>
+  <li><a href="#coverage">Coverage</a></li>
+  <li><a href="#running-tests-locally">Running tests locally</a></li>
+  <li><a href="#reading-the-coverage-report">Reading the coverage report</a></li>
+  <li><a href="#what-is-tested-and-what-is-excluded">What is tested and what is excluded</a></li>
+  <li><a href="#troubleshooting">Troubleshooting</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="tests">Tests</h1>
+<p>This project uses two separate Jest runners to handle the mixed runtime requirements of Node build scripts and React frontend components.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#test-runners">Test runners</a></li>
+<li><a href="#coverage">Coverage</a></li>
+<li><a href="#running-tests-locally">Running tests locally</a></li>
+<li><a href="#reading-the-coverage-report">Reading the coverage report</a></li>
+<li><a href="#what-is-tested-and-what-is-excluded">What is tested and what is excluded</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="test-runners">Test runners</h2>
+<p>Two runners are needed because CRA injects its own Babel and CSS transform pipeline; running CRA tests with raw Jest fails to parse CSS and static asset imports.</p>
+<table>
+<thead>
+<tr>
+<th>Runner</th>
+<th>Command</th>
+<th>Config</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Node</td>
+<td><code>npm run test:node</code></td>
+<td><code>jest.node.config.js</code></td>
+<td><code>src/__tests__/</code></td>
+</tr>
+<tr>
+<td>CRA</td>
+<td><code>npm run test:cra</code></td>
+<td>CRA built-in</td>
+<td><code>src/**/*.test.{js,jsx}</code></td>
+</tr>
+</tbody></table>
+<p>Combined commands:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>npm run test:all</code></td>
+<td>Runs both runners sequentially</td>
+</tr>
+<tr>
+<td><code>npm run test:ci</code></td>
+<td>Non-interactive CI mode for both runners</td>
+</tr>
+<tr>
+<td><code>npm run test:helpers</code></td>
+<td>Runs only <code>src/__tests__/fetchHelpers</code></td>
+</tr>
+</tbody></table>
+<h2 id="coverage">Coverage</h2>
+<p>No minimum coverage thresholds are currently enforced. Run <code>npm run test:node -- --coverage</code> to generate a local HTML report and view current percentages.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Threshold</th>
+<th>How to check</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Statements</td>
+<td>Not enforced</td>
+<td><code>npm run test:node -- --coverage</code></td>
+</tr>
+<tr>
+<td>Branches</td>
+<td>Not enforced</td>
+<td><code>npm run test:node -- --coverage</code></td>
+</tr>
+<tr>
+<td>Functions</td>
+<td>Not enforced</td>
+<td><code>npm run test:node -- --coverage</code></td>
+</tr>
+<tr>
+<td>Lines</td>
+<td>Not enforced</td>
+<td><code>npm run test:node -- --coverage</code></td>
+</tr>
+</tbody></table>
+<p>Coverage is collected from <code>config/jest/**/*.js</code>, <code>src/**/*.{js,jsx}</code>, and <code>scripts/**/*.js</code>.</p>
+<h2 id="running-tests-locally">Running tests locally</h2>
+<ol>
+<li>Install dependencies: <code>npm install</code></li>
+<li>Run the Node runner: <code>npm run test:node</code></li>
+<li>Run the CRA runner: <code>npm run test:cra</code></li>
+<li>Run both at once: <code>npm run test:all</code></li>
+<li>For CI (non-interactive, no watch mode): <code>npm run test:ci</code></li>
+</ol>
+<h2 id="reading-the-coverage-report">Reading the coverage report</h2>
+<p>After running <code>npm run test:node -- --coverage</code>, open <code>coverage/index.html</code> in a browser to see the full line-by-line HTML report. A machine-readable summary is also written to <code>coverage/coverage-summary.json</code>.</p>
+<h2 id="what-is-tested-and-what-is-excluded">What is tested and what is excluded</h2>
+<p>Tested source locations:</p>
+<ul>
+<li><code>src/**/*.{js,jsx}</code> — React components and hooks</li>
+<li><code>scripts/**/*.js</code> — build-time scripts (README parsing, media downloads, postprocessing)</li>
+<li><code>config/jest/**/*.js</code> — Jest configuration helpers</li>
+</ul>
+<p>Intentionally excluded from coverage:</p>
+<ul>
+<li>Test files (<code>__tests__/</code>, <code>*.test.js</code>, <code>*.spec.js</code>)</li>
+<li>CRA test setup (<code>setupTests.js</code>)</li>
+<li>Standalone debug and audit scripts (<code>debugRepoDocs.js</code>, <code>audit-check.js</code>)</li>
+</ul>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<ul>
+<li><strong>CSS parsing errors when running raw <code>jest</code></strong> — use <code>npm run test:cra</code> instead, which uses CRA&#39;s transform pipeline.</li>
+<li><strong>Missing <code>fetch</code> in Node tests</strong> — confirm that <code>node-fetch</code> v2 is installed as a devDependency (<code>npm install --save-dev node-fetch@2</code>).</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://jestjs.io/docs/getting-started">Jest documentation</a></li>
+<li><a href="https://create-react-app.dev/docs/running-tests/">Create React App — running tests</a></li>
+<li><a href="https://testing-library.com/docs/">Testing Library documentation</a></li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <p>
+      my-portfolio docs &mdash;
+      <a href="https://github.com/Keglev/my-portfolio">GitHub Repository</a>
+    </p>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,27 +1,63 @@
-# How to refresh the portfolio site (README / docs updates)
+# Refresh
 
-This document explains how to regenerate the prebuilt `projects.json` and redeploy the site after you change a README.md or docs in one of your project repositories. It includes quick local commands, how to re-run the GitHub Action, and recommendations for separating code vs docs pipelines (simple and enterprise-grade).
+A "refresh" means regenerating `public/projects.json` and `public/projects_media/` from GitHub data and then redeploying the site. It does not change application code — only the static data artifacts that the React app reads at runtime.
 
-## Quick local refresh (PowerShell)
+## Contents
+
+- [When to run a refresh](#when-to-run-a-refresh)
+- [Quick local refresh](#quick-local-refresh)
+- [Re-run via GitHub Actions](#re-run-via-github-actions)
+- [Triggering only code or only docs](#triggering-only-code-or-only-docs)
+- [Enterprise approaches](#enterprise-approaches)
+- [Recommended minimal setup](#recommended-minimal-setup)
+- [After the refresh](#after-the-refresh)
+- [References](#references)
+
+## When to run a refresh
+
+Run a refresh when any of the following conditions are true:
+
+- A README.md in one of your pinned GitHub repositories changed
+- Documentation files in a linked project repository changed
+- You added, removed, or reordered pinned repositories on GitHub
+- You want to preview the regenerated content locally before pushing
+
+```mermaid
+flowchart TD
+    A[Content changed] --> B{Where?}
+    B -->|Local machine preview| C[Quick local refresh]
+    B -->|Production redeployment| D[Re-run GitHub Action]
+    C --> E[Verify projects.json locally]
+    D --> F[Verify live site]
+```
+
+## Quick local refresh
+
+These steps reproduce what CI does, so local output matches what Vercel will produce.
 
 1. Open PowerShell at the repository root (`my-portfolio`).
-2. (Optional) set DeepL secret for translation in this session only:
+2. Optionally set the DeepL secret for this session only:
 
 ```powershell
 # $env:DEEPL_SECRET = 'your_deepl_secret_here'   # do NOT commit this
 # $env:DEEPL_API_KEY = 'your_deepl_key_here'     # alternative name supported
 ```
 
-3. Run the same steps used by CI to fetch, postprocess and build:
+3. Run the fetch, postprocess, and optional fallback scan:
 
 ```powershell
 node .\scripts\fetchProjects.js
 node .\scripts\postprocessProjects.js
 node .\scripts\applyFallbackDocScan.js   # optional
+```
+
+4. Build the React app:
+
+```powershell
 npm run build
 ```
 
-4. Prepare the Vercel prebuilt output (optional — only if you deploy with `vercel --prebuilt`):
+5. Optionally prepare the Vercel prebuilt output (only needed when deploying with `vercel --prebuilt`):
 
 ```powershell
 Remove-Item -Recurse -Force .vercel\output -ErrorAction SilentlyContinue
@@ -41,67 +77,55 @@ Copy-Item -Path public\projects_media -Destination .vercel\output\static\project
 "@ | Out-File -FilePath .vercel\output\config.json -Encoding utf8
 ```
 
-5. Deploy with Vercel (optional):
+6. Deploy with the Vercel CLI (optional):
 
 ```powershell
-# if you have Vercel CLI and token in $env:VERCEL_TOKEN
 npx vercel --prebuilt . --token $env:VERCEL_TOKEN --yes
 ```
 
-6. Verify the result (example):
+### Explicit fetch and postprocess commands
+
+If you only want the data regeneration steps without a full build, paste these into PowerShell from the repository root:
 
 ```powershell
-Invoke-RestMethod 'https://your-domain.example.com/projects.json' | Select-Object -First 1
-```
-
-Notes:
-- Never commit your secret; setting it in the environment is safe for local runs.
-- `fetchProjects.js` will only call DeepL when a relevant env var is present (`DEEPL_API_KEY` or `DEEPL_SECRET` — both are supported).
-
-### Run pipeline locally (explicit quick commands)
-
-If you only want to run the fetch + postprocess steps from PowerShell, here are exact commands you can paste in. These run the same steps CI uses but locally. Make sure you are in the repository root (`my-portfolio`).
-
-```powershell
-# (optional) set a GitHub token in this shell so the pipeline can read private or rate-limited repos
+# Optional: provide a GitHub token so the pipeline can read private or rate-limited repos
 $env:GH_PROJECTS_TOKEN = 'ghp_xxx'
 
-# fetch README data, media and generate public/projects.json
+# Fetch README data, media, and generate public/projects.json
 node .\scripts\fetchProjects.js
 
-# normalize and prefer github.io doc links where available
+# Normalize and prefer github.io doc links where available
 node .\scripts\postprocessProjects.js
-
-# (optional) generate the production build
-npm run build
 ```
 
-If you don't have a GitHub token set the fetch step will skip network fetches and the postprocess step will operate on the existing `public/projects.json` file (if present). Always avoid committing secrets.
+If `GH_PROJECTS_TOKEN` is not set, `fetchProjects.js` skips network fetches and `postprocessProjects.js` operates on the existing `public/projects.json` if present. Never commit secrets.
 
-## Re-run via GitHub Actions (recommended for regular use)
+## Re-run via GitHub Actions
 
-- Go to GitHub → Actions → "Build and Fetch Projects" (or the workflow name you use) → Run workflow.
-- Or use `gh` (GitHub CLI):
+Triggering the workflow from GitHub Actions is the recommended approach for regular production refreshes.
+
+1. Go to **GitHub → Actions → "Build and Fetch Projects"** (or your workflow name).
+2. Click **Run workflow** and select the `main` branch.
+3. Alternatively, use the GitHub CLI:
 
 ```bash
 gh workflow run build-and-fetch.yml --repo Keglev/my-portfolio --ref main
 ```
 
-If `DEEPL_SECRET` (or `DEEPL_API_KEY`) is set in repository secrets, the Action will run translations during fetch. The workflow will create the `.vercel/output` prebuilt artifact and deploy it with `vercel --prebuilt`.
+If `DEEPL_SECRET` (or `DEEPL_API_KEY`) is set in repository secrets, the Action runs translations during the fetch step. The workflow creates the `.vercel/output` prebuilt artifact and deploys it with `vercel --prebuilt`.
 
----
+## Triggering only code or only docs
 
-## Triggering only code or only docs: simple approaches
+If you want documentation updates to trigger a lighter pipeline than a full code build, two approaches work well.
 
-If you want to treat documentation updates separately from code updates, you have two practical options:
+### Path-filtered workflows (single repo)
 
-1) Path-filtered workflows (single repo, easy)
+Create two workflows in `.github/workflows/`:
 
-- Create two separate workflows in `.github/workflows/`:
-  - `build-and-fetch.yml` — run when code files change (e.g. `src/**`, `package.json`, `public/**`).
-  - `docs-refresh.yml` — run when docs/README content changes (e.g. `README.md`, `projects/**`, `docs/**`, or pattern matching `**/README.md`).
+- `build-and-fetch.yml` — triggers on code changes (`src/**`, `package.json`, `public/**`)
+- `docs-refresh.yml` — triggers on README or docs changes
 
-Example `docs-refresh.yml` trigger (only runs when README or docs change):
+Example `docs-refresh.yml` trigger:
 
 ```yaml
 name: Docs refresh
@@ -121,7 +145,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install
         run: npm ci --legacy-peer-deps
-      - name: Fetch & postprocess
+      - name: Fetch and postprocess
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
@@ -130,76 +154,73 @@ jobs:
           node scripts/fetchProjects.js
           node scripts/postprocessProjects.js
           node scripts/applyFallbackDocScan.js
-      - name: Build & prepare prebuilt
-        run: |
-          npm run build
-          # copy into .vercel/output as in main workflow
+      - name: Build and prepare prebuilt
+        run: npm run build
 ```
 
-This keeps code-triggered builds separate from docs-triggered builds.
+### Separate docs repository
 
-2) Separate repo for docs (recommended if docs team/process is independent)
+Move docs into a separate repository and use webhooks or `repository_dispatch` events to trigger the portfolio repository's docs workflow. This decouples permissions and allows different reviewers, CI quotas, and schedules.
 
-- Move docs into a separate repository (or keep them in each project repo but use a dedicated docs repo as the canonical source). Then use webhooks or `repository_dispatch` events to trigger the portfolio repo's docs workflow. This decouples permissions and allows different reviewers, CI quotas, and schedules.
+## Enterprise approaches
 
----
+For portfolios that span multiple repositories and require auditable, scalable pipelines, consider these patterns.
 
-## Enterprise solution and best practices
+### Separate code and docs pipelines
 
-If you manage multiple repos and want robust, scalable, auditable builds for code vs docs, consider the following:
-
-1) Separate pipelines (recommended):
-
-- Code pipeline: triggers on changes to application code and performs a full build and deployment. Use path filters to scope triggers.
-- Docs pipeline: triggers on docs/README changes (either in the same repo or other repos) and produces a smaller artifact (docs manifest) which is then deployed separately.
+- Code pipeline: triggers on application code changes and performs a full build and deployment
+- Docs pipeline: triggers on README or docs changes and produces only a data artifact (`projects.json`)
 
 Advantages:
-- Reduced build time and cost (docs builds can be lighter and run more often).
-- Clear ownership and lower blast radius (docs deploys don't change app code).
-- Simpler approvals: different deployment gates for docs vs code.
+- Reduced build time — docs builds can be lighter and run more frequently
+- Lower blast radius — docs deploys do not change application code
+- Simpler approvals — different deployment gates for docs versus code
 
-2) Use a build artifact store and deploy hooks:
+### Artifact store and deploy hooks
 
-- Produce deterministic artifacts in CI (e.g., upload `projects.json` and `projects_media` to an artifact store or S3). The code pipeline can reference these artifacts during application builds.
-- Use Vercel deploy hooks (or the Vercel API) to trigger a deploy when artifacts change. This allows pushing only the changed static assets without running a full app build.
+Produce deterministic artifacts in CI (upload `projects.json` and `projects_media` to an artifact store or S3). Use Vercel deploy hooks or the Vercel API to trigger a deploy when artifacts change, avoiding a full app rebuild.
 
-3) Triggering across repositories:
+### Cross-repository triggers
 
-- Use `repository_dispatch` or a dedicated CI user with a PAT to call the portfolio repo's workflow when docs change in other repos.
-- Or use an integration/service (e.g., Jenkins, GitHub Apps) to orchestrate cross-repo events and maintain audit logs.
+Use `repository_dispatch` or a dedicated CI user with a PAT to call the portfolio workflow when docs change in other repositories. A GitHub App can orchestrate cross-repository events and maintain audit logs.
 
-4) Security and secret handling:
+### Secret handling at scale
 
-- Store secrets in the CI provider's secret store (GitHub Actions secrets or Vercel envs). Avoid printing secrets in logs.
-- Limit which workflows can access which secrets using `permissions` and environment protections.
+- Store secrets in the CI provider's secret store. Avoid printing secrets in logs.
+- Use `permissions` blocks and environment protections to limit which workflows can access which secrets.
 
-5) Observability and approvals:
+### Observability and approvals
 
-- Add a short verification step (already present) to print the number of repos and docs links before deploy.
-- For enterprise, add required approvals or environment protection for production deploys (GitHub Environments) and Slack/Teams notifications on deploys.
+- Add a verification step to print the number of repos and doc links before deploy.
+- For production, add required approvals via GitHub Environments and Slack or Teams notifications on deploys.
 
-6) Caching & incremental builds:
+### Caching and incremental builds
 
-- Use content-hash based caching (persist and compare `meta.json` per project; your scripts already write `projects_media/*/meta.json`) to skip expensive downloads or translations.
+Use content-hash-based caching — persist and compare `meta.json` per project (your scripts already write `projects_media/*/meta.json`) to skip expensive downloads or translations when content has not changed.
 
----
+## Recommended minimal setup
 
-## Minimal recommended setup for you
+Given the current project structure, the smallest change that adds meaningful separation between code and docs pipelines:
 
-Given your setup and needs, my recommended minimal posture:
+1. Keep the current repository and workflows as-is.
+2. Add one `docs-refresh.yml` workflow that triggers on changes to `**/README.md` and `docs/**` (example above). This regenerates `projects.json` and runs a prebuilt Vercel deploy without touching the code-triggered workflow.
+3. Add `DEEPL_SECRET` as a GitHub Actions secret if translations are needed during docs runs.
 
-1. Keep the current repo and workflows.
-2. Add one small `docs-refresh.yml` workflow that triggers on changes to `**/README.md` and `docs/**` (example above). This will regenerate `projects.json` and run a prebuilt Vercel deploy without touching the code-triggered workflow.
-3. Add `DEEPL_SECRET` as a GitHub Actions secret if you want translations during docs runs.
+## After the refresh
 
-This gives you separate, predictable docs redeploys while leaving code builds unaffected.
+After running either the local steps or the GitHub Action, verify the following:
 
----
+1. Open `public/projects.json` and confirm it contains the expected repositories and updated summaries.
+2. Check that `public/projects_media/<repo>/` directories exist for each project with a media asset.
+3. If deployed, open the live site and confirm the Projects section renders the refreshed data.
+4. For a quick API check from PowerShell:
 
-If you'd like, I can:
+```powershell
+Invoke-RestMethod 'https://your-domain.example.com/projects.json' | Select-Object -First 1
+```
 
-- Create `docs/REFRESH.md` in the repo (this file),
-- Add the `docs-refresh.yml` workflow for you (path-filtered), or
-- Implement a `repository_dispatch` example to trigger the docs pipeline from other repos.
+## References
 
-Tell me which of those you'd like me to add next and I'll make the change and run a quick local build to validate.
+- [GitHub Actions — workflow triggers](https://docs.github.com/en/actions/writing-workflows/choosing-when-your-workflow-runs/events-that-trigger-workflows)
+- [Vercel deploy hooks](https://vercel.com/docs/deployments/deploy-hooks)
+- [GitHub — repository_dispatch event](https://docs.github.com/en/rest/repos/repos#create-a-repository-dispatch-event)
