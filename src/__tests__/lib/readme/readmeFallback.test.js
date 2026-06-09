@@ -1,3 +1,5 @@
+// Verifies fetchReadmeFromRaw: successful README fetch via raw URL, 404
+// handling, and the axios.default branch resolved by getAxios().
 jest.mock('axios', () => ({
   get: jest.fn(),
   default: { get: jest.fn() },

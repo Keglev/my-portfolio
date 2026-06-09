@@ -1,7 +1,9 @@
+// Verifies persistMetaForNode: meta.json write on first run, readmeHash
+// comparison for change detection, and skip logic when the hash is unchanged.
 const fs = require('fs');
- 
+
 jest.mock('fs');
- 
+
 const { persistMetaForNode } = require('../../../../scripts/lib/media/persistence');
  
 describe('persistence.persistMetaForNode', () => {

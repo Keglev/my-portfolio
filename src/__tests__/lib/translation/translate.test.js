@@ -1,3 +1,6 @@
+// Verifies translateToGermanDetailed: DeepL API call, md5-keyed cache
+// deduplication (identical strings share one API call), fs-backed cache
+// persistence, and the translateWithCache / translateTitlesBatch re-exports.
 jest.mock('fs', () => ({
   existsSync: jest.fn(),
   readFileSync: jest.fn(),

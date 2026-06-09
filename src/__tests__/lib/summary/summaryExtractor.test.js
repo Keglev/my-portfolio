@@ -1,3 +1,5 @@
+// Verifies extractSummaryFromNode: description field priority, README section
+// fallback, and the three-step extraction strategy (description → first para → null).
 const { extractSummaryFromNode } = require('../../../../scripts/lib/summary/summaryExtractor');
 const parseReadme = require('../../../../scripts/lib/parseReadme');
 

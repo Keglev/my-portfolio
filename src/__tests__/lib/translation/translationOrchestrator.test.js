@@ -1,3 +1,5 @@
+// Verifies translateTitlesBatch: parallel title translation, parallel-index
+// mapping, null-text skipping, and per-item error handling.
 const { translateTitlesBatch } = require('../../../../scripts/lib/translation/translationOrchestrator');
 
 const makeTranslate = (suffix = ' (de)') =>

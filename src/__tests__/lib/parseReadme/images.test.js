@@ -1,3 +1,5 @@
+// Verifies findImageCandidateFromAst image node selection and isBadgeLike
+// badge/shield URL detection, including null/empty and edge-case inputs.
 const { findImageCandidateFromAst, isBadgeLike } = require('../../../../scripts/lib/parseReadme/images');
 
 describe('isBadgeLike', () => {

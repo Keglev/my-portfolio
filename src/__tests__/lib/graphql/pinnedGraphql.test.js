@@ -1,3 +1,5 @@
+// Verifies fetchPinnedNodes: runGraphQL delegation, response shape handling,
+// and auth/error branches.
 const { fetchPinnedNodes } = require('../../../../scripts/lib/graphql/pinnedGraphql');
  
 jest.mock('../../../../scripts/lib/fetchGithub', () => ({

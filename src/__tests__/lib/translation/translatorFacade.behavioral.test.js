@@ -1,3 +1,6 @@
+// Behavioral smoke-test: confirms translateNode writes translated fields
+// (summary_de, title_de, etc.) onto the node when a real translate function
+// is provided, without mocking the facade internals.
 const translator = require('../../../../scripts/lib/translation/translatorFacade');
 
 describe('translatorFacade behavioral', () => {

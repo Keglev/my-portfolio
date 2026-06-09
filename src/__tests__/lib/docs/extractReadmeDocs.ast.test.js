@@ -1,3 +1,6 @@
+// Verifies extractReadmeDocs AST-specific paths: stripAstJsonFragments JSON
+// fragment removal, shouldTranslateUI field gating, and extractRepoDocsDetailed
+// behaviour when GITHUB_TOKEN is absent (no-auth environment).
 const { extractRepoDocsDetailed, shouldTranslateUI, stripAstJsonFragments } = require('../../../../scripts/lib/docs/extractReadmeDocs');
 
 describe('extractReadmeDocs AST paths', () => {

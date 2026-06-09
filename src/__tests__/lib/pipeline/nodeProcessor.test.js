@@ -1,3 +1,6 @@
+// Verifies processNode: stage isolation (readme → docs → translation → persistence),
+// service injection via the injected downloader/translate stubs, and stage-error
+// propagation when a sub-stage throws.
 jest.mock('fs', () => ({
   existsSync: jest.fn(() => false),
   readdirSync: jest.fn(() => []),

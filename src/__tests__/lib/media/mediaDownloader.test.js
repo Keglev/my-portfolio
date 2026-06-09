@@ -1,5 +1,7 @@
+// Verifies mediaDownloader: ensureDir directory creation, md5 hashing, and
+// downloadIfNeeded cache-skip (file already exists) and download behaviour.
 const fs = require('fs');
- 
+
 jest.mock('fs');
 jest.mock('axios');
  

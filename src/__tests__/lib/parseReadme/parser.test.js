@@ -1,3 +1,5 @@
+// Verifies buildFallbackAst: synchronous heading/paragraph/list node parsing
+// from plain markdown text without requiring the remark dependency at runtime.
 const { buildFallbackAst } = require('../../../../scripts/lib/parseReadme/parser');
 
 describe('buildFallbackAst', () => {

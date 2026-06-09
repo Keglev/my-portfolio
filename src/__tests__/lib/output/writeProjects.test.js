@@ -1,3 +1,5 @@
+// Verifies writeProjectsJson: correct output file path, JSON serialization,
+// and the fs.writeFileSync invocation with the expected arguments.
 jest.mock('fs');
 const fs = require('fs');
 const { writeProjectsJson } = require('../../../../scripts/lib/output/writeProjects');

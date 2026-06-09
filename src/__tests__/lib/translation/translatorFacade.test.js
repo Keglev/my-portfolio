@@ -1,3 +1,6 @@
+// Verifies translateNode: orchestrator delegation, field-by-field translation,
+// error-path resilience when the orchestrator throws, and DEBUG_FETCH logging.
+//
 // Mock the orchestrator so we can control whether it throws per-test
 jest.mock('../../../../scripts/lib/translation/translationOrchestrator');
 
