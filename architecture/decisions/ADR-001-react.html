@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Architecture Index — my-portfolio docs</title>
+  <title>ADR-001: React as the Frontend Framework — my-portfolio docs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../templates/styles.css" />
+  <link rel="stylesheet" href="../../templates/styles.css" />
 </head>
 <body>
 
@@ -15,7 +15,7 @@
     <div class="site-header__inner">
       <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
       <span class="site-header__sep">/</span>
-      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <a class="site-header__title" href="../../index.html">my-portfolio</a>
       <span class="site-header__sep">/</span>
       <span class="site-header__section">Docs</span>
       <div class="site-header__spacer"></div>
@@ -32,58 +32,58 @@
     <aside class="doc-toc" aria-label="On this page">
       <p class="doc-toc__label">On this page</p>
       <ul class="doc-toc__list">
-  <li><a href="#documents">Documents</a></li>
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#status">Status</a></li>
+  <li><a href="#context">Context</a></li>
+  <li><a href="#decision">Decision</a></li>
+  <li><a href="#consequences">Consequences</a></li>
   <li><a href="#references">References</a></li>
 </ul>
     </aside>
 
     <article class="article">
-      <h1 id="architecture-index">Architecture Index</h1>
-<p><a href="../index.html">← Documentation root</a></p>
-<p>This index covers the architecture documentation for the personal portfolio application. Each document focuses on one architectural concern. Together they describe the tech stack, component structure, internationalisation flow, CI/CD pipeline, and runtime data flow.</p>
-<p>For a quick orientation, start with <a href="overview.html">overview.md</a>; for the German-language version, see <a href="overview.de.html">overview.de.md</a>. The remaining documents go deeper into specific areas.</p>
-<h2 id="documents">Documents</h2>
-<table>
-<thead>
-<tr>
-<th>Document</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="overview.html">overview.md</a></td>
-<td>What the app is, tech stack table, high-level component diagram, key design decisions, and non-functional requirements</td>
-</tr>
-<tr>
-<td><a href="overview.de.html">overview.de.md</a></td>
-<td>German-language version of the architecture overview</td>
-</tr>
-<tr>
-<td><a href="component-tree.html">component-tree.md</a></td>
-<td>React component hierarchy diagram and per-group responsibility notes</td>
-</tr>
-<tr>
-<td><a href="i18n-flow.html">i18n-flow.md</a></td>
-<td>Language-switch sequence diagram, namespace and key table, and i18next configuration</td>
-</tr>
-<tr>
-<td><a href="ci-cd-pipeline.html">ci-cd-pipeline.md</a></td>
-<td>CI/CD pipeline diagram, per-workflow file breakdown, and concurrency strategy</td>
-</tr>
-<tr>
-<td><a href="data-flow.html">data-flow.md</a></td>
-<td>Runtime data flow diagram and state management approach (no Redux — explained here)</td>
-</tr>
-<tr>
-<td><a href="decisions/index.html">decisions/</a></td>
-<td>Architecture Decision Records — the <em>why</em> behind each significant technical choice</td>
-</tr>
-</tbody></table>
+      <h1 id="adr-001-react-as-the-frontend-framework">ADR-001: React as the Frontend Framework</h1>
+<p><a href="index.html">← Decisions index</a></p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#status">Status</a></li>
+<li><a href="#context">Context</a></li>
+<li><a href="#decision">Decision</a></li>
+<li><a href="#consequences">Consequences</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="status">Status</h2>
+<p>Accepted</p>
+<h2 id="context">Context</h2>
+<p>The portfolio needed to be a single-page application with dynamic content
+sections, language switching, and component reuse across sections. A static
+HTML/CSS approach would require duplicating markup for every section and
+language, and would make the GitHub-data-driven Projects section impractical
+to implement cleanly.</p>
+<p>The project also required a well-supported testing story (React Testing Library),
+an established i18n integration (react-i18next), and zero-config build tooling
+that could produce a prebuilt artifact for Vercel deployment without a custom
+build server.</p>
+<h2 id="decision">Decision</h2>
+<p>Use React 18 as the UI framework, bootstrapped with Create React App (CRA /
+react-scripts 5). All UI is composed from function components using hooks.</p>
+<h2 id="consequences">Consequences</h2>
+<ul>
+<li>Component reuse across sections is straightforward with JSX composition</li>
+<li>i18next integrates cleanly via the <code>useTranslation</code> hook from react-i18next</li>
+<li>React Testing Library provides component-level tests aligned with user behaviour</li>
+<li>CRA provides zero-config Webpack/Babel setup; no custom bundler configuration needed</li>
+<li>Adds JavaScript bundle overhead compared to a static HTML site</li>
+<li>CRA is in maintenance mode upstream; a future migration to Vite may be needed</li>
+<li>The <code>ErrorBoundary</code> component wraps the entire React tree for graceful error handling</li>
+</ul>
 <h2 id="references">References</h2>
 <ul>
-<li><a href="../index.html">Documentation root index</a></li>
-<li><a href="https://github.com/Keglev/my-portfolio">GitHub repository — Keglev/my-portfolio</a></li>
-<li><a href="https://keglev.github.io/my-portfolio/">Live docs — GitHub Pages</a></li>
+<li><a href="https://react.dev">React documentation</a></li>
+<li><a href="https://create-react-app.dev">Create React App documentation</a></li>
+<li><a href="https://github.com/facebook/create-react-app/blob/main/CHANGELOG.html">react-scripts changelog</a></li>
+<li><a href="../component-tree.html">component-tree.md</a> — component hierarchy built on this decision</li>
+<li><a href="../data-flow.html">data-flow.md</a> — state management approach within the React tree</li>
 </ul>
 
     </article>

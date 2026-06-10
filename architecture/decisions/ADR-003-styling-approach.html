@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADR-003: Two-Layer Styling Approach (styled-components + plain CSS) — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#status">Status</a></li>
+  <li><a href="#context">Context</a></li>
+  <li><a href="#decision">Decision</a></li>
+  <li><a href="#consequences">Consequences</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="adr-003-two-layer-styling-approach-styled-components-plain-css">ADR-003: Two-Layer Styling Approach (styled-components + plain CSS)</h1>
+<p><a href="index.html">← Decisions index</a></p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#status">Status</a></li>
+<li><a href="#context">Context</a></li>
+<li><a href="#decision">Decision</a></li>
+<li><a href="#consequences">Consequences</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="status">Status</h2>
+<p>Accepted</p>
+<h2 id="context">Context</h2>
+<p>The portfolio has two structurally distinct UI areas that have different
+styling requirements:</p>
+<ol>
+<li><p><strong>The Sidebar</strong> — fixed-position on desktop, collapses to a static top
+block on mobile, contains multiple interactive states (hover transforms,
+active-link slide animation, scale effects on social icons), and its
+visual states are tightly coupled to dynamic props passed from the
+component (e.g. <code>activeSection</code>). CSS class toggling for all these states
+would produce fragile, scattered rules.</p>
+</li>
+<li><p><strong>Section components</strong> (About, Education, Projects, Experience, RepoDocs,
+Legal) — simpler layouts with fewer interactive states and no dynamic
+style props. The overhead of CSS-in-JS for these would add build cost
+without meaningful benefit.</p>
+</li>
+</ol>
+<p>CSS Modules were evaluated but ruled out: the project uses Create React App
+with a Babel/Webpack configuration that already supports CSS Modules, but
+the IDE autocomplete and type-safety benefits of Modules require additional
+tooling setup. For the scale of this project, the complexity was not
+justified.</p>
+<h2 id="decision">Decision</h2>
+<p>Use a <strong>two-layer approach</strong>:</p>
+<ul>
+<li><p><strong>styled-components v6</strong> for all Sidebar components, defined in
+<code>src/components/Sidebar/SidebarStyles.js</code>. This file exports named styled
+components (<code>SidebarContainer</code>, <code>NameTitle</code>, <code>StyledLink</code>, <code>Menu</code>,
+<code>SocialLinksWrapper</code>, <code>SocialLinks</code>, <code>FooterMessage</code>, <code>LanguageWrapper</code>,
+<code>LegalButton</code>, <code>CVDownloadWrapper</code>, <code>CVDownloadLink</code>) that co-locate
+their styles with the component logic.</p>
+</li>
+<li><p><strong>Plain <code>.css</code> files</strong> co-located in each section component&#39;s directory
+for all other components. These files reference CSS custom properties
+(design tokens) defined in <code>src/index.css</code>.</p>
+</li>
+<li><p><strong>Global design tokens</strong> defined under <code>:root</code> in <code>src/index.css</code> and
+a global reset/base in <code>src/styles/GlobalStyles.js</code> (a styled-components
+global style, always injected by <code>App</code>).</p>
+</li>
+</ul>
+<h2 id="consequences">Consequences</h2>
+<ul>
+<li>The Sidebar&#39;s complex responsive and interactive behaviour is fully
+contained in one file, readable alongside the component it styles</li>
+<li>Section components use familiar plain CSS with no runtime overhead</li>
+<li>CSS custom properties propagate token changes across both layers
+from a single edit in <code>src/index.css</code></li>
+<li>Two different styling mental models exist in the same codebase; new
+contributors must understand both</li>
+<li>styled-components adds ~13 kB gzipped to the bundle</li>
+<li>No class-name collisions at the component level for Sidebar styles;
+section components use kebab-case BEM-style class names by convention</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://styled-components.com/docs">styled-components documentation</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties">MDN CSS custom properties</a></li>
+<li><a href="../../frontend/styling.html">frontend/styling.md</a> — design token table and per-file breakdown</li>
+<li><code>src/components/Sidebar/SidebarStyles.js</code> — all styled-component definitions</li>
+<li><code>src/index.css</code> — CSS custom properties (design tokens)</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

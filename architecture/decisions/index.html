@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Architecture Index — my-portfolio docs</title>
+  <title>Architecture Decision Records — my-portfolio docs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../templates/styles.css" />
+  <link rel="stylesheet" href="../../templates/styles.css" />
 </head>
 <body>
 
@@ -15,7 +15,7 @@
     <div class="site-header__inner">
       <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
       <span class="site-header__sep">/</span>
-      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <a class="site-header__title" href="../../index.html">my-portfolio</a>
       <span class="site-header__sep">/</span>
       <span class="site-header__section">Docs</span>
       <div class="site-header__spacer"></div>
@@ -32,58 +32,77 @@
     <aside class="doc-toc" aria-label="On this page">
       <p class="doc-toc__label">On this page</p>
       <ul class="doc-toc__list">
-  <li><a href="#documents">Documents</a></li>
+  <li><a href="#decisions">Decisions</a></li>
+  <li><a href="#how-to-read-an-adr">How to read an ADR</a></li>
+  <li><a href="#how-to-add-a-new-adr">How to add a new ADR</a></li>
   <li><a href="#references">References</a></li>
 </ul>
     </aside>
 
     <article class="article">
-      <h1 id="architecture-index">Architecture Index</h1>
-<p><a href="../index.html">← Documentation root</a></p>
-<p>This index covers the architecture documentation for the personal portfolio application. Each document focuses on one architectural concern. Together they describe the tech stack, component structure, internationalisation flow, CI/CD pipeline, and runtime data flow.</p>
-<p>For a quick orientation, start with <a href="overview.html">overview.md</a>; for the German-language version, see <a href="overview.de.html">overview.de.md</a>. The remaining documents go deeper into specific areas.</p>
-<h2 id="documents">Documents</h2>
+      <h1 id="architecture-decision-records">Architecture Decision Records</h1>
+<p><a href="../index.html">← Architecture index</a> · <a href="../../index.html">← Documentation root</a></p>
+<p>This directory records the significant technical decisions made in the
+my-portfolio project. Each ADR captures the context that existed at the time,
+the choice that was made, and the trade-offs accepted. Reading these documents
+is the fastest way to understand <em>why</em> the project is structured the way it is.</p>
+<h2 id="decisions">Decisions</h2>
 <table>
 <thead>
 <tr>
-<th>Document</th>
-<th>Description</th>
+<th>ADR</th>
+<th>Title</th>
+<th>Status</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><a href="overview.html">overview.md</a></td>
-<td>What the app is, tech stack table, high-level component diagram, key design decisions, and non-functional requirements</td>
+<td><a href="ADR-001-react.html">ADR-001</a></td>
+<td>React as the Frontend Framework</td>
+<td>Accepted</td>
 </tr>
 <tr>
-<td><a href="overview.de.html">overview.de.md</a></td>
-<td>German-language version of the architecture overview</td>
+<td><a href="ADR-002-i18next-internationalization.html">ADR-002</a></td>
+<td>i18next for Internationalization</td>
+<td>Accepted</td>
 </tr>
 <tr>
-<td><a href="component-tree.html">component-tree.md</a></td>
-<td>React component hierarchy diagram and per-group responsibility notes</td>
+<td><a href="ADR-003-styling-approach.html">ADR-003</a></td>
+<td>Two-Layer Styling Approach (styled-components + plain CSS)</td>
+<td>Accepted</td>
 </tr>
 <tr>
-<td><a href="i18n-flow.html">i18n-flow.md</a></td>
-<td>Language-switch sequence diagram, namespace and key table, and i18next configuration</td>
+<td><a href="ADR-004-three-workflow-cicd.html">ADR-004</a></td>
+<td>Three-Workflow CI/CD Architecture</td>
+<td>Accepted</td>
 </tr>
 <tr>
-<td><a href="ci-cd-pipeline.html">ci-cd-pipeline.md</a></td>
-<td>CI/CD pipeline diagram, per-workflow file breakdown, and concurrency strategy</td>
+<td><a href="ADR-005-vercel-hosting.html">ADR-005</a></td>
+<td>Vercel as the Hosting Platform</td>
+<td>Accepted</td>
 </tr>
 <tr>
-<td><a href="data-flow.html">data-flow.md</a></td>
-<td>Runtime data flow diagram and state management approach (no Redux — explained here)</td>
-</tr>
-<tr>
-<td><a href="decisions/index.html">decisions/</a></td>
-<td>Architecture Decision Records — the <em>why</em> behind each significant technical choice</td>
+<td><a href="ADR-006-build-time-github-data-fetch.html">ADR-006</a></td>
+<td>Build-Time GitHub Data Fetch over Runtime API Calls</td>
+<td>Accepted</td>
 </tr>
 </tbody></table>
+<h2 id="how-to-read-an-adr">How to read an ADR</h2>
+<p>Each record has four sections:</p>
+<ul>
+<li><strong>Context</strong> — the forces and constraints that made a decision necessary</li>
+<li><strong>Decision</strong> — what was chosen and exactly how it was implemented</li>
+<li><strong>Consequences</strong> — positive and negative effects, trade-offs accepted</li>
+<li><strong>References</strong> — links to related code, docs, or external resources</li>
+</ul>
+<h2 id="how-to-add-a-new-adr">How to add a new ADR</h2>
+<p>Copy <a href="../../templates/adr-template.html">adr-template.md</a> to this directory as
+<code>ADR-NNN-short-title.md</code> (where <code>NNN</code> is the next number), fill in the
+sections, and add a row to the table above.</p>
 <h2 id="references">References</h2>
 <ul>
-<li><a href="../index.html">Documentation root index</a></li>
-<li><a href="https://github.com/Keglev/my-portfolio">GitHub repository — Keglev/my-portfolio</a></li>
-<li><a href="https://keglev.github.io/my-portfolio/">Live docs — GitHub Pages</a></li>
+<li><a href="../index.html">Architecture index</a></li>
+<li><a href="../../index.html">Documentation root</a></li>
+<li><a href="../../templates/adr-template.html">ADR template</a></li>
 </ul>
 
     </article>

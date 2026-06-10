@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADR-002: i18next for Internationalization — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#status">Status</a></li>
+  <li><a href="#context">Context</a></li>
+  <li><a href="#decision">Decision</a></li>
+  <li><a href="#consequences">Consequences</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="adr-002-i18next-for-internationalization">ADR-002: i18next for Internationalization</h1>
+<p><a href="index.html">← Decisions index</a></p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#status">Status</a></li>
+<li><a href="#context">Context</a></li>
+<li><a href="#decision">Decision</a></li>
+<li><a href="#consequences">Consequences</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="status">Status</h2>
+<p>Accepted</p>
+<h2 id="context">Context</h2>
+<p>The portfolio targets both German and international employers. All visible
+strings — section headings, bio text, job entries, legal notices — needed
+to switch between German and English without page reloads. Additionally,
+project descriptions fetched from the GitHub API at build time arrive in
+English and need a German counterpart for the German-language view.</p>
+<p>Two concerns had to be addressed separately:</p>
+<ol>
+<li><strong>Static UI strings</strong> — hand-authored content such as the bio, job
+history, and section labels, stored as JSON and bundled at build time.</li>
+<li><strong>Dynamic project descriptions</strong> — English text from GitHub that must be
+translated to German automatically during the CI/CD fetch step.</li>
+</ol>
+<h2 id="decision">Decision</h2>
+<p>Use i18next 25 with react-i18next 14 for all static UI strings.
+Translations are stored in two locale files bundled directly into the
+JavaScript build:</p>
+<ul>
+<li><code>src/locales/en.json</code> — English strings</li>
+<li><code>src/locales/de.json</code> — German strings</li>
+</ul>
+<p>Both files use a single <code>translation</code> namespace (the i18next default).
+The i18next instance is configured in <code>src/i18n.js</code> with:</p>
+<ul>
+<li><code>lng: &#39;de&#39;</code> — German as the default display language, targeting the
+German job market</li>
+<li><code>fallbackLng: &#39;en&#39;</code> — falls back to the English string if a key is
+absent from the German locale file</li>
+<li><code>interpolation.escapeValue: false</code> — React already escapes values;
+disabling prevents double-escaping</li>
+<li><code>compatibilityJSON: &#39;v3&#39;</code> — matches the plural-key format in the locale files</li>
+</ul>
+<p>For dynamic project descriptions, the DeepL free-tier API
+(<code>https://api-free.deepl.com/v2/translate</code>) translates English GitHub
+descriptions to German during the <code>scripts/fetchProjects.js</code> build step.
+Translations are cached per repository in
+<code>public/projects_media/{repo}/meta.json</code> using an md5 key so identical
+strings are only sent to DeepL once. If the DeepL API is unavailable or
+the key is absent, the translation result is <code>null</code> and the React component
+falls back to displaying the English original.</p>
+<h2 id="consequences">Consequences</h2>
+<ul>
+<li>Language switching is instant with no network request after initial load,
+because both locale files are bundled at build time</li>
+<li>Adding a third language requires new locale JSON files and a corresponding
+DeepL target language in the fetch script</li>
+<li>The <code>fallbackLng: &#39;en&#39;</code> setting means a missing German key silently
+displays English rather than an error; locale files must be kept in sync</li>
+<li>DeepL translations for project descriptions are cached; unchanged
+descriptions do not consume API quota on subsequent builds</li>
+<li>The DeepL free tier has a monthly character limit; very large numbers of
+project descriptions could exhaust it</li>
+<li>Strings longer than 300 characters are not sent to DeepL to avoid
+exceeding the per-request limit; long descriptions remain in English</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://www.i18next.com">i18next documentation</a></li>
+<li><a href="https://react.i18next.com">react-i18next documentation</a></li>
+<li><a href="https://www.deepl.com/docs-api">DeepL API documentation</a></li>
+<li><a href="../i18n-flow.html">i18n-flow.md</a> — sequence diagram of the language-switch flow</li>
+<li><a href="../../REFRESH.html">REFRESH.md</a> — how the fetch step and DeepL translation run</li>
+<li><code>src/i18n.js</code> — i18next configuration</li>
+<li><code>scripts/lib/translation/translate.js</code> — DeepL integration and cache logic</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

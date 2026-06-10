@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ADR-005: Vercel as the Hosting Platform — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#status">Status</a></li>
+  <li><a href="#context">Context</a></li>
+  <li><a href="#decision">Decision</a></li>
+  <li><a href="#consequences">Consequences</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="adr-005-vercel-as-the-hosting-platform">ADR-005: Vercel as the Hosting Platform</h1>
+<p><a href="index.html">← Decisions index</a></p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#status">Status</a></li>
+<li><a href="#context">Context</a></li>
+<li><a href="#decision">Decision</a></li>
+<li><a href="#consequences">Consequences</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="status">Status</h2>
+<p>Accepted</p>
+<h2 id="context">Context</h2>
+<p>The portfolio is a React SPA built with Create React App. It requires HTTPS,
+fast global CDN delivery, and a reliable deployment target for a low-traffic
+personal project. Self-hosting was not considered due to cost and ongoing
+maintenance overhead.</p>
+<p>Two deployment strategies were evaluated:</p>
+<ol>
+<li><p><strong>Standard Vercel GitHub integration</strong> — Vercel pulls the source code and
+runs its own build. This would duplicate the CRA build that already runs in
+GitHub Actions and would prevent the project data fetch step (which requires
+a <code>GH_PROJECTS_TOKEN</code>) from being tightly controlled in CI.</p>
+</li>
+<li><p><strong>Prebuilt artifact deployment</strong> — GitHub Actions builds the app and
+assembles a Vercel Build Output API v3 artifact, then deploys the
+pre-assembled output with <code>vercel --prebuilt</code>. Vercel receives a finished
+artifact with no rebuild step.</p>
+</li>
+</ol>
+<p>Option 2 was chosen because it keeps the full build pipeline — including the
+GitHub GraphQL fetch and DeepL translation — inside GitHub Actions where the
+secrets are already managed.</p>
+<h2 id="decision">Decision</h2>
+<p>Deploy the React app to Vercel using <strong>prebuilt artifact deployment</strong> (Vercel
+Build Output API v3). The <code>build-and-fetch.yml</code> workflow assembles the artifact
+in <code>.vercel/output/static/</code> via <code>scripts/prepareVercelOutput.sh</code> and deploys it
+with <code>vercel --prod --prebuilt</code>. Vercel performs no build step; it serves the
+static output directly from its edge CDN.</p>
+<p>Production deploys trigger only from the <code>main</code> branch via the
+<code>build-and-fetch.yml</code> workflow (after <code>ci.yml</code> passes). Vercel environment
+variables (<code>VERCEL_TOKEN</code>, <code>VERCEL_ORG_ID</code>, <code>VERCEL_PROJECT_ID</code>) are stored as
+GitHub Actions secrets.</p>
+<h2 id="consequences">Consequences</h2>
+<ul>
+<li>Zero redundant builds: the artifact built and smoke-tested in CI is
+exactly what is served in production</li>
+<li>Secrets (<code>GH_PROJECTS_TOKEN</code>, <code>DEEPL_API_KEY</code>) never leave GitHub Actions</li>
+<li>Vercel&#39;s global edge CDN serves the SPA with automatic HTTPS and HTTP/2</li>
+<li>The <code>.vercel/output/config.json</code> routes all unmatched paths to <code>index.html</code>
+so client-side React Router navigation works without server configuration</li>
+<li>No preview deployments per branch (the standard GitHub integration would
+provide these automatically; the prebuilt approach requires explicit
+workflow steps to create them)</li>
+<li>Vendor dependency on the Vercel Build Output API v3 format; a major version
+change would require updating <code>prepareVercelOutput.sh</code></li>
+<li>The free tier is sufficient for a portfolio with low traffic</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://vercel.com/docs/build-output-api/v3">Vercel Build Output API v3 documentation</a></li>
+<li><a href="https://vercel.com/docs/cli">Vercel CLI documentation</a></li>
+<li><a href="../../DEPLOY.html">DEPLOY.md</a> — environment variables and deployment details</li>
+<li><a href="../ci-cd-pipeline.html">ci-cd-pipeline.md</a> — where the deploy step sits in the pipeline</li>
+<li><code>scripts/prepareVercelOutput.sh</code> — assembles the prebuilt artifact</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

@@ -16,6 +16,7 @@ For a quick orientation, start with [overview.md](overview.md); for the German-l
 | [i18n-flow.md](i18n-flow.md) | Language-switch sequence diagram, namespace and key table, and i18next configuration |
 | [ci-cd-pipeline.md](ci-cd-pipeline.md) | CI/CD pipeline diagram, per-workflow file breakdown, and concurrency strategy |
 | [data-flow.md](data-flow.md) | Runtime data flow diagram and state management approach (no Redux — explained here) |
+| [decisions/](decisions/index.md) | Architecture Decision Records — the *why* behind each significant technical choice |
 
 ## References
 
