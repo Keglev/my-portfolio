@@ -1,5 +1,7 @@
-// Verifies that ErrorBoundary passes children through normally and catches render errors,
-// displaying a fallback UI that includes the error message text.
+/*
+ * Tests for ErrorBoundary.js
+ * Covers: normal child rendering, render error catching, and fallback UI with error message.
+ */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import ErrorBoundary from '../../components/ErrorBoundary';

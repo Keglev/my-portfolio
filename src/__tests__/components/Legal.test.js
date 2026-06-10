@@ -1,5 +1,7 @@
-// Verifies that the Legal section renders both Impressum and Datenschutz headings
-// and correctly injects the HTML content strings supplied by the i18n layer via dangerouslySetInnerHTML.
+/*
+ * Tests for Legal.js
+ * Covers: Impressum and Datenschutz headings, dangerouslySetInnerHTML content injection from i18n.
+ */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Legal from '../../components/Legal/Legal';

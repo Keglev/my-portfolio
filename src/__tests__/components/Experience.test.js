@@ -1,5 +1,7 @@
-// Verifies that the Experience section renders all job entries from translated locale data,
-// covering heading count, job titles, dates, and summaries.
+/*
+ * Tests for Experience.js
+ * Covers: section heading, job entry count, titles, dates, and summaries from i18n data.
+ */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Experience from '../../components/Experience/Experience';

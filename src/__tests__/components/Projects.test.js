@@ -1,5 +1,7 @@
-// Verifies that Projects fetches projects.json, renders one ProjectCard per item,
-// and renders nothing when the fetch fails.
+/*
+ * Tests for Projects.js
+ * Covers: projects.json fetch, ProjectCard rendering per item, and empty state on fetch failure.
+ */
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k, def) => def || k }) }));

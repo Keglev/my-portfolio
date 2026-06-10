@@ -1,5 +1,8 @@
-// Verifies that Sidebar tracks scroll position to update the active section,
-// removes the scroll listener on unmount, and calls scrollIntoView for legal subsection buttons.
+/*
+ * Tests for Sidebar.js
+ * Covers: scroll position tracking, active section updates, scroll listener cleanup on unmount,
+ * and scrollIntoView calls for legal subsection buttons.
+ */
 import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Sidebar from '../../../components/Sidebar/Sidebar';

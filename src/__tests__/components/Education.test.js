@@ -1,5 +1,7 @@
-// Verifies that Education conditionally renders institution and note paragraphs
-// only when the i18n values for those fields are non-empty.
+/*
+ * Tests for Education.js
+ * Covers: heading and entry titles, conditional rendering of institution and note paragraphs.
+ */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Education from '../../components/Education/Education';

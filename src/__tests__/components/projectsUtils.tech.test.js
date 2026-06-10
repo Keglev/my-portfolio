@@ -1,5 +1,7 @@
-// Verifies getTechnologyWords against a multi-subsection Tech Stack fixture that mirrors
-// the real README format used across the portfolio's projects.
+/*
+ * Tests for getTechnologyWords in projectsUtils.js
+ * Covers: multi-subsection Tech Stack extraction and malformed token handling.
+ */
 import { getTechnologyWords } from '../../components/Projects/projectsUtils';
 
 const TECH_STACK_SAMPLE = `## Tech Stack

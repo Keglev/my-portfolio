@@ -1,5 +1,8 @@
-// Verifies projectsUtils helpers: URL construction, image fallback chain, SVG placeholder
-// generation, About section extraction, and technology keyword parsing.
+/*
+ * Tests for projectsUtils.js
+ * Covers: URL construction, image fallback chain, SVG placeholder generation,
+ * About section extraction, null/undefined handling, and technology keyword parsing.
+ */
 import {
   getProjectImageUrl,
   getPrimaryImage,

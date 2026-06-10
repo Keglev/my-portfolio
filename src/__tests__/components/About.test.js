@@ -1,5 +1,7 @@
-// Verifies that About renders the translated heading, description paragraphs, tech stack items,
-// and the profile image with an accessible alt attribute.
+/*
+ * Tests for About.js
+ * Covers: translated heading, description paragraphs, tech stack items, and profile image alt text.
+ */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import About from '../../components/About/About';
