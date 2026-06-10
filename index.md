@@ -13,6 +13,7 @@ A personal portfolio built with React (Create React App), styled-components, i18
 | Architecture | Component structure and data flow diagrams | [architecture/index.md](architecture/index.md) |
 | Frontend | Component reference and i18n guide | [frontend/index.md](frontend/index.md) |
 | Scripts | Build-time script reference (fetchProjects, postprocess) | [scripts/index.md](scripts/index.md) |
+| Templates | Blank templates for ADRs, component docs, and test plans | [templates/index.md](templates/index.md) |
 
 ## References
 
