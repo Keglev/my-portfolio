@@ -1,5 +1,6 @@
 {
   "github": {
     "productionBranch": "main"
-  }
+  },
+  "buildCommand": "react-scripts build"
 }

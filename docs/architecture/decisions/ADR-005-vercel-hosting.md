@@ -50,6 +50,13 @@ Production deploys trigger only from the `main` branch via the
 variables (`VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`) are stored as
 GitHub Actions secrets.
 
+A `vercel.json` in the project root sets `github.productionBranch` to `"main"`
+and `buildCommand` to `"react-scripts build"`. The `productionBranch` setting
+prevents the `gh-pages` branch (which receives the documentation site) from
+being treated as a Vercel production source. The `buildCommand` value is defined
+for completeness but is never exercised — the `--prebuilt` flag means Vercel
+receives a finished static artifact and skips any build step of its own.
+
 ## Consequences
 
 - Zero redundant builds: the artifact built and smoke-tested in CI is

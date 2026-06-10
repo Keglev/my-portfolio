@@ -1,7 +1,17 @@
 #!/usr/bin/env node
+/**
+ * audit-check.js
+ *
+ * Runs `npm audit --json` and fails the process if high or critical
+ * vulnerabilities are found. Intended for CI — exits 1 on findings,
+ * 2 on execution or parse failure, 0 when clean.
+ *
+ * Called by the audit:ci npm script and the CI workflow audit step.
+ */
 const { exec } = require('child_process');
 
-// 5 MB buffer: npm audit --json output for large dependency trees can exceed the default 1 MB limit
+// 5 MB buffer: npm audit --json output for large dependency trees can exceed
+// the default 1 MB limit and cause a silent truncation error.
 exec('npm audit --json', { maxBuffer: 1024 * 1024 * 5 }, (err, stdout) => {
   if (err && !stdout) {
     console.error('Failed to run npm audit:', err);

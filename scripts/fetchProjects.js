@@ -1,4 +1,20 @@
 #!/usr/bin/env node
+/**
+ * fetchProjects.js
+ *
+ * CLI entry point for fetching pinned GitHub repositories and enriching
+ * them with README data. Delegates all logic to lib/fetchPinned and
+ * lib/parseReadme.
+ *
+ * Dual-use module:
+ *   - Run directly (`node scripts/fetchProjects.js`) to refresh projects.json.
+ *   - Required by other scripts (e.g. applyFallbackDocScan.js) to access
+ *     parseReadme utilities without re-running the fetch.
+ *
+ * Called by the build-and-fetch.yml workflow after secrets are available.
+ * Never called by Vercel directly — the buildCommand in vercel.json skips
+ * the prebuild step.
+ */
 const parseReadme = require('./lib/parseReadme');
 const { fetchPinned } = require('./lib/fetchPinned');
 
@@ -9,8 +25,9 @@ if (require.main === module) {
   });
 }
 
-// Dual-use: CLI entry point when run directly, and a re-export surface for other
-// scripts (e.g. applyFallbackDocScan.js) that need parseReadme utilities.
+// Re-export parseReadme utilities so callers don't need to know the internal
+// module path. extractRepoDocsDetailed is optional — not available in all
+// environments (e.g. stripped builds) — so the require is guarded.
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     parseMarkdown: parseReadme.parseMarkdown,

@@ -1,4 +1,17 @@
 #!/usr/bin/env bash
+# prepareVercelOutput.sh
+#
+# Assembles the Vercel Build Output API v3 directory structure from the React
+# production build. Must run after `npm run build` and before `vercel --prebuilt`.
+#
+# Output layout:
+#   .vercel/output/static/   — compiled React app + projects.json + media
+#   .vercel/output/functions/ — empty placeholder required by Vercel's spec
+#   .vercel/output/config.json — routing rules for client-side navigation
+#   .vercel/output/.vc-config.json — empty placeholder required by spec validation
+#
+# All cp steps use `|| true` so a missing optional directory (e.g. projects_media)
+# does not fail the script.
 set -e
 
 # Idempotent reset — output dir may already exist from a previous attempt.
@@ -6,15 +19,16 @@ rm -rf .vercel/output || true
 mkdir -p .vercel/output/static
 cp -r build/* .vercel/output/static/ || true
 cp -f public/projects.json .vercel/output/static/projects.json || true
-# projects_media may not exist in every build; || true prevents a missing-dir failure.
+
+# projects_media is optional — only present when the fetch step ran successfully.
 cp -r public/projects_media .vercel/output/static/projects_media || true
 
-# Vercel Output API requires a functions dir even when the project has none.
+# Empty placeholder required by Vercel's output spec even for static-only projects.
 mkdir -p .vercel/output/functions || true
 
-# Vercel Build Output API v3 config.
+# Vercel Build Output API v3 routing config.
 # "handle": "filesystem" serves real static files first; the catch-all
-# routes every other path to index.html to support client-side routing.
+# routes all other paths to index.html to support client-side routing.
 printf '%s\n' '{' \
   '  "version": 3,' \
   '  "routes": [' \

@@ -1,4 +1,17 @@
 #!/usr/bin/env node
+/**
+ * postprocessProjects.js
+ *
+ * Runs a sequence of post-processing passes on public/projects.json after
+ * fetchProjects.js has populated it. Passes execute in order:
+ *   1. probeGithubIoLinks  — prefers GitHub Pages URLs over raw.githubusercontent.com
+ *   2. backfillLegacyDocs  — populates docsLink from repoDocs when missing
+ *   3. fixBadDocsTitles    — replaces placeholder or invalid doc titles
+ *   4. normalizeTechTokens — splits and cleans compound technology strings
+ *
+ * Called by the build-and-fetch.yml workflow after fetchProjects.js and
+ * applyFallbackDocScan.js have run. Writes the result back to projects.json.
+ */
 const fs = require('fs');
 const path = require('path');
 
