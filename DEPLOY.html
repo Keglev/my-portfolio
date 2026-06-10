@@ -109,9 +109,9 @@
 <td>GitHub PAT. Use <code>public_repo</code> scope for public repos, <code>repo</code> for private</td>
 </tr>
 <tr>
-<td><code>DEEPL_API_KEY</code></td>
+<td><code>DEEPL_API_KEY</code> or <code>DEEPL_SECRET</code></td>
 <td>No</td>
-<td>If set, translates project summaries to German via DeepL</td>
+<td>If either is set, translates project summaries to German via DeepL. Both variable names are accepted by the fetch script.</td>
 </tr>
 <tr>
 <td><code>DEBUG_FETCH</code></td>
@@ -120,20 +120,20 @@
 </tr>
 </tbody></table>
 <h2 id="deploying-to-vercel">Deploying to Vercel</h2>
-<p>Vercel runs <code>prebuild</code> automatically before <code>build</code>, so no manual intervention is required after the initial setup.</p>
+<p>Deployment runs through GitHub Actions using a prebuilt artifact. Vercel does not run the build itself — GitHub Actions builds the app and hands Vercel a ready-to-serve <code>.vercel/output/</code> directory.</p>
 <ol>
-<li>Connect the GitHub repository to a Vercel project (first-time setup only).</li>
-<li>Set <code>GH_PROJECTS_TOKEN</code> in the Vercel dashboard, targeting the Build step.</li>
-<li>Optionally set <code>DEEPL_API_KEY</code> in the same location.</li>
-<li>Push to <code>main</code> — Vercel detects the push and starts a new deployment.</li>
-<li>Vercel runs <code>npm run prebuild</code> (<code>scripts/fetchProjects.js</code>), then <code>npm run build</code> (<code>react-scripts build</code>).</li>
-<li>Vercel publishes the output from <code>build/</code> to the live URL.</li>
+<li>Connect the GitHub repository to a Vercel project and record <code>VERCEL_TOKEN</code>, <code>VERCEL_ORG_ID</code>, and <code>VERCEL_PROJECT_ID</code> as GitHub Actions secrets (first-time setup only).</li>
+<li>Set <code>GH_PROJECTS_TOKEN</code> as a GitHub Actions secret.</li>
+<li>Optionally set <code>DEEPL_API_KEY</code> or <code>DEEPL_SECRET</code> as GitHub Actions secrets for German translation.</li>
+<li>Push to <code>main</code> — <code>ci.yml</code> detects the push, runs linting and tests, then dispatches <code>build-and-fetch.yml</code>.</li>
+<li><code>build-and-fetch.yml</code> runs the fetch scripts, executes <code>npm run build</code>, and assembles the prebuilt artifact in <code>.vercel/output/static/</code> via <code>scripts/prepareVercelOutput.sh</code>.</li>
+<li>GitHub Actions deploys the prebuilt artifact to Vercel via <code>vercel --prod --prebuilt</code>.</li>
 </ol>
 <div class="mermaid-wrapper"><pre class="mermaid">flowchart LR
-    A[Push to main] --&gt; B[Vercel build trigger]
-    B --&gt; C[npm run prebuild\nfetchProjects.js]
-    C --&gt; D[npm run build\nreact-scripts build]
-    D --&gt; E[Publish build/\nto Vercel CDN]
+    A[Push to main] --&gt; B[ci.yml passes]
+    B --&gt; C[build-and-fetch.yml\nfetch scripts + npm run build]
+    C --&gt; D[prepareVercelOutput.sh\n.vercel/output/static/]
+    D --&gt; E[vercel --prod --prebuilt\nVercel CDN]
 </pre></div>
 <h2 id="running-locally">Running locally</h2>
 <p>Use these steps to preview generated artifacts before committing or deploying.</p>

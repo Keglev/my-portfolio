@@ -118,7 +118,7 @@
 </thead>
 <tbody><tr>
 <td><code>.github/workflows/ci.yml</code></td>
-<td>Push to <code>main</code> (src / scripts / config changes), PRs to <code>main</code></td>
+<td>Push to <code>main</code> (<code>src/**</code>, <code>scripts/**</code>, <code>config/**</code>, <code>jest.node.config.js</code>, <code>package.json</code>, <code>.github/workflows/ci.yml</code>), PRs to <code>main</code></td>
 <td>Lint, run full test suite, upload coverage artifact; dispatches <code>build-and-fetch.yml</code> on successful push</td>
 </tr>
 <tr>
@@ -134,7 +134,7 @@
 <tr>
 <td><code>.github/actions/node-setup/</code></td>
 <td>Composite action used by all three workflows</td>
-<td>Checks out the repo and sets up Node.js with dependency caching; keeps the Node version consistent</td>
+<td>Sets up Node.js 20, restores the npm cache, and runs <code>npm ci --legacy-peer-deps</code>; called after <code>actions/checkout@v4</code> in each workflow</td>
 </tr>
 </tbody></table>
 <h2 id="step-details">Step Details</h2>
@@ -156,6 +156,7 @@
 <li>Run <code>scripts/verifyProjects.js</code> — validate <code>public/projects.json</code> against schema</li>
 <li>Run <code>npm run build</code> — production CRA build</li>
 <li>Run <code>scripts/prepareVercelOutput.sh</code> — assemble <code>.vercel/output/static/</code></li>
+<li>Verify prebuilt static artifacts — confirms <code>projects.json</code> is present in <code>.vercel/output/static/</code> and reports its size; fails the workflow if missing</li>
 <li>Deploy with <code>vercel --prod --prebuilt</code></li>
 <li>Smoke-test the Vercel URL (HTTP 200 required before proceeding)</li>
 <li>Dispatch <code>docs-refresh.yml</code></li>

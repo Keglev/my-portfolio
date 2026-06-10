@@ -62,7 +62,7 @@ The four fetch scripts run sequentially and form a single logical stage:
 
 1. `fetchProjects.js` — calls the GitHub GraphQL API, downloads README files and project media, optionally calls DeepL for German summaries, and writes the raw `public/projects.json`.
 2. `applyFallbackDocScan.js` — scans READMEs for documentation links when the primary fetch yields none, filling gaps before normalization.
-3. `postprocessProjects.js` — normalizes all links in `projects.json` for offline use (converts raw GitHub URLs to blob URLs).
+3. `postprocessProjects.js` — upgrades raw `githubusercontent.com` URLs to GitHub Pages equivalents and splits compound technology tokens.
 4. `verifyProjects.js` — validates the final `projects.json` against the expected schema; the build fails if validation does not pass.
 
 ## Documentation and Coverage Flow

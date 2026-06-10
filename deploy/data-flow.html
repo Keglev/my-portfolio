@@ -140,7 +140,7 @@
 <ol>
 <li><code>fetchProjects.js</code> — calls the GitHub GraphQL API, downloads README files and project media, optionally calls DeepL for German summaries, and writes the raw <code>public/projects.json</code>.</li>
 <li><code>applyFallbackDocScan.js</code> — scans READMEs for documentation links when the primary fetch yields none, filling gaps before normalization.</li>
-<li><code>postprocessProjects.js</code> — normalizes all links in <code>projects.json</code> for offline use (converts raw GitHub URLs to blob URLs).</li>
+<li><code>postprocessProjects.js</code> — upgrades raw <code>githubusercontent.com</code> URLs to GitHub Pages equivalents and splits compound technology tokens.</li>
 <li><code>verifyProjects.js</code> — validates the final <code>projects.json</code> against the expected schema; the build fails if validation does not pass.</li>
 </ol>
 <h2 id="documentation-and-coverage-flow">Documentation and Coverage Flow</h2>
