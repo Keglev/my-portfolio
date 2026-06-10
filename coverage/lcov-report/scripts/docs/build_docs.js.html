@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/69</span>
+                <span class='fraction'>0/76</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/36</span>
+                <span class='fraction'>0/38</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/66</span>
+                <span class='fraction'>0/72</span>
             </div>
         
             
@@ -267,7 +267,15 @@
 <a name='L202'></a><a href='#L202'>202</a>
 <a name='L203'></a><a href='#L203'>203</a>
 <a name='L204'></a><a href='#L204'>204</a>
-<a name='L205'></a><a href='#L205'>205</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -330,6 +338,8 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -460,6 +470,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -479,10 +495,10 @@
  *   - Parses markdown with marked
  *   - Wraps ```mermaid fences in .mermaid-wrapper divs for client-side rendering
  *   - Builds a sidebar TOC from h2/h3 headings
- *   - Injects TITLE, TOC, CONTENT into docs/templates/page.html
+ *   - Injects TITLE, TOC, CONTENT into scripts/docs/templates/page.html
  *   - Writes docs/&lt;name&gt;.html next to the source .md file
  *
- * Additionally copies docs/templates/hub.html → docs/index.html
+ * Additionally copies scripts/docs/templates/hub.html → docs/index.html
  * as the visual landing page, replacing the old static index.html.
  *
  * Usage (from repo root):
@@ -529,11 +545,13 @@ const RendererCtor =
 // Paths
 // ---------------------------------------------------------------------------
 &nbsp;
-const REPO_ROOT = <span class="cstat-no" title="statement not covered" >path.resolve(__dirname, '..', '..');</span>
-const DOCS_DIR  = <span class="cstat-no" title="statement not covered" >path.join(REPO_ROOT, 'docs');</span>
-const TMPL_DIR  = <span class="cstat-no" title="statement not covered" >path.join(DOCS_DIR, 'templates');</span>
-const PAGE_TMPL = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'page.html');</span>
-const HUB_TMPL  = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'hub.html');</span>
+const REPO_ROOT   = <span class="cstat-no" title="statement not covered" >path.resolve(__dirname, '..', '..');</span>
+const DOCS_DIR    = <span class="cstat-no" title="statement not covered" >path.join(REPO_ROOT, 'docs');</span>
+const TMPL_DIR    = <span class="cstat-no" title="statement not covered" >path.join(__dirname, 'templates');</span>
+const PAGE_TMPL   = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'page.html');</span>
+const HUB_TMPL    = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'hub.html');</span>
+const STYLES_SRC  = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'styles.css');</span>
+const STYLES_OUT  = <span class="cstat-no" title="statement not covered" >path.join(DOCS_DIR, 'templates', 'styles.css');</span>
 &nbsp;
 // ---------------------------------------------------------------------------
 // Configure marked: inject id attributes into headings
@@ -665,6 +683,12 @@ function <span class="fstat-no" title="function not covered" >run(</span>) {
     }
   }
 &nbsp;
+  // Copy styles.css into docs/templates/ so generated HTML can resolve it
+  const stylesDir = <span class="cstat-no" title="statement not covered" >path.dirname(STYLES_OUT);</span>
+<span class="cstat-no" title="statement not covered" >  if (!fs.existsSync(stylesDir)) <span class="cstat-no" title="statement not covered" >fs.mkdirSync(stylesDir, { recursive: true });</span></span>
+<span class="cstat-no" title="statement not covered" >  fs.copyFileSync(STYLES_SRC, STYLES_OUT);</span>
+<span class="cstat-no" title="statement not covered" >  console.log('[build_docs]  styles.css → docs/templates/styles.css');</span>
+&nbsp;
   // Replace the old static index.html with the visual hub page
 <span class="cstat-no" title="statement not covered" >  if (fs.existsSync(HUB_TMPL)) {</span>
 <span class="cstat-no" title="statement not covered" >    fs.copyFileSync(HUB_TMPL, path.join(DOCS_DIR, 'index.html'));</span>
@@ -682,7 +706,7 @@ function <span class="fstat-no" title="function not covered" >run(</span>) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-06-09T12:50:15.031Z
+                at 2026-06-10T09:56:33.079Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
