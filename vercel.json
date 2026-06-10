@@ -2,5 +2,6 @@
   "github": {
     "productionBranch": "main"
   },
-  "buildCommand": "react-scripts build"
+  "buildCommand": "react-scripts build",
+  "ignoreCommand": "[ \"$VERCEL_GIT_COMMIT_REF\" = \"gh-pages\" ] && exit 0 || exit 1"
 }
