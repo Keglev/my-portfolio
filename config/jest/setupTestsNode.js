@@ -1,35 +1,25 @@
-// Centralized Jest setup for node/jsdom test runs
-// Provide a minimal, robust environment for tests that need React, fetch, and jest-dom.
+/** Jest setup for node/jsdom runs: polyfills React global and fetch, loads jest-dom matchers, suppresses known deprecation noise. */
 try {
-  // Provide React global for older tests that rely on an implicit global
   if (typeof global.React === 'undefined') global.React = require('react');
-} catch (e) { /* if react isn't available tests that need it will fail explicitly */ }
+} catch (e) {}
 
-// Provide fetch polyfill only when node-fetch is available
 try {
-  // prefer global.fetch if already provided by environment
   if (typeof global.fetch === 'undefined') {
-    // require node-fetch v2 style (commonjs)
     const nf = require('node-fetch');
     if (nf) global.fetch = nf;
   }
-} catch (e) {
-  // If node-fetch isn't available, tests that rely on fetch will need to mock it.
-}
+} catch (e) {}
 
-// Load jest-dom matchers to enable DOM assertions
 try {
   require('@testing-library/jest-dom');
-} catch (e) { /* optional */ }
+} catch (e) {}
 
-// Small console suppression for a known ReactDOMTestUtils deprecation noise
 try {
-  // Ensure the modern React act environment flag is set for node test runs
+  // Required for React 18's act() to work correctly in jsdom
   if (typeof global !== 'undefined') global.IS_REACT_ACT_ENVIRONMENT = true;
 } catch (e) {}
 
-// Keep a targeted suppression for the specific ReactDOMTestUtils.act deprecation
-// message so test logs stay clean.
+// Suppress ReactDOMTestUtils.act deprecation warning to keep test output clean
 try {
   const realConsoleError = console.error;
   console.error = (...args) => {

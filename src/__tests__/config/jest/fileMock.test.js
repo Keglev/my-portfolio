@@ -1,13 +1,10 @@
-/**
- * Tests for config/jest/fileMock.js
- * This mock is used by Jest to handle static file imports (images, media, etc.)
- */
+/** Tests for config/jest/fileMock.js — verifies the static asset stub exports the correct string value. */
 
 describe('fileMock', () => {
   let fileMock;
 
   beforeEach(() => {
-    // Clear the require cache to ensure fresh import
+    // Re-require each time to get a fresh module instance
     delete require.cache[require.resolve('../../../../config/jest/fileMock')];
     fileMock = require('../../../../config/jest/fileMock');
   });

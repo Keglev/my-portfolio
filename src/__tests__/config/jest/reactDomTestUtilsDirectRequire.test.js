@@ -1,4 +1,5 @@
 /* eslint-env jest */
+/** Tests for config/jest/react-dom-test-utils.js — exercises direct require with and without React available. */
 describe('react-dom-test-utils direct require', () => {
   const modPath = '../../../../config/jest/react-dom-test-utils';
 
@@ -8,17 +9,15 @@ describe('react-dom-test-utils direct require', () => {
   });
 
   it('exports act from React when React is present', () => {
-    // Require the real module (React present)
     const mod = require(modPath);
     expect(mod).toHaveProperty('act');
   });
 
   it('uses fallback act when requiring while React throws', () => {
-    // Replace the 'react' module with a factory that throws when required
     jest.resetModules();
+    // doMock + isolateModules ensures the mocked registry is used when loading the module
     jest.doMock('react', () => { throw new Error('module not found'); });
 
-    // Require the module under test in an isolated module registry so mocks apply
     jest.isolateModules(() => {
       const mod = require(modPath);
       expect(mod).toHaveProperty('act');

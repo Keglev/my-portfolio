@@ -1,17 +1,12 @@
-/**
- * Tests for config/jest/react-dom-test-utils.js - comprehensive coverage
- * Tests both the normal path (React available) and fallback path
- */
+/** Extended fallback and act-method tests for config/jest/react-dom-test-utils.js. */
 
-// Test the fallback path logic directly
 describe('react-dom-test-utils fallback logic', () => {
   it('should implement fallback noop function correctly', () => {
-    // The fallback function from line 9: function noop(cb) { return cb && cb(); }
+    // Replicates the catch-path noop inline to verify its short-circuit logic independently
     const noop = function noop(cb) {
       return cb && cb();
     };
-    
-    // Test 1: Normal callback execution
+
     let callCount = 0;
     noop(() => {
       callCount++;
@@ -23,13 +18,13 @@ describe('react-dom-test-utils fallback logic', () => {
     const noop = function noop(cb) {
       return cb && cb();
     };
-    
+
     const result1 = noop(() => 42);
     expect(result1).toBe(42);
-    
+
     const result2 = noop(() => 'test');
     expect(result2).toBe('test');
-    
+
     const result3 = noop(() => ({ key: 'value' }));
     expect(result3).toEqual({ key: 'value' });
   });
@@ -38,8 +33,7 @@ describe('react-dom-test-utils fallback logic', () => {
     const noop = function noop(cb) {
       return cb && cb();
     };
-    
-    // All falsy values should return falsy without calling
+
     expect(noop(null)).toBeFalsy();
     expect(noop(undefined)).toBeFalsy();
     expect(noop(false)).toBeFalsy();
@@ -48,26 +42,22 @@ describe('react-dom-test-utils fallback logic', () => {
   });
 
   it('should test the try-catch structure coverage', async () => {
-    // Load the module and verify it has the act method
     const module = require('../../../../config/jest/react-dom-test-utils');
-    
-    // Verify both try and catch paths export act
+
     expect(module).toBeDefined();
     expect(module.act).toBeDefined();
     expect(typeof module.act).toBe('function');
-    
-    // Verify act can be called (tests try path) with a meaningful callback
+
     let called = false;
     await module.act(async () => { called = true; });
     expect(called).toBe(true);
   });
 
   it('should execute fallback when React is unavailable (simulate require throwing)', async () => {
-    // Use Jest to mock 'react' so that requiring it throws, triggering the catch path
+    // jest.doMock forces the catch branch by making require('react') throw
     jest.resetModules();
     jest.doMock('react', () => { throw new Error('react not found'); }, { virtual: true });
 
-    // Re-require the module under test; it will hit the catch block and export the noop
     const moduleUnderTest = require('../../../../config/jest/react-dom-test-utils');
 
     expect(moduleUnderTest).toBeDefined();
@@ -78,12 +68,10 @@ describe('react-dom-test-utils fallback logic', () => {
     expect(executed).toBe(true);
     await expect(Promise.resolve(result)).resolves.toBe('ok');
 
-    // Clean up mocks
     jest.resetModules();
   });
 });
 
-// Test more complex scenarios
 describe('react-dom-test-utils act method', () => {
   let reactDomTestUtils;
 
@@ -98,12 +86,12 @@ describe('react-dom-test-utils act method', () => {
 
   it('should handle async callbacks', async () => {
     let executed = false;
-    
+
     const result = await reactDomTestUtils.act(async () => {
       executed = true;
       return 'async result';
     });
-    
+
     expect(executed).toBe(true);
     expect(result).toBe('async result');
   });
@@ -111,7 +99,7 @@ describe('react-dom-test-utils act method', () => {
   it('should be consistent on multiple calls', () => {
     const ref1 = reactDomTestUtils.act;
     const ref2 = reactDomTestUtils.act;
-    
+
     expect(ref1).toBe(ref2);
   });
 

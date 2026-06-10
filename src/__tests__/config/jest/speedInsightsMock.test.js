@@ -1,7 +1,4 @@
-/**
- * Tests for config/jest/speedInsightsMock.js
- * This mock stubs @vercel/speed-insights/react so Jest never loads the real Vercel SDK.
- */
+/** Tests for config/jest/speedInsightsMock.js — verifies SpeedInsights renders null and ignores all props. */
 
 describe('speedInsightsMock', () => {
   let speedInsightsMock;

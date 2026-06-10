@@ -1,13 +1,10 @@
-/**
- * Tests for config/jest/react-dom-test-utils.js
- * This shim redirects react-dom/test-utils imports to use React's act
- */
+/** Tests for config/jest/react-dom-test-utils.js — covers the React-available path and the noop fallback. */
 
 describe('react-dom-test-utils', () => {
   let reactDomTestUtils;
 
   beforeEach(() => {
-    // Clear the require cache to ensure fresh import
+    // Re-require each time to get a fresh module instance
     delete require.cache[require.resolve('../../../../config/jest/react-dom-test-utils')];
   });
 
@@ -47,19 +44,18 @@ describe('react-dom-test-utils', () => {
 
     it('should not have other properties', () => {
       expect(Object.keys(reactDomTestUtils)).toContain('act');
-      // Should only have the act property (or at most act and other React exports)
+      // Loose check: module may expose additional React exports alongside act
       expect(typeof reactDomTestUtils.act).toBe('function');
     });
   });
 
   describe('fallback behavior', () => {
     it('should have a working fallback noop function', () => {
-      // Test the fallback directly by checking the pattern
+      // Replicates the catch-path noop inline to verify its short-circuit logic independently
       const noop = function noop(cb) {
         return cb && cb();
       };
 
-      // Test that noop function works correctly
       let called = false;
       const result = noop(() => {
         called = true;
@@ -75,7 +71,6 @@ describe('react-dom-test-utils', () => {
         return cb && cb();
       };
 
-      // Should not throw when no callback provided
       expect(() => noop()).not.toThrow();
       expect(noop()).toBeUndefined();
     });

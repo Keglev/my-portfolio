@@ -1,13 +1,10 @@
-/**
- * Tests for config/jest/styleMock.js
- * This mock is used by Jest to handle CSS imports
- */
+/** Tests for config/jest/styleMock.js — verifies the CSS import stub is an empty, extensible plain object. */
 
 describe('styleMock', () => {
   let styleMock;
 
   beforeEach(() => {
-    // Clear the require cache to ensure fresh import
+    // Re-require each time to get a fresh module instance
     delete require.cache[require.resolve('../../../../config/jest/styleMock')];
     styleMock = require('../../../../config/jest/styleMock');
   });
