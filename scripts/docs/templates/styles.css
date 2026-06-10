@@ -376,8 +376,6 @@ body {
   border-radius: var(--radius);
   padding: 1.75rem 1.5rem;
   margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: center;
   overflow-x: auto;
 }
 
@@ -387,7 +385,14 @@ body {
   border: none;
   padding: 0;
   margin: 0;
-  max-width: 100%;
+  width: 100%;
+}
+
+.mermaid-wrapper svg {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto;
+  display: block;
 }
 
 /* -- site footer --------------------------------------------------- */
