@@ -9,8 +9,8 @@ A personal portfolio built with React (Create React App), styled-components, i18
 | Deployment | Vercel configuration, environment variables, and build-time fetch | [DEPLOY.md](DEPLOY.md) |
 | Tests | Test strategy, runners, coverage thresholds, and how to run locally | [TESTS.md](TESTS.md) |
 | Refresh | How to regenerate projects.json and trigger redeployment | [REFRESH.md](REFRESH.md) |
-| Architecture | Component structure and data flow diagrams | [architecture/](architecture/) |
-| Frontend | Component reference and i18n guide | [frontend/](frontend/) |
+| Architecture | Component structure and data flow diagrams | [architecture/index.md](architecture/index.md) |
+| Frontend | Component reference and i18n guide | [frontend/index.md](frontend/index.md) |
 | Scripts | Build-time script reference (fetchProjects, postprocess) | [scripts/](scripts/) |
 
 ## References
