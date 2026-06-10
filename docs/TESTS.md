@@ -33,14 +33,7 @@ Combined commands:
 
 ## Coverage
 
-No minimum coverage thresholds are currently enforced. Run `npm run test:node -- --coverage` to generate a local HTML report and view current percentages.
-
-| Metric | Threshold | How to check |
-|--------|-----------|--------------|
-| Statements | 85% | `npm run test:node -- --coverage` |
-| Branches   | 85% | `npm run test:node -- --coverage` |
-| Functions  | 75% | `npm run test:node -- --coverage` |
-| Lines      | 75% | `npm run test:node -- --coverage` |
+No minimum coverage thresholds are currently enforced. Run `npm run test:node -- --coverage` to generate a local HTML report and view current percentages. The report includes statements, branches, functions, and line coverage.
 
 Coverage is collected from `config/jest/**/*.js`, `src/**/*.{js,jsx}`, and `scripts/**/*.js`.
 

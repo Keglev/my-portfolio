@@ -122,43 +122,25 @@ If you want documentation updates to trigger a lighter pipeline than a full code
 
 ### Path-filtered workflows (single repo)
 
-Create two workflows in `.github/workflows/`:
+The repository already uses two workflows in `.github/workflows/`:
 
-- `build-and-fetch.yml` — triggers on code changes (`src/**`, `package.json`, `public/**`)
-- `docs-refresh.yml` — triggers on README or docs changes
+- `build-and-fetch.yml` — triggers on code changes (`src/**`, `scripts/**`, `config/**`, `jest.node.config.js`, `package.json`)
+- `docs-refresh.yml` — triggers on documentation changes (`docs/**`, `scripts/docs/**`)
 
-Example `docs-refresh.yml` trigger:
+The actual `docs-refresh.yml` trigger (applied to doc-HTML changes only; the full pipeline dispatch handles the rest):
 
 ```yaml
-name: Docs refresh
+name: Docs Refresh
 on:
   push:
     branches: [ main ]
     paths:
-      - '**/README.md'
-      - 'projects/**'
       - 'docs/**'
+      - 'scripts/docs/**'
   workflow_dispatch:
-
-jobs:
-  docs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install
-        run: npm ci --legacy-peer-deps
-      - name: Fetch and postprocess
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
-          DEEPL_SECRET: ${{ secrets.DEEPL_SECRET }}
-        run: |
-          node scripts/fetchProjects.js
-          node scripts/postprocessProjects.js
-          node scripts/applyFallbackDocScan.js
-      - name: Build and prepare prebuilt
-        run: npm run build
 ```
+
+`docs-refresh.yml` does not re-run the fetch pipeline. It applies HTML templates to existing Markdown files, pre-renders Mermaid diagrams, generates JSDoc, downloads the latest coverage artifact from CI, and publishes everything to `gh-pages`. To trigger a full data refresh (re-fetching `projects.json`), push a code change or manually dispatch `build-and-fetch.yml`.
 
 ### Separate docs repository
 

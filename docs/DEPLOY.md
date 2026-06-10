@@ -29,26 +29,26 @@ Set these in the Vercel dashboard under **Project → Settings → Environment V
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `GH_PROJECTS_TOKEN` | Yes | GitHub PAT. Use `public_repo` scope for public repos, `repo` for private |
-| `DEEPL_API_KEY` | No | If set, translates project summaries to German via DeepL |
+| `DEEPL_API_KEY` or `DEEPL_SECRET` | No | If either is set, translates project summaries to German via DeepL. Both variable names are accepted by the fetch script. |
 | `DEBUG_FETCH` | No | Set to `1` to emit extra debug logs. Disable in production |
 
 ## Deploying to Vercel
 
-Vercel runs `prebuild` automatically before `build`, so no manual intervention is required after the initial setup.
+Deployment runs through GitHub Actions using a prebuilt artifact. Vercel does not run the build itself — GitHub Actions builds the app and hands Vercel a ready-to-serve `.vercel/output/` directory.
 
-1. Connect the GitHub repository to a Vercel project (first-time setup only).
-2. Set `GH_PROJECTS_TOKEN` in the Vercel dashboard, targeting the Build step.
-3. Optionally set `DEEPL_API_KEY` in the same location.
-4. Push to `main` — Vercel detects the push and starts a new deployment.
-5. Vercel runs `npm run prebuild` (`scripts/fetchProjects.js`), then `npm run build` (`react-scripts build`).
-6. Vercel publishes the output from `build/` to the live URL.
+1. Connect the GitHub repository to a Vercel project and record `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` as GitHub Actions secrets (first-time setup only).
+2. Set `GH_PROJECTS_TOKEN` as a GitHub Actions secret.
+3. Optionally set `DEEPL_API_KEY` or `DEEPL_SECRET` as GitHub Actions secrets for German translation.
+4. Push to `main` — `ci.yml` detects the push, runs linting and tests, then dispatches `build-and-fetch.yml`.
+5. `build-and-fetch.yml` runs the fetch scripts, executes `npm run build`, and assembles the prebuilt artifact in `.vercel/output/static/` via `scripts/prepareVercelOutput.sh`.
+6. GitHub Actions deploys the prebuilt artifact to Vercel via `vercel --prod --prebuilt`.
 
 ```mermaid
 flowchart LR
-    A[Push to main] --> B[Vercel build trigger]
-    B --> C[npm run prebuild\nfetchProjects.js]
-    C --> D[npm run build\nreact-scripts build]
-    D --> E[Publish build/\nto Vercel CDN]
+    A[Push to main] --> B[ci.yml passes]
+    B --> C[build-and-fetch.yml\nfetch scripts + npm run build]
+    C --> D[prepareVercelOutput.sh\n.vercel/output/static/]
+    D --> E[vercel --prod --prebuilt\nVercel CDN]
 ```
 
 ## Running locally

@@ -59,10 +59,10 @@ flowchart TD
 
 | File | Trigger | Responsibility |
 |------|---------|---------------|
-| `.github/workflows/ci.yml` | Push to `main` (src / scripts / config changes), PRs to `main` | Lint, run full test suite, upload coverage artifact; dispatches `build-and-fetch.yml` on successful push |
+| `.github/workflows/ci.yml` | Push to `main` (`src/**`, `scripts/**`, `config/**`, `jest.node.config.js`, `package.json`, `.github/workflows/ci.yml`), PRs to `main` | Lint, run full test suite, upload coverage artifact; dispatches `build-and-fetch.yml` on successful push |
 | `.github/workflows/build-and-fetch.yml` | Dispatched by `ci.yml` after tests pass; manual `workflow_dispatch` | Fetch pinned GitHub repos + READMEs, post-process links, build React app, deploy prebuilt output to Vercel, dispatch `docs-refresh.yml` |
 | `.github/workflows/docs-refresh.yml` | Dispatched by `build-and-fetch.yml`; push to `docs/**` or `scripts/docs/**`; manual `workflow_dispatch` | Apply HTML templates to Markdown, pre-render Mermaid diagrams, generate JSDoc, download coverage artifact from latest CI run, publish `docs/` to `gh-pages` |
-| `.github/actions/node-setup/` | Composite action used by all three workflows | Checks out the repo and sets up Node.js with dependency caching; keeps the Node version consistent |
+| `.github/actions/node-setup/` | Composite action used by all three workflows | Sets up Node.js 20, restores the npm cache, and runs `npm ci --legacy-peer-deps`; called after `actions/checkout@v4` in each workflow |
 
 ## Step Details
 
@@ -84,9 +84,10 @@ flowchart TD
 5. Run `scripts/verifyProjects.js` — validate `public/projects.json` against schema
 6. Run `npm run build` — production CRA build
 7. Run `scripts/prepareVercelOutput.sh` — assemble `.vercel/output/static/`
-8. Deploy with `vercel --prod --prebuilt`
-9. Smoke-test the Vercel URL (HTTP 200 required before proceeding)
-10. Dispatch `docs-refresh.yml`
+8. Verify prebuilt static artifacts — confirms `projects.json` is present in `.vercel/output/static/` and reports its size; fails the workflow if missing
+9. Deploy with `vercel --prod --prebuilt`
+10. Smoke-test the Vercel URL (HTTP 200 required before proceeding)
+11. Dispatch `docs-refresh.yml`
 
 ### docs-refresh.yml
 
