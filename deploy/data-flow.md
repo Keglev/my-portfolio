@@ -46,6 +46,16 @@ flowchart TD
     ProjectsJSON -->|"copied into public/ before build"| CRABuild
     CRABuild -->|"prepareVercelOutput.sh"| VercelOutput
     VercelOutput -->|"vercel --prod --prebuilt"| VercelCDN
+
+    class GHGraphQL,DeepL,Secrets l1
+    class FetchScripts l2
+    class ProjectsJSON l3
+    class CRABuild,VercelOutput,VercelCDN l4
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 ```
 
 The four fetch scripts run sequentially and form a single logical stage:
@@ -75,6 +85,14 @@ flowchart TD
     BuildDocs -->|"docs/*.html"| GHPages
     SrcCode -->|"npm run docs:jsdoc"| JSDocOutput
     JSDocOutput -->|"published with docs/"| GHPages
+
+    class CIJob,MarkdownDocs,SrcCode l1
+    class CoverageArtifact,BuildDocs,JSDocOutput l2
+    class GHPages l3
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
 ```
 
 The `docs-refresh.yml` workflow is responsible for the entire right side of this diagram. It is triggered after a successful Vercel deployment (dispatched by `build-and-fetch.yml`) and also directly on pushes to `docs/**` or `scripts/docs/**`, which lets small documentation edits publish without running the full pipeline.

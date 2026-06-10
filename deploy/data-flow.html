@@ -114,6 +114,16 @@
     ProjectsJSON --&gt;|&quot;copied into public/ before build&quot;| CRABuild
     CRABuild --&gt;|&quot;prepareVercelOutput.sh&quot;| VercelOutput
     VercelOutput --&gt;|&quot;vercel --prod --prebuilt&quot;| VercelCDN
+
+    class GHGraphQL,DeepL,Secrets l1
+    class FetchScripts l2
+    class ProjectsJSON l3
+    class CRABuild,VercelOutput,VercelCDN l4
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 </pre></div>
 <p>The four fetch scripts run sequentially and form a single logical stage:</p>
 <ol>
@@ -139,6 +149,14 @@
     BuildDocs --&gt;|&quot;docs/*.html&quot;| GHPages
     SrcCode --&gt;|&quot;npm run docs:jsdoc&quot;| JSDocOutput
     JSDocOutput --&gt;|&quot;published with docs/&quot;| GHPages
+
+    class CIJob,MarkdownDocs,SrcCode l1
+    class CoverageArtifact,BuildDocs,JSDocOutput l2
+    class GHPages l3
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
 </pre></div>
 <p>The <code>docs-refresh.yml</code> workflow is responsible for the entire right side of this diagram. It is triggered after a successful Vercel deployment (dispatched by <code>build-and-fetch.yml</code>) and also directly on pushes to <code>docs/**</code> or <code>scripts/docs/**</code>, which lets small documentation edits publish without running the full pipeline.</p>
 <h2 id="artifact-summary">Artifact Summary</h2>
@@ -228,11 +246,32 @@
       theme: 'base',
       themeVariables: {
         fontFamily: 'Inter, sans-serif',
-        primaryColor: '#1A1D2E',
-        primaryTextColor: '#E2E8F0',
-        primaryBorderColor: '#2D3047',
-        lineColor: '#3B82F6',
         background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
       }
     });
   </script>

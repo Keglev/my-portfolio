@@ -35,7 +35,7 @@ Die folgende Tabelle ordnet jede Architekturebene der gewählten Technologie und
 Das folgende Diagramm zeigt den Laufzeitfluss von einer Browser-Anfrage durch die bereitgestellte Infrastruktur.
 
 ```mermaid
-graph LR
+graph TD
     Browser["Browser"]
     Vercel["Vercel CDN"]
     ReactApp["React App\n(CRA-Bundle)"]
@@ -44,12 +44,22 @@ graph LR
     GHPages["GitHub Pages\n(Docs + Coverage)"]
 
     Browser -->|"Seitenaufruf"| Vercel
+    Browser -->|"Docs-Anfrage"| GHPages
     Vercel -->|"liefert Bundle + Assets"| ReactApp
     ReactApp -->|"Sprachschlüssel-Abfrage"| i18next
     i18next -->|"übersetzte Strings"| ReactApp
     ReactApp -->|"fetch /projects.json"| ProjectsJSON
     ProjectsJSON -->|"Projektdaten"| ReactApp
-    Browser -->|"Docs-Anfrage"| GHPages
+
+    class Browser l1
+    class Vercel,GHPages l2
+    class ReactApp l3
+    class i18next,ProjectsJSON l4
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 ```
 
 ## Wichtige Designentscheidungen

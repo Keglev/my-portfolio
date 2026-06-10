@@ -121,7 +121,7 @@
 </tbody></table>
 <h2 id="komponentendiagramm">Komponentendiagramm</h2>
 <p>Das folgende Diagramm zeigt den Laufzeitfluss von einer Browser-Anfrage durch die bereitgestellte Infrastruktur.</p>
-<div class="mermaid-wrapper"><pre class="mermaid">graph LR
+<div class="mermaid-wrapper"><pre class="mermaid">graph TD
     Browser[&quot;Browser&quot;]
     Vercel[&quot;Vercel CDN&quot;]
     ReactApp[&quot;React App\n(CRA-Bundle)&quot;]
@@ -130,12 +130,22 @@
     GHPages[&quot;GitHub Pages\n(Docs + Coverage)&quot;]
 
     Browser --&gt;|&quot;Seitenaufruf&quot;| Vercel
+    Browser --&gt;|&quot;Docs-Anfrage&quot;| GHPages
     Vercel --&gt;|&quot;liefert Bundle + Assets&quot;| ReactApp
     ReactApp --&gt;|&quot;Sprachschlüssel-Abfrage&quot;| i18next
     i18next --&gt;|&quot;übersetzte Strings&quot;| ReactApp
     ReactApp --&gt;|&quot;fetch /projects.json&quot;| ProjectsJSON
     ProjectsJSON --&gt;|&quot;Projektdaten&quot;| ReactApp
-    Browser --&gt;|&quot;Docs-Anfrage&quot;| GHPages
+
+    class Browser l1
+    class Vercel,GHPages l2
+    class ReactApp l3
+    class i18next,ProjectsJSON l4
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 </pre></div>
 <h2 id="wichtige-designentscheidungen">Wichtige Designentscheidungen</h2>
 <p>Jede Entscheidung unten verweist auf das Dokument, in dem sie ausführlich erläutert wird.</p>
@@ -204,11 +214,32 @@
       theme: 'base',
       themeVariables: {
         fontFamily: 'Inter, sans-serif',
-        primaryColor: '#1A1D2E',
-        primaryTextColor: '#E2E8F0',
-        primaryBorderColor: '#2D3047',
-        lineColor: '#3B82F6',
         background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
       }
     });
   </script>

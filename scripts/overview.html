@@ -88,6 +88,16 @@
     FallbackScan --&gt; Postprocess
     Postprocess --&gt; Verify
     Verify --&gt; ProjectsJSON
+
+    class FetchProjects l1
+    class FetchGithub l2
+    class RawNodes,NodeProcessor,FallbackScan,Postprocess,Verify l3
+    class ProjectsJSON l4
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 </pre></div>
 <h2 id="root-level-scripts">Root-Level Scripts</h2>
 <p>These scripts are executed directly by <code>npm run</code> commands or GitHub Actions workflow steps.</p>
@@ -415,11 +425,32 @@
       theme: 'base',
       themeVariables: {
         fontFamily: 'Inter, sans-serif',
-        primaryColor: '#1A1D2E',
-        primaryTextColor: '#E2E8F0',
-        primaryBorderColor: '#2D3047',
-        lineColor: '#3B82F6',
         background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
       }
     });
   </script>

@@ -58,8 +58,22 @@
 <h2 id="component-hierarchy-diagram">Component Hierarchy Diagram</h2>
 <p>The diagram shows all significant rendering components. Infrastructure utilities (<code>SpeedInsights</code>, <code>GlobalStyles</code>) are omitted to keep the focus on UI structure.</p>
 <div class="mermaid-wrapper"><pre class="mermaid">graph TD
+    App[&quot;App&quot;]
+    Sidebar[&quot;Sidebar&quot;]
+    MainContent[&quot;main-content (div#scroll-container)&quot;]
+    NameTitle[&quot;NameTitle&quot;]
+    SidebarMenu[&quot;SidebarMenu&quot;]
+    SidebarSocial[&quot;SidebarSocial&quot;]
+    FooterMessage[&quot;FooterMessage&quot;]
+    About[&quot;About&quot;]
+    Education[&quot;Education&quot;]
+    Projects[&quot;Projects&quot;]
+    RepoDocs[&quot;RepoDocs&quot;]
+    Experience[&quot;Experience&quot;]
+    Legal[&quot;Legal&quot;]
+
     App --&gt; Sidebar
-    App --&gt; MainContent[&quot;main-content (div#scroll-container)&quot;]
+    App --&gt; MainContent
     Sidebar --&gt; NameTitle
     Sidebar --&gt; SidebarMenu
     Sidebar --&gt; SidebarSocial
@@ -70,6 +84,14 @@
     MainContent --&gt; RepoDocs
     MainContent --&gt; Experience
     MainContent --&gt; Legal
+
+    class App l1
+    class Sidebar,MainContent l2
+    class NameTitle,SidebarMenu,SidebarSocial,FooterMessage,About,Education,Projects,RepoDocs,Experience,Legal l3
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
 </pre></div>
 <h2 id="sidebar-group">Sidebar Group</h2>
 <p>The <code>Sidebar</code> component is fixed to the left of the viewport for the entire user session. It owns all navigation, identity, and utility controls.</p>
@@ -174,11 +196,32 @@
       theme: 'base',
       themeVariables: {
         fontFamily: 'Inter, sans-serif',
-        primaryColor: '#1A1D2E',
-        primaryTextColor: '#E2E8F0',
-        primaryBorderColor: '#2D3047',
-        lineColor: '#3B82F6',
         background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
       }
     });
   </script>

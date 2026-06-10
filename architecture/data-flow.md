@@ -41,6 +41,16 @@ flowchart TD
     i18next -->|"t() calls"| AllComponents
     ScrollEvent -->|"setActiveSection"| ActiveSectionState
     ActiveSectionState -->|"activeSection prop"| SidebarMenu
+
+    class ProjectsJSON,LocaleFiles,ScrollEvent l1
+    class useProjects,i18next,ActiveSectionState l2
+    class ProjectsState,AllComponents,SidebarMenu l3
+    class ProjectCard,ProjectSummary l4
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 ```
 
 ## State Management Approach

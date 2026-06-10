@@ -57,20 +57,44 @@
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="pipeline-diagram">Pipeline Diagram</h2>
-<div class="mermaid-wrapper"><pre class="mermaid">flowchart LR
-    Push[&quot;Push to main&quot;] --&gt; CI[&quot;CI\nci.yml&quot;]
-    CI --&gt; Lint[&quot;Lint&quot;]
-    Lint --&gt; Test[&quot;Test + Coverage&quot;]
-    Test --&gt; Artifact[&quot;Upload coverage\nartifact&quot;]
-    Artifact --&gt; BuildFetch[&quot;Build &amp; Fetch\nbuild-and-fetch.yml&quot;]
-    BuildFetch --&gt; FetchGH[&quot;Fetch GitHub\nprojects&quot;]
-    FetchGH --&gt; BuildReact[&quot;Build React app&quot;]
-    BuildReact --&gt; Vercel[&quot;Deploy to Vercel&quot;]
-    Vercel --&gt; DocsRefresh[&quot;Docs Refresh\ndocs-refresh.yml&quot;]
-    DocsRefresh --&gt; JSDoc[&quot;Generate JSDoc&quot;]
-    JSDoc --&gt; Templates[&quot;Apply doc templates&quot;]
-    Templates --&gt; Coverage[&quot;Download coverage\nartifact&quot;]
-    Coverage --&gt; GHPages[&quot;Publish to\nGitHub Pages&quot;]
+<div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
+    Push[&quot;Push to main&quot;]
+
+    subgraph CI[&quot;ci.yml&quot;]
+        Lint[&quot;Lint&quot;]
+        Test[&quot;Test + Coverage&quot;]
+        Artifact[&quot;Upload coverage artifact&quot;]
+        Lint --&gt; Test --&gt; Artifact
+    end
+
+    subgraph BF[&quot;build-and-fetch.yml&quot;]
+        FetchGH[&quot;Fetch GitHub projects&quot;]
+        BuildReact[&quot;Build React app&quot;]
+        VercelDeploy[&quot;Deploy to Vercel&quot;]
+        FetchGH --&gt; BuildReact --&gt; VercelDeploy
+    end
+
+    subgraph DR[&quot;docs-refresh.yml&quot;]
+        JSDoc[&quot;Generate JSDoc&quot;]
+        Templates[&quot;Apply doc templates&quot;]
+        Coverage[&quot;Download coverage artifact&quot;]
+        GHPages[&quot;Publish to GitHub Pages&quot;]
+        JSDoc --&gt; Templates --&gt; Coverage --&gt; GHPages
+    end
+
+    Push --&gt; Lint
+    Artifact --&gt;|&quot;workflow_dispatch&quot;| FetchGH
+    VercelDeploy --&gt;|&quot;workflow_dispatch&quot;| JSDoc
+
+    class Push l1
+    class Lint,Test,Artifact l2
+    class FetchGH,BuildReact,VercelDeploy l3
+    class JSDoc,Templates,Coverage,GHPages l4
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 </pre></div>
 <h2 id="workflow-files">Workflow Files</h2>
 <table>
@@ -169,11 +193,32 @@
       theme: 'base',
       themeVariables: {
         fontFamily: 'Inter, sans-serif',
-        primaryColor: '#1A1D2E',
-        primaryTextColor: '#E2E8F0',
-        primaryBorderColor: '#2D3047',
-        lineColor: '#3B82F6',
         background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
       }
     });
   </script>
