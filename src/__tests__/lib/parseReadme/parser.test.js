@@ -1,5 +1,8 @@
-// Verifies buildFallbackAst: synchronous heading/paragraph/list node parsing
-// from plain markdown text without requiring the remark dependency at runtime.
+/*
+ * Tests for parseReadme/parser.buildFallbackAst
+ * Covers: heading, image, html, list, and paragraph/link node parsing from plain
+ * markdown text without the remark dependency.
+ */
 const { buildFallbackAst } = require('../../../../scripts/lib/parseReadme/parser');
 
 describe('buildFallbackAst', () => {

@@ -1,5 +1,8 @@
-// Verifies runGraphQL: happy-path node extraction, auth failure branches, main query
-// error handling, response shape variants, variable inclusion, and DEBUG_FETCH logging.
+/*
+ * Tests for fetchGithub.runGraphQL
+ * Covers: happy-path node extraction, auth failure branches, query error handling,
+ * response shape variants, variable inclusion, and DEBUG_FETCH logging.
+ */
 jest.mock('axios', () => ({ post: jest.fn() }));
 
 const { runGraphQL } = require('../../../scripts/lib/fetchGithub');

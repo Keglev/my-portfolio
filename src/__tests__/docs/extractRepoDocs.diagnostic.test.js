@@ -1,5 +1,7 @@
-// Diagnostic test: verifies that extractRepoDocsDetailed strips embedded AST/JSON fragments
-// from description fields without discarding the surrounding readable text.
+/*
+ * Tests for extractRepoDocsDetailed in scripts/lib/docs.js
+ * Covers: AST/JSON fragment stripping from description fields.
+ */
 const { extractRepoDocsDetailed } = require('../../../scripts/lib/docs');
 
 describe('extractRepoDocsDetailed diagnostic', () => {

@@ -1,5 +1,8 @@
-// Verifies tryGithubIo: GitHub Pages reachability probing, X-Frame-Options DENY
-// rejection, non-200 response handling, and the injected-axios instance pattern.
+/*
+ * Tests for githubIoPreferer.tryGithubIo
+ * Covers: GitHub Pages reachability probing, X-Frame-Options DENY rejection,
+ * non-200 response handling, and the injected-axios instance pattern.
+ */
 const { tryGithubIo } = require('../../../../scripts/lib/normalize/githubIoPreferer');
  
 const makeAxios = (status, contentType, xFrameOptions = '') => ({

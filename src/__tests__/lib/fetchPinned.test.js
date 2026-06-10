@@ -1,5 +1,8 @@
-// Verifies fetchPinned: GraphQL query execution, Repository/Gist filtering,
-// meta.json file caching, no-TOKEN local-dev fallback, and error handling.
+/*
+ * Tests for fetchPinned.js
+ * Covers: GraphQL query execution, Repository/Gist filtering, meta.json caching,
+ * no-TOKEN local-dev fallback, error handling, and github.io link conversion.
+ */
 jest.mock('fs', () => ({
   readFileSync: jest.fn(),
   writeFileSync: jest.fn(),

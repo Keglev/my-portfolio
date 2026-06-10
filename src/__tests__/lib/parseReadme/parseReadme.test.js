@@ -1,5 +1,8 @@
-// Smoke-tests the parseReadme barrel against a real fixture file to confirm
-// the full extraction pipeline (parse → AST → technologies) works end-to-end.
+/*
+ * Smoke-tests for the parseReadme barrel
+ * Covers: end-to-end extraction pipeline (parse → AST → technologies) against
+ * a real fixture file.
+ */
 const parseReadme = require('../../../../scripts/lib/parseReadme');
 const fs = require('fs');
 const path = require('path');

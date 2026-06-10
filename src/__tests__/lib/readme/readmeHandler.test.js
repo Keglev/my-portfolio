@@ -1,5 +1,8 @@
-// Verifies processNodeReadme: README fetch via GraphQL then raw fallback, AST
-// parsing, media processing, and readmeHash-based change-detection skip logic.
+/*
+ * Tests for readme/readmeHandler.processNodeReadme
+ * Covers: README fetch via raw fallback, AST parsing, media processing,
+ * and readmeHash-based change-detection skip logic.
+ */
 jest.mock('fs');
 jest.mock('../../../../scripts/lib/readme/readmeFallback');
 jest.mock('../../../../scripts/lib/media');

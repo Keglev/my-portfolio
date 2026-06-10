@@ -1,6 +1,8 @@
-// Verifies extractRepoDocsDetailed: section extraction via a mocked parseReadme,
-// shouldTranslateUI gating, and all structural branches of the docs pipeline
-// when README AST nodes are provided or absent.
+/*
+ * Tests for extractRepoDocsDetailed in extractReadmeDocs.js
+ * Covers: section extraction via mocked parseReadme, shouldTranslateUI gating,
+ * and all structural branches when README AST nodes are provided or absent.
+ */
 jest.mock('../../../../scripts/lib/parseReadme', () => ({
   parseMarkdown: jest.fn(),
   findLinksInListItem: jest.fn(),

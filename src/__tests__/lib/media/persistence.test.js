@@ -1,5 +1,8 @@
-// Verifies persistMetaForNode: meta.json write on first run, readmeHash
-// comparison for change detection, and skip logic when the hash is unchanged.
+/*
+ * Tests for persistence.persistMetaForNode
+ * Covers: meta.json write on first run, readmeHash change detection,
+ * and skip logic when the hash is unchanged.
+ */
 const fs = require('fs');
 
 jest.mock('fs');

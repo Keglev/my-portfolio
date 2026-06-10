@@ -1,6 +1,8 @@
-// Verifies processNodeMedia: service injection via downloader/parseReadme stubs,
-// explicit project-image path preference over AST candidate, and badge/SVG
-// image-ref rewriting.
+/*
+ * Tests for mediaHelper.processNodeMedia
+ * Covers: service injection via downloader/parseReadme stubs, explicit project-image
+ * path preference over AST candidate, and badge/SVG image-ref rewriting.
+ */
 const { processNodeMedia } = require('../../../../scripts/lib/media/mediaHelper');
  
 const makeMediaDownloader = (overrides = {}) => ({

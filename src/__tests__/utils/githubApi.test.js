@@ -1,5 +1,7 @@
-// Verifies githubApi.fetchPinnedRepositories: success path, 401/generic error handling,
-// and the axios.default resolution branch used when axios ships an ESM wrapper.
+/*
+ * Tests for githubApi.fetchPinnedRepositories
+ * Covers: success path, 401 and generic error handling, and axios.default ESM resolution.
+ */
 jest.mock('axios', () => ({ post: jest.fn() }));
 
 describe('githubApi.fetchPinnedRepositories', () => {

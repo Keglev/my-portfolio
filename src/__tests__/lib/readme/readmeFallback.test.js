@@ -1,5 +1,8 @@
-// Verifies fetchReadmeFromRaw: successful README fetch via raw URL, 404
-// handling, and the axios.default branch resolved by getAxios().
+/*
+ * Tests for readme/readmeFallback.fetchReadmeFromRaw
+ * Covers: successful fetch, 404 handling, branch fallback, custom timeout,
+ * and the axios.default ESM resolution branch.
+ */
 jest.mock('axios', () => ({
   get: jest.fn(),
   default: { get: jest.fn() },

@@ -1,5 +1,8 @@
-// Verifies that App renders without crashing, mounts the correct top-level
-// sections (About, Projects, Education, Sidebar), and integrates with i18n.
+/*
+ * Tests for App.js
+ * Covers: top-level render, presence of all major sections (About, Projects,
+ * Education, Experience, RepoDocs, Legal), and i18n integration.
+ */
 /* eslint-disable testing-library/no-node-access */
 import App from '../App';
 import React from 'react';

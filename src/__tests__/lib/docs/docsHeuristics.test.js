@@ -1,6 +1,8 @@
-// Verifies docsHeuristics: backfillDocsFromText link/inline detection,
-// backfillFromAstHeading heading scanning, and postProcessDocsLinkCandidates
-// bad-link (issue/PR URL) filtering.
+/*
+ * Tests for docsHeuristics.js
+ * Covers: backfillDocsFromText link detection, backfillFromAstHeading heading scanning,
+ * and postProcessDocsLinkCandidates bad-link (issue/PR URL) filtering.
+ */
 const docsHeur = require('../../../../scripts/lib/docs/docsHeuristics');
 
 describe('docsHeuristics', () => {

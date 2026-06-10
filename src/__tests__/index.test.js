@@ -1,12 +1,11 @@
-// Verifies that index.js calls ReactDOM.createRoot with the root DOM node and
-// invokes render with the App component wrapped in React.StrictMode.
-//
-// Track createRoot/render calls via a plain array in the factory closure.
-// This avoids two CRA Jest incompatibilities:
-//   1. jest.fn(impl) in factories — the impl is silently ignored in CRA's runner
-//   2. const variables referenced inside factories — they are undefined after hoisting
-// Plain arrays and closures work identically in both jest.node.config.js and
-// react-scripts test.
+/*
+ * Tests for src/index.js entry point
+ * Covers: ReactDOM.createRoot call with #root element and render with the App tree.
+ *
+ * Note: createRoot/render calls are tracked via a plain array in the factory closure
+ * to avoid two CRA Jest incompatibilities: jest.fn(impl) in factories (silently
+ * ignored) and const variables in factories (undefined after hoisting).
+ */
 
 jest.mock('../App', () => function App() { return null; });
 

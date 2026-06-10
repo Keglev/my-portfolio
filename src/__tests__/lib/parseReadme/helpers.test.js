@@ -1,6 +1,8 @@
-// Verifies parseReadme AST helper functions: flattenNodeText, extractTextFromListItem,
-// extractLinkFromParagraphNode, extractLinkFromListNode, extractSectionWithRegex,
-// and findSectionText against inline AST node fixtures.
+/*
+ * Tests for parseReadme/helpers.js
+ * Covers: flattenNodeText, extractTextFromListItem, extractLinkFromParagraphNode,
+ * extractLinkFromListNode, extractSectionWithRegex, and findSectionText.
+ */
 const {
   flattenNodeText,
   extractTextFromListItem,

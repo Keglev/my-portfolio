@@ -1,5 +1,8 @@
-// Verifies extractDocsFromAst: docs section detection by heading, link
-// extraction, and legacy docsLink/docsTitle field backfill for older consumers.
+/*
+ * Tests for parseReadme/docs.extractDocsFromAst
+ * Covers: docs section detection by heading, link extraction, relative path
+ * conversion, legacy docsLink/docsTitle backfill, and error handling.
+ */
 const { extractDocsFromAst } = require('../../../../scripts/lib/parseReadme/docs');
 
 // ── AST helpers ──────────────────────────────────────────────────────────────

@@ -1,5 +1,8 @@
-// Verifies normalizeTitle and normalizeSummary: null/empty handling, whitespace
-// trimming, and surrogate-pair emoji stripping that prevents JSON issues.
+/*
+ * Tests for parseReadme/normalize.js
+ * Covers: normalizeTitle and normalizeSummary null/empty handling, whitespace
+ * trimming, and emoji stripping.
+ */
 const { normalizeTitle, normalizeSummary } = require('../../../../scripts/lib/parseReadme/normalize');
 
 describe('normalizeTitle', () => {

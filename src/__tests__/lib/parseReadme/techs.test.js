@@ -1,5 +1,8 @@
-// Verifies extractTechnologiesFromAst: bold-token primary strategy, legacy
-// list-item fallback, deduplication, and null/empty AST edge cases.
+/*
+ * Tests for parseReadme/techs.extractTechnologiesFromAst
+ * Covers: bold-token primary strategy, legacy list-item fallback, deduplication,
+ * and null/empty AST edge cases.
+ */
 const { extractTechnologiesFromAst } = require('../../../../scripts/lib/parseReadme/techs');
 
 describe('extractTechnologiesFromAst', () => {

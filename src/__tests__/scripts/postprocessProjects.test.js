@@ -1,6 +1,9 @@
-// Verifies postprocessProjects: normalizeTech token splitting and cleaning,
-// tryGithubIo GitHub Pages probing, docsLink/docsTitle backfill and bad-title
-// replacement, technology deduplication, and all branches in main().
+/*
+ * Tests for postprocessProjects.js
+ * Covers: normalizeTech token splitting and cleaning, tryGithubIo GitHub Pages probing,
+ * docsLink/docsTitle backfill, bad-title replacement, technology deduplication,
+ * and main() integration branches.
+ */
 jest.mock('fs');
 jest.mock('axios');
 

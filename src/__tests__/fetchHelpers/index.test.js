@@ -1,5 +1,8 @@
-// Verifies fetchProjects helpers: normalizeTitle, normalizeSummary, extractSectionWithRegex,
-// isBadgeLike, and their null/empty/edge-case behaviours.
+/*
+ * Tests for fetchProjects helpers
+ * Covers: normalizeTitle, normalizeSummary, extractSectionWithRegex, isBadgeLike,
+ * and null/empty/edge-case behaviours.
+ */
 const { normalizeTitle, normalizeSummary, extractSectionWithRegex, isBadgeLike } = require('../../../scripts/fetchProjects');
 
 describe('fetchProjects helpers', () => {

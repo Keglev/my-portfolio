@@ -1,5 +1,8 @@
-// Verifies toRawGithub URL rewriting (blob → raw.githubusercontent) and
-// normalizeRepoDocsLinks node-level application across all doc link fields.
+/*
+ * Tests for normalize.js
+ * Covers: toRawGithub URL rewriting (blob → raw.githubusercontent) and
+ * normalizeRepoDocsLinks application across all doc link fields.
+ */
 const { toRawGithub, normalizeRepoDocsLinks } = require('../../../../scripts/lib/normalize/normalize');
  
 describe('toRawGithub', () => {

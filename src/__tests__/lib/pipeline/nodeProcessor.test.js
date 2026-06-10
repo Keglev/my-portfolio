@@ -1,6 +1,8 @@
-// Verifies processNode: stage isolation (readme → docs → translation → persistence),
-// service injection via the injected downloader/translate stubs, and stage-error
-// propagation when a sub-stage throws.
+/*
+ * Tests for pipeline/nodeProcessor.processNode
+ * Covers: stage isolation (readme → docs → translation → persistence), service
+ * injection, DEBUG_FETCH logging, and stage-error propagation.
+ */
 jest.mock('fs', () => ({
   existsSync: jest.fn(() => false),
   readdirSync: jest.fn(() => []),

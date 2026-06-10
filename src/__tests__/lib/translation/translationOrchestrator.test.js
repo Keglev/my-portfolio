@@ -1,5 +1,8 @@
-// Verifies translateTitlesBatch: parallel title translation, parallel-index
-// mapping, null-text skipping, and per-item error handling.
+/*
+ * Tests for translationOrchestrator.translateTitlesBatch
+ * Covers: parallel title translation, null-text skipping, per-item error handling,
+ * and DEBUG_FETCH logging.
+ */
 const { translateTitlesBatch } = require('../../../../scripts/lib/translation/translationOrchestrator');
 
 const makeTranslate = (suffix = ' (de)') =>
