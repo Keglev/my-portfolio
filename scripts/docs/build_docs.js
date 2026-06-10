@@ -1,13 +1,15 @@
 #!/usr/bin/env node
 /**
- * build_docs.js — converts docs/*.md to docs/*.html
+ * build_docs.js — converts docs/**\/*.md to docs/**\/*.html
  *
- * For each .md file at the docs root:
+ * Recursively walks docs/, skipping jsdoc/ and coverage/:
  *   - Parses markdown with marked
  *   - Wraps ```mermaid fences in .mermaid-wrapper divs for client-side rendering
  *   - Builds a sidebar TOC from h2/h3 headings
  *   - Injects TITLE, TOC, CONTENT into scripts/docs/templates/page.html
- *   - Writes docs/<name>.html next to the source .md file
+ *   - Adjusts relative hrefs (CSS, hub link) for each subdirectory depth
+ *   - Writes <name>.html next to each source .md file
+ *   - docs/index.md is output as docs-index.html (hub.html owns index.html)
  *
  * Additionally copies scripts/docs/templates/hub.html → docs/index.html
  * as the visual landing page, replacing the old static index.html.
@@ -63,6 +65,9 @@ const PAGE_TMPL   = path.join(TMPL_DIR, 'page.html');
 const HUB_TMPL    = path.join(TMPL_DIR, 'hub.html');
 const STYLES_SRC  = path.join(TMPL_DIR, 'styles.css');
 const STYLES_OUT  = path.join(DOCS_DIR, 'templates', 'styles.css');
+
+// Subdirectories inside docs/ that contain generated output — never walk them
+const SKIP_DIRS = new Set(['jsdoc', 'coverage']);
 
 // ---------------------------------------------------------------------------
 // Configure marked: inject id attributes into headings
@@ -167,6 +172,59 @@ function convertMd(mdPath, template) {
 }
 
 // ---------------------------------------------------------------------------
+// Template adjuster — fixes relative hrefs for subdirectory pages
+// ---------------------------------------------------------------------------
+
+/**
+ * For pages one or more levels below docs/, rewrite the two relative hrefs
+ * in page.html so the stylesheet and the hub back-link resolve correctly.
+ * Depth 0 = docs/ root; depth 1 = docs/architecture/, etc.
+ */
+function adjustTemplate(template, depth) {
+  if (depth === 0) return template;
+  const prefix = '../'.repeat(depth);
+  return template
+    .replace('href="templates/styles.css"', `href="${prefix}templates/styles.css"`)
+    .replace('href="index.html"',           `href="${prefix}index.html"`);
+}
+
+// ---------------------------------------------------------------------------
+// Recursive directory walker
+// ---------------------------------------------------------------------------
+
+function processDir(dir, depth, template) {
+  const adjusted = adjustTemplate(template, depth);
+  let entries;
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch (err) {
+    console.error(`[build_docs] Cannot read ${dir}: ${err.message}`);
+    return;
+  }
+
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (!SKIP_DIRS.has(entry.name)) processDir(fullPath, depth + 1, template);
+    } else if (entry.name.endsWith('.md')) {
+      // docs/index.md must not overwrite index.html — hub.html owns that slot
+      const baseName = (depth === 0 && entry.name === 'index.md')
+        ? 'docs-index'
+        : path.basename(entry.name, '.md');
+      const out = path.join(dir, baseName + '.html');
+      try {
+        fs.writeFileSync(out, convertMd(fullPath, adjusted), 'utf8');
+        const relIn  = path.relative(DOCS_DIR, fullPath);
+        const relOut = path.relative(DOCS_DIR, out);
+        console.log(`[build_docs]  ${relIn} → ${relOut}`);
+      } catch (err) {
+        console.error(`[build_docs]  FAIL ${path.relative(DOCS_DIR, fullPath)}: ${err.message}`);
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
@@ -177,22 +235,8 @@ function run() {
   }
 
   const template = fs.readFileSync(PAGE_TMPL, 'utf8');
-  const mdFiles  = fs.readdirSync(DOCS_DIR).filter(f => f.endsWith('.md'));
 
-  if (!mdFiles.length) {
-    console.warn('[build_docs] No .md files found in', DOCS_DIR);
-  }
-
-  for (const file of mdFiles) {
-    const src = path.join(DOCS_DIR, file);
-    const out = path.join(DOCS_DIR, path.basename(file, '.md') + '.html');
-    try {
-      fs.writeFileSync(out, convertMd(src, template), 'utf8');
-      console.log(`[build_docs]  ${file} → ${path.basename(out)}`);
-    } catch (err) {
-      console.error(`[build_docs]  FAIL ${file}: ${err.message}`);
-    }
-  }
+  processDir(DOCS_DIR, 0, template);
 
   // Copy styles.css into docs/templates/ so generated HTML can resolve it
   const stylesDir = path.dirname(STYLES_OUT);

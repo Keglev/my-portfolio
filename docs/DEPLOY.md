@@ -1,5 +1,7 @@
 # Deployment
 
+[← Hub](https://keglev.github.io/my-portfolio/index.html) · [← Docs index](docs-index.html)
+
 This project deploys the React app to Vercel (live site). At build time, `scripts/fetchProjects.js` fetches GitHub data and writes static artifacts to `public/` before the React build starts. The generated API docs are published separately to GitHub Pages via the `gh-pages` branch.
 
 ## Contents

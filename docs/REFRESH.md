@@ -1,5 +1,7 @@
 # Refresh
 
+[← Hub](https://keglev.github.io/my-portfolio/index.html) · [← Docs index](docs-index.html)
+
 A "refresh" means regenerating `public/projects.json` and `public/projects_media/` from GitHub data and then redeploying the site. It does not change application code — only the static data artifacts that the React app reads at runtime.
 
 ## Contents
