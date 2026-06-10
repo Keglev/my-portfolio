@@ -1,11 +1,10 @@
-/* ============================================================
-   my-portfolio docs — shared stylesheet (dark mode)
-   ============================================================ */
+/* ─── Base: reset, custom properties, html/body defaults ────── */
 
-/* -- reset & custom properties ------------------------------------- */
+/* Intentional override: resets all browser default box-sizing, margin, and padding */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
+  /* ─── Color palette ──────────────────────────────────────── */
   --bg:            #0F1117;
   --bg-soft:       #1A1D2E;
   --bg-inset:      #141622;
@@ -18,10 +17,14 @@
   --accent-border: rgba(59, 130, 246, 0.35);
   --code-bg:       #141622;
   --radius:        6px;
-  --font-sans:     'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-  --font-mono:     'JetBrains Mono', "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  --shadow-sm:     0 1px 0 rgba(0, 0, 0, 0.4);
-  --shadow-md:     0 4px 12px rgba(0, 0, 0, 0.5);
+
+  /* ─── Typography stacks ──────────────────────────────────── */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-mono: 'JetBrains Mono', "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+
+  /* ─── Shadows ────────────────────────────────────────────── */
+  --shadow-sm: 0 1px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 html { font-size: 16px; scroll-behavior: smooth; }
@@ -34,10 +37,78 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* -- site header --------------------------------------------------- */
+/* ─── Layout: page structure, grids, hub shell ──────────────── */
+
+/* ─── Hub (landing page shell) ──────────────────────────────── */
+.hub {
+  max-width: 960px;
+  margin: 4rem auto;
+  padding: 0 1.5rem 4rem;
+}
+
+.hub__hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.hub__hero h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -.02em;
+  margin-bottom: 0.6rem;
+}
+
+.hub__hero p {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.hub__section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  margin-top: 2.5rem;
+}
+
+/* auto-fill keeps the grid responsive without a breakpoint; 260px is the card minimum width */
+.hub__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.875rem;
+}
+
+/* ─── Doc layout (sidebar + article two-column grid) ─────────── */
+.doc-layout {
+  display: grid;
+  /* 220px fixed sidebar; minmax(0,1fr) prevents the article from overflowing its track */
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 3rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* Collapse to single column on narrow viewports; hide the TOC sidebar */
+@media (max-width: 760px) {
+  .doc-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem 1rem 3rem;
+  }
+  .doc-toc { display: none; }
+}
+/* ─── Components: header, card, TOC sidebar, mermaid, footer ─── */
+
+/* ─── Site header ────────────────────────────────────────────── */
 .site-header {
   position: sticky;
   top: 0;
+  /* z-index scale: modal=300, overlay=200, navbar=100, default=1 */
   z-index: 100;
   background: var(--bg-soft);
   border-bottom: 1px solid var(--border);
@@ -75,6 +146,7 @@ body {
   white-space: nowrap;
 }
 
+/* Pushes nav links to the far right of the header bar */
 .site-header__spacer { flex: 1; }
 
 .site-header__nav {
@@ -101,49 +173,7 @@ body {
   background: var(--accent-bg);
 }
 
-/* -- hub (landing page) -------------------------------------------- */
-.hub {
-  max-width: 960px;
-  margin: 4rem auto;
-  padding: 0 1.5rem 4rem;
-}
-
-.hub__hero {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.hub__hero h1 {
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: -.02em;
-  margin-bottom: 0.6rem;
-}
-
-.hub__hero p {
-  font-size: 1rem;
-  color: var(--text-muted);
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-.hub__section-label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: var(--text-muted);
-  margin-bottom: 0.75rem;
-  margin-top: 2.5rem;
-}
-
-.hub__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 0.875rem;
-}
-
-/* -- card ---------------------------------------------------------- */
+/* ─── Card ───────────────────────────────────────────────────── */
 .card {
   display: flex;
   flex-direction: column;
@@ -158,9 +188,11 @@ body {
 }
 .card:hover {
   border-color: var(--accent-border);
+  /* Combined focus ring (3px) + drop-shadow for a layered depth effect */
   box-shadow: 0 0 0 3px var(--accent-bg), var(--shadow-md);
   transform: translateY(-1px);
 }
+/* Snap back to resting position on press */
 .card:active { transform: translateY(0); }
 
 .card__icon {
@@ -181,30 +213,13 @@ body {
   line-height: 1.45;
 }
 
-/* -- doc layout (sidebar + article) -------------------------------- */
-.doc-layout {
-  display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
-  gap: 3rem;
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
-}
-
-@media (max-width: 760px) {
-  .doc-layout {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 1.5rem 1rem 3rem;
-  }
-  .doc-toc { display: none; }
-}
-
-/* -- TOC sidebar --------------------------------------------------- */
+/* ─── TOC sidebar ────────────────────────────────────────────── */
 .doc-toc {
   position: sticky;
+  /* 56px header height + 16px breathing room */
   top: 72px;
   align-self: start;
+  /* Cap sidebar height to the viewport so it scrolls independently */
   max-height: calc(100vh - 80px);
   overflow-y: auto;
   padding-bottom: 2rem;
@@ -227,6 +242,7 @@ body {
 
 .doc-toc__list li {
   display: block;
+  /* Negative margin-left pulls the item's active indicator over the track border */
   border-left: 2px solid transparent;
   margin-left: -2px;
 }
@@ -246,12 +262,77 @@ body {
 .doc-toc__list a:hover { color: var(--text); }
 .doc-toc__list li.active > a { color: var(--accent); font-weight: 500; }
 
+/* h3 entries are indented one extra level relative to h2 */
 .doc-toc__list .toc-h3 > a {
   padding-left: 1.625rem;
   font-size: 0.75rem;
 }
 
-/* -- article (rendered markdown) ----------------------------------- */
+/* ─── Mermaid diagram wrapper ────────────────────────────────── */
+.mermaid-wrapper {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.75rem 1.5rem;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+/* Reset pre/div styles that marked injects inside the wrapper */
+.mermaid-wrapper pre.mermaid,
+.mermaid-wrapper div.mermaid {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+/* Force SVG to fill the wrapper without overflowing */
+.mermaid-wrapper svg {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto;
+  display: block;
+}
+
+/* Thicker edges and arrowheads for legibility on the dark background */
+.mermaid-wrapper svg .edgePath path,
+.mermaid-wrapper svg .flowchart-link {
+  stroke-width: 2px !important;
+}
+
+.mermaid-wrapper svg .messageLine0,
+.mermaid-wrapper svg .messageLine1 {
+  stroke-width: 2px !important;
+}
+
+.mermaid-wrapper svg .actor line,
+.mermaid-wrapper svg .actor rect {
+  stroke-width: 2px !important;
+}
+
+/* ─── Site footer ────────────────────────────────────────────── */
+.site-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+  padding: 1.25rem 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.site-footer a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+.site-footer a:hover { color: var(--accent-hover); }
+
+/* ─── Typography: article (rendered markdown content) ─────────── */
+
+/* min-width: 0 prevents the article from overflowing its grid track */
 .article { min-width: 0; }
 
 .article h1 {
@@ -279,6 +360,7 @@ body {
   margin-bottom: 0.5rem;
 }
 
+/* Intentional override: removes top margin when h1 is the first child */
 .article h1:first-child { margin-top: 0; }
 
 .article p { margin-bottom: 1rem; }
@@ -298,12 +380,13 @@ body {
 .article li > ul,
 .article li > ol { margin-top: 0.3rem; margin-bottom: 0.1rem; }
 
-/* tables */
+/* ─── Tables ─────────────────────────────────────────────────── */
 .article table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
   margin-bottom: 1.5rem;
+  /* display: block + overflow-x enables horizontal scroll on narrow viewports */
   display: block;
   overflow-x: auto;
 }
@@ -322,7 +405,7 @@ body {
 }
 .article tr:nth-child(even) td { background: var(--bg-soft); }
 
-/* inline code */
+/* ─── Inline code ────────────────────────────────────────────── */
 .article code {
   font-family: var(--font-mono);
   font-size: 0.85em;
@@ -333,7 +416,7 @@ body {
   color: var(--accent-hover);
 }
 
-/* code blocks */
+/* ─── Code blocks ────────────────────────────────────────────── */
 .article pre {
   background: var(--code-bg);
   border: 1px solid var(--border);
@@ -343,6 +426,7 @@ body {
   margin-bottom: 1.25rem;
   position: relative;
 }
+/* Reset inline-code styles inside a block — the block already provides its own background */
 .article pre code {
   background: none;
   border: none;
@@ -352,7 +436,7 @@ body {
   color: var(--text);
 }
 
-/* block quotes */
+/* ─── Block quotes ───────────────────────────────────────────── */
 .article blockquote {
   border-left: 4px solid var(--border);
   padding: 0.5rem 1.25rem;
@@ -361,6 +445,7 @@ body {
   background: var(--bg-soft);
   border-radius: 0 var(--radius) var(--radius) 0;
 }
+/* Intentional override: removes paragraph bottom margin inside blockquotes */
 .article blockquote p { margin-bottom: 0; }
 
 .article hr {
@@ -369,70 +454,15 @@ body {
   margin: 2rem 0;
 }
 
-/* -- mermaid diagrams ---------------------------------------------- */
-.mermaid-wrapper {
-  background: var(--bg-soft);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.75rem 1.5rem;
-  margin-bottom: 1.5rem;
-  overflow-x: auto;
-}
+/* ─── Utilities: responsive overrides ───────────────────────── */
 
-.mermaid-wrapper pre.mermaid,
-.mermaid-wrapper div.mermaid {
-  background: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-}
-
-.mermaid-wrapper svg {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: auto;
-  display: block;
-}
-
-/* Thicker edges and arrowheads */
-.mermaid-wrapper svg .edgePath path,
-.mermaid-wrapper svg .flowchart-link {
-  stroke-width: 2px !important;
-}
-
-.mermaid-wrapper svg .messageLine0,
-.mermaid-wrapper svg .messageLine1 {
-  stroke-width: 2px !important;
-}
-
-.mermaid-wrapper svg .actor line,
-.mermaid-wrapper svg .actor rect {
-  stroke-width: 2px !important;
-}
-
-/* -- site footer --------------------------------------------------- */
-.site-footer {
-  border-top: 1px solid var(--border);
-  margin-top: 2rem;
-  padding: 1.25rem 1.5rem;
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.site-footer a {
-  color: var(--text-muted);
-  text-decoration: none;
-}
-.site-footer a:hover { color: var(--accent-hover); }
-
-/* -- responsive ---------------------------------------------------- */
+/* ─── Narrow viewport (≤ 620px) ─────────────────────────────── */
 @media (max-width: 620px) {
+  /* Collapse hub card grid to a single column */
   .hub__grid { grid-template-columns: 1fr; }
   .hub__hero h1 { font-size: 1.5rem; }
+  /* Hide nav links to save horizontal space; content is still reachable via the hub */
   .site-header__nav { display: none; }
+  /* Stack footer items vertically when horizontal space is insufficient */
   .site-footer { flex-direction: column; }
 }

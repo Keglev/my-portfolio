@@ -1,20 +1,26 @@
+<!-- ─── Shared page shell: DOCTYPE, head, body open, site header ── -->
+<!-- Assembled into every generated page by build_docs.js             -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Replaced at build time: full page title set by each consumer (page vs. hub) -->
   <title>Portfolio Architecture Overview — my-portfolio docs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in build_docs.js) -->
   <link rel="stylesheet" href="../templates/styles.css" />
 </head>
 <body>
 
+  <!-- ─── Site header: breadcrumb + external nav ──────────────── -->
   <header class="site-header">
     <div class="site-header__inner">
       <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
       <span class="site-header__sep">/</span>
+      <!-- href adjusted at build time for subdirectory pages -->
       <a class="site-header__title" href="../index.html">my-portfolio</a>
       <span class="site-header__sep">/</span>
       <span class="site-header__section">Docs</span>
@@ -27,10 +33,14 @@
     </div>
   </header>
 
+
+  <!-- ─── Doc layout: sticky TOC sidebar + article ────────────── -->
   <div class="doc-layout">
 
     <aside class="doc-toc" aria-label="On this page">
       <p class="doc-toc__label">On this page</p>
+      <!-- Replaced at build time by buildToc() in build_docs.js;
+           empty string when the page has fewer than two headings -->
       <ul class="doc-toc__list">
   <li><a href="#table-of-contents">Table of Contents</a></li>
   <li><a href="#tech-stack">Tech Stack</a></li>
@@ -42,6 +52,7 @@
     </aside>
 
     <article class="article">
+      <!-- Replaced at build time by convertMd() in build_docs.js -->
       <h1 id="portfolio-architecture-overview">Portfolio Architecture Overview</h1>
 <p><a href="index.html">← Architecture index</a></p>
 <p>This personal portfolio is a single-page React application built with Create React App. It presents professional information — experience, education, projects, and legal notices — in both English and German. Project data is pre-generated at build time by fetching pinned GitHub repositories via the GitHub GraphQL API and stored as static JSON, eliminating any runtime API dependency. The built app is deployed to Vercel; generated documentation and test coverage reports are published separately to GitHub Pages.</p>
@@ -198,15 +209,7 @@
 
   </div>
 
-  <footer class="site-footer">
-    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
-    <span>
-      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
-      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
-    </span>
-  </footer>
-
-  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped -->
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
     mermaid.initialize({
@@ -244,7 +247,7 @@
     });
   </script>
 
-  <!-- TOC: highlight the active heading on scroll -->
+  <!-- TOC: highlight the active section heading as the user scrolls -->
   <script>
     (function () {
       const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
@@ -263,6 +266,7 @@
             if (hit) hit.closest('li').classList.add('active');
           });
         },
+        /* rootMargin pushes the activation zone toward the top quarter of the viewport */
         { rootMargin: '-10% 0% -80% 0%' }
       );
 
@@ -270,7 +274,7 @@
     })();
   </script>
 
-  <!-- Nav: mark the current page link as active -->
+  <!-- Nav: mark the current page link as active in the site header -->
   <script>
     (function () {
       const page = location.pathname.split('/').pop() || 'index.html';
@@ -278,6 +282,16 @@
       if (link) link.classList.add('active');
     })();
   </script>
+
+
+  <!-- ─── Site footer ──────────────────────────────────────────── -->
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
 
 </body>
 </html>

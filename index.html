@@ -1,20 +1,26 @@
+<!-- ─── Shared page shell: DOCTYPE, head, body open, site header ── -->
+<!-- Assembled into every generated page by build_docs.js             -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Replaced at build time: full page title set by each consumer (page vs. hub) -->
   <title>my-portfolio — Documentation</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in build_docs.js) -->
   <link rel="stylesheet" href="templates/styles.css" />
 </head>
 <body>
 
+  <!-- ─── Site header: breadcrumb + external nav ──────────────── -->
   <header class="site-header">
     <div class="site-header__inner">
       <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
       <span class="site-header__sep">/</span>
+      <!-- href adjusted at build time for subdirectory pages -->
       <a class="site-header__title" href="index.html">my-portfolio</a>
       <span class="site-header__sep">/</span>
       <span class="site-header__section">Docs</span>
@@ -27,6 +33,8 @@
     </div>
   </header>
 
+
+  <!-- ─── Hub: landing page — hero title + card grid ──────────── -->
   <main class="hub">
 
     <div class="hub__hero">
@@ -34,6 +42,7 @@
       <p>Personal portfolio built with React — documentation hub</p>
     </div>
 
+    <!-- ─── Generated references ─────────────────────────────── -->
     <p class="hub__section-label">Generated references</p>
     <div class="hub__grid">
 
@@ -43,6 +52,7 @@
         <span class="card__desc">Auto-generated JSDoc reference for components, hooks, and build scripts</span>
       </a>
 
+      <!-- Coverage report lives under the GitHub Pages domain, not a relative path -->
       <a class="card" href="https://keglev.github.io/my-portfolio/coverage/index.html">
         <span class="card__icon">🧪</span>
         <span class="card__title">Test Coverage</span>
@@ -51,6 +61,7 @@
 
     </div>
 
+    <!-- ─── Developer guides ──────────────────────────────────── -->
     <p class="hub__section-label">Developer guides</p>
     <div class="hub__grid">
 
@@ -74,6 +85,7 @@
 
     </div>
 
+    <!-- ─── Architecture & design ─────────────────────────────── -->
     <p class="hub__section-label">Architecture &amp; design</p>
     <div class="hub__grid">
 
@@ -117,6 +129,8 @@
 
   </main>
 
+
+  <!-- ─── Site footer ──────────────────────────────────────────── -->
   <footer class="site-footer">
     <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
     <span>
