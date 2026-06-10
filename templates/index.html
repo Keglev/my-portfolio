@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Templates Index — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#templates">Templates</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="templates-index">Templates Index</h1>
+<p><a href="../index.html">← Documentation root</a></p>
+<p>This directory contains reusable blank templates for the portfolio project. Copy the relevant file, rename it, and fill in the placeholders. Do not edit the originals in this directory — they are the canonical blank forms.</p>
+<h2 id="templates">Templates</h2>
+<table>
+<thead>
+<tr>
+<th>Template</th>
+<th>Purpose</th>
+<th>Where to place the filled copy</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="adr-template.html">adr-template.md</a></td>
+<td>Architecture Decision Record — captures context, decision, and consequences of a significant technical choice</td>
+<td><code>docs/adr-NNN.md</code></td>
+</tr>
+<tr>
+<td><a href="component-doc-template.html">component-doc-template.md</a></td>
+<td>Component reference page — purpose, props table, usage example, dependencies, and notes</td>
+<td><code>docs/frontend/&lt;component-name&gt;.md</code></td>
+</tr>
+<tr>
+<td><a href="test-plan-template.html">test-plan-template.md</a></td>
+<td>Test plan — scope, test case table, coverage targets, and run instructions for a module or feature</td>
+<td>Alongside the module under test, or in <code>docs/</code></td>
+</tr>
+</tbody></table>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="../index.html">Documentation root index</a></li>
+<li><a href="../frontend/components.html">frontend/components.md</a> — existing component catalog; check before creating a new component doc</li>
+<li><a href="../TESTS.html">TESTS.md</a> — project-wide test strategy; read before creating a new test plan</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

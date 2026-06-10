@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Flow — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#build-time-data-preparation">Build-Time Data Preparation</a></li>
+  <li><a href="#runtime-data-flow">Runtime Data Flow</a></li>
+  <li><a href="#state-management-approach">State Management Approach</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="data-flow">Data Flow</h1>
+<p><a href="index.html">← Architecture index</a></p>
+<p>This document explains how data moves through the portfolio at build time and at runtime, and describes the state management approach.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#build-time-data-preparation">Build-Time Data Preparation</a></li>
+<li><a href="#runtime-data-flow">Runtime Data Flow</a></li>
+<li><a href="#state-management-approach">State Management Approach</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="build-time-data-preparation">Build-Time Data Preparation</h2>
+<p>Before the React bundle is served, GitHub Actions runs <code>scripts/fetchProjects.js</code> to fetch pinned repository metadata via the GitHub GraphQL API. The output — <code>public/projects.json</code> and <code>public/projects_media/</code> — is bundled into the Vercel deployment as static assets. Every project card and documentation link in the live site originates from this pre-generation step; there are no runtime calls to the GitHub API.</p>
+<h2 id="runtime-data-flow">Runtime Data Flow</h2>
+<p>The diagram below shows the principal data flows during a user session. Arrows represent data movement; node labels identify the source or consumer.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
+    ProjectsJSON[&quot;public/projects.json\n(static asset on Vercel)&quot;]
+    useProjects[&quot;useProjects hook\n(fetch on mount)&quot;]
+    ProjectsState[&quot;projects state\n(useState in Projects)&quot;]
+    ProjectCard[&quot;ProjectCard\n(project prop)&quot;]
+    ProjectSummary[&quot;ProjectSummary\n(project prop)&quot;]
+    LocaleFiles[&quot;Locale JSON\n(en.json / de.json)&quot;]
+    i18next[&quot;i18next instance\n(initialised at startup)&quot;]
+    AllComponents[&quot;Translated components\n(useTranslation hook)&quot;]
+    ScrollEvent[&quot;window scroll event&quot;]
+    ActiveSectionState[&quot;activeSection state\n(useState in Sidebar)&quot;]
+    SidebarMenu[&quot;SidebarMenu\n(activeSection prop)&quot;]
+
+    ProjectsJSON --&gt;|&quot;HTTP GET at mount&quot;| useProjects
+    useProjects --&gt;|&quot;setProjects&quot;| ProjectsState
+    ProjectsState --&gt;|&quot;project prop&quot;| ProjectCard
+    ProjectsState --&gt;|&quot;project prop&quot;| ProjectSummary
+    LocaleFiles --&gt;|&quot;bundled at build&quot;| i18next
+    i18next --&gt;|&quot;t() calls&quot;| AllComponents
+    ScrollEvent --&gt;|&quot;setActiveSection&quot;| ActiveSectionState
+    ActiveSectionState --&gt;|&quot;activeSection prop&quot;| SidebarMenu
+</pre></div>
+<h2 id="state-management-approach">State Management Approach</h2>
+<p>The app uses no global state management library such as Redux, Zustand, or MobX. State is owned by the component that needs it and passed down as props where children require it. This was a deliberate choice: the portfolio has no cross-component shared mutable state that would justify the overhead of a centralised store.</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Owner</th>
+<th>Shared via</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Project list (fetch lifecycle)</td>
+<td><code>useProjects</code> hook → <code>Projects</code></td>
+<td>Props to <code>ProjectCard</code>, <code>ProjectSummary</code></td>
+</tr>
+<tr>
+<td>Active nav section</td>
+<td><code>Sidebar</code></td>
+<td>Prop to <code>SidebarMenu</code></td>
+</tr>
+<tr>
+<td>Current language</td>
+<td>i18next module instance</td>
+<td><code>react-i18next</code> context (not component state)</td>
+</tr>
+<tr>
+<td>Legal / nav scroll targets</td>
+<td>No state — DOM <code>getElementById</code> calls</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p>Language selection is the one exception to pure component state: i18next maintains the current locale in its own module-level instance. All components subscribe to locale changes via the <code>useTranslation()</code> hook, which internally consumes the React context provided automatically by <code>initReactI18next</code>.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://react.dev/reference/react/useState">React useState documentation</a></li>
+<li><a href="https://www.i18next.com/overview/api#changelanguage">i18next changeLanguage API</a></li>
+<li><a href="component-tree.html">component-tree.md</a> — where each stateful component sits in the hierarchy</li>
+<li><a href="i18n-flow.html">i18n-flow.md</a> — language-switch sequence in detail</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

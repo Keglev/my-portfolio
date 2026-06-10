@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Documentation Index — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      
+    </aside>
+
+    <article class="article">
+      <h1 id="documentation-index">Documentation Index</h1>
+<p>A personal portfolio built with React (Create React App), styled-components, i18next, and React Router — deployed on Vercel (live site) and GitHub Pages (generated API docs).</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Description</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>API Docs</td>
+<td>Auto-generated JSDoc reference from source</td>
+<td><a href="/my-portfolio/jsdoc/index.html">jsdoc/index.html</a></td>
+</tr>
+<tr>
+<td>Test Coverage</td>
+<td>Istanbul / Jest HTML coverage report</td>
+<td><a href="https://keglev.github.io/my-portfolio/coverage/index.html">coverage/index.html</a></td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>Vercel configuration, environment variables, and build-time fetch</td>
+<td><a href="DEPLOY.html">DEPLOY.md</a></td>
+</tr>
+<tr>
+<td>Deploy data flow</td>
+<td>How data moves through the build pipeline to Vercel and GitHub Pages</td>
+<td><a href="deploy/data-flow.html">deploy/data-flow.md</a></td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>Test strategy, runners, coverage thresholds, and how to run locally</td>
+<td><a href="TESTS.html">TESTS.md</a></td>
+</tr>
+<tr>
+<td>Refresh</td>
+<td>How to regenerate projects.json and trigger redeployment</td>
+<td><a href="REFRESH.html">REFRESH.md</a></td>
+</tr>
+<tr>
+<td>Architecture</td>
+<td>Component structure and data flow diagrams</td>
+<td><a href="architecture/index.html">architecture/index.md</a></td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>Component reference and i18n guide</td>
+<td><a href="frontend/index.html">frontend/index.md</a></td>
+</tr>
+<tr>
+<td>Scripts</td>
+<td>Build-time script reference (fetchProjects, postprocess)</td>
+<td><a href="scripts/index.html">scripts/index.md</a></td>
+</tr>
+<tr>
+<td>Templates</td>
+<td>Blank templates for ADRs, component docs, and test plans</td>
+<td><a href="templates/index.html">templates/index.md</a></td>
+</tr>
+</tbody></table>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://github.com/Keglev/my-portfolio">GitHub repository — Keglev/my-portfolio</a></li>
+<li><a href="https://keglev.github.io/my-portfolio/">Live docs — GitHub Pages</a></li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

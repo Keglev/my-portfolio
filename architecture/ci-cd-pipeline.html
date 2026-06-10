@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CI/CD Pipeline — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#pipeline-diagram">Pipeline Diagram</a></li>
+  <li><a href="#workflow-files">Workflow Files</a></li>
+  <li><a href="#step-details">Step Details</a></li>
+  <li class="toc-h3"><a href="#ciyml">ci.yml</a></li>
+  <li class="toc-h3"><a href="#build-and-fetchyml">build-and-fetch.yml</a></li>
+  <li class="toc-h3"><a href="#docs-refreshyml">docs-refresh.yml</a></li>
+  <li><a href="#concurrency-strategy">Concurrency Strategy</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="cicd-pipeline">CI/CD Pipeline</h1>
+<p><a href="index.html">← Architecture index</a></p>
+<p>The portfolio uses three GitHub Actions workflows that form a sequential pipeline: CI runs first, build-and-fetch deploys the app to Vercel, and docs-refresh publishes documentation to GitHub Pages. A shared concurrency group ensures no two pipeline runs overlap.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#pipeline-diagram">Pipeline Diagram</a></li>
+<li><a href="#workflow-files">Workflow Files</a></li>
+<li><a href="#step-details">Step Details</a></li>
+<li><a href="#concurrency-strategy">Concurrency Strategy</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="pipeline-diagram">Pipeline Diagram</h2>
+<div class="mermaid-wrapper"><pre class="mermaid">flowchart LR
+    Push[&quot;Push to main&quot;] --&gt; CI[&quot;CI\nci.yml&quot;]
+    CI --&gt; Lint[&quot;Lint&quot;]
+    Lint --&gt; Test[&quot;Test + Coverage&quot;]
+    Test --&gt; Artifact[&quot;Upload coverage\nartifact&quot;]
+    Artifact --&gt; BuildFetch[&quot;Build &amp; Fetch\nbuild-and-fetch.yml&quot;]
+    BuildFetch --&gt; FetchGH[&quot;Fetch GitHub\nprojects&quot;]
+    FetchGH --&gt; BuildReact[&quot;Build React app&quot;]
+    BuildReact --&gt; Vercel[&quot;Deploy to Vercel&quot;]
+    Vercel --&gt; DocsRefresh[&quot;Docs Refresh\ndocs-refresh.yml&quot;]
+    DocsRefresh --&gt; JSDoc[&quot;Generate JSDoc&quot;]
+    JSDoc --&gt; Templates[&quot;Apply doc templates&quot;]
+    Templates --&gt; Coverage[&quot;Download coverage\nartifact&quot;]
+    Coverage --&gt; GHPages[&quot;Publish to\nGitHub Pages&quot;]
+</pre></div>
+<h2 id="workflow-files">Workflow Files</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Trigger</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>.github/workflows/ci.yml</code></td>
+<td>Push to <code>main</code> (src / scripts / config changes), PRs to <code>main</code></td>
+<td>Lint, run full test suite, upload coverage artifact; dispatches <code>build-and-fetch.yml</code> on successful push</td>
+</tr>
+<tr>
+<td><code>.github/workflows/build-and-fetch.yml</code></td>
+<td>Dispatched by <code>ci.yml</code> after tests pass; manual <code>workflow_dispatch</code></td>
+<td>Fetch pinned GitHub repos + READMEs, post-process links, build React app, deploy prebuilt output to Vercel, dispatch <code>docs-refresh.yml</code></td>
+</tr>
+<tr>
+<td><code>.github/workflows/docs-refresh.yml</code></td>
+<td>Dispatched by <code>build-and-fetch.yml</code>; push to <code>docs/**</code> or <code>scripts/docs/**</code>; manual <code>workflow_dispatch</code></td>
+<td>Apply HTML templates to Markdown, pre-render Mermaid diagrams, generate JSDoc, download coverage artifact from latest CI run, publish <code>docs/</code> to <code>gh-pages</code></td>
+</tr>
+<tr>
+<td><code>.github/actions/node-setup/</code></td>
+<td>Composite action used by all three workflows</td>
+<td>Checks out the repo and sets up Node.js with dependency caching; keeps the Node version consistent</td>
+</tr>
+</tbody></table>
+<h2 id="step-details">Step Details</h2>
+<h3 id="ciyml">ci.yml</h3>
+<ol>
+<li>Checkout the repository</li>
+<li>Run the <code>node-setup</code> composite action</li>
+<li>Run <code>npm run lint</code> — fails fast before any test runs</li>
+<li>Run <code>npx jest --config=jest.node.config.js --runInBand --coverage</code> — serial execution prevents resource contention in CI</li>
+<li>Upload <code>coverage/</code> as the <code>coverage-report</code> artifact (7-day retention)</li>
+<li>Dispatch <code>build-and-fetch.yml</code> (push to <code>main</code> only; skipped on pull requests)</li>
+</ol>
+<h3 id="build-and-fetchyml">build-and-fetch.yml</h3>
+<ol>
+<li>Checkout and <code>node-setup</code></li>
+<li>Run <code>scripts/fetchProjects.js</code> — fetches GitHub GraphQL data, READMEs, and media files</li>
+<li>Run <code>scripts/applyFallbackDocScan.js</code> — fallback doc-link discovery before normalization</li>
+<li>Run <code>scripts/postprocessProjects.js</code> — normalize links for offline use</li>
+<li>Run <code>scripts/verifyProjects.js</code> — validate <code>public/projects.json</code> against schema</li>
+<li>Run <code>npm run build</code> — production CRA build</li>
+<li>Run <code>scripts/prepareVercelOutput.sh</code> — assemble <code>.vercel/output/static/</code></li>
+<li>Deploy with <code>vercel --prod --prebuilt</code></li>
+<li>Smoke-test the Vercel URL (HTTP 200 required before proceeding)</li>
+<li>Dispatch <code>docs-refresh.yml</code></li>
+</ol>
+<h3 id="docs-refreshyml">docs-refresh.yml</h3>
+<ol>
+<li>Checkout and <code>node-setup</code></li>
+<li>Apply doc templates via <code>scripts/docs/build_docs.js</code></li>
+<li>Pre-render Mermaid diagrams via <code>scripts/docs/build_mermaid.js</code>; falls back to CDN client-side rendering when <code>mmdc</code> is not installed</li>
+<li>Generate JSDoc API docs with <code>npm run docs:jsdoc</code></li>
+<li>Locate the latest successful <code>ci.yml</code> run via the <code>gh</code> CLI</li>
+<li>Download the <code>coverage-report</code> artifact from that run</li>
+<li>Copy <code>coverage/</code> into <code>docs/coverage/</code></li>
+<li>Deploy <code>docs/</code> to the <code>gh-pages</code> branch via <code>peaceiris/actions-gh-pages@v4</code></li>
+<li>Smoke-test <code>https://keglev.github.io/my-portfolio</code> (warning-only; workflow exits 0 regardless)</li>
+</ol>
+<h2 id="concurrency-strategy">Concurrency Strategy</h2>
+<p>All three workflows share the <code>portfolio-pipeline</code> concurrency group with <code>cancel-in-progress: false</code>. Runs queue rather than cancel, so a second push waits for the first full pipeline to complete.</p>
+<p>Docs-only pushes — changes to <code>docs/**</code> or <code>scripts/docs/**</code> — trigger <code>docs-refresh.yml</code> directly using the separate <code>docs-only</code> concurrency group. This keeps small documentation edits fast without queuing behind an active full-pipeline run.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://docs.github.com/en/actions">GitHub Actions documentation</a></li>
+<li><a href="https://vercel.com/docs/cli">Vercel CLI documentation</a></li>
+<li><a href="https://github.com/peaceiris/actions-gh-pages">peaceiris/actions-gh-pages</a></li>
+<li><a href="../DEPLOY.html">DEPLOY.md</a> — Vercel environment variables and deployment details</li>
+<li><a href="../TESTS.html">TESTS.md</a> — test runner configuration and coverage thresholds</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

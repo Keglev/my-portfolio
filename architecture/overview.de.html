@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfolio-Architektur – Übersicht — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#inhaltsverzeichnis">Inhaltsverzeichnis</a></li>
+  <li><a href="#tech-stack">Tech-Stack</a></li>
+  <li><a href="#komponentendiagramm">Komponentendiagramm</a></li>
+  <li><a href="#wichtige-designentscheidungen">Wichtige Designentscheidungen</a></li>
+  <li><a href="#nichtfunktionale-anforderungen">Nichtfunktionale Anforderungen</a></li>
+  <li><a href="#referenzen">Referenzen</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="portfolio-architektur-bersicht">Portfolio-Architektur – Übersicht</h1>
+<p><a href="index.html">← Architekturindex</a></p>
+<p>Dieses persönliche Portfolio ist eine Single-Page-Anwendung, erstellt mit React (Create React App). Es präsentiert berufliche Informationen — Erfahrung, Ausbildung, Projekte und rechtliche Hinweise — auf Englisch und Deutsch. Die Projektdaten werden zur Build-Zeit durch Abruf gepinnter GitHub-Repositories über die GitHub GraphQL API vorausgeneriert und als statisches JSON gespeichert, sodass keine Laufzeit-API-Abhängigkeit besteht. Die gebaute App wird auf Vercel bereitgestellt; generierte Dokumentation und Test-Coverage-Berichte werden separat auf GitHub Pages veröffentlicht.</p>
+<h2 id="inhaltsverzeichnis">Inhaltsverzeichnis</h2>
+<ul>
+<li><a href="#tech-stack">Tech-Stack</a></li>
+<li><a href="#komponentendiagramm">Komponentendiagramm</a></li>
+<li><a href="#wichtige-designentscheidungen">Wichtige Designentscheidungen</a></li>
+<li><a href="#nichtfunktionale-anforderungen">Nichtfunktionale Anforderungen</a></li>
+<li><a href="#referenzen">Referenzen</a></li>
+</ul>
+<h2 id="tech-stack">Tech-Stack</h2>
+<p>Die folgende Tabelle ordnet jede Architekturebene der gewählten Technologie und dem Grund für die Wahl zu.</p>
+<table>
+<thead>
+<tr>
+<th>Ebene</th>
+<th>Technologie</th>
+<th>Begründung</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UI-Framework</td>
+<td>React 18 (Create React App)</td>
+<td>Ausgereiftes Ökosystem; CRA bietet Zero-Config-Build-Tooling</td>
+</tr>
+<tr>
+<td>Styling</td>
+<td>styled-components 6</td>
+<td>Komponentenlokale Styles, keine Class-Name-Kollisionen</td>
+</tr>
+<tr>
+<td>Routing / Scroll</td>
+<td>react-router-dom 6, react-scroll</td>
+<td>Hash-basierte Navigation mit sanftem Scrollen; kein Server erforderlich</td>
+</tr>
+<tr>
+<td>Internationalisierung</td>
+<td>i18next 25 + react-i18next 14</td>
+<td>Industriestandard-i18n, React-Hooks-API, JSON-Namespace-Unterstützung</td>
+</tr>
+<tr>
+<td>HTTP-Client</td>
+<td>axios 1</td>
+<td>Konsistente API für GitHub-API-Aufrufe in allen Umgebungen</td>
+</tr>
+<tr>
+<td>Analytics</td>
+<td>Vercel Speed Insights</td>
+<td>Zero-Config Core Web Vitals-Monitoring; ohne Cookies</td>
+</tr>
+<tr>
+<td>Testing</td>
+<td>Jest + React Testing Library</td>
+<td>Komponentenbasierte Unit-Tests, am Nutzerverhalten ausgerichtet</td>
+</tr>
+<tr>
+<td>Linting</td>
+<td>ESLint (react-app-Konfiguration)</td>
+<td>Fehler vor CI abfangen; keine zusätzliche Konfiguration nötig</td>
+</tr>
+<tr>
+<td>CI/CD</td>
+<td>GitHub Actions (3 Workflows)</td>
+<td>Kostenlos für öffentliche Repos, native GitHub-Integration</td>
+</tr>
+<tr>
+<td>App-Hosting</td>
+<td>Vercel</td>
+<td>Automatisches HTTPS, Edge-CDN, Prebuilt-Artifact-Deployment</td>
+</tr>
+<tr>
+<td>Docs-Hosting</td>
+<td>GitHub Pages (gh-pages-Branch)</td>
+<td>Kostenloses statisches Hosting, zusammen mit dem Repository</td>
+</tr>
+</tbody></table>
+<h2 id="komponentendiagramm">Komponentendiagramm</h2>
+<p>Das folgende Diagramm zeigt den Laufzeitfluss von einer Browser-Anfrage durch die bereitgestellte Infrastruktur.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">graph LR
+    Browser[&quot;Browser&quot;]
+    Vercel[&quot;Vercel CDN&quot;]
+    ReactApp[&quot;React App\n(CRA-Bundle)&quot;]
+    i18next[&quot;i18next\n(Sprachzustand)&quot;]
+    ProjectsJSON[&quot;projects.json\n(statisches Asset)&quot;]
+    GHPages[&quot;GitHub Pages\n(Docs + Coverage)&quot;]
+
+    Browser --&gt;|&quot;Seitenaufruf&quot;| Vercel
+    Vercel --&gt;|&quot;liefert Bundle + Assets&quot;| ReactApp
+    ReactApp --&gt;|&quot;Sprachschlüssel-Abfrage&quot;| i18next
+    i18next --&gt;|&quot;übersetzte Strings&quot;| ReactApp
+    ReactApp --&gt;|&quot;fetch /projects.json&quot;| ProjectsJSON
+    ProjectsJSON --&gt;|&quot;Projektdaten&quot;| ReactApp
+    Browser --&gt;|&quot;Docs-Anfrage&quot;| GHPages
+</pre></div>
+<h2 id="wichtige-designentscheidungen">Wichtige Designentscheidungen</h2>
+<p>Jede Entscheidung unten verweist auf das Dokument, in dem sie ausführlich erläutert wird.</p>
+<ul>
+<li><strong>Statische Datenvorgenerierung</strong> — Projektdaten werden zur Build-Zeit von GitHub abgerufen, nicht zur Laufzeit, sodass keine API-Abhängigkeit im Live-Betrieb besteht. Siehe <a href="../REFRESH.html">REFRESH.md</a>.</li>
+<li><strong>Vercel Prebuilt Artifact</strong> — Die App wird in GitHub Actions gebaut und als <code>.vercel/output</code>-Artifact deployed, was vollständige Kontrolle über die Build-Umgebung gibt. Siehe <a href="../DEPLOY.html">DEPLOY.md</a>.</li>
+<li><strong>Zwei Test-Runner</strong> — Node-only-Skripte verwenden eine separate Jest-Konfiguration vom CRA-Runner, um Babel/CSS-Transform-Konflikte zu vermeiden. Siehe <a href="../TESTS.html">TESTS.md</a>.</li>
+<li><strong>Standard-Locale Deutsch</strong> — <code>lng: &#39;de&#39;</code> in i18next, da das Portfolio auf einen deutschsprachigen Jobmarkt ausgerichtet ist. Siehe <a href="i18n-flow.html">i18n-flow.md</a>.</li>
+<li><strong>Keine Client-seitige State-Bibliothek</strong> — Komponentenlokales <code>useState</code> ist ausreichend; es gibt keinen gemeinsamen veränderbaren Zustand zwischen unverbundenen Komponenten. Siehe <a href="data-flow.html">data-flow.md</a>.</li>
+</ul>
+<h2 id="nichtfunktionale-anforderungen">Nichtfunktionale Anforderungen</h2>
+<table>
+<thead>
+<tr>
+<th>Anforderung</th>
+<th>Ansatz</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Performance</td>
+<td>Statisches JSON vom Vercel CDN; keine Laufzeit-API-Aufrufe; Speed Insights überwacht Core Web Vitals</td>
+</tr>
+<tr>
+<td>Barrierefreiheit</td>
+<td>Semantische HTML-Section-Anker; <code>aria-label</code> auf Icon-only-Buttons; tastaturnavigierbare Sidebar</td>
+</tr>
+<tr>
+<td>Internationalisierung</td>
+<td>Vollständige EN/DE-Unterstützung via i18next; Standard-Locale Deutsch; alle sichtbaren Strings in Locale-JSON-Dateien</td>
+</tr>
+<tr>
+<td>Zuverlässigkeit</td>
+<td><code>ErrorBoundary</code> umschließt den gesamten React-Baum; CI blockiert Deployment bei Test- oder Lint-Fehlern</td>
+</tr>
+<tr>
+<td>Wartbarkeit</td>
+<td>Generierte Docs und Coverage werden bei jedem erfolgreichen Deployment auf GitHub Pages veröffentlicht</td>
+</tr>
+</tbody></table>
+<h2 id="referenzen">Referenzen</h2>
+<ul>
+<li><a href="https://react.dev">React-Dokumentation</a></li>
+<li><a href="https://www.i18next.com">i18next-Dokumentation</a></li>
+<li><a href="https://vercel.com/docs">Vercel-Dokumentation</a></li>
+<li><a href="https://create-react-app.dev">Create React App Dokumentation</a></li>
+<li><a href="https://docs.github.com/en/actions">GitHub Actions Dokumentation</a></li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

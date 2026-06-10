@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Internationalisation Flow — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#language-switch-sequence">Language Switch Sequence</a></li>
+  <li><a href="#namespaces-and-keys">Namespaces and Keys</a></li>
+  <li><a href="#configuration-details">Configuration Details</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="internationalisation-flow">Internationalisation Flow</h1>
+<p><a href="index.html">← Architecture index</a></p>
+<p>This document describes how the portfolio handles language switching between English and German. The implementation uses i18next and react-i18next with a single <code>translation</code> namespace and JSON locale files bundled into the JavaScript build at compile time.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#language-switch-sequence">Language Switch Sequence</a></li>
+<li><a href="#namespaces-and-keys">Namespaces and Keys</a></li>
+<li><a href="#configuration-details">Configuration Details</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="language-switch-sequence">Language Switch Sequence</h2>
+<p>The sequence below traces what happens from the moment the user clicks a language button to the point where the updated UI renders.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">sequenceDiagram
+    participant User
+    participant LanguageButtons as LanguageButtons (Sidebar)
+    participant i18next
+    participant LocaleJSON as Locale JSON (en / de)
+    participant Components as Translated Components
+
+    User-&gt;&gt;LanguageButtons: clicks EN or DE button
+    LanguageButtons-&gt;&gt;i18next: i18n.changeLanguage(&#39;en&#39; | &#39;de&#39;)
+    i18next-&gt;&gt;LocaleJSON: resolves translation namespace
+    LocaleJSON--&gt;&gt;i18next: returns key/value map
+    i18next--&gt;&gt;Components: triggers re-render via react-i18next context
+    Components--&gt;&gt;User: updated UI in selected language
+</pre></div>
+<p>Because both locale files are imported directly in <code>src/i18n.js</code> and bundled at build time, there is no network request on language switch. The transition is synchronous.</p>
+<h2 id="namespaces-and-keys">Namespaces and Keys</h2>
+<p>The app uses a single i18next namespace — <code>translation</code>, the default — containing all translatable strings. The table below lists the top-level key groups, the UI area they cover, and the files that define them.</p>
+<table>
+<thead>
+<tr>
+<th>Key group</th>
+<th>UI area covered</th>
+<th>Source files</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>name</code>, <code>title</code></td>
+<td>Name and job title in the sidebar</td>
+<td>src/locales/en.json, src/locales/de.json</td>
+</tr>
+<tr>
+<td><code>about</code>, <code>aboutSection</code></td>
+<td>Section heading and bio paragraphs</td>
+<td>src/locales/en.json, src/locales/de.json</td>
+</tr>
+<tr>
+<td><code>education</code>, <code>educationSection</code></td>
+<td>Education section heading and degree entries</td>
+<td>src/locales/en.json, src/locales/de.json</td>
+</tr>
+<tr>
+<td><code>projects</code>, <code>repoDocs</code></td>
+<td>Projects and documentation section headings</td>
+<td>src/locales/en.json, src/locales/de.json</td>
+</tr>
+<tr>
+<td><code>experience</code>, <code>experienceSection</code></td>
+<td>Experience section heading and job entries</td>
+<td>src/locales/en.json, src/locales/de.json</td>
+</tr>
+<tr>
+<td><code>legal</code></td>
+<td>Impressum and Datenschutz headings and HTML content</td>
+<td>src/locales/en.json, src/locales/de.json</td>
+</tr>
+<tr>
+<td><code>language</code></td>
+<td>EN / DE toggle button labels</td>
+<td>src/locales/en.json, src/locales/de.json</td>
+</tr>
+<tr>
+<td><code>footerMessage</code>, <code>impressumLink</code>, <code>datenschutzLink</code></td>
+<td>Sidebar footer text and legal navigation buttons</td>
+<td>src/locales/en.json, src/locales/de.json</td>
+</tr>
+<tr>
+<td><code>viewOnGithub</code>, <code>viewDocs</code>, <code>urlLabel</code>, <code>noRepoDocs</code></td>
+<td>Project card action labels</td>
+<td>src/locales/en.json, src/locales/de.json</td>
+</tr>
+</tbody></table>
+<h2 id="configuration-details">Configuration Details</h2>
+<p>The i18next instance is configured in <code>src/i18n.js</code> and imported by <code>src/index.js</code> before any translated component mounts. All components access translations via the <code>useTranslation()</code> hook: <code>const { t } = useTranslation()</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lng</code></td>
+<td><code>&#39;de&#39;</code></td>
+<td>Portfolio targets a German-speaking job market; German is the default experience</td>
+</tr>
+<tr>
+<td><code>fallbackLng</code></td>
+<td><code>&#39;en&#39;</code></td>
+<td>Falls back to English if a key is missing from the German locale file</td>
+</tr>
+<tr>
+<td><code>interpolation.escapeValue</code></td>
+<td><code>false</code></td>
+<td>React already escapes interpolated values; disabling prevents double-escaping</td>
+</tr>
+<tr>
+<td><code>compatibilityJSON</code></td>
+<td><code>&#39;v3&#39;</code></td>
+<td>Matches the plural-key format used in the locale JSON files</td>
+</tr>
+<tr>
+<td>Namespace</td>
+<td><code>translation</code> (default)</td>
+<td>A single namespace is sufficient; splitting would add configuration overhead without benefit</td>
+</tr>
+</tbody></table>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://www.i18next.com">i18next documentation</a></li>
+<li><a href="https://react.i18next.com">react-i18next documentation</a></li>
+<li><a href="https://www.i18next.com/overview/configuration-options">i18next configuration options</a></li>
+<li><a href="component-tree.html">component-tree.md</a> — where the language buttons live in the component hierarchy</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

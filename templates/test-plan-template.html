@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Plan: [Module or feature name] — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#scope">Scope</a></li>
+  <li><a href="#test-cases">Test Cases</a></li>
+  <li><a href="#coverage-targets">Coverage Targets</a></li>
+  <li><a href="#how-to-run">How to Run</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="test-plan-module-or-feature-name">Test Plan: [Module or feature name]</h1>
+<p><a href="index.html">← Templates index</a></p>
+<p>One test plan per module or feature. Copy this file, name it after the module being tested (e.g. <code>test-plan-useProjects.md</code>), and complete each section before writing the tests. See <a href="../TESTS.html">TESTS.md</a> for the project-wide testing strategy and runner configuration.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#scope">Scope</a></li>
+<li><a href="#test-cases">Test Cases</a></li>
+<li><a href="#coverage-targets">Coverage Targets</a></li>
+<li><a href="#how-to-run">How to Run</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="scope">Scope</h2>
+<p>What is covered by these tests and what is explicitly excluded.</p>
+<p>Describe the file paths or features under test, the boundaries (e.g. &quot;unit tests only — no network calls&quot;), and the reason for any exclusions (e.g. &quot;DOM rendering is excluded; covered by the CRA test suite&quot;).</p>
+<h2 id="test-cases">Test Cases</h2>
+<p>Add one row per scenario. Use ordered IDs so cases can be referenced unambiguously in code reviews and bug reports.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Description</th>
+<th>Type</th>
+<th>Expected result</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TC-01</td>
+<td>Describe the first scenario</td>
+<td>unit / integration / e2e</td>
+<td>What should happen</td>
+</tr>
+<tr>
+<td>TC-02</td>
+<td>Describe the second scenario</td>
+<td>unit / integration / e2e</td>
+<td>What should happen</td>
+</tr>
+</tbody></table>
+<h2 id="coverage-targets">Coverage Targets</h2>
+<p>These are the minimum thresholds for this module. Adjust them downward only if the module is thin glue code with no branching logic, and document the reason.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Statements</td>
+<td>85%</td>
+</tr>
+<tr>
+<td>Branches</td>
+<td>85%</td>
+</tr>
+<tr>
+<td>Functions</td>
+<td>85%</td>
+</tr>
+<tr>
+<td>Lines</td>
+<td>85%</td>
+</tr>
+</tbody></table>
+<h2 id="how-to-run">How to Run</h2>
+<p>Ordered steps to execute these tests locally.</p>
+<ol>
+<li>Install dependencies: <code>npm install</code></li>
+<li>Run the Node-only test suite: <code>npm run test:node</code></li>
+<li>Run the CRA test suite: <code>npm run test:cra</code></li>
+<li>Open the HTML coverage report: <code>coverage/index.html</code></li>
+</ol>
+<p>Replace steps 2–3 with the specific runner and flags for the module under test if it differs from the project defaults.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="../TESTS.html">TESTS.md</a> — project-wide testing strategy, runner configuration, and coverage thresholds</li>
+<li><a href="../architecture/ci-cd-pipeline.html">architecture/ci-cd-pipeline.md</a> — how coverage artifacts are collected and published in CI</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scripts Overview — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#top-level-pipeline-flow">Top-Level Pipeline Flow</a></li>
+  <li><a href="#root-level-scripts">Root-Level Scripts</a></li>
+  <li><a href="#documentation-generation-scripts">Documentation Generation Scripts</a></li>
+  <li><a href="#processing-pipeline">Processing Pipeline</a></li>
+  <li><a href="#github-api">GitHub API</a></li>
+  <li><a href="#readme-processing">README Processing</a></li>
+  <li><a href="#documentation-extraction">Documentation Extraction</a></li>
+  <li><a href="#media-handling">Media Handling</a></li>
+  <li><a href="#translation">Translation</a></li>
+  <li><a href="#output-and-normalization">Output and Normalization</a></li>
+  <li><a href="#readme-fetching-and-summary-extraction">README Fetching and Summary Extraction</a></li>
+  <li><a href="#utilities">Utilities</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="scripts-overview">Scripts Overview</h1>
+<p><a href="index.html">← Scripts index</a></p>
+<p>The <code>scripts/</code> directory contains the build-time data pipeline that populates the portfolio with live project data. Seven root-level scripts act as CLI entry points or validation tools; all heavy logic lives in <code>scripts/lib/</code> and its subdirectories. The <code>scripts/docs/</code> subdirectory holds the documentation build tooling used by the <code>docs-refresh</code> workflow.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#top-level-pipeline-flow">Top-Level Pipeline Flow</a></li>
+<li><a href="#root-level-scripts">Root-Level Scripts</a></li>
+<li><a href="#documentation-generation-scripts">Documentation Generation Scripts</a></li>
+<li><a href="#processing-pipeline">Processing Pipeline</a></li>
+<li><a href="#github-api">GitHub API</a></li>
+<li><a href="#readme-processing">README Processing</a></li>
+<li><a href="#documentation-extraction">Documentation Extraction</a></li>
+<li><a href="#media-handling">Media Handling</a></li>
+<li><a href="#translation">Translation</a></li>
+<li><a href="#output-and-normalization">Output and Normalization</a></li>
+<li><a href="#readme-fetching-and-summary-extraction">README Fetching and Summary Extraction</a></li>
+<li><a href="#utilities">Utilities</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="top-level-pipeline-flow">Top-Level Pipeline Flow</h2>
+<p>The diagram below shows how the root-level scripts orchestrate the full data pipeline. <code>nodeProcessor.js</code> is shown as a single stage; its internal three-stage design is described under <a href="#processing-pipeline">Processing Pipeline</a>.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
+    FetchProjects[&quot;fetchProjects.js\n(CLI entry point)&quot;]
+    FetchGithub[&quot;lib/fetchGithub.js\n(GitHub GraphQL API)&quot;]
+    RawNodes[&quot;GitHub repo nodes\n(name, url, description)&quot;]
+    NodeProcessor[&quot;lib/pipeline/nodeProcessor.js\n(per-repo enrichment pipeline)&quot;]
+    FallbackScan[&quot;applyFallbackDocScan.js\n(regex doc-link discovery)&quot;]
+    Postprocess[&quot;postprocessProjects.js\n(URL normalization)&quot;]
+    Verify[&quot;verifyProjects.js\n(schema validation)&quot;]
+    ProjectsJSON[&quot;public/projects.json\n(final static output)&quot;]
+
+    FetchProjects --&gt;|&quot;token + GraphQL query&quot;| FetchGithub
+    FetchGithub --&gt;|&quot;pinnedItems nodes&quot;| RawNodes
+    RawNodes --&gt;|&quot;one node at a time&quot;| NodeProcessor
+    NodeProcessor --&gt;|&quot;enriched nodes array&quot;| FallbackScan
+    FallbackScan --&gt; Postprocess
+    Postprocess --&gt; Verify
+    Verify --&gt; ProjectsJSON
+</pre></div>
+<h2 id="root-level-scripts">Root-Level Scripts</h2>
+<p>These scripts are executed directly by <code>npm run</code> commands or GitHub Actions workflow steps.</p>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Purpose</th>
+<th>Key inputs</th>
+<th>Key outputs</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>fetchProjects.js</code></td>
+<td>CLI entry point; orchestrates the entire project-fetch pipeline</td>
+<td><code>GH_PROJECTS_TOKEN</code>, <code>DEEPL_API_KEY</code> env vars</td>
+<td><code>public/projects.json</code>, <code>public/projects_media/</code></td>
+</tr>
+<tr>
+<td><code>postprocessProjects.js</code></td>
+<td>Upgrades raw <code>githubusercontent.com</code> URLs to GitHub Pages equivalents; splits compound technology tokens</td>
+<td><code>public/projects.json</code></td>
+<td><code>public/projects.json</code> (updated in place)</td>
+</tr>
+<tr>
+<td><code>applyFallbackDocScan.js</code></td>
+<td>Regex scan of README text for doc-like links on nodes that have no structured <code>repoDocs</code> yet</td>
+<td><code>public/projects.json</code></td>
+<td><code>public/projects.json</code> (adds missing doc links)</td>
+</tr>
+<tr>
+<td><code>verifyProjects.js</code></td>
+<td>Reads <code>projects.json</code> and logs repo names with their detected doc links; exits 0 if the file is missing</td>
+<td><code>public/projects.json</code></td>
+<td>Console summary; non-zero exit on invalid content</td>
+</tr>
+<tr>
+<td><code>audit-check.js</code></td>
+<td>Runs <code>npm audit --json</code>; fails the process if any high or critical vulnerabilities are found</td>
+<td>npm audit JSON output</td>
+<td>Exit code 0 (pass) / 1 (vulns found) / 2 (audit failed)</td>
+</tr>
+<tr>
+<td><code>run-eslint-dev.js</code></td>
+<td>Runs ESLint with <code>NODE_ENV=development</code> so CRA&#39;s React-specific rules activate; fails on any warning</td>
+<td><code>src/</code> directory</td>
+<td>ESLint report via stylish formatter</td>
+</tr>
+<tr>
+<td><code>prepareVercelOutput.sh</code></td>
+<td>Assembles the Vercel Output API v3 artifact: resets <code>.vercel/output/</code>, copies <code>build/</code> + <code>projects.json</code> + media, writes <code>config.json</code></td>
+<td><code>build/</code>, <code>public/projects.json</code></td>
+<td><code>.vercel/output/static/</code></td>
+</tr>
+</tbody></table>
+<h2 id="documentation-generation-scripts">Documentation Generation Scripts</h2>
+<p>Scripts in <code>scripts/docs/</code> are called by the <code>docs-refresh</code> GitHub Actions workflow to transform Markdown documentation into deployable HTML.</p>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>scripts/docs/build_docs.js</code></td>
+<td>Reads HTML templates from <code>scripts/docs/templates/</code>; converts every <code>docs/*.md</code> to <code>docs/*.html</code> using <code>page.html</code>; generates a sidebar TOC from h2/h3 headings; wraps Mermaid code blocks in <code>.mermaid-wrapper</code> divs; copies <code>hub.html</code> → <code>docs/index.html</code> and <code>styles.css</code> → <code>docs/templates/styles.css</code></td>
+</tr>
+<tr>
+<td><code>scripts/docs/build_mermaid.js</code></td>
+<td>Scans the generated HTML files for Mermaid wrapper blocks and pre-renders them to inline SVG using <code>@mermaid-js/mermaid-cli</code> (<code>mmdc</code>); exits cleanly when <code>mmdc</code> is not installed so that client-side CDN rendering acts as the fallback</td>
+</tr>
+</tbody></table>
+<h2 id="processing-pipeline">Processing Pipeline</h2>
+<p><code>scripts/lib/pipeline/nodeProcessor.js</code> is the central coordinator. It runs a three-stage pipeline for each repo node returned by the GitHub API.</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Function</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Doc stage</td>
+<td><code>runDocStage(node, svc)</code></td>
+<td>Fetches the README, downloads media, extracts technology tags, extracts documentation links, runs doc heuristics backfill, extracts the project summary</td>
+</tr>
+<tr>
+<td>Translation stage</td>
+<td><code>runTranslationStage(node, svc)</code></td>
+<td>Calls <code>translatorFacade.translateNode</code> to batch-translate all UI strings (summary, doc titles, descriptions) to German via DeepL</td>
+</tr>
+<tr>
+<td>Persistence stage</td>
+<td><code>runPersistenceStage(node, svc)</code></td>
+<td>Saves per-repo <code>meta.json</code>, normalizes all relative URLs to absolute, upgrades raw GitHub URLs to GitHub Pages equivalents where available, checks media download status</td>
+</tr>
+</tbody></table>
+<p>The module accepts a <code>services</code> object (<code>getAxios</code>, <code>parseReadme</code>, <code>translateWithCache</code>, <code>shouldTranslateUI</code>, <code>DEBUG_FETCH</code>) so all external dependencies can be injected during tests without network calls.</p>
+<h2 id="github-api">GitHub API</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lib/fetchGithub.js</code></td>
+<td>Runs GitHub GraphQL queries; performs a lightweight auth test before the real query to surface token errors early; extracts repo nodes from the <code>pinnedItems</code> or <code>repositories</code> response shape</td>
+</tr>
+<tr>
+<td><code>lib/graphql/pinnedGraphql.js</code></td>
+<td>Defines the GraphQL query that fetches the first 12 pinned repositories (name, description, URL) for a given GitHub login</td>
+</tr>
+</tbody></table>
+<h2 id="readme-processing">README Processing</h2>
+<p><code>scripts/lib/parseReadme/</code> parses a repository&#39;s README markdown into an AST and extracts structured data from it.</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>parser.js</code></td>
+<td>Converts markdown text to an AST using <code>unified</code>/<code>remark</code>; falls back to a synchronous minimal AST builder when those packages are absent</td>
+</tr>
+<tr>
+<td><code>helpers.js</code></td>
+<td>AST traversal utilities: flatten node text, extract plain text from list items, find the first link in a paragraph or list node</td>
+</tr>
+<tr>
+<td><code>normalize.js</code></td>
+<td><code>normalizeTitle</code> strips markdown, URLs, and emoji then truncates to 120 chars; <code>normalizeSummary</code> does the same for summaries at 400 chars</td>
+</tr>
+<tr>
+<td><code>techs.js</code></td>
+<td>Finds the &quot;Technologies&quot; or &quot;Tech Stack&quot; heading in the AST and extracts technology tokens, preferring bold-formatted tokens over comma-separated lists</td>
+</tr>
+<tr>
+<td><code>images.js</code></td>
+<td>Selects the best representative image from the AST; priority order: screenshot/gallery heading → explicit <code>project-image.png</code> path → raster images → any image; skips CI badge URLs</td>
+</tr>
+<tr>
+<td><code>docs.js</code></td>
+<td>Extracts documentation links from named headings (<code>API Documentation</code>, <code>Architecture Overview</code>) in the AST; falls back to a raw-text regex scan</td>
+</tr>
+<tr>
+<td><code>extractors.js</code></td>
+<td>Re-exports <code>images</code>, <code>techs</code>, <code>docs</code>, and <code>helpers</code> as the public surface of the <code>parseReadme</code> module</td>
+</tr>
+</tbody></table>
+<h2 id="documentation-extraction">Documentation Extraction</h2>
+<p><code>scripts/lib/docs/</code> extracts structured documentation metadata from each project&#39;s README.</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>extractReadmeDocs.js</code></td>
+<td>Main orchestrator; calls all four extractors below and returns <code>{ architectureOverview, apiDocumentation, testing, productionUrl }</code>; returns a placeholder object when no docs are found so the UI always has a fallback</td>
+</tr>
+<tr>
+<td><code>extractArchitecture.js</code></td>
+<td>Finds the &quot;Architecture Overview&quot; heading then looks for an &quot;Index&quot; link beneath it; scans AST nodes first, falls back to text search</td>
+</tr>
+<tr>
+<td><code>extractApiDocs.js</code></td>
+<td>Multi-stage search for &quot;Complete API&quot; links: AST paragraphs/lists → line-by-line text scan → any API link fallback</td>
+</tr>
+<tr>
+<td><code>extractTesting.js</code></td>
+<td>Finds &quot;Test Coverage&quot; links anywhere in the README and returns them as a <code>{ coverage: [...] }</code> array</td>
+</tr>
+<tr>
+<td><code>extractProductionUrl.js</code></td>
+<td>Finds a &quot;Production URL&quot; link in paragraphs or lists; falls back to raw text search</td>
+</tr>
+<tr>
+<td><code>docsHeuristics.js</code></td>
+<td>Post-processing: <code>backfillDocsFromText</code> runs a regex fallback for doc links; <code>postProcessDocsLinkCandidates</code> replaces issue/PR links with better alternatives from <code>repoDocs</code></td>
+</tr>
+<tr>
+<td><code>translateDocs.js</code></td>
+<td>Batch-translates doc field titles and descriptions to German using the provided translate function; adds <code>_de</code>-suffixed fields alongside originals</td>
+</tr>
+<tr>
+<td><code>urlResolver.js</code></td>
+<td><code>toRawGithub</code> converts relative README paths to absolute <code>raw.githubusercontent.com</code> URLs; routes through GitHub Pages when no auth token is present to avoid CORS issues</td>
+</tr>
+</tbody></table>
+<h2 id="media-handling">Media Handling</h2>
+<p><code>scripts/lib/media/</code> downloads and caches project images fetched during the README processing stage.</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>mediaDownloader.js</code></td>
+<td>Downloads an image URL to <code>public/projects_media/&lt;repoName&gt;/</code>; enforces a 2 MB size cap; uses an MD5 hash as the filename for deterministic caching; validates <code>Content-Type: image/*</code>; skips files already on disk</td>
+</tr>
+<tr>
+<td><code>mediaHelper.js</code></td>
+<td>High-level media pipeline: probes for an explicit <code>project-image.png</code> first, then falls back to the AST-derived image candidate, then the first markdown image; rewrites the README text to reference the local path after download</td>
+</tr>
+<tr>
+<td><code>persistence.js</code></td>
+<td>Saves per-repo <code>meta.json</code> tracking <code>readmeHash</code>, <code>imageSelection</code>, <code>primaryImage</code>, <code>summarySource</code>, and translation metadata so subsequent runs can skip unchanged repos</td>
+</tr>
+</tbody></table>
+<h2 id="translation">Translation</h2>
+<p><code>scripts/lib/translation/</code> integrates with the DeepL API to provide German translations for project summaries and documentation titles.</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>translate.js</code></td>
+<td>Calls the DeepL API for a single string (≤ 300 chars); returns <code>{ text, status, raw?, error? }</code>; returns <code>status: &#39;no-key-or-text&#39;</code> when no API key is present so the pipeline degrades gracefully</td>
+</tr>
+<tr>
+<td><code>translationOrchestrator.js</code></td>
+<td>Collects all translatable strings for a node into a single <code>Promise.all</code> batch to minimise API round-trips; uses parallel index arrays to map results back to their target node fields</td>
+</tr>
+<tr>
+<td><code>translatorFacade.js</code></td>
+<td>High-level entry point; calls the orchestrator and writes the translated values back onto the node</td>
+</tr>
+</tbody></table>
+<h2 id="output-and-normalization">Output and Normalization</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lib/output/writeProjects.js</code></td>
+<td>Pretty-prints the final enriched node array to <code>public/projects.json</code></td>
+</tr>
+<tr>
+<td><code>lib/normalize/normalize.js</code></td>
+<td><code>toRawGithub</code> converts relative paths to absolute <code>raw.githubusercontent.com</code> URLs; <code>normalizeRepoDocsLinks</code> applies this to all <code>repoDocs</code> link fields on a node</td>
+</tr>
+<tr>
+<td><code>lib/normalize/githubIoPreferer.js</code></td>
+<td>Probes each raw GitHub URL with an HTTP HEAD request; if the GitHub Pages equivalent responds with HTML and does not set <code>X-Frame-Options: DENY</code>, upgrades the URL so docs can be embedded in the portfolio</td>
+</tr>
+</tbody></table>
+<h2 id="readme-fetching-and-summary-extraction">README Fetching and Summary Extraction</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lib/readme/readmeHandler.js</code></td>
+<td>Full README processing entry point: fetches the README if absent, parses it to an AST, downloads media, extracts technologies, and extracts documentation links; mutates the node in place</td>
+</tr>
+<tr>
+<td><code>lib/readme/readmeFallback.js</code></td>
+<td>HTTP fallback that fetches <code>README.md</code> from <code>raw.githubusercontent.com</code> when the GraphQL response contains no README text; tries <code>main</code> then <code>master</code> branches with an 8-second timeout</td>
+</tr>
+<tr>
+<td><code>lib/summary/summaryExtractor.js</code></td>
+<td>Extracts a one-line project summary in priority order: named section heading (About, Overview, Description) → first paragraph → raw truncation at 160 chars; records the source strategy in <code>summarySource</code></td>
+</tr>
+</tbody></table>
+<h2 id="utilities">Utilities</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lib/axiosLoader.js</code></td>
+<td>Lazily loads <code>axios</code> with a deferred <code>require()</code> to avoid ESM entry-point issues in test runners; returns <code>null</code> when <code>axios</code> is not installed so callers can skip network steps gracefully</td>
+</tr>
+<tr>
+<td><code>prepareVercelOutput.sh</code></td>
+<td>Bash script that idempotently resets <code>.vercel/output/</code>, copies the CRA <code>build/</code> output and the pre-generated <code>projects.json</code> and media into <code>.vercel/output/static/</code>, and writes the Vercel Output API v3 <code>config.json</code></td>
+</tr>
+</tbody></table>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="../REFRESH.html">REFRESH.md</a> — when and how to re-run the fetch pipeline</li>
+<li><a href="../deploy/data-flow.html">deploy/data-flow.md</a> — how script outputs flow to Vercel and GitHub Pages</li>
+<li><a href="../architecture/ci-cd-pipeline.html">architecture/ci-cd-pipeline.md</a> — which workflow step calls which script</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

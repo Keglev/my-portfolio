@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Deployment Data Flow — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#configuration-inputs">Configuration Inputs</a></li>
+  <li><a href="#build-time-project-data-flow">Build-Time Project Data Flow</a></li>
+  <li><a href="#documentation-and-coverage-flow">Documentation and Coverage Flow</a></li>
+  <li><a href="#artifact-summary">Artifact Summary</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="deployment-data-flow">Deployment Data Flow</h1>
+<p><a href="../index.html">← Documentation root</a></p>
+<p>This document shows how data moves through the deployment system — from external APIs and repository secrets through build-time scripts to the final deployment targets on Vercel and GitHub Pages. For configuration details (environment variables, step-by-step commands), see <a href="../DEPLOY.html">DEPLOY.md</a>. For the CI/CD workflow trigger chain, see <a href="../architecture/ci-cd-pipeline.html">architecture/ci-cd-pipeline.md</a>.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#configuration-inputs">Configuration Inputs</a></li>
+<li><a href="#build-time-project-data-flow">Build-Time Project Data Flow</a></li>
+<li><a href="#documentation-and-coverage-flow">Documentation and Coverage Flow</a></li>
+<li><a href="#artifact-summary">Artifact Summary</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="configuration-inputs">Configuration Inputs</h2>
+<p>Before any data can flow through the build pipeline, three categories of external input must be available as environment variables in the GitHub Actions runner.</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Provided by</th>
+<th>Consumed by</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GH_PROJECTS_TOKEN</code></td>
+<td>GitHub repository secret</td>
+<td><code>scripts/fetchProjects.js</code> — authenticates the GraphQL API call</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>DEEPL_API_KEY</code> / <code>DEEPL_SECRET</code></td>
+<td>GitHub repository secret</td>
+<td><code>scripts/fetchProjects.js</code> — translates project summaries to German</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>VERCEL_TOKEN</code>, <code>VERCEL_ORG_ID</code>, <code>VERCEL_PROJECT_ID</code></td>
+<td>GitHub repository secrets</td>
+<td>Vercel CLI deploy step</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>GITHUB_TOKEN</code></td>
+<td>Automatically injected by Actions</td>
+<td><code>gh</code> CLI calls in all three workflows</td>
+<td>Yes (automatic)</td>
+</tr>
+<tr>
+<td><code>DEBUG_FETCH</code></td>
+<td>Optional manual env var</td>
+<td><code>scripts/fetchProjects.js</code> — emits extra debug output</td>
+<td>No</td>
+</tr>
+</tbody></table>
+<h2 id="build-time-project-data-flow">Build-Time Project Data Flow</h2>
+<p>The diagram below shows how project data moves from the GitHub GraphQL API and optional DeepL translation service through the fetch scripts to the final Vercel deployment.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
+    GHGraphQL[&quot;GitHub GraphQL API\n(pinned repos, READMEs, media URLs)&quot;]
+    DeepL[&quot;DeepL API\n(optional — German summaries)&quot;]
+    Secrets[&quot;Repository Secrets\n(GH_PROJECTS_TOKEN, DEEPL_API_KEY)&quot;]
+    FetchScripts[&quot;Fetch Scripts\nfetchProjects.js → applyFallbackDocScan.js\n→ postprocessProjects.js → verifyProjects.js&quot;]
+    ProjectsJSON[&quot;public/projects.json\n+ public/projects_media/\n(static build assets)&quot;]
+    CRABuild[&quot;npm run build\n(react-scripts — bundles app + assets)&quot;]
+    VercelOutput[&quot;.vercel/output/static/\n(prebuilt artifact)&quot;]
+    VercelCDN[&quot;Vercel CDN\ncarloskeglevich.vercel.app&quot;]
+
+    Secrets --&gt;|&quot;injected as env vars&quot;| FetchScripts
+    GHGraphQL --&gt;|&quot;repo metadata + README text&quot;| FetchScripts
+    DeepL --&gt;|&quot;translated summary_de fields&quot;| FetchScripts
+    FetchScripts --&gt;|&quot;writes normalized JSON + media&quot;| ProjectsJSON
+    ProjectsJSON --&gt;|&quot;copied into public/ before build&quot;| CRABuild
+    CRABuild --&gt;|&quot;prepareVercelOutput.sh&quot;| VercelOutput
+    VercelOutput --&gt;|&quot;vercel --prod --prebuilt&quot;| VercelCDN
+</pre></div>
+<p>The four fetch scripts run sequentially and form a single logical stage:</p>
+<ol>
+<li><code>fetchProjects.js</code> — calls the GitHub GraphQL API, downloads README files and project media, optionally calls DeepL for German summaries, and writes the raw <code>public/projects.json</code>.</li>
+<li><code>applyFallbackDocScan.js</code> — scans READMEs for documentation links when the primary fetch yields none, filling gaps before normalization.</li>
+<li><code>postprocessProjects.js</code> — normalizes all links in <code>projects.json</code> for offline use (converts raw GitHub URLs to blob URLs).</li>
+<li><code>verifyProjects.js</code> — validates the final <code>projects.json</code> against the expected schema; the build fails if validation does not pass.</li>
+</ol>
+<h2 id="documentation-and-coverage-flow">Documentation and Coverage Flow</h2>
+<p>The diagram below shows how documentation sources and the test coverage report flow into GitHub Pages independently of the Vercel deployment.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
+    CIJob[&quot;CI workflow\n(jest --coverage)&quot;]
+    CoverageArtifact[&quot;GitHub Actions artifact\ncoverage-report (7-day retention)&quot;]
+    MarkdownDocs[&quot;docs/*.md\n(authored documentation)&quot;]
+    BuildDocs[&quot;scripts/docs/build_docs.js\n(Markdown → HTML via templates)&quot;]
+    SrcCode[&quot;src/\n(JSDoc comments in source)&quot;]
+    JSDocOutput[&quot;docs/jsdoc/\n(generated API reference)&quot;]
+    GHPages[&quot;GitHub Pages\nkeglev.github.io/my-portfolio&quot;]
+
+    CIJob --&gt;|&quot;actions/upload-artifact&quot;| CoverageArtifact
+    CoverageArtifact --&gt;|&quot;gh run download in docs-refresh&quot;| GHPages
+    MarkdownDocs --&gt;|&quot;converted to HTML&quot;| BuildDocs
+    BuildDocs --&gt;|&quot;docs/*.html&quot;| GHPages
+    SrcCode --&gt;|&quot;npm run docs:jsdoc&quot;| JSDocOutput
+    JSDocOutput --&gt;|&quot;published with docs/&quot;| GHPages
+</pre></div>
+<p>The <code>docs-refresh.yml</code> workflow is responsible for the entire right side of this diagram. It is triggered after a successful Vercel deployment (dispatched by <code>build-and-fetch.yml</code>) and also directly on pushes to <code>docs/**</code> or <code>scripts/docs/**</code>, which lets small documentation edits publish without running the full pipeline.</p>
+<h2 id="artifact-summary">Artifact Summary</h2>
+<p>The table below lists every intermediate and final artifact produced by the deployment system, where it originates, and where it lands.</p>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Produced by</th>
+<th>Stage</th>
+<th>Destination</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>public/projects.json</code></td>
+<td><code>scripts/fetchProjects.js</code></td>
+<td>Build-time</td>
+<td>Copied into <code>.vercel/output/static/</code></td>
+</tr>
+<tr>
+<td><code>public/projects_media/</code></td>
+<td><code>scripts/fetchProjects.js</code></td>
+<td>Build-time</td>
+<td>Copied into <code>.vercel/output/static/projects_media/</code></td>
+</tr>
+<tr>
+<td><code>build/</code></td>
+<td><code>npm run build</code> (CRA)</td>
+<td>Build-time</td>
+<td>Merged into <code>.vercel/output/static/</code></td>
+</tr>
+<tr>
+<td><code>.vercel/output/static/</code></td>
+<td><code>scripts/prepareVercelOutput.sh</code></td>
+<td>Pre-deploy</td>
+<td>Deployed to Vercel CDN</td>
+</tr>
+<tr>
+<td><code>coverage/</code></td>
+<td>Jest (<code>--coverage</code> flag in CI)</td>
+<td>CI</td>
+<td>Uploaded as <code>coverage-report</code> artifact; later copied to <code>docs/coverage/</code></td>
+</tr>
+<tr>
+<td><code>docs/jsdoc/</code></td>
+<td><code>npm run docs:jsdoc</code> (JSDoc)</td>
+<td>Docs-refresh</td>
+<td>Published to <code>gh-pages</code> branch</td>
+</tr>
+<tr>
+<td><code>docs/*.html</code></td>
+<td><code>scripts/docs/build_docs.js</code></td>
+<td>Docs-refresh</td>
+<td>Published to <code>gh-pages</code> branch</td>
+</tr>
+<tr>
+<td><code>docs/templates/styles.css</code></td>
+<td><code>scripts/docs/build_docs.js</code> (copied from <code>scripts/docs/templates/</code>)</td>
+<td>Docs-refresh</td>
+<td>Published to <code>gh-pages</code> branch alongside <code>docs/*.html</code></td>
+</tr>
+</tbody></table>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="../DEPLOY.html">DEPLOY.md</a> — environment variables, manual deployment commands, and security notes</li>
+<li><a href="../architecture/ci-cd-pipeline.html">architecture/ci-cd-pipeline.md</a> — workflow trigger chain and step details</li>
+<li><a href="../REFRESH.html">REFRESH.md</a> — how to regenerate <code>projects.json</code> and trigger a redeployment</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>

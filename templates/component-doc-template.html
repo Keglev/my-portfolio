@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ComponentName — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../templates/styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#purpose">Purpose</a></li>
+  <li><a href="#props">Props</a></li>
+  <li><a href="#usage">Usage</a></li>
+  <li><a href="#dependencies">Dependencies</a></li>
+  <li><a href="#notes">Notes</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <h1 id="componentname">ComponentName</h1>
+<p><a href="index.html">← Templates index</a></p>
+<p>One component, one document. Copy this file to <code>docs/frontend/</code>, rename it to the component name in kebab-case (e.g. <code>project-card.md</code>), and fill in each section. Check <a href="../frontend/components.html">frontend/components.md</a> first — the component may already be catalogued there.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#purpose">Purpose</a></li>
+<li><a href="#props">Props</a></li>
+<li><a href="#usage">Usage</a></li>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#notes">Notes</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="purpose">Purpose</h2>
+<p>One paragraph. What does this component do and why does it exist? Describe the user-visible behaviour and the problem it solves, not the implementation.</p>
+<h2 id="props">Props</h2>
+<p>List every prop the component accepts. If the component accepts no props, replace this table with the sentence &quot;This component accepts no props.&quot;</p>
+<table>
+<thead>
+<tr>
+<th>Prop</th>
+<th>Type</th>
+<th>Required</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>propName</code></td>
+<td><code>string</code></td>
+<td>yes</td>
+<td>—</td>
+<td>What this prop controls and any valid values</td>
+</tr>
+</tbody></table>
+<h2 id="usage">Usage</h2>
+<p>Short code example showing typical usage in JSX.</p>
+<pre><code class="language-jsx">import ComponentName from &#39;./ComponentName&#39;;
+
+&lt;ComponentName propName=&quot;value&quot; /&gt;
+</code></pre>
+<p>Add a second example if there is a meaningfully different usage pattern (e.g. with optional props, in a list, or inside a provider).</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>What this component imports or relies on. List only non-obvious dependencies; omit React itself.</p>
+<ul>
+<li><strong>Components</strong>: sub-components rendered inside this one</li>
+<li><strong>Hooks</strong>: custom hooks called (e.g. <code>useTranslation</code>, <code>useProjects</code>)</li>
+<li><strong>i18n</strong>: translation namespace keys consumed</li>
+<li><strong>Libraries</strong>: third-party packages imported directly</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<p>Edge cases, known limitations, and intentional design choices that are not obvious from reading the source. If there are none, write &quot;No known edge cases.&quot;</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="../frontend/components.html">frontend/components.md</a> — full component catalog</li>
+<li><a href="../architecture/component-tree.html">architecture/component-tree.md</a> — hierarchy diagram</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Mermaid: client-side rendering for diagrams in code fences -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        primaryColor: '#1A1D2E',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#2D3047',
+        lineColor: '#3B82F6',
+        background: '#0F1117',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active heading on scroll -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+</body>
+</html>
