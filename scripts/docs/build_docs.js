@@ -6,13 +6,17 @@
  *   - Parses markdown with marked
  *   - Wraps ```mermaid fences in .mermaid-wrapper divs for client-side rendering
  *   - Builds a sidebar TOC from h2/h3 headings
- *   - Injects TITLE, TOC, CONTENT into scripts/docs/templates/page.html
+ *   - Assembles the doc-page template from header.html + page.html + footer.html
+ *   - Injects TITLE, TOC, CONTENT into the assembled template
  *   - Adjusts relative hrefs (CSS, hub link) for each subdirectory depth
  *   - Writes <name>.html next to each source .md file
  *   - docs/index.md is output as docs-index.html (hub.html owns index.html)
  *
- * Additionally copies scripts/docs/templates/hub.html → docs/index.html
- * as the visual landing page, replacing the old static index.html.
+ * Additionally assembles header.html + hub.html + footer.html → docs/index.html
+ * as the visual landing page.
+ *
+ * Concatenates styles/{base,layout,components,typography,utilities}.css
+ * into a single docs/templates/styles.css for all generated pages.
  *
  * Usage (from repo root):
  *   node scripts/docs/build_docs.js
@@ -61,9 +65,16 @@ const RendererCtor =
 const REPO_ROOT   = path.resolve(__dirname, '..', '..');
 const DOCS_DIR    = path.join(REPO_ROOT, 'docs');
 const TMPL_DIR    = path.join(__dirname, 'templates');
+
+// Template parts — assembled at runtime into full page and hub HTML
+const HEADER_TMPL = path.join(TMPL_DIR, 'header.html');
+const FOOTER_TMPL = path.join(TMPL_DIR, 'footer.html');
 const PAGE_TMPL   = path.join(TMPL_DIR, 'page.html');
 const HUB_TMPL    = path.join(TMPL_DIR, 'hub.html');
-const STYLES_SRC  = path.join(TMPL_DIR, 'styles.css');
+
+// CSS source files in cascade order; concatenated into one output stylesheet
+const CSS_PARTS   = ['base.css', 'layout.css', 'components.css', 'typography.css', 'utilities.css']
+                      .map(f => path.join(TMPL_DIR, f));
 const STYLES_OUT  = path.join(DOCS_DIR, 'templates', 'styles.css');
 
 // Subdirectories inside docs/ that contain generated output — never walk them
@@ -165,8 +176,9 @@ function convertMd(mdPath, template) {
   html = wrapMermaid(html);
   html = rewriteLinks(html);
 
+  // Title suffix is added here rather than in header.html so the hub can set a different title
   return template
-    .replace('{{TITLE}}',   title)
+    .replace('{{TITLE}}',   title + ' — my-portfolio docs')
     .replace('{{TOC}}',     buildToc(html))
     .replace('{{CONTENT}}', html);
 }
@@ -177,7 +189,7 @@ function convertMd(mdPath, template) {
 
 /**
  * For pages one or more levels below docs/, rewrite the two relative hrefs
- * in page.html so the stylesheet and the hub back-link resolve correctly.
+ * in header.html so the stylesheet and the hub back-link resolve correctly.
  * Depth 0 = docs/ root; depth 1 = docs/architecture/, etc.
  */
 function adjustTemplate(template, depth) {
@@ -229,26 +241,36 @@ function processDir(dir, depth, template) {
 // ---------------------------------------------------------------------------
 
 function run() {
-  if (!fs.existsSync(PAGE_TMPL)) {
-    console.error(`[build_docs] Template not found: ${PAGE_TMPL}`);
-    process.exit(1);
+  // Verify all template parts exist before starting
+  for (const tmpl of [HEADER_TMPL, FOOTER_TMPL, PAGE_TMPL, HUB_TMPL]) {
+    if (!fs.existsSync(tmpl)) {
+      console.error(`[build_docs] Template not found: ${tmpl}`);
+      process.exit(1);
+    }
   }
 
-  const template = fs.readFileSync(PAGE_TMPL, 'utf8');
+  const headerTmpl   = fs.readFileSync(HEADER_TMPL, 'utf8');
+  const footerTmpl   = fs.readFileSync(FOOTER_TMPL, 'utf8');
+  const pageBodyTmpl = fs.readFileSync(PAGE_TMPL,   'utf8');
+  const hubBodyTmpl  = fs.readFileSync(HUB_TMPL,    'utf8');
 
-  processDir(DOCS_DIR, 0, template);
+  // Assemble the full doc-page template from its three parts
+  const pageTemplate = headerTmpl + '\n' + pageBodyTmpl + '\n' + footerTmpl;
+  processDir(DOCS_DIR, 0, pageTemplate);
 
-  // Copy styles.css into docs/templates/ so generated HTML can resolve it
+  // Concatenate split CSS source files into a single output stylesheet
   const stylesDir = path.dirname(STYLES_OUT);
   if (!fs.existsSync(stylesDir)) fs.mkdirSync(stylesDir, { recursive: true });
-  fs.copyFileSync(STYLES_SRC, STYLES_OUT);
-  console.log('[build_docs]  styles.css → docs/templates/styles.css');
+  const combinedCss = CSS_PARTS.map(f => fs.readFileSync(f, 'utf8')).join('\n');
+  fs.writeFileSync(STYLES_OUT, combinedCss, 'utf8');
+  console.log('[build_docs]  styles/{base,layout,components,typography,utilities}.css → docs/templates/styles.css');
 
-  // Replace the old static index.html with the visual hub page
-  if (fs.existsSync(HUB_TMPL)) {
-    fs.copyFileSync(HUB_TMPL, path.join(DOCS_DIR, 'index.html'));
-    console.log('[build_docs]  hub.html → index.html');
-  }
+  // Assemble the hub landing page and write it directly to docs/index.html
+  const hubHtml = headerTmpl.replace('{{TITLE}}', 'my-portfolio — Documentation')
+                + '\n' + hubBodyTmpl
+                + '\n' + footerTmpl;
+  fs.writeFileSync(path.join(DOCS_DIR, 'index.html'), hubHtml, 'utf8');
+  console.log('[build_docs]  hub assembled → index.html');
 
   console.log('[build_docs] Done.');
 }

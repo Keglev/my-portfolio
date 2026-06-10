@@ -60,8 +60,10 @@ jobs:
         uses: ./.github/actions/node-setup
 
       # ── Doc templates ───────────────────────────────────────────────────
-      # build_docs.js converts docs/*.md → docs/*.html using scripts/docs/templates/page.html
-      # and copies scripts/docs/templates/hub.html → docs/index.html (visual landing page).
+      # build_docs.js assembles header.html + page.html + footer.html into the doc-page template,
+      # converts docs/*.md → docs/*.html, concatenates the split CSS source files into a single
+      # docs/templates/styles.css, and assembles header.html + hub.html + footer.html →
+      # docs/index.html as the visual landing page.
       #
       # marked must be installed before this step.
       # The inline install is a no-op once "marked" is committed to package-lock.json

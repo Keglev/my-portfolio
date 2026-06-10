@@ -1,0 +1,12 @@
+/* ─── Utilities: responsive overrides ───────────────────────── */
+
+/* ─── Narrow viewport (≤ 620px) ─────────────────────────────── */
+@media (max-width: 620px) {
+  /* Collapse hub card grid to a single column */
+  .hub__grid { grid-template-columns: 1fr; }
+  .hub__hero h1 { font-size: 1.5rem; }
+  /* Hide nav links to save horizontal space; content is still reachable via the hub */
+  .site-header__nav { display: none; }
+  /* Stack footer items vertically when horizontal space is insufficient */
+  .site-footer { flex-direction: column; }
+}

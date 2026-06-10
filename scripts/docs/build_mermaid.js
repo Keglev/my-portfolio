@@ -172,7 +172,7 @@ function run() {
     console.log(
       '[build_mermaid] mmdc not found — skipping pre-render.\n' +
       '  Diagrams will be rendered client-side by the Mermaid CDN script\n' +
-      '  already included in scripts/docs/templates/page.html.\n' +
+      '  included in scripts/docs/templates/page.html (the doc-page body partial).\n' +
       '\n' +
       '  To enable pre-rendering, install mermaid-cli:\n' +
       '    npm install --save-dev @mermaid-js/mermaid-cli'

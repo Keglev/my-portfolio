@@ -1,9 +1,9 @@
 # About
-This is a Portfolio Website. It showcases my skills and projects. You can use it for showing your skills too!  
+This is a Portfolio Website. It showcases my skills and projects. You can use it for showing your skills and Portfolio projects too!  
 
 # 💼 Description
 
-Welcome to my personal portfolio website, showcasing my skills, projects, and experiences as a software engineer. This responsive web application is designed to provide visitors with an insight into my work, technical expertise, and professional journey.
+Welcome to my personal portfolio website, showcasing my skills, projects, and experiences as a software engineer. This responsive web application is designed to provide visitors with an insight into my work, technical expertise, and professional journey. Project data — including descriptions parsed from each repository's README — is fetched from GitHub via the GraphQL API at build time and stored as static JSON, so no live API calls are made at runtime. The site is fully bilingual (English and German) powered by i18next.
 
 ## Table of Contents
 
@@ -34,27 +34,33 @@ Welcome to my personal portfolio website, showcasing my skills, projects, and ex
 
 🙋 **About Section**: Provides a brief introduction, background, and expertise as a software engineer."
 
+🎓 **Education Section**: Academic background and qualifications.
+
 📂 **Projects Showcase**: A detailed presentation of my projects with descriptions and links to the GitHub repositories.
 
 📂 **Repo Docs**: A link to my main project's documentation, like API, Architecture, and deployment techniques
 
 👨‍💼 **Experience Section**: Display of my professional experience, highlighting key achievements and roles.
 
-📫 **Contact Information Section**: Includes direct links to GitHub, LinkedIn, and email for easy communication.
+📫 **Social Links**: Icon links to GitHub, LinkedIn, Xing, and email in the sidebar for easy communication.
+
+📄 **Resume Download**: Locale-aware CV download — English or German version served based on the active language.
+
+⚖️ **Impressum & Privacy Policy**: German legal notices (Impressum and Datenschutz) accessible directly from the sidebar.
 
 ## Project Status
 
-- ✅ Professional API documentation with OpenAPI specifications
+- ✅ Complete architecture documentation with component diagrams, data-flow diagrams, CI/CD pipeline overview, and 6 Architecture Decision Records (ADRs)
 
 - ✅ Working CI/CD pipeline for build, test, and deployment
 
 ### 📚 Documentation Status 
 
--  ⚠️ **Still under construction** Enterprise-level documentation with architecture diagrams 
+- ✅ **Architecture documentation**: component structure, data flow, CI/CD pipeline, and 6 ADRs — covering every major technical decision
 
-- ⚠️ **Still under construction** Testing strategy documentation
+- ✅ **Testing documentation**: two-runner Jest strategy, coverage thresholds, and CI commands (TESTS.md)
 
-- ⚠️ **Still under construction** Deployment and CI/CD documentation
+- ✅ **Deployment documentation**: Vercel configuration, environment variables, and build pipeline (DEPLOY.md, REFRESH.md)
 
 ## Testing & Code Quality
 
@@ -88,7 +94,10 @@ You can also generate the docs locally with:
 npm run docs:jsdoc
 ```
 ## Architecture docs
- Will be available soon
+
+Full architecture documentation — component diagrams, data-flow diagrams, CI/CD pipeline overview, a 6-ADR decision log, and a German-language overview — is published on GitHub Pages:
+
+https://keglev.github.io/my-portfolio/
 
 ## Instalation
 
