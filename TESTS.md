@@ -37,10 +37,10 @@ No minimum coverage thresholds are currently enforced. Run `npm run test:node --
 
 | Metric | Threshold | How to check |
 |--------|-----------|--------------|
-| Statements | Not enforced | `npm run test:node -- --coverage` |
-| Branches | Not enforced | `npm run test:node -- --coverage` |
-| Functions | Not enforced | `npm run test:node -- --coverage` |
-| Lines | Not enforced | `npm run test:node -- --coverage` |
+| Statements | 85% | `npm run test:node -- --coverage` |
+| Branches   | 85% | `npm run test:node -- --coverage` |
+| Functions  | 75% | `npm run test:node -- --coverage` |
+| Lines      | 75% | `npm run test:node -- --coverage` |
 
 Coverage is collected from `config/jest/**/*.js`, `src/**/*.{js,jsx}`, and `scripts/**/*.js`.
 
@@ -55,6 +55,9 @@ Coverage is collected from `config/jest/**/*.js`, `src/**/*.{js,jsx}`, and `scri
 ## Reading the coverage report
 
 After running `npm run test:node -- --coverage`, open `coverage/index.html` in a browser to see the full line-by-line HTML report. A machine-readable summary is also written to `coverage/coverage-summary.json`.
+
+The deployed coverage report is available at
+[keglev.github.io/my-portfolio/coverage/index.html](https://keglev.github.io/my-portfolio/coverage/index.html).
 
 ## What is tested and what is excluded
 
