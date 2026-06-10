@@ -6,10 +6,10 @@
  *   - Parses markdown with marked
  *   - Wraps ```mermaid fences in .mermaid-wrapper divs for client-side rendering
  *   - Builds a sidebar TOC from h2/h3 headings
- *   - Injects TITLE, TOC, CONTENT into docs/templates/page.html
+ *   - Injects TITLE, TOC, CONTENT into scripts/docs/templates/page.html
  *   - Writes docs/<name>.html next to the source .md file
  *
- * Additionally copies docs/templates/hub.html → docs/index.html
+ * Additionally copies scripts/docs/templates/hub.html → docs/index.html
  * as the visual landing page, replacing the old static index.html.
  *
  * Usage (from repo root):
@@ -56,11 +56,13 @@ const RendererCtor =
 // Paths
 // ---------------------------------------------------------------------------
 
-const REPO_ROOT = path.resolve(__dirname, '..', '..');
-const DOCS_DIR  = path.join(REPO_ROOT, 'docs');
-const TMPL_DIR  = path.join(DOCS_DIR, 'templates');
-const PAGE_TMPL = path.join(TMPL_DIR, 'page.html');
-const HUB_TMPL  = path.join(TMPL_DIR, 'hub.html');
+const REPO_ROOT   = path.resolve(__dirname, '..', '..');
+const DOCS_DIR    = path.join(REPO_ROOT, 'docs');
+const TMPL_DIR    = path.join(__dirname, 'templates');
+const PAGE_TMPL   = path.join(TMPL_DIR, 'page.html');
+const HUB_TMPL    = path.join(TMPL_DIR, 'hub.html');
+const STYLES_SRC  = path.join(TMPL_DIR, 'styles.css');
+const STYLES_OUT  = path.join(DOCS_DIR, 'templates', 'styles.css');
 
 // ---------------------------------------------------------------------------
 // Configure marked: inject id attributes into headings
@@ -191,6 +193,12 @@ function run() {
       console.error(`[build_docs]  FAIL ${file}: ${err.message}`);
     }
   }
+
+  // Copy styles.css into docs/templates/ so generated HTML can resolve it
+  const stylesDir = path.dirname(STYLES_OUT);
+  if (!fs.existsSync(stylesDir)) fs.mkdirSync(stylesDir, { recursive: true });
+  fs.copyFileSync(STYLES_SRC, STYLES_OUT);
+  console.log('[build_docs]  styles.css → docs/templates/styles.css');
 
   // Replace the old static index.html with the visual hub page
   if (fs.existsSync(HUB_TMPL)) {
