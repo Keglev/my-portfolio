@@ -92,6 +92,7 @@ The table below lists every intermediate and final artifact produced by the depl
 | `coverage/` | Jest (`--coverage` flag in CI) | CI | Uploaded as `coverage-report` artifact; later copied to `docs/coverage/` |
 | `docs/jsdoc/` | `npm run docs:jsdoc` (JSDoc) | Docs-refresh | Published to `gh-pages` branch |
 | `docs/*.html` | `scripts/docs/build_docs.js` | Docs-refresh | Published to `gh-pages` branch |
+| `docs/templates/styles.css` | `scripts/docs/build_docs.js` (copied from `scripts/docs/templates/`) | Docs-refresh | Published to `gh-pages` branch alongside `docs/*.html` |
 
 ## References
 
