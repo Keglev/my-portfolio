@@ -96,6 +96,12 @@ static output directly from its edge CDN.</p>
 <code>build-and-fetch.yml</code> workflow (after <code>ci.yml</code> passes). Vercel environment
 variables (<code>VERCEL_TOKEN</code>, <code>VERCEL_ORG_ID</code>, <code>VERCEL_PROJECT_ID</code>) are stored as
 GitHub Actions secrets.</p>
+<p>A <code>vercel.json</code> in the project root sets <code>github.productionBranch</code> to <code>&quot;main&quot;</code>
+and <code>buildCommand</code> to <code>&quot;react-scripts build&quot;</code>. The <code>productionBranch</code> setting
+prevents the <code>gh-pages</code> branch (which receives the documentation site) from
+being treated as a Vercel production source. The <code>buildCommand</code> value is defined
+for completeness but is never exercised — the <code>--prebuilt</code> flag means Vercel
+receives a finished static artifact and skips any build step of its own.</p>
 <h2 id="consequences">Consequences</h2>
 <ul>
 <li>Zero redundant builds: the artifact built and smoke-tested in CI is

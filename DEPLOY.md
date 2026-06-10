@@ -36,6 +36,8 @@ Set these in the Vercel dashboard under **Project → Settings → Environment V
 
 Deployment runs through GitHub Actions using a prebuilt artifact. Vercel does not run the build itself — GitHub Actions builds the app and hands Vercel a ready-to-serve `.vercel/output/` directory.
 
+A `vercel.json` in the project root configures two fields: `github.productionBranch: "main"` anchors any Vercel GitHub integration to the `main` branch (preventing the `gh-pages` documentation branch from being treated as a production source), and `buildCommand: "react-scripts build"` records the correct build command. The `buildCommand` is never invoked in practice because `vercel --prod --prebuilt` delivers a finished artifact and Vercel performs no build step.
+
 1. Connect the GitHub repository to a Vercel project and record `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` as GitHub Actions secrets (first-time setup only).
 2. Set `GH_PROJECTS_TOKEN` as a GitHub Actions secret.
 3. Optionally set `DEEPL_API_KEY` or `DEEPL_SECRET` as GitHub Actions secrets for German translation.
