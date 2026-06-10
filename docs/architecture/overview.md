@@ -35,7 +35,7 @@ The table below maps each architectural layer to the chosen technology and the r
 The diagram below shows the runtime flow from a browser request through the deployed infrastructure.
 
 ```mermaid
-graph LR
+graph TD
     Browser["Browser"]
     Vercel["Vercel CDN"]
     ReactApp["React App\n(CRA bundle)"]
@@ -44,12 +44,22 @@ graph LR
     GHPages["GitHub Pages\n(docs + coverage)"]
 
     Browser -->|"page request"| Vercel
+    Browser -->|"docs request"| GHPages
     Vercel -->|"serves bundle + assets"| ReactApp
     ReactApp -->|"language key lookup"| i18next
     i18next -->|"translated strings"| ReactApp
     ReactApp -->|"fetch /projects.json"| ProjectsJSON
     ProjectsJSON -->|"project data"| ReactApp
-    Browser -->|"docs request"| GHPages
+
+    class Browser l1
+    class Vercel,GHPages l2
+    class ReactApp l3
+    class i18next,ProjectsJSON l4
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 ```
 
 ## Key Design Decisions

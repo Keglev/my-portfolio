@@ -19,8 +19,22 @@ The diagram shows all significant rendering components. Infrastructure utilities
 
 ```mermaid
 graph TD
+    App["App"]
+    Sidebar["Sidebar"]
+    MainContent["main-content (div#scroll-container)"]
+    NameTitle["NameTitle"]
+    SidebarMenu["SidebarMenu"]
+    SidebarSocial["SidebarSocial"]
+    FooterMessage["FooterMessage"]
+    About["About"]
+    Education["Education"]
+    Projects["Projects"]
+    RepoDocs["RepoDocs"]
+    Experience["Experience"]
+    Legal["Legal"]
+
     App --> Sidebar
-    App --> MainContent["main-content (div#scroll-container)"]
+    App --> MainContent
     Sidebar --> NameTitle
     Sidebar --> SidebarMenu
     Sidebar --> SidebarSocial
@@ -31,6 +45,14 @@ graph TD
     MainContent --> RepoDocs
     MainContent --> Experience
     MainContent --> Legal
+
+    class App l1
+    class Sidebar,MainContent l2
+    class NameTitle,SidebarMenu,SidebarSocial,FooterMessage,About,Education,Projects,RepoDocs,Experience,Legal l3
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
 ```
 
 ## Sidebar Group

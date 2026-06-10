@@ -15,20 +15,44 @@ The portfolio uses three GitHub Actions workflows that form a sequential pipelin
 ## Pipeline Diagram
 
 ```mermaid
-flowchart LR
-    Push["Push to main"] --> CI["CI\nci.yml"]
-    CI --> Lint["Lint"]
-    Lint --> Test["Test + Coverage"]
-    Test --> Artifact["Upload coverage\nartifact"]
-    Artifact --> BuildFetch["Build & Fetch\nbuild-and-fetch.yml"]
-    BuildFetch --> FetchGH["Fetch GitHub\nprojects"]
-    FetchGH --> BuildReact["Build React app"]
-    BuildReact --> Vercel["Deploy to Vercel"]
-    Vercel --> DocsRefresh["Docs Refresh\ndocs-refresh.yml"]
-    DocsRefresh --> JSDoc["Generate JSDoc"]
-    JSDoc --> Templates["Apply doc templates"]
-    Templates --> Coverage["Download coverage\nartifact"]
-    Coverage --> GHPages["Publish to\nGitHub Pages"]
+flowchart TD
+    Push["Push to main"]
+
+    subgraph CI["ci.yml"]
+        Lint["Lint"]
+        Test["Test + Coverage"]
+        Artifact["Upload coverage artifact"]
+        Lint --> Test --> Artifact
+    end
+
+    subgraph BF["build-and-fetch.yml"]
+        FetchGH["Fetch GitHub projects"]
+        BuildReact["Build React app"]
+        VercelDeploy["Deploy to Vercel"]
+        FetchGH --> BuildReact --> VercelDeploy
+    end
+
+    subgraph DR["docs-refresh.yml"]
+        JSDoc["Generate JSDoc"]
+        Templates["Apply doc templates"]
+        Coverage["Download coverage artifact"]
+        GHPages["Publish to GitHub Pages"]
+        JSDoc --> Templates --> Coverage --> GHPages
+    end
+
+    Push --> Lint
+    Artifact -->|"workflow_dispatch"| FetchGH
+    VercelDeploy -->|"workflow_dispatch"| JSDoc
+
+    class Push l1
+    class Lint,Test,Artifact l2
+    class FetchGH,BuildReact,VercelDeploy l3
+    class JSDoc,Templates,Coverage,GHPages l4
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 ```
 
 ## Workflow Files

@@ -395,6 +395,22 @@ body {
   display: block;
 }
 
+/* Thicker edges and arrowheads */
+.mermaid-wrapper svg .edgePath path,
+.mermaid-wrapper svg .flowchart-link {
+  stroke-width: 2px !important;
+}
+
+.mermaid-wrapper svg .messageLine0,
+.mermaid-wrapper svg .messageLine1 {
+  stroke-width: 2px !important;
+}
+
+.mermaid-wrapper svg .actor line,
+.mermaid-wrapper svg .actor rect {
+  stroke-width: 2px !important;
+}
+
 /* -- site footer --------------------------------------------------- */
 .site-footer {
   border-top: 1px solid var(--border);
