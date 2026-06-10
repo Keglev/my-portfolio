@@ -64,7 +64,7 @@ Scripts in `scripts/docs/` are called by the `docs-refresh` GitHub Actions workf
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/docs/build_docs.js` | Converts every `docs/*.md` file to `docs/*.html` using the `scripts/docs/templates/page.html` template; generates a sidebar TOC from h2/h3 headings; wraps Mermaid code blocks in `.mermaid-wrapper` divs; copies `hub.html` to `docs/index.html` |
+| `scripts/docs/build_docs.js` | Reads HTML templates from `scripts/docs/templates/`; converts every `docs/*.md` to `docs/*.html` using `page.html`; generates a sidebar TOC from h2/h3 headings; wraps Mermaid code blocks in `.mermaid-wrapper` divs; copies `hub.html` → `docs/index.html` and `styles.css` → `docs/templates/styles.css` |
 | `scripts/docs/build_mermaid.js` | Scans the generated HTML files for Mermaid wrapper blocks and pre-renders them to inline SVG using `@mermaid-js/mermaid-cli` (`mmdc`); exits cleanly when `mmdc` is not installed so that client-side CDN rendering acts as the fallback |
 
 ## Processing Pipeline
