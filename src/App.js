@@ -9,6 +9,7 @@ import RepoDocs from './components/RepoDocs/RepoDocs';
 import Legal from './components/Legal/Legal';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from "@vercel/analytics/react";
 import "./i18n"; // must be imported before any translated component renders
 
 /**
@@ -20,6 +21,7 @@ import "./i18n"; // must be imported before any translated component renders
 function App() {
   return (
     <>
+      <Analytics />
       <SpeedInsights />
       <GlobalStyles />
       <div className="container">

@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
     "ajv": "^8.17.1",
     "axios": "^1.7.7",
@@ -44,7 +45,8 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "^@vercel/speed-insights/react$": "<rootDir>/config/jest/speedInsightsMock.js"
+      "^@vercel/speed-insights/react$": "<rootDir>/config/jest/speedInsightsMock.js",
+      "^@vercel/analytics/react$": "<rootDir>/config/jest/analyticsMock.js"
     }
   },
   "overrides": {

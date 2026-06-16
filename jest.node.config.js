@@ -26,7 +26,8 @@ module.exports = {
     // Redirect deprecated test-utils path to React's built-in act
     '^react-dom/test-utils$': '<rootDir>/config/jest/react-dom-test-utils.js',
     // Vercel SDK has no meaning in test environments
-    '^@vercel/speed-insights/react$': '<rootDir>/config/jest/speedInsightsMock.js'
+    '^@vercel/speed-insights/react$': '<rootDir>/config/jest/speedInsightsMock.js',
+    '^@vercel/analytics/react$': '<rootDir>/config/jest/analyticsMock.js'
   },
   // Include all source files so coverage report is comprehensive
   collectCoverageFrom: [
