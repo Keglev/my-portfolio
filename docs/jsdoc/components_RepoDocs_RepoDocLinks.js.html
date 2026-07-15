@@ -28,82 +28,34 @@
         <article>
             <pre class="prettyprint source linenums"><code>import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { convertRawToBlob } from '../Projects/projectsUtils';
-
-const DocLink = ({ href, label }) => (
-  &lt;a href={href} target="_blank" rel="noopener noreferrer" className="project-link">
-    {label}
-  &lt;/a>
-);
 
 /**
- * Renders documentation links for a single project in the RepoDocs section.
- * Checks fields in priority order: placeholder → API docs → architecture overview →
- * production URL → test coverage → generic docsLink fallback.
+ * Renders the curated documentation links for a single project as a stacked
+ * list. Each link's label is localized (English/German) from the config; the
+ * label text itself is the clickable link.
  *
- * @param {object} project - Enriched project object from useRepoDocs
+ * @param {Object[]} links - Curated doc links (RepoDocLink shape from src/data/repoDocs.config)
  * @returns {JSX.Element}
  */
-const RepoDocLinks = ({ project: p }) => {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
-  const linkLabel = t('viewDocs');
+const RepoDocLinks = ({ links = [] }) => {
+  const { i18n } = useTranslation();
+  const isGerman = (i18n.language || 'en').toLowerCase().startsWith('de');
 
-  if (p.repoDocs?.placeholder) {
-    const title = (lang === 'de' &amp;&amp; p.repoDocs.placeholder.title_de)
-      ? p.repoDocs.placeholder.title_de
-      : p.repoDocs.placeholder.title;
-    const desc = (lang === 'de' &amp;&amp; p.repoDocs.placeholder.description_de)
-      ? p.repoDocs.placeholder.description_de
-      : p.repoDocs.placeholder.description;
-    return &lt;p style={{ fontStyle: 'italic', color: '#888' }}>&lt;strong>{title}&lt;/strong> — {desc}&lt;/p>;
-  }
-
-  const nodes = [];
-
-  if (p.repoDocs?.apiDocumentation?.link) {
-    const title = (lang === 'de' &amp;&amp; p.repoDocs.apiDocumentation.title_de)
-      ? p.repoDocs.apiDocumentation.title_de
-      : p.repoDocs.apiDocumentation.title;
-    nodes.push(
-      &lt;p key="api">&lt;strong>{title}&lt;/strong>: &lt;DocLink href={convertRawToBlob(p.repoDocs.apiDocumentation.link)} label={linkLabel} />&lt;/p>
-    );
-  }
-
-  if (p.repoDocs?.architectureOverview?.link) {
-    const title = (lang === 'de' &amp;&amp; p.repoDocs.architectureOverview.title_de)
-      ? p.repoDocs.architectureOverview.title_de
-      : p.repoDocs.architectureOverview.title;
-    nodes.push(
-      &lt;p key="arch">&lt;strong>{title}&lt;/strong>: &lt;DocLink href={convertRawToBlob(p.repoDocs.architectureOverview.link)} label={linkLabel} />&lt;/p>
-    );
-  }
-
-  if (p.repoDocs?.productionUrl?.link) {
-    const title = (lang === 'de' &amp;&amp; p.repoDocs.productionUrl.title_de)
-      ? p.repoDocs.productionUrl.title_de
-      : p.repoDocs.productionUrl.title;
-    nodes.push(
-      &lt;p key="url">&lt;strong>{title}&lt;/strong>: &lt;DocLink href={convertRawToBlob(p.repoDocs.productionUrl.link)} label={t('urlLabel')} />&lt;/p>
-    );
-  }
-
-  if (Array.isArray(p.repoDocs?.testing?.coverage)) {
-    p.repoDocs.testing.coverage.forEach((cov, idx) => {
-      const title = (lang === 'de' &amp;&amp; cov.title_de) ? cov.title_de : cov.title;
-      nodes.push(
-        &lt;p key={`cov-${idx}`}>&lt;strong>{title}&lt;/strong>: &lt;DocLink href={convertRawToBlob(cov.link)} label={linkLabel} />&lt;/p>
-      );
-    });
-  }
-
-  // Only fall back to the generic docsLink when no structured doc fields exist
-  const hasStructuredLinks = !!(p.repoDocs?.apiDocumentation || p.repoDocs?.architectureOverview || p.docs?.documentation);
-  if (!hasStructuredLinks &amp;&amp; p.docsLink) {
-    return &lt;p>&lt;DocLink href={convertRawToBlob(p.docsLink)} label={t('viewDocs')} />&lt;/p>;
-  }
-
-  return &lt;>{nodes}&lt;/>;
+  return (
+    &lt;div className="repo-docs-links">
+      {links.map((link, idx) => (
+        &lt;a
+          key={idx}
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="project-link"
+        >
+          {isGerman ? link.titleDe : link.titleEn}
+        &lt;/a>
+      ))}
+    &lt;/div>
+  );
 };
 
 export default RepoDocLinks;
@@ -117,13 +69,13 @@ export default RepoDocLinks;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#useRepoDocs">useRepoDocs</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#repoDocs">repoDocs</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 15 2026 18:31:27 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 15 2026 19:02:55 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

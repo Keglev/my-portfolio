@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/Sidebar/SidebarMenu.js</title>
+    <title>JSDoc: Source: data/repoDocs.config.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/Sidebar/SidebarMenu.js</h1>
+    <h1 class="page-title">Source: data/repoDocs.config.js</h1>
 
     
 
@@ -26,74 +26,54 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { Menu, StyledLink, LanguageWrapper, CVDownloadWrapper, CVDownloadLink } from './SidebarStyles';
+            <pre class="prettyprint source linenums"><code>/**
+ * Curated documentation links for the "Project documentation" (RepoDocs) section.
+ *
+ * Single source of truth, replacing the previous runtime fetch of
+ * public/projects.json plus README/AST parsing. Every URL here is a real,
+ * author-published documentation page (GitHub Pages), verified against each
+ * repository's README, so links do not break and stale/duplicate projects can
+ * no longer leak in.
+ *
+ * To add or change a link, edit this file — no fetch pipeline or token needed.
+ *
+ * @typedef {Object} RepoDocLink
+ * @property {string} titleEn  Link label in English.
+ * @property {string} titleDe  Link label in German.
+ * @property {string} url      Absolute URL to the published documentation page.
+ *
+ * @typedef {Object} RepoDocEntry
+ * @property {string} slug         Stable id (matches the project card slug).
+ * @property {string} displayName  Product name shown as the card heading.
+ * @property {RepoDocLink[]} links Documentation links for this project.
+ */
 
-const NAV_ITEMS = [
-  { id: 'About',      key: 'about' },
-  { id: 'Education',  key: 'education' },
-  { id: 'Projects',   key: 'projects' },
-  { id: 'RepoDocs',   key: 'repoDocs' },
-  { id: 'Experience', key: 'experience.jobExperiences' },
+/** @type {RepoDocEntry[]} */
+const repoDocs = [
+  {
+    slug: 'smartsupplypro',
+    displayName: 'SmartSupplyPro',
+    links: [
+      { titleEn: 'Documentation hub', titleDe: 'Dokumentations-Hub', url: 'https://keglev.github.io/inventory-service/' },
+      { titleEn: 'API reference', titleDe: 'API-Referenz', url: 'https://keglev.github.io/inventory-service/backend/api/index.html' },
+      { titleEn: 'Architecture overview', titleDe: 'Architektur-Überblick', url: 'https://keglev.github.io/inventory-service/backend/architecture/overview.html' },
+      { titleEn: 'Backend test coverage', titleDe: 'Backend-Testabdeckung', url: 'https://keglev.github.io/inventory-service/backend/coverage/index.html' },
+    ],
+  },
+  {
+    slug: 'stockease',
+    displayName: 'StockEase',
+    links: [
+      { titleEn: 'Documentation hub', titleDe: 'Dokumentations-Hub', url: 'https://keglev.github.io/stockease/' },
+      { titleEn: 'API reference', titleDe: 'API-Referenz', url: 'https://keglev.github.io/stockease/api-docs.html' },
+      { titleEn: 'Architecture &amp; security', titleDe: 'Architektur &amp; Sicherheit', url: 'https://keglev.github.io/stockease/architecture/security.html' },
+      { titleEn: 'Test coverage', titleDe: 'Testabdeckung', url: 'https://keglev.github.io/stockease/coverage/index.html' },
+      { titleEn: 'Frontend documentation', titleDe: 'Frontend-Dokumentation', url: 'https://keglev.github.io/frontend/' },
+    ],
+  },
 ];
 
-/**
- * Renders the sidebar navigation links, language switcher, and CV download button.
- * The CV filename and label are both locale-driven to serve the correct language version.
- *
- * @param {string} activeSection - Id of the section currently in view
- * @returns {JSX.Element}
- */
-const SidebarMenu = ({ activeSection }) => {
-  const { t, i18n } = useTranslation();
-
-  const cvFile = i18n.language === 'de'
-    ? '/Carlos_Keglevich_Lebenslauf_DE.pdf'
-    : '/Carlos_Keglevich_CV_EN.pdf';
-  const cvLabel = i18n.language === 'de' ? 'Lebenslauf herunterladen' : 'Download Resume';
-
-  return (
-    &lt;>
-      &lt;Menu>
-        {NAV_ITEMS.map(({ id, key }) => (
-          &lt;StyledLink
-            key={id}
-            to={id}
-            smooth={true}
-            duration={500}
-            spy={true}
-            activeClass={activeSection === id ? 'active' : ''}
-            containerId="scroll-container"
-            // Offset keeps the section heading clear of the mobile top bar
-            offset={70}
-          >
-            {t(key)}
-          &lt;/StyledLink>
-        ))}
-      &lt;/Menu>
-
-      &lt;LanguageWrapper role="group" aria-label="Language switch">
-        &lt;button onClick={() => i18n.changeLanguage('en')} aria-label="Switch to English">{t('language.english')}&lt;/button>
-        &lt;button onClick={() => i18n.changeLanguage('de')} aria-label="Switch to German">{t('language.german')}&lt;/button>
-      &lt;/LanguageWrapper>
-
-      &lt;CVDownloadWrapper>
-        &lt;CVDownloadLink
-          href={cvFile}
-          download
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={cvLabel}
-        >
-          {cvLabel}
-        &lt;/CVDownloadLink>
-      &lt;/CVDownloadWrapper>
-    &lt;/>
-  );
-};
-
-export default SidebarMenu;
+export default repoDocs;
 </code></pre>
         </article>
     </section>

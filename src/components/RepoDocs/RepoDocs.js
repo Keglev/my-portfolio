@@ -1,32 +1,32 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import useRepoDocs from './useRepoDocs';
+import repoDocs from '../../data/repoDocs.config';
 import RepoDocLinks from './RepoDocLinks';
 import './RepoDocs.css';
 
 /**
- * Renders the RepoDocs section listing projects that have linked documentation.
- * Shows an empty-state card when no projects with docs are found.
+ * Renders the "Project documentation" section from the curated repoDocs config.
+ * No runtime fetch: link content, titles and order are controlled in
+ * src/data/repoDocs.config. Shows an empty-state card only if the config is empty.
  *
  * @returns {JSX.Element}
  */
 const RepoDocs = () => {
   const { t } = useTranslation();
-  const projectsWithDocs = useRepoDocs();
 
   return (
     <div className="repo-docs-container" id="RepoDocs">
       <h2>{t('repoDocs')}</h2>
       <div className="repo-docs-list">
-        {projectsWithDocs.length === 0 ? (
+        {repoDocs.length === 0 ? (
           <div className="repo-docs-card">
             <p>{t('noRepoDocs')}</p>
           </div>
         ) : (
-          projectsWithDocs.map((p, idx) => (
-            <div className="repo-docs-card" key={idx}>
-              <h3>{p.name}</h3>
-              <RepoDocLinks project={p} />
+          repoDocs.map((project) => (
+            <div className="repo-docs-card" key={project.slug}>
+              <h3>{project.displayName}</h3>
+              <RepoDocLinks links={project.links} />
             </div>
           ))
         )}
