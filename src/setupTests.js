@@ -16,12 +16,14 @@ try {
 }
 
 // Keep a targeted suppression for the specific ReactDOMTestUtils.act deprecation
-// message. This avoids noisy test output while allowing other warnings to surface.
+// message emitted by the testing-library/react compat layer. The real message
+// wraps the identifier in backticks ("`ReactDOMTestUtils.act` is deprecated"),
+// so we match on the identifier alone. Other warnings still surface.
 const _realConsoleError = console.error;
 console.error = (...args) => {
 	try {
 		const msg = args && args[0] && String(args[0]);
-		if (msg && msg.includes('ReactDOMTestUtils.act is deprecated')) return;
+		if (msg && msg.includes('ReactDOMTestUtils.act')) return;
 	} catch (e) {}
 	_realConsoleError.apply(console, args);
 };

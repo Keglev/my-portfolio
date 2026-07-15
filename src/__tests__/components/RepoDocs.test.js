@@ -4,7 +4,7 @@
  * language switching, fetch error handling, and raw.githubusercontent.com link rewriting.
  */
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import RepoDocs from '../../components/RepoDocs/RepoDocs';
 
 jest.mock('react-i18next', () => ({ useTranslation: jest.fn() }));
@@ -94,18 +94,24 @@ describe('RepoDocs', () => {
     useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en' } });
     global.fetch.mockResolvedValue({ ok: false, json: async () => [] });
 
-    render(<RepoDocs />);
+    // Empty state is present on first render, so wrap in act to also flush the
+    // trailing setState from the resolved fetch (otherwise it lands outside act).
+    await act(async () => {
+      render(<RepoDocs />);
+    });
 
-    expect(await screen.findByText('noRepoDocs')).toBeInTheDocument();
+    expect(screen.getByText('noRepoDocs')).toBeInTheDocument();
   });
 
   it('renders the empty state when fetch throws', async () => {
     useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en' } });
     global.fetch.mockRejectedValue(new Error('network'));
 
-    render(<RepoDocs />);
+    await act(async () => {
+      render(<RepoDocs />);
+    });
 
-    expect(await screen.findByText('noRepoDocs')).toBeInTheDocument();
+    expect(screen.getByText('noRepoDocs')).toBeInTheDocument();
   });
 
   it('filters out repos that only have a summary and no documentation structure', async () => {

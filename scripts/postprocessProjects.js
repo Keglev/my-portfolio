@@ -164,7 +164,8 @@ async function main(nodes) {
   fixBadDocsTitles(nodes);
   normalizeTechTokens(nodes);
   fs.writeFileSync(FILE, JSON.stringify(nodes, null, 2), 'utf8');
-  console.log('Wrote', FILE);
+  // Keep this log for CI/manual runs, but stay silent when invoked from tests.
+  if (process.env.NODE_ENV !== 'test') console.log('Wrote', FILE);
 }
 
 module.exports = { tryGithubIo, normalizeTech, main };
