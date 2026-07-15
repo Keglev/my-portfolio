@@ -1293,6 +1293,74 @@ Technologies heading, so sibling sections are not included.
 
 
         
+            
+<h4 class="name" id="projects"><span class="type-signature">(constant) </span>projects<span class="type-signature"> :Array.&lt;<a href="global.html#ProjectConfig">ProjectConfig</a>></span></h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Array.&lt;<a href="global.html#ProjectConfig">ProjectConfig</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="data_projects.config.js.html">data/projects.config.js</a>, <a href="data_projects.config.js.html#line35">line 35</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
     
 
     
@@ -1857,7 +1925,7 @@ Both sections reuse the project-card layout for visual consistency with the rest
     
 
     
-    <h4 class="name" id="ProjectCard"><span class="type-signature"></span>ProjectCard<span class="signature">(project, image, index, loadedImages, setLoadedImages)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    <h4 class="name" id="ProjectCard"><span class="type-signature"></span>ProjectCard<span class="signature">(project, index, loadedImages, setLoadedImages)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
     
@@ -1865,8 +1933,10 @@ Both sections reuse the project-card layout for visual consistency with the rest
 
 
 <div class="description">
-    Renders a single project card with image, summary, technologies, and links.
-Handles progressive image loading and a multi-step fallback chain when images fail.
+    Renders a single curated project card: preview image, title, summary,
+technology tags, and up to four links (repo, optional second repo, live app,
+docs). Image load failures fall back to an inline SVG placeholder — the card
+never shows a broken-image icon.
 </div>
 
 
@@ -1908,7 +1978,7 @@ Handles progressive image loading and a multi-step fallback chain when images fa
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
 
 
             
@@ -1918,30 +1988,7 @@ Handles progressive image loading and a multi-step fallback chain when images fa
 
             
 
-            <td class="description last">Project data object from projects.json</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>image</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">Primary image URL resolved by the parent</td>
+            <td class="description last">Curated project data (ProjectConfig shape from src/data/projects.config)</td>
         </tr>
 
     
@@ -1964,7 +2011,7 @@ Handles progressive image loading and a multi-step fallback chain when images fa
 
             
 
-            <td class="description last">Position in the projects array, used as the loadedImages key</td>
+            <td class="description last">Position in the projects array; key into loadedImages</td>
         </tr>
 
     
@@ -1987,7 +2034,7 @@ Handles progressive image loading and a multi-step fallback chain when images fa
 
             
 
-            <td class="description last">Map of index → boolean tracking which images have loaded</td>
+            <td class="description last">Map of index → boolean tracking loaded images</td>
         </tr>
 
     
@@ -2051,7 +2098,7 @@ Handles progressive image loading and a multi-step fallback chain when images fa
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Projects_ProjectCard.js.html">components/Projects/ProjectCard.js</a>, <a href="components_Projects_ProjectCard.js.html#line22">line 22</a>
+        <a href="components_Projects_ProjectCard.js.html">components/Projects/ProjectCard.js</a>, <a href="components_Projects_ProjectCard.js.html#line18">line 18</a>
     </li></ul></dd>
     
 
@@ -2105,7 +2152,7 @@ Handles progressive image loading and a multi-step fallback chain when images fa
     
 
     
-    <h4 class="name" id="ProjectSummary"><span class="type-signature"></span>ProjectSummary<span class="signature">(project, language, t)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    <h4 class="name" id="ProjectSummary"><span class="type-signature"></span>ProjectSummary<span class="signature">(project, language)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
     
@@ -2113,10 +2160,9 @@ Handles progressive image loading and a multi-step fallback chain when images fa
 
 
 <div class="description">
-    Renders the descriptive summary for a single project card.
-Selects the best available text in priority order: German translation >
-README About section > default summary. Falls back to a skeleton placeholder
-while content is unavailable.
+    Renders the descriptive summary for a curated project card.
+Both summaryEn and summaryDe are always present in the config, so language
+selection is a straightforward switch with no missing-translation fallback.
 </div>
 
 
@@ -2158,7 +2204,7 @@ while content is unavailable.
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Object</span>
 
 
             
@@ -2168,7 +2214,7 @@ while content is unavailable.
 
             
 
-            <td class="description last">Project data object</td>
+            <td class="description last">Curated project data (ProjectConfig shape from src/data/projects.config)</td>
         </tr>
 
     
@@ -2192,29 +2238,6 @@ while content is unavailable.
             
 
             <td class="description last">Active i18n locale code (e.g. 'en', 'de')</td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>t</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">i18next translation function</td>
         </tr>
 
     
@@ -2255,7 +2278,7 @@ while content is unavailable.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Projects_ProjectSummary.js.html">components/Projects/ProjectSummary.js</a>, <a href="components_Projects_ProjectSummary.js.html#line15">line 15</a>
+        <a href="components_Projects_ProjectSummary.js.html">components/Projects/ProjectSummary.js</a>, <a href="components_Projects_ProjectSummary.js.html#line12">line 12</a>
     </li></ul></dd>
     
 
@@ -2318,7 +2341,11 @@ while content is unavailable.
 
 <div class="description">
     Renders the portfolio's Projects section.
-Fetches project data via useProjects and delegates card rendering to ProjectCard.
+
+Reads curated project data directly from src/data/projects.config (no runtime
+fetch). Card content, titles, tech tags, images and links are all controlled
+there. `loadedImages` tracks per-card image load state for the entrance
+animation handled in ProjectCard/Projects.css.
 </div>
 
 
@@ -2362,7 +2389,7 @@ Fetches project data via useProjects and delegates card rendering to ProjectCard
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Projects_Projects.js.html">components/Projects/Projects.js</a>, <a href="components_Projects_Projects.js.html#line14">line 14</a>
+        <a href="components_Projects_Projects.js.html">components/Projects/Projects.js</a>, <a href="components_Projects_Projects.js.html#line17">line 17</a>
     </li></ul></dd>
     
 
@@ -2391,7 +2418,7 @@ Fetches project data via useProjects and delegates card rendering to ProjectCard
 
         
 <div class="param-desc">
-    Grid of project cards loaded from projects.json.
+    Grid of curated project cards.
 </div>
 
 
@@ -3214,113 +3241,6 @@ Iterates from bottom to top so the deepest section the user has scrolled past wi
     
 
     
-    <h4 class="name" id="useProjects"><span class="type-signature"></span>useProjects<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Fetches and caches the project list from the static /projects.json endpoint.
-Also manages per-card image load tracking used for card entrance animations.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Projects_useProjects.js.html">components/Projects/useProjects.js</a>, <a href="components_Projects_useProjects.js.html#line9">line 9</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Object</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
-            
-
-    
-
-    
     <h4 class="name" id="useRepoDocs"><span class="type-signature"></span>useRepoDocs<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;object>}</span></h4>
     
 
@@ -3430,6 +3350,389 @@ Enriches each project with a normalized docs shape via enrichProject.
     
 
     
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        
+                
+<h4 class="name" id="ProjectConfig">ProjectConfig</h4>
+
+
+
+
+<div class="description">
+    Curated project data for the Projects section.
+
+Single source of truth for the portfolio cards. It intentionally does NOT
+fetch from the GitHub API at build time: cards are hand-curated for a
+recruiter audience, so copy, titles, tech tags and images are controlled
+here instead of inherited (with bugs) from README files. The old fetch
+pipeline is retained only as an optional dev tool (`npm run refresh:projects`)
+and is no longer on the render path.
+
+Copy is aligned to the CV (EN + DE) so the portfolio and CV tell the same
+story. Summaries are plain text only — no Markdown, no leading section labels.
+
+Image convention:
+  Put curated PNGs in `public/projects/` and reference them by absolute
+  public path. Resolves the same under CRA and Vite and never breaks the
+  build if a file is missing — ProjectCard falls back to an inline SVG
+  placeholder on load error.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>slug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Stable id / key (kebab-case).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>displayName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Human-facing product name shown as the card title.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>summaryEn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Plain-text English summary.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>summaryDe</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Plain-text German summary.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tech</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;string></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Clean technology labels (already normalized).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>image</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Absolute public path to the preview image.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>repoUrl</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Primary GitHub repository URL.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>repoUrlSecondary</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Optional second repo (e.g. separate frontend).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>liveUrl</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Live application URL, or null if none.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>docsUrl</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Documentation hub URL, or null if none.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>featured</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Featured projects render first / larger.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="data_projects.config.js.html">data/projects.config.js</a>, <a href="data_projects.config.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
+    
 
     
 </article>
@@ -3442,13 +3745,13 @@ Enriches each project with a normalized docs shape via enrichProject.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#useProjects">useProjects</a></li><li><a href="global.html#useRepoDocs">useRepoDocs</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#useRepoDocs">useRepoDocs</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jun 10 2026 15:39:03 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 15 2026 10:45:18 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
