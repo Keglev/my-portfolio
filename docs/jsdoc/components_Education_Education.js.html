@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: components/Education/Education.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,76 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: components/Education/Education.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { useTranslation } from 'react-i18next';
+import './Education.css';
 
+/**
+ * Displays a list of educational qualifications and certifications.
+ * Dynamically renders education entries from i18n resources with optional institution
+ * and note fields.
+ *
+ * @returns {JSX.Element} Education section with a list of qualification cards.
+ */
+const Education = () => {
+  const { t } = useTranslation();
 
-    <h3> </h3>
+  const entries = [
+    {
+      title: t('educationSection.entry1.title'),
+      institution: t('educationSection.entry1.institution'),
+      note: t('educationSection.entry1.note'),
+    },
+    {
+      title: t('educationSection.entry2.title'),
+      institution: t('educationSection.entry2.institution'),
+      note: t('educationSection.entry2.note'),
+    },
+    {
+      title: t('educationSection.entry3.title'),
+      institution: t('educationSection.entry3.institution'),
+      note: t('educationSection.entry3.note'),
+    },
+    {
+      title: t('educationSection.entry4.title'),
+      institution: t('educationSection.entry4.institution'),
+      note: t('educationSection.entry4.note'),
+    },
+  ];
 
+  return (
+    &lt;div className="education-container" id="Education">
+      &lt;h2>{t('educationSection.heading')}&lt;/h2>
+      &lt;div className="education-list">
+        {entries.map((entry, index) => (
+          &lt;div className="education-card" key={index}>
+            &lt;h3>{entry.title}&lt;/h3>
+            {entry.institution &amp;&amp; (
+              &lt;p className="education-institution">{entry.institution}&lt;/p>
+            )}
+            {entry.note &amp;&amp; (
+              &lt;p className="education-note">{entry.note}&lt;/p>
+            )}
+          &lt;/div>
+        ))}
+      &lt;/div>
+    &lt;/div>
+  );
+};
 
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+export default Education;
+</code></pre>
+        </article>
+    </section>
 
 
 

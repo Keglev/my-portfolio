@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: components/ErrorBoundary.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,51 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: components/ErrorBoundary.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
 
+/**
+ * Catches unhandled React rendering errors and displays a fallback UI
+ * instead of a blank page. Wrap any subtree that may throw during render.
+ */
+export default class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
 
-    <h3> </h3>
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
 
+  componentDidCatch(error, info) {
+    console.error('ErrorBoundary caught an error:', error, info);
+  }
 
+  render() {
+    if (this.state.hasError) {
+      return (
+        &lt;div style={{ padding: 20, color: '#ffcccb', background: '#0a0a0a' }}>
+          &lt;h2>Something went wrong while rendering the app.&lt;/h2>
+          &lt;pre style={{ whiteSpace: 'pre-wrap' }}>{String(this.state.error)}&lt;/pre>
+        &lt;/div>
+      );
+    }
 
-
-
-
-
-
-
-
-    
-
-
-
-
-
+    return this.props.children;
+  }
+}
+</code></pre>
+        </article>
+    </section>
 
 
 

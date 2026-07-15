@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/Sidebar/Sidebar.js</title>
+    <title>JSDoc: Source: components/Projects/ProjectCard.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/Sidebar/Sidebar.js</h1>
+    <h1 class="page-title">Source: components/Projects/ProjectCard.js</h1>
 
     
 
@@ -26,89 +26,82 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+            <pre class="prettyprint source linenums"><code>import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  SidebarContainer,
-  NameTitle,
-  FooterMessage,
-  LegalButton,
-} from './SidebarStyles';
-import SidebarMenu from './SidebarMenu';
-import SidebarSocial from './SidebarSocial';
-
-// Ordered bottom-to-top so the first match is always the deepest section currently in view
-const SECTIONS = ['Legal', 'RepoDocs', 'Experience', 'Projects', 'Education'];
+import { generatePlaceholderSVGDataUrl } from './projectsUtils';
+import ProjectSummary from './ProjectSummary';
 
 /**
- * Returns the id of the section currently most visible in the viewport.
- * Iterates from bottom to top so the deepest section the user has scrolled past wins.
+ * Renders a single curated project card: preview image, title, summary,
+ * technology tags, and up to four links (repo, optional second repo, live app,
+ * docs). Image load failures fall back to an inline SVG placeholder — the card
+ * never shows a broken-image icon.
  *
- * @param {number} scrollPosition - window.scrollY plus half the viewport height
- * @returns {string} Section id, defaulting to 'About' when scroll is near the top
- */
-const getActiveSection = (scrollPosition) => {
-  for (const id of SECTIONS) {
-    const el = document.getElementById(id);
-    if (el &amp;&amp; scrollPosition >= el.offsetTop) return id;
-  }
-  return 'About';
-};
-
-/**
- * Fixed left-hand navigation sidebar.
- * Tracks the active section via scroll position and exposes language switching,
- * CV download, and links to German legal pages.
- *
+ * @param {Object} project - Curated project data (ProjectConfig shape from src/data/projects.config)
+ * @param {number} index - Position in the projects array; key into loadedImages
+ * @param {object} loadedImages - Map of index → boolean tracking loaded images
+ * @param {Function} setLoadedImages - Setter for loadedImages state
  * @returns {JSX.Element}
  */
-const Sidebar = () => {
-  const { t } = useTranslation();
-  const [activeSection, setActiveSection] = useState('About');
+const ProjectCard = ({ project, index, loadedImages = {}, setLoadedImages = () => {} }) => {
+  const { t, i18n } = useTranslation();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      // Midpoint of the viewport keeps the active item stable as the user scrolls through sections
-      const scrollPosition = window.scrollY + window.innerHeight / 2;
-      setActiveSection(getActiveSection(scrollPosition));
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // Single, deterministic fallback: config image → inline SVG placeholder.
+  const handleError = (e) => {
+    const img = e.currentTarget;
+    if (img.getAttribute('data-fallback') !== '1') {
+      img.setAttribute('data-fallback', '1');
+      img.src = generatePlaceholderSVGDataUrl(project.displayName);
+    }
+    setLoadedImages(prev => ({ ...prev, [index]: true }));
+  };
 
   return (
-    &lt;SidebarContainer>
-      &lt;NameTitle>
-        &lt;h1>{t('name')}&lt;/h1>
-        &lt;h2>{t('title')}&lt;/h2>
-      &lt;/NameTitle>
-      &lt;SidebarMenu activeSection={activeSection} />
-      &lt;SidebarSocial />
-      &lt;FooterMessage>
-        &lt;p>{t('footerMessage')}&lt;/p>
-        &lt;div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          &lt;LegalButton
-            type="button"
-            aria-label="Jump to Impressum section"
-            onClick={() => document.getElementById('Impressum')?.scrollIntoView({ behavior: 'smooth' })}
-          >
-            {t('impressumLink')}
-          &lt;/LegalButton>
-          &lt;span style={{ color: '#8892b0' }}>|&lt;/span>
-          &lt;LegalButton
-            type="button"
-            aria-label="Jump to privacy policy section"
-            onClick={() => document.getElementById('Datenschutz')?.scrollIntoView({ behavior: 'smooth' })}
-          >
-            {t('datenschutzLink')}
-          &lt;/LegalButton>
+    &lt;div className={'project-card ' + (loadedImages[index] ? 'visible' : '')}>
+      &lt;div className="image-wrap">
+        &lt;img
+          src={project.image}
+          alt={project.displayName + ' preview'}
+          className={'project-image ' + (loadedImages[index] ? 'loaded' : '')}
+          loading="lazy"
+          onLoad={() => setLoadedImages(prev => ({ ...prev, [index]: true }))}
+          onError={handleError}
+        />
+      &lt;/div>
+      &lt;div className="project-content">
+        &lt;h3>{project.displayName}&lt;/h3>
+        &lt;ProjectSummary project={project} language={i18n.language} />
+        &lt;div className="technologies">
+          {project.tech.map((word, idx) => (
+            &lt;span className="tech-box" key={idx}>{word}&lt;/span>
+          ))}
         &lt;/div>
-      &lt;/FooterMessage>
-    &lt;/SidebarContainer>
+        &lt;div className="project-links">
+          &lt;a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="project-link">
+            {t('viewOnGithub')}
+          &lt;/a>
+          {project.repoUrlSecondary &amp;&amp; (
+            &lt;a href={project.repoUrlSecondary} target="_blank" rel="noopener noreferrer" className="project-link">
+              {t('viewOnGithubFrontend', 'Frontend on GitHub')}
+            &lt;/a>
+          )}
+          {project.liveUrl &amp;&amp; (
+            &lt;a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="project-link">
+              {t('urlLabel')}
+            &lt;/a>
+          )}
+          {project.docsUrl &amp;&amp; (
+            &lt;a href={project.docsUrl} target="_blank" rel="noopener noreferrer" className="project-link">
+              {t('viewDocs', 'Documentation')}
+            &lt;/a>
+          )}
+        &lt;/div>
+      &lt;/div>
+    &lt;/div>
   );
 };
 
-export default Sidebar;
+export default ProjectCard;
 </code></pre>
         </article>
     </section>

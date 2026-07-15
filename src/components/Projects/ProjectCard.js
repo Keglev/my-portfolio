@@ -9,7 +9,7 @@ import ProjectSummary from './ProjectSummary';
  * docs). Image load failures fall back to an inline SVG placeholder — the card
  * never shows a broken-image icon.
  *
- * @param {import('../../data/projects.config').ProjectConfig} project - Curated project data
+ * @param {Object} project - Curated project data (ProjectConfig shape from src/data/projects.config)
  * @param {number} index - Position in the projects array; key into loadedImages
  * @param {object} loadedImages - Map of index → boolean tracking loaded images
  * @param {Function} setLoadedImages - Setter for loadedImages state

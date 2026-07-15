@@ -27,10 +27,11 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import styled from 'styled-components';
-import { Link } from 'react-scroll'; // Importing Link from react-scroll for smooth scrolling
+import { Link } from 'react-scroll';
 
 /**
- * Styled container for the sidebar
+ * Fixed full-height column that holds all sidebar content.
+ * Becomes a static block on mobile so it doesn't obscure the scrollable content area.
  */
 export const SidebarContainer = styled.div`
   width: 350px;
@@ -44,16 +45,21 @@ export const SidebarContainer = styled.div`
   position: fixed;
   top: 0;
   left: 0;
+  padding: 1rem 1rem;
+  overflow: hidden;
+  box-sizing: border-box;
 
   @media (max-width: 768px) {
     width: 100%;
     height: auto;
     position: relative;
+    overflow-y: visible;
   }
 `;
 
 /**
- * Styled link component for navigation, includes hover and active state
+ * Navigation link powered by react-scroll.
+ * Slides right on hover/active to signal the current section without a full page change.
  */
 export const StyledLink = styled(Link)`
   display: flex;
@@ -66,66 +72,69 @@ export const StyledLink = styled(Link)`
 
   &amp;:hover,
   &amp;.active {
-    transform: translateX(10px); /* Shift to the right when hovered or active */
-    color: #64ffda; /* Highlight color */
+    transform: translateX(10px);
+    color: #64ffda;
   }
 `;
 
 /**
- * Name and title section styling
+ * Name and job title block at the top of the sidebar.
+ * Uses clamp() on h1 so the name stays on one line within the fixed sidebar width.
  */
 export const NameTitle = styled.div`
   text-align: center;
 
   h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+    /* clamp keeps the name on one line without overflowing the fixed sidebar width */
+    font-size: clamp(1.4rem, 4.8vw, 1.9rem);
+    margin-bottom: 0.3rem;
     color: #64ffda;
+    white-space: nowrap;
   }
 
   h2 {
-    font-size: 1.4rem;
+    font-size: 1.1rem;
     color: #8892b0;
   }
 
   @media (max-width: 768px) {
     h1 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
+      white-space: normal;
     }
 
     h2 {
-      font-size: 1.2rem;
+      font-size: 1rem;
     }
   }
 `;
 
 /**
- * Menu wrapper for the links
+ * Navigation link column. Hidden on mobile because the sidebar
+ * collapses to a top header bar where vertical links don't fit.
  */
 export const Menu = styled.div`
-  margin-top: 2rem;
+  margin-top: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.2rem;
 
   @media (max-width: 768px) {
-    display: none; /* Hide menu on smaller screens */
+    display: none;
   }
 `;
 
 /**
- * Wrapper for social links like GitHub, LinkedIn, and Email
+ * Centering wrapper for the social icon row.
  */
 export const SocialLinksWrapper = styled.div`
-  margin-top: auto;
-  margin-bottom: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
 /**
- * Social links container with hover effects
+ * Social icon links with scale-and-color hover effect.
  */
 export const SocialLinks = styled.div`
   display: flex;
@@ -137,8 +146,8 @@ export const SocialLinks = styled.div`
     transition: color 0.3s ease, transform 0.3s ease;
 
     &amp;:hover {
-      color: #64ffda; /* Change color on hover */
-      transform: scale(1.2); /* Slight zoom effect */
+      color: #64ffda;
+      transform: scale(1.2);
     }
   }
 
@@ -152,10 +161,10 @@ export const SocialLinks = styled.div`
 `;
 
 /**
- * Footer message at the bottom of the sidebar
+ * Footer area at the bottom of the sidebar containing the tagline and legal links.
  */
 export const FooterMessage = styled.div`
-  margin-bottom: 2rem;
+  margin-bottom: 0;
   text-align: center;
   font-size: 0.9rem;
   color: #ccd6f6;
@@ -170,13 +179,14 @@ export const FooterMessage = styled.div`
 `;
 
 /**
- * Wrapper for language buttons area
+ * Language toggle button group. Subtle background separates it visually
+ * from the navigation links above.
  */
 export const LanguageWrapper = styled.div`
-  margin-bottom: 4.5rem; /* more separation from menu */
+  margin-bottom: 1rem;
   display: flex;
-  gap: 1.5rem; /* increased gap so buttons sit away from menu links */
-  margin-top: 1rem; /* ensure there is room above buttons */
+  gap: 1.5rem;
+  margin-top: 1rem;
   button {
     background: rgba(100,255,218,0.04);
     border: 1px solid rgba(100,255,218,0.16);
@@ -189,7 +199,7 @@ export const LanguageWrapper = styled.div`
     transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease, box-shadow 0.12s ease;
   }
   button:hover {
-    /* copy tech-box hover: brighter, green background and shadow */
+    /* Matches tech-box hover: solid accent background with lift shadow */
     background: #64ffda;
     color: #0a192f;
     transform: translateY(-3px) scale(1.06);
@@ -204,6 +214,10 @@ export const LanguageWrapper = styled.div`
   }
 `;
 
+/**
+ * Ghost button used for Impressum and Datenschutz footer links.
+ * Styled to look like a text link while keeping button semantics for accessibility.
+ */
 export const LegalButton = styled.button`
   background: none;
   border: none;
@@ -212,6 +226,43 @@ export const LegalButton = styled.button`
   color: inherit;
   text-decoration: underline;
   font: inherit;
+`;
+
+/**
+ * Centering wrapper for the CV download link.
+ */
+export const CVDownloadWrapper = styled.div`
+  margin-top: 1rem;
+  margin-bottom: 0;
+  display: flex;
+  justify-content: center;
+`;
+
+/**
+ * Styled CV download link. Matches the language button appearance
+ * so both actions feel like peers in the sidebar footer.
+ */
+export const CVDownloadLink = styled.a`
+  display: inline-block;
+  background: rgba(100, 255, 218, 0.04);
+  border: 1px solid rgba(100, 255, 218, 0.16);
+  color: #64ffda;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(10, 25, 47, 0.25);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease,
+    box-shadow 0.12s ease;
+
+  &amp;:hover {
+    background: #64ffda;
+    color: #0a192f;
+    transform: translateY(-3px) scale(1.06);
+    box-shadow: 0 8px 18px rgba(100, 255, 218, 0.14);
+  }
 `;
 </code></pre>
         </article>
@@ -223,13 +274,13 @@ export const LegalButton = styled.button`
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#useRepoDocs">useRepoDocs</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Oct 20 2025 19:07:06 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 15 2026 12:42:46 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

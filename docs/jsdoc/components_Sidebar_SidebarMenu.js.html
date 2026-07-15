@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: components/Sidebar/SidebarMenu.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,86 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: components/Sidebar/SidebarMenu.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Menu, StyledLink, LanguageWrapper, CVDownloadWrapper, CVDownloadLink } from './SidebarStyles';
 
+const NAV_ITEMS = [
+  { id: 'About',      key: 'about' },
+  { id: 'Education',  key: 'education' },
+  { id: 'Projects',   key: 'projects' },
+  { id: 'RepoDocs',   key: 'repoDocs' },
+  { id: 'Experience', key: 'experience.jobExperiences' },
+];
 
-    <h3> </h3>
+/**
+ * Renders the sidebar navigation links, language switcher, and CV download button.
+ * The CV filename and label are both locale-driven to serve the correct language version.
+ *
+ * @param {string} activeSection - Id of the section currently in view
+ * @returns {JSX.Element}
+ */
+const SidebarMenu = ({ activeSection }) => {
+  const { t, i18n } = useTranslation();
 
+  const cvFile = i18n.language === 'de'
+    ? '/Carlos_Keglevich_Lebenslauf_DE.pdf'
+    : '/Carlos_Keglevich_CV_EN.pdf';
+  const cvLabel = i18n.language === 'de' ? 'Lebenslauf herunterladen' : 'Download Resume';
 
+  return (
+    &lt;>
+      &lt;Menu>
+        {NAV_ITEMS.map(({ id, key }) => (
+          &lt;StyledLink
+            key={id}
+            to={id}
+            smooth={true}
+            duration={500}
+            spy={true}
+            activeClass={activeSection === id ? 'active' : ''}
+            containerId="scroll-container"
+            // Offset keeps the section heading clear of the mobile top bar
+            offset={70}
+          >
+            {t(key)}
+          &lt;/StyledLink>
+        ))}
+      &lt;/Menu>
 
+      &lt;LanguageWrapper role="group" aria-label="Language switch">
+        &lt;button onClick={() => i18n.changeLanguage('en')} aria-label="Switch to English">{t('language.english')}&lt;/button>
+        &lt;button onClick={() => i18n.changeLanguage('de')} aria-label="Switch to German">{t('language.german')}&lt;/button>
+      &lt;/LanguageWrapper>
 
+      &lt;CVDownloadWrapper>
+        &lt;CVDownloadLink
+          href={cvFile}
+          download
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={cvLabel}
+        >
+          {cvLabel}
+        &lt;/CVDownloadLink>
+      &lt;/CVDownloadWrapper>
+    &lt;/>
+  );
+};
 
-
-
-
-
-
-    
-
-
-
-
-
+export default SidebarMenu;
+</code></pre>
+        </article>
+    </section>
 
 
 

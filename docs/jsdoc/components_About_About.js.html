@@ -27,30 +27,31 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>import React from 'react';
-import './About.css'; // Import the CSS file for styling
-import ProfilePic from '../../assets/profile-pic.jpg'; // Import the profile image
-import { SiReact, SiPostgresql, SiSpringboot, SiDocker, SiTypescript, SiMaterialdesign, SiGit, SiVite } from 'react-icons/si'; // Import technology icons
-import { FaJava, FaGithub, FaShieldAlt } from 'react-icons/fa'; // Import Java, GitHub and Shield icons
-import { TbTestPipe } from 'react-icons/tb'; // test pipe icon for JUnit/Mockito
-import { useTranslation } from 'react-i18next'; // Translation function to translate text
+import './About.css';
+import ProfilePic from '../../assets/profile-pic.jpg';
+import { SiReact, SiPostgresql, SiSpringboot, SiDocker, SiTypescript, SiMaterialdesign, SiGit, SiVite } from 'react-icons/si';
+import { FaJava, FaGithub, FaShieldAlt } from 'react-icons/fa';
+import { TbTestPipe } from 'react-icons/tb';
+import { useTranslation } from 'react-i18next';
 
 /**
- * The About component renders information about the developer
- * and showcases the technologies they are proficient in.
+ * Renders developer profile and technology stack.
+ * Displays introductory text from i18n resources alongside a profile picture
+ * and icons for key technical skills grouped into categories.
+ *
+ * @returns {JSX.Element} About section with profile image, biography text, and tech stack icons.
  */
 const About = () => {
-  const { t } = useTranslation(); // Translation function to translate text
+  const { t } = useTranslation();
   return (
     &lt;div className="about-container" id="About">
-      {/* Content section */}
-      {/* Display the heading and description of the about section from the locales directory, according to the selected language*/}
       &lt;div className="content">
         &lt;h2>{t('aboutSection.heading')}&lt;/h2>
         &lt;p>{t('aboutSection.description1')}&lt;/p>
         &lt;p>{t('aboutSection.description2')}&lt;/p>
         &lt;p>{t('aboutSection.description3')}&lt;/p>
       
-        {/* Shorter tech lists — grouped */}
+        {/* Grouped by domain: backend, frontend, devops */}
         &lt;p>🔧 &lt;strong>Tech Stack:&lt;/strong>&lt;/p>
         &lt;ul className="tech-list">
           &lt;li>&lt;FaJava /> Java 17&lt;/li>
@@ -73,9 +74,8 @@ const About = () => {
           &lt;li>&lt;SiVite /> Vite&lt;/li>
         &lt;/ul>
       &lt;/div>
-      {/* Profile image section */}
       &lt;div className="profile">
-        &lt;img src={ProfilePic} alt="Carlos Keglevich Profile" /> {/* Profile image */}
+        &lt;img src={ProfilePic} alt="Carlos Keglevich Profile" />
       &lt;/div>
     &lt;/div>
   );
@@ -92,13 +92,13 @@ export default About;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#useRepoDocs">useRepoDocs</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Oct 20 2025 19:07:06 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 15 2026 12:42:46 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

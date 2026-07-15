@@ -5,7 +5,7 @@ import React from 'react';
  * Both summaryEn and summaryDe are always present in the config, so language
  * selection is a straightforward switch with no missing-translation fallback.
  *
- * @param {import('../../data/projects.config').ProjectConfig} project - Curated project data
+ * @param {Object} project - Curated project data (ProjectConfig shape from src/data/projects.config)
  * @param {string} language - Active i18n locale code (e.g. 'en', 'de')
  * @returns {JSX.Element}
  */

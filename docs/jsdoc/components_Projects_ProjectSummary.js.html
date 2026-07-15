@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: components/Projects/ProjectSummary.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,36 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: components/Projects/ProjectSummary.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
 
+/**
+ * Renders the descriptive summary for a curated project card.
+ * Both summaryEn and summaryDe are always present in the config, so language
+ * selection is a straightforward switch with no missing-translation fallback.
+ *
+ * @param {Object} project - Curated project data (ProjectConfig shape from src/data/projects.config)
+ * @param {string} language - Active i18n locale code (e.g. 'en', 'de')
+ * @returns {JSX.Element}
+ */
+const ProjectSummary = ({ project, language }) => {
+  const isGerman = language === 'de';
+  const text = isGerman ? project.summaryDe : project.summaryEn;
+  return &lt;p>{text}&lt;/p>;
+};
 
-    <h3> </h3>
-
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+export default ProjectSummary;
+</code></pre>
+        </article>
+    </section>
 
 
 

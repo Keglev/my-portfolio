@@ -26,54 +26,34 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ProjectCard from './ProjectCard';
-import { getPrimaryImage } from './projectsUtils';
+import projects from '../../data/projects.config';
 import './Projects.css';
 
-// We intentionally do NOT require a build-time JSON file here because during
-// the production build that file may not exist and webpack would fail.
-// The pipeline writes `public/projects.json` which we fetch at runtime below.
-let ProjectsData = [];
-
 /**
- * Projects component
- * Renders a grid of ProjectCard components using pre-built data (deployed_projects.json).
+ * Renders the portfolio's Projects section.
+ *
+ * Reads curated project data directly from src/data/projects.config (no runtime
+ * fetch). Card content, titles, tech tags, images and links are all controlled
+ * there. `loadedImages` tracks per-card image load state for the entrance
+ * animation handled in ProjectCard/Projects.css.
+ *
+ * @returns {JSX.Element} Grid of curated project cards.
  */
 const Projects = () => {
   const { t } = useTranslation();
-  const [projects, setProjects] = useState(() => ProjectsData || []);
-  // track loaded state per project so ProjectCard can toggle the `.visible` class
   const [loadedImages, setLoadedImages] = useState({});
-
-  // If build-time `deployed_projects.json` is empty, try to fetch the runtime
-  // `public/projects.json` as a fallback so the Projects list renders during dev.
-  useEffect(() => {
-    if (projects &amp;&amp; projects.length > 0) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const res = await fetch('/projects.json');
-        if (!res.ok) return;
-        const json = await res.json();
-        if (!cancelled &amp;&amp; Array.isArray(json) &amp;&amp; json.length > 0) setProjects(json);
-      } catch (e) {
-        // ignore fetch errors
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [projects]);
 
   return (
     &lt;section className="project-container" id="Projects">
       &lt;h2>{t('projects', 'Projects')}&lt;/h2>
       &lt;div className="project-grid">
-        {projects.map((p, idx) => (
+        {projects.map((project, idx) => (
           &lt;ProjectCard
-            key={p.name || idx}
-            project={p}
-            image={getPrimaryImage(p)}
+            key={project.slug || idx}
+            project={project}
             index={idx}
             loadedImages={loadedImages}
             setLoadedImages={setLoadedImages}
@@ -95,13 +75,13 @@ export default Projects;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#useRepoDocs">useRepoDocs</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Oct 20 2025 19:07:06 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 15 2026 12:42:46 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

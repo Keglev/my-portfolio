@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: styles/GlobalStyles.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,54 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: styles/GlobalStyles.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { createGlobalStyle } from 'styled-components';
 
+/**
+ * CSS reset and base typography applied globally across the entire app.
+ * Injected once at the root so all components inherit consistent defaults.
+ */
+export const GlobalStyles = createGlobalStyle`
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-    <h3> </h3>
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #0a192f;
+    color: #ccd6f6;
+    scroll-behavior: smooth;
+    line-height: 1.6;
+  }
 
+  h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-weight: 700;
+  }
 
+  p {
+    margin: 0;
+  }
 
-
-
-
-
-
-
-
-    
-
-
-
-
-
+  @media (max-width: 768px) {
+    body {
+      padding: 0 1rem;
+    }
+  }
+`;
+</code></pre>
+        </article>
+    </section>
 
 
 
