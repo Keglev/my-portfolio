@@ -84,8 +84,8 @@ const projects = [
     image: '/projects/stockease.png',
     repoUrl: 'https://github.com/Keglev/stockease',
     repoUrlSecondary: 'https://github.com/Keglev/frontend',
-    liveUrl: null,
-    docsUrl: null,
+    liveUrl: 'https://stockeasefrontend.vercel.app',
+    docsUrl: 'https://keglev.github.io/stockease/',
     featured: true,
   },
 ];
