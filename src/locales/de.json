@@ -75,6 +75,7 @@
     }
   },
   "viewOnGithub": "Auf GitHub ansehen",
+  "viewOnGithubFrontend": "Frontend auf GitHub",
   "viewDocs": "Dokumentation ansehen",
   "translationMissing": "Übersetzung fehlt",
   "repoDocs": "Projekte Documentation",

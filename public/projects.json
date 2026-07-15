@@ -105,6 +105,15 @@
           ]
         },
         {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "1. [Still under construction](#still-under-construction) 2. [Screenshots](#screenshots) 3. [Project status](#project-status) 4. [Features](#features) 5. [Security](#security) 6. [Documentation](#documentation)"
+            }
+          ]
+        },
+        {
           "type": "list",
           "children": [
             {
@@ -170,7 +179,7 @@
           "children": [
             {
               "type": "text",
-              "value": "1. [Still under construction](#still-under-construction) 2. [Screenshots](#screenshots) 3. [Project status](#project-status) 4. [Features](#features) 5. [Security](#security) 6. [Documentation](#documentation) 7. [Testing & Code quality](#testing-code-quality) 8. [Tech stack](#tech-stack) 9. [Environment profiles (Ci/CD)](#environment-profiles) 10. [Available Scripts](#available-scripts) 11. [Coming next](#coming-next)"
+              "value": "7. [Testing & Code quality](#testing-code-quality) 8. [Tech stack](#tech-stack) 9. [Environment profiles (Ci/CD)](#environment-profiles) 10. [Available Scripts](#available-scripts) 11. [Coming next](#coming-next)"
             }
           ]
         },
@@ -1884,6 +1893,15 @@
           ]
         },
         {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**Backend CI/CD:**"
+            }
+          ]
+        },
+        {
           "type": "list",
           "children": [
             {
@@ -1963,7 +1981,7 @@
           "children": [
             {
               "type": "text",
-              "value": "**Backend CI/CD:**"
+              "value": "**Frontend CI/CD:**"
             }
           ]
         },
@@ -2025,15 +2043,6 @@
                   ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
-              "value": "**Frontend CI/CD:**"
             }
           ]
         },
@@ -2165,6 +2174,15 @@
           ]
         },
         {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "**Backend Deployment:** 1. **Automated CI/CD**: Push to main → Triggers build, test, and Docker image creation 2. **Manual Production Deploy**: Due to Oracle free tier IP restrictions, backend deployment uses manual trigger: ```bash fly deploy ``` This approach:"
+            }
+          ]
+        },
+        {
           "type": "list",
           "children": [
             {
@@ -2230,7 +2248,7 @@
           "children": [
             {
               "type": "text",
-              "value": "**Backend Deployment:** 1. **Automated CI/CD**: Push to main → Triggers build, test, and Docker image creation 2. **Manual Production Deploy**: Due to Oracle free tier IP restrictions, backend deployment uses manual trigger: ```bash fly deploy ``` This approach:"
+              "value": "**Frontend Deployment:**"
             }
           ]
         },
@@ -2278,15 +2296,6 @@
                   ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
-              "value": "**Frontend Deployment:**"
             }
           ]
         },
@@ -2697,22 +2706,19 @@
       "architectureOverview": {
         "title": "Index for Backend Documentation",
         "link": "https://github.com/keglev/inventory-service/blob/main/docs/backend/README.md",
-        "description": "",
-        "title_de": null
+        "description": ""
       },
       "apiDocumentation": {
         "title": "Complete API Documentation (ReDoc)",
         "link": "https://keglev.github.io/inventory-service/docs/api/redoc/index.html",
-        "description": "",
-        "title_de": null
+        "description": ""
       },
       "testing": {
         "coverage": [
           {
             "title": "**Backend Test Coverage (JaCoCo)**",
             "link": "https://keglev.github.io/inventory-service/backend/coverage/index.html",
-            "description": "📊 **View Coverage Reports:** 👉",
-            "description_de": null
+            "description": "📊 **View Coverage Reports:** 👉"
           }
         ]
       },
@@ -2724,7 +2730,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 4
+        "requestMs": 14
       },
       "summary": {
         "text": null,
@@ -2744,7 +2750,7 @@
     "description": "A backend in Java Spring boot to control merchandise stock",
     "url": "https://github.com/Keglev/stockease",
     "object": {
-      "text": "# StockEase Backend\n\n## About\nStockEase is a backend service for managing stock-related data efficiently. Built with **Spring Boot** and integrated with **PostgreSQL**, this project showcases authentication, role-based access control, and CRUD operations for products. \n\n## 📖 Table of Contents\n- [📌 About](#-about)\n- [🚀 Features](#-features)\n- [🖼️ Screenshots](#-screenshots)\n- [🛠️ Installation](#-installation)\n- [📌 Usage](#-usage)\n- [🧑‍💻 Available Scripts](#-available-scripts)\n- [⚙️ Technologies](#-technologies)\n- [🔗 API Integration](#-api-integration)\n- [🤝 Contributing](#-contributing)\n\n## 🚀 Features\n- ✅ **User Authentication with JWT** 🔑\n- ✅ **Role-Based Access Control (Admin & User)** 👥\n- ✅ **CRUD Operations for Products** 📝\n- ✅ **Paginated Product Fetching** 📑\n- ✅ **Total Stock Value Calculation** 💰\n- ✅ **Industry-Standard Testing with Mockito** 🧪\n\n# Screenshots\nHere are some screenshots from Postman showing some API answers:\n\n### Example API Response in Postman:\n\n### Adding a Product\n<img src=\"./src/assets/imgs/project-image.png\" alt=\"Adding Product\" width=\"600\" height=\"300\"/>\n\n### Updating Product Quantity\n\n<img src=\"./src/assets/imgs/updateQuantity.png\" alt=\"Update Quantity\" width=\"600\" height=\"300\"/>\n\n### Example of a missing input from the user.\n\n<img src=\"./src/assets/imgs/Missingquantity.png\" alt=\"Missing quantity\" width=\"600\" height=\"300\"/>\n\n## 🛠️ Installation\n### **1. Clone the Repository**\n```bash\ngit clone https://github.com/yourusername/StockEase.git\ncd StockEase\n```\n\n### **2. Set Up Database Credentials**\nCreate an `application.properties` file inside `src/main/resources/` and configure it:\n```properties\nspring.datasource.url=jdbc:postgresql://DATABASE_HOST/DATABASE_NAME\nspring.datasource.username=YOUR_DB_USER\nspring.datasource.password=YOUR_DB_PASSWORD\n```\nReplace placeholders with actual values.\n\n### **3. Run the Application**\nUse Maven to build and start the application:\n```bash\nmvn spring-boot:run\n```\n\n## 📌 Usage\nThis portfolio backend is designed to:\n- **Handle stock-related data** including adding, updating, deleting, and fetching product details.\n- **Provide secured endpoints** with JWT authentication.\n- **Manage user roles** to restrict access to admin and user functionalities.\n- **Integrate with a frontend application** for full-stack functionality.\n\n## 🧑‍💻 Available Scripts\n- `mvn spring-boot:run` - Runs the application.\n- `mvn test` - Runs unit tests with **Mockito**.\n- `mvn package` - Builds the application.\n\n##  Technologies ⚙️\n- *Spring Boot\n- *Java\n- *Spring Security \n- *PostgreSQL \n- *JWT (JSON Web Token) \n- *Mockito \n- *Jakarta Persistence API (JPA) \n- Jakarta Validation API (Data Validation)\n- Hibernate Core (ORM Implementation)\n- *Hibernate Validator \n- Lombok \n- Spring Boot DevTools \n- Jakarta Servlet API (HTTP Request Handling)\n- *REST API \n- Maven (Build Tool)\n\n## 🔗 API Integration\nThis backend provides a **REST API** for interacting with stock data. You can find the full API documentation here:\n\n📌 **[View Full API Documentation](src/main/docs/api.md)**\n\n## 🤝 Contributing\nContributions are welcome! If you'd like to improve this project, feel free to:\n- Fork the repository\n- Create a new branch\n- Make your changes\n- Submit a pull request\n\nFor any issues or improvements, please open a GitHub issue. 🚀\n\n\n\n"
+      "text": "# StockEase Backend\n\n## About\nStockEase is a backend service for managing stock-related data efficiently. Built with **Spring Boot** and integrated with **PostgreSQL**, this project showcases authentication, role-based access control, and CRUD operations for products. \n\n## 📖 Table of Contents\n- [📌 About](#-about)\n- [🚀 Features](#-features)\n- [🖼️ Screenshots](#-screenshots)\n- [🛠️ Installation](#-installation)\n- [📌 Usage](#-usage)\n- [🧑‍💻 Available Scripts](#-available-scripts)\n- [⚙️ Technologies](#-technologies)\n- [🔗 API Integration](#-api-integration)\n- [🤝 Contributing](#-contributing)\n\n## 🚀 Features\n- ✅ **User Authentication with JWT** 🔑\n- ✅ **Role-Based Access Control (Admin & User)** 👥\n- ✅ **CRUD Operations for Products** 📝\n- ✅ **Paginated Product Fetching** 📑\n- ✅ **Total Stock Value Calculation** 💰\n- ✅ **Industry-Standard Testing with Mockito** 🧪\n\n# Screenshots\nHere are some screenshots from Postman showing some API answers:\n\n### Example API Response in Postman:\n\n### Adding a Product\n<img src=\"/projects_media/stockease/project-image.png-ce62396f.png\" alt=\"Adding Product\" width=\"600\" height=\"300\"/>\n\n### Updating Product Quantity\n\n<img src=\"./src/assets/imgs/updateQuantity.png\" alt=\"Update Quantity\" width=\"600\" height=\"300\"/>\n\n### Example of a missing input from the user.\n\n<img src=\"./src/assets/imgs/Missingquantity.png\" alt=\"Missing quantity\" width=\"600\" height=\"300\"/>\n\n## 🛠️ Installation\n### **1. Clone the Repository**\n```bash\ngit clone https://github.com/yourusername/StockEase.git\ncd StockEase\n```\n\n### **2. Set Up Database Credentials**\nCreate an `application.properties` file inside `src/main/resources/` and configure it:\n```properties\nspring.datasource.url=jdbc:postgresql://DATABASE_HOST/DATABASE_NAME\nspring.datasource.username=YOUR_DB_USER\nspring.datasource.password=YOUR_DB_PASSWORD\n```\nReplace placeholders with actual values.\n\n### **3. Run the Application**\nUse Maven to build and start the application:\n```bash\nmvn spring-boot:run\n```\n\n## 📌 Usage\nThis portfolio backend is designed to:\n- **Handle stock-related data** including adding, updating, deleting, and fetching product details.\n- **Provide secured endpoints** with JWT authentication.\n- **Manage user roles** to restrict access to admin and user functionalities.\n- **Integrate with a frontend application** for full-stack functionality.\n\n## 🧑‍💻 Available Scripts\n- `mvn spring-boot:run` - Runs the application.\n- `mvn test` - Runs unit tests with **Mockito**.\n- `mvn package` - Builds the application.\n\n##  Technologies ⚙️\n- *Spring Boot\n- *Java\n- *Spring Security \n- *PostgreSQL \n- *JWT (JSON Web Token) \n- *Mockito \n- *Jakarta Persistence API (JPA) \n- Jakarta Validation API (Data Validation)\n- Hibernate Core (ORM Implementation)\n- *Hibernate Validator \n- Lombok \n- Spring Boot DevTools \n- Jakarta Servlet API (HTTP Request Handling)\n- *REST API \n- Maven (Build Tool)\n\n## 🔗 API Integration\nThis backend provides a **REST API** for interacting with stock data. You can find the full API documentation here:\n\n📌 **[View Full API Documentation](src/main/docs/api.md)**\n\n## 🤝 Contributing\nContributions are welcome! If you'd like to improve this project, feel free to:\n- Fork the repository\n- Create a new branch\n- Make your changes\n- Submit a pull request\n\nFor any issues or improvements, please open a GitHub issue. 🚀\n\n\n\n"
     },
     "_ast": {
       "type": "root",
@@ -3167,6 +3173,15 @@
           ]
         },
         {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This portfolio backend is designed to:"
+            }
+          ]
+        },
+        {
           "type": "list",
           "children": [
             {
@@ -3224,15 +3239,6 @@
                   ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
-              "value": "This portfolio backend is designed to:"
             }
           ]
         },
@@ -3571,6 +3577,15 @@
           ]
         },
         {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "Contributions are welcome! If you'd like to improve this project, feel free to:"
+            }
+          ]
+        },
+        {
           "type": "list",
           "children": [
             {
@@ -3636,15 +3651,6 @@
           "children": [
             {
               "type": "text",
-              "value": "Contributions are welcome! If you'd like to improve this project, feel free to:"
-            }
-          ]
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
               "value": "For any issues or improvements, please open a GitHub issue. 🚀"
             }
           ]
@@ -3686,8 +3692,7 @@
       "apiDocumentation": {
         "title": "🔗 API Integration",
         "link": "https://keglev.github.io/stockease/#-api-integration",
-        "description": "",
-        "title_de": null
+        "description": ""
       },
       "testing": null,
       "productionUrl": null
@@ -3698,7 +3703,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 3
+        "requestMs": 12
       },
       "summary": {
         "text": null,
@@ -4115,6 +4120,15 @@
           ]
         },
         {
+          "type": "paragraph",
+          "children": [
+            {
+              "type": "text",
+              "value": "This frontend allows users to:"
+            }
+          ]
+        },
+        {
           "type": "list",
           "children": [
             {
@@ -4186,15 +4200,6 @@
                   ]
                 }
               ]
-            }
-          ]
-        },
-        {
-          "type": "paragraph",
-          "children": [
-            {
-              "type": "text",
-              "value": "This frontend allows users to:"
             }
           ]
         },
@@ -4485,7 +4490,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 3
+        "requestMs": 15
       },
       "summary": {
         "text": null,
@@ -4501,8 +4506,7 @@
       "apiDocumentation": {
         "title": "StockEase Backend API Docs",
         "link": "https://raw.githubusercontent.com/keglev/frontend/main/#",
-        "description": "",
-        "title_de": null
+        "description": ""
       },
       "testing": null,
       "productionUrl": null
@@ -5340,7 +5344,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 2
+        "requestMs": 13
       },
       "summary": {
         "text": null,
@@ -5356,8 +5360,7 @@
       "apiDocumentation": {
         "title": "API Integration",
         "link": "https://keglev.github.io/restaurant-speisekarte/#API-Integration",
-        "description": "",
-        "title_de": null
+        "description": ""
       },
       "testing": null,
       "productionUrl": null

@@ -75,6 +75,7 @@
     }
   },
   "viewOnGithub": "View on GitHub",
+  "viewOnGithubFrontend": "Frontend on GitHub",
   "viewDocs": "View docs",
   "translationMissing": "Translation missing",
   "repoDocs": "Projects Documentation",

@@ -1,29 +1,31 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ProjectCard from './ProjectCard';
-import { getPrimaryImage } from './projectsUtils';
-import useProjects from './useProjects';
+import projects from '../../data/projects.config';
 import './Projects.css';
 
 /**
  * Renders the portfolio's Projects section.
- * Fetches project data via useProjects and delegates card rendering to ProjectCard.
  *
- * @returns {JSX.Element} Grid of project cards loaded from projects.json.
+ * Reads curated project data directly from src/data/projects.config (no runtime
+ * fetch). Card content, titles, tech tags, images and links are all controlled
+ * there. `loadedImages` tracks per-card image load state for the entrance
+ * animation handled in ProjectCard/Projects.css.
+ *
+ * @returns {JSX.Element} Grid of curated project cards.
  */
 const Projects = () => {
   const { t } = useTranslation();
-  const { projects, loadedImages, setLoadedImages } = useProjects();
+  const [loadedImages, setLoadedImages] = useState({});
 
   return (
     <section className="project-container" id="Projects">
       <h2>{t('projects', 'Projects')}</h2>
       <div className="project-grid">
-        {projects.map((p, idx) => (
+        {projects.map((project, idx) => (
           <ProjectCard
-            key={p.name || idx}
-            project={p}
-            image={getPrimaryImage(p)}
+            key={project.slug || idx}
+            project={project}
             index={idx}
             loadedImages={loadedImages}
             setLoadedImages={setLoadedImages}

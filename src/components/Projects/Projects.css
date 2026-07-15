@@ -111,9 +111,16 @@
 
 /* ─── Project Links ──────────────────────────────── */
 
+/* Stacked link column; replaces the former inline flex styles on the card. */
+.project-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
 .project-link {
   display: inline-block;
-  margin-top: 1rem;
   color: var(--color-accent);
   text-decoration: none;
 }

@@ -1,37 +1,18 @@
 import React from 'react';
-import { getAboutSection } from './projectsUtils';
 
 /**
- * Renders the descriptive summary for a single project card.
- * Selects the best available text in priority order: German translation >
- * README About section > default summary. Falls back to a skeleton placeholder
- * while content is unavailable.
+ * Renders the descriptive summary for a curated project card.
+ * Both summaryEn and summaryDe are always present in the config, so language
+ * selection is a straightforward switch with no missing-translation fallback.
  *
- * @param {object} project - Project data object
+ * @param {import('../../data/projects.config').ProjectConfig} project - Curated project data
  * @param {string} language - Active i18n locale code (e.g. 'en', 'de')
- * @param {Function} t - i18next translation function
  * @returns {JSX.Element}
  */
-const ProjectSummary = ({ project, language, t }) => {
-  const about = getAboutSection(project.object?.text);
+const ProjectSummary = ({ project, language }) => {
   const isGerman = language === 'de';
-  // Priority: explicit German summary > README About text > generic summary
-  const displaySummary = (isGerman && project.summary_de) ? project.summary_de : (about || project.summary);
-
-  if (!displaySummary?.trim()) {
-    return <div data-testid="project-summary-skeleton" className="skeleton-description short skeleton" style={{ width: '60%' }} />;
-  }
-
-  return (
-    <p>
-      {displaySummary}
-      {isGerman && !project.summary_de && (
-        <span style={{ fontStyle: 'italic', marginLeft: '8px', color: '#666', fontSize: '0.9em' }}>
-          ({t('translationMissing') || 'Übersetzung fehlt'})
-        </span>
-      )}
-    </p>
-  );
+  const text = isGerman ? project.summaryDe : project.summaryEn;
+  return <p>{text}</p>;
 };
 
 export default ProjectSummary;
