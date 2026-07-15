@@ -2730,7 +2730,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 14
+        "requestMs": 2
       },
       "summary": {
         "text": null,
@@ -3065,7 +3065,7 @@
         },
         {
           "type": "html",
-          "value": "<img src=\"./src/assets/imgs/project-image.png\" alt=\"Adding Product\" width=\"600\" height=\"300\"/>"
+          "value": "<img src=\"/projects_media/stockease/project-image.png-ce62396f.png\" alt=\"Adding Product\" width=\"600\" height=\"300\"/>"
         },
         {
           "type": "heading",
@@ -3703,7 +3703,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 12
+        "requestMs": 1
       },
       "summary": {
         "text": null,
@@ -4490,7 +4490,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 15
+        "requestMs": 1
       },
       "summary": {
         "text": null,
@@ -5344,7 +5344,7 @@
     "mediaDownloaded": true,
     "_translation": {
       "debug": {
-        "requestMs": 13
+        "requestMs": 1
       },
       "summary": {
         "text": null,

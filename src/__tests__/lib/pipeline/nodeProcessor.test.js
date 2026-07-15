@@ -222,6 +222,8 @@ describe('nodeProcessor – processNode', () => {
   // ── DEBUG_FETCH via process.env ───────────────────────────────────────────
 
   test('picks up DEBUG_FETCH from process.env when not in services', async () => {
+    // DEBUG_FETCH=1 intentionally triggers timing logs; mute them (afterEach restores).
+    jest.spyOn(console, 'log').mockImplementation(() => {});
     process.env.DEBUG_FETCH = '1';
     const node = { name: 'repo', object: { text: '# Hi\n\nContent.' } };
     const services = makeServices();
