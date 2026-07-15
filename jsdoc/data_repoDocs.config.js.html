@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/Education/Education.js</title>
+    <title>JSDoc: Source: data/repoDocs.config.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/Education/Education.js</h1>
+    <h1 class="page-title">Source: data/repoDocs.config.js</h1>
 
     
 
@@ -26,64 +26,54 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React from 'react';
-import { useTranslation } from 'react-i18next';
-import './Education.css';
-
-/**
- * Displays a list of educational qualifications and certifications.
- * Dynamically renders education entries from i18n resources with optional institution
- * and note fields.
+            <pre class="prettyprint source linenums"><code>/**
+ * Curated documentation links for the "Project documentation" (RepoDocs) section.
  *
- * @returns {JSX.Element} Education section with a list of qualification cards.
+ * Single source of truth, replacing the previous runtime fetch of
+ * public/projects.json plus README/AST parsing. Every URL here is a real,
+ * author-published documentation page (GitHub Pages), verified against each
+ * repository's README, so links do not break and stale/duplicate projects can
+ * no longer leak in.
+ *
+ * To add or change a link, edit this file — no fetch pipeline or token needed.
+ *
+ * @typedef {Object} RepoDocLink
+ * @property {string} titleEn  Link label in English.
+ * @property {string} titleDe  Link label in German.
+ * @property {string} url      Absolute URL to the published documentation page.
+ *
+ * @typedef {Object} RepoDocEntry
+ * @property {string} slug         Stable id (matches the project card slug).
+ * @property {string} displayName  Product name shown as the card heading.
+ * @property {RepoDocLink[]} links Documentation links for this project.
  */
-const Education = () => {
-  const { t } = useTranslation();
 
-  const entries = [
-    {
-      title: t('educationSection.entry1.title'),
-      institution: t('educationSection.entry1.institution'),
-      note: t('educationSection.entry1.note'),
-    },
-    {
-      title: t('educationSection.entry2.title'),
-      institution: t('educationSection.entry2.institution'),
-      note: t('educationSection.entry2.note'),
-    },
-    {
-      title: t('educationSection.entry3.title'),
-      institution: t('educationSection.entry3.institution'),
-      note: t('educationSection.entry3.note'),
-    },
-    {
-      title: t('educationSection.entry4.title'),
-      institution: t('educationSection.entry4.institution'),
-      note: t('educationSection.entry4.note'),
-    },
-  ];
+/** @type {RepoDocEntry[]} */
+const repoDocs = [
+  {
+    slug: 'smartsupplypro',
+    displayName: 'SmartSupplyPro',
+    links: [
+      { titleEn: 'Documentation hub', titleDe: 'Dokumentations-Hub', url: 'https://keglev.github.io/inventory-service/' },
+      { titleEn: 'API reference', titleDe: 'API-Referenz', url: 'https://keglev.github.io/inventory-service/backend/api/index.html' },
+      { titleEn: 'Architecture overview', titleDe: 'Architektur-Überblick', url: 'https://keglev.github.io/inventory-service/backend/architecture/overview.html' },
+      { titleEn: 'Backend test coverage', titleDe: 'Backend-Testabdeckung', url: 'https://keglev.github.io/inventory-service/backend/coverage/index.html' },
+    ],
+  },
+  {
+    slug: 'stockease',
+    displayName: 'StockEase',
+    links: [
+      { titleEn: 'Documentation hub', titleDe: 'Dokumentations-Hub', url: 'https://keglev.github.io/stockease/' },
+      { titleEn: 'API reference', titleDe: 'API-Referenz', url: 'https://keglev.github.io/stockease/api-docs.html' },
+      { titleEn: 'Architecture &amp; security', titleDe: 'Architektur &amp; Sicherheit', url: 'https://keglev.github.io/stockease/architecture/security.html' },
+      { titleEn: 'Test coverage', titleDe: 'Testabdeckung', url: 'https://keglev.github.io/stockease/coverage/index.html' },
+      { titleEn: 'Frontend documentation', titleDe: 'Frontend-Dokumentation', url: 'https://keglev.github.io/frontend/' },
+    ],
+  },
+];
 
-  return (
-    &lt;div className="education-container" id="Education">
-      &lt;h2>{t('educationSection.heading')}&lt;/h2>
-      &lt;div className="education-list">
-        {entries.map((entry, index) => (
-          &lt;div className="education-card" key={index}>
-            &lt;h3>{entry.title}&lt;/h3>
-            {entry.institution &amp;&amp; (
-              &lt;p className="education-institution">{entry.institution}&lt;/p>
-            )}
-            {entry.note &amp;&amp; (
-              &lt;p className="education-note">{entry.note}&lt;/p>
-            )}
-          &lt;/div>
-        ))}
-      &lt;/div>
-    &lt;/div>
-  );
-};
-
-export default Education;
+export default repoDocs;
 </code></pre>
         </article>
     </section>

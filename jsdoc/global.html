@@ -1361,6 +1361,74 @@ Technologies heading, so sibling sections are not included.
 
 
         
+            
+<h4 class="name" id="repoDocs"><span class="type-signature">(constant) </span>repoDocs<span class="type-signature"> :Array.&lt;<a href="global.html#RepoDocEntry">RepoDocEntry</a>></span></h4>
+
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Array.&lt;<a href="global.html#RepoDocEntry">RepoDocEntry</a>></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="data_repoDocs.config.js.html">data/repoDocs.config.js</a>, <a href="data_repoDocs.config.js.html#line24">line 24</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
     
 
     
@@ -2447,7 +2515,7 @@ animation handled in ProjectCard/Projects.css.
     
 
     
-    <h4 class="name" id="RepoDocLinks"><span class="type-signature"></span>RepoDocLinks<span class="signature">(project)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    <h4 class="name" id="RepoDocLinks"><span class="type-signature"></span>RepoDocLinks<span class="signature">(links)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
     
 
     
@@ -2455,9 +2523,9 @@ animation handled in ProjectCard/Projects.css.
 
 
 <div class="description">
-    Renders documentation links for a single project in the RepoDocs section.
-Checks fields in priority order: placeholder → API docs → architecture overview →
-production URL → test coverage → generic docsLink fallback.
+    Renders the curated documentation links for a single project as a stacked
+list. Each link's label is localized (English/German) from the config; the
+label text itself is the clickable link.
 </div>
 
 
@@ -2493,13 +2561,13 @@ production URL → test coverage → generic docsLink fallback.
 
         <tr>
             
-                <td class="name"><code>project</code></td>
+                <td class="name"><code>links</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">object</span>
+<span class="param-type">Array.&lt;Object></span>
 
 
             
@@ -2509,7 +2577,7 @@ production URL → test coverage → generic docsLink fallback.
 
             
 
-            <td class="description last">Enriched project object from useRepoDocs</td>
+            <td class="description last">Curated doc links (RepoDocLink shape from src/data/repoDocs.config)</td>
         </tr>
 
     
@@ -2550,7 +2618,7 @@ production URL → test coverage → generic docsLink fallback.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_RepoDocs_RepoDocLinks.js.html">components/RepoDocs/RepoDocLinks.js</a>, <a href="components_RepoDocs_RepoDocLinks.js.html#line19">line 19</a>
+        <a href="components_RepoDocs_RepoDocLinks.js.html">components/RepoDocs/RepoDocLinks.js</a>, <a href="components_RepoDocs_RepoDocLinks.js.html#line12">line 12</a>
     </li></ul></dd>
     
 
@@ -2612,8 +2680,9 @@ production URL → test coverage → generic docsLink fallback.
 
 
 <div class="description">
-    Renders the RepoDocs section listing projects that have linked documentation.
-Shows an empty-state card when no projects with docs are found.
+    Renders the "Project documentation" section from the curated repoDocs config.
+No runtime fetch: link content, titles and order are controlled in
+src/data/repoDocs.config. Shows an empty-state card only if the config is empty.
 </div>
 
 
@@ -2657,7 +2726,7 @@ Shows an empty-state card when no projects with docs are found.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_RepoDocs_RepoDocs.js.html">components/RepoDocs/RepoDocs.js</a>, <a href="components_RepoDocs_RepoDocs.js.html#line13">line 13</a>
+        <a href="components_RepoDocs_RepoDocs.js.html">components/RepoDocs/RepoDocs.js</a>, <a href="components_RepoDocs_RepoDocs.js.html#line14">line 14</a>
     </li></ul></dd>
     
 
@@ -3236,117 +3305,6 @@ Iterates from bottom to top so the deepest section the user has scrolled past wi
 
 
         
-            
-
-    
-
-    
-    <h4 class="name" id="useRepoDocs"><span class="type-signature"></span>useRepoDocs<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;object>}</span></h4>
-    
-
-    
-
-
-
-<div class="description">
-    Fetches projects.json and returns only entries that have linked documentation.
-Enriches each project with a normalized docs shape via enrichProject.
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_RepoDocs_useRepoDocs.js.html">components/RepoDocs/useRepoDocs.js</a>, <a href="components_RepoDocs_useRepoDocs.js.html#line51">line 51</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    Array of enriched project objects where hasDocs is true
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Array.&lt;object></span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-
-
-        
     
 
     
@@ -3732,6 +3690,253 @@ Image convention:
 
 
             
+                
+<h4 class="name" id="RepoDocEntry">RepoDocEntry</h4>
+
+
+
+
+<div class="description">
+    Curated documentation links for the "Project documentation" (RepoDocs) section.
+
+Single source of truth, replacing the previous runtime fetch of
+public/projects.json plus README/AST parsing. Every URL here is a real,
+author-published documentation page (GitHub Pages), verified against each
+repository's README, so links do not break and stale/duplicate projects can
+no longer leak in.
+
+To add or change a link, edit this file — no fetch pipeline or token needed.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>titleEn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Link label in English.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>titleDe</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Link label in German.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>url</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Absolute URL to the published documentation page.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>slug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Stable id (matches the project card slug).</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>displayName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Product name shown as the card heading.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>links</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;RepoDocLink></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Documentation links for this project.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="data_repoDocs.config.js.html">data/repoDocs.config.js</a>, <a href="data_repoDocs.config.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+            
     
 
     
@@ -3745,13 +3950,13 @@ Image convention:
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#useRepoDocs">useRepoDocs</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#repoDocs">repoDocs</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 15 2026 16:45:11 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 15 2026 17:15:29 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
