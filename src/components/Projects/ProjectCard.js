@@ -18,6 +18,18 @@ import ProjectSummary from './ProjectSummary';
 const ProjectCard = ({ project, index, loadedImages = {}, setLoadedImages = () => {} }) => {
   const { t, i18n } = useTranslation();
 
+  // Portfolio is dark-only today; when a theme toggle is added, replace this
+  // with the active theme. Image is picked by theme then language, falling back
+  // to English, then to any available image.
+  const theme = 'dark';
+  const lang = (i18n.language || 'en').toLowerCase().startsWith('de') ? 'de' : 'en';
+  const themeSet = (project.images && project.images[theme]) || {};
+  const imageSrc =
+    themeSet[lang] ||
+    themeSet.en ||
+    (project.images && project.images.dark && project.images.dark.en) ||
+    '';
+
   // Single, deterministic fallback: config image → inline SVG placeholder.
   const handleError = (e) => {
     const img = e.currentTarget;
@@ -32,7 +44,7 @@ const ProjectCard = ({ project, index, loadedImages = {}, setLoadedImages = () =
     <div className={'project-card ' + (loadedImages[index] ? 'visible' : '')}>
       <div className="image-wrap">
         <img
-          src={project.image}
+          src={imageSrc}
           alt={project.displayName + ' preview'}
           className={'project-image ' + (loadedImages[index] ? 'loaded' : '')}
           loading="lazy"

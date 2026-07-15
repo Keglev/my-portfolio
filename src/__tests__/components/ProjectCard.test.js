@@ -17,7 +17,10 @@ const baseProject = {
   summaryEn: 'english summary',
   summaryDe: 'deutsche Zusammenfassung',
   tech: ['React', 'Jest'],
-  image: '/projects/demo.png',
+  images: {
+    dark: { en: '/projects/demo-dark-en.png', de: '/projects/demo-dark-de.png' },
+    light: { en: '/projects/demo-light-en.png', de: '/projects/demo-light-de.png' },
+  },
   repoUrl: 'https://github.com/Keglev/demo',
   repoUrlSecondary: null,
   liveUrl: null,
@@ -41,6 +44,18 @@ describe('ProjectCard', () => {
     render(<ProjectCard project={baseProject} index={0} />);
     expect(screen.getByText('deutsche Zusammenfassung')).toBeInTheDocument();
     expect(screen.queryByText('english summary')).toBeNull();
+  });
+
+  it('selects the dark English preview image in English', () => {
+    useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'en' } });
+    render(<ProjectCard project={baseProject} index={0} />);
+    expect(screen.getByAltText('Demo Project preview')).toHaveAttribute('src', '/projects/demo-dark-en.png');
+  });
+
+  it('selects the dark German preview image in German (incl. locale like de-DE)', () => {
+    useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'de-DE' } });
+    render(<ProjectCard project={baseProject} index={0} />);
+    expect(screen.getByAltText('Demo Project preview')).toHaveAttribute('src', '/projects/demo-dark-de.png');
   });
 
   it('renders only the repo link when no optional links are present', () => {

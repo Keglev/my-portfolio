@@ -23,7 +23,7 @@
  * @property {string} summaryEn       Plain-text English summary.
  * @property {string} summaryDe       Plain-text German summary.
  * @property {string[]} tech          Clean technology labels (already normalized).
- * @property {string} image           Absolute public path to the preview image.
+ * @property {Object} images          Preview images by theme then language, e.g. images.dark.en.
  * @property {string} repoUrl         Primary GitHub repository URL.
  * @property {string|null} repoUrlSecondary  Optional second repo (e.g. separate frontend).
  * @property {string|null} liveUrl    Live application URL, or null if none.
@@ -54,7 +54,10 @@ const projects = [
       'JaCoCo',
       'GitHub Actions',
     ],
-    image: '/projects/smartsupplypro.png',
+    images: {
+      dark: { en: '/projects/smartsupplypro-dark-en.png', de: '/projects/smartsupplypro-dark-de.png' },
+      light: { en: '/projects/smartsupplypro-light-en.png', de: '/projects/smartsupplypro-light-de.png' },
+    },
     repoUrl: 'https://github.com/Keglev/inventory-service',
     repoUrlSecondary: null,
     liveUrl: 'https://www.smartsupplypro.de',
@@ -81,7 +84,10 @@ const projects = [
       'Tailwind CSS',
       'Vite',
     ],
-    image: '/projects/stockease.png',
+    images: {
+      dark: { en: '/projects/stockease-dark-en.png', de: '/projects/stockease-dark-de.png' },
+      light: { en: '/projects/stockease-light-en.png', de: '/projects/stockease-light-de.png' },
+    },
     repoUrl: 'https://github.com/Keglev/stockease',
     repoUrlSecondary: 'https://github.com/Keglev/frontend',
     liveUrl: 'https://stockeasefrontend.vercel.app',
