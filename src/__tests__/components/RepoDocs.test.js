@@ -94,11 +94,12 @@ describe('RepoDocs', () => {
     useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en' } });
     global.fetch.mockResolvedValue({ ok: false, json: async () => [] });
 
-    // Empty state is present on first render, so wrap in act to also flush the
-    // trailing setState from the resolved fetch (otherwise it lands outside act).
-    await act(async () => {
-      render(<RepoDocs />);
-    });
+    // The empty state renders on the first paint, so there is no DOM change for
+    // findBy/waitFor to poll toward; the resolved fetch's trailing setState would
+    // otherwise land outside act. Flushing it in act() here is necessary, so the
+    // no-unnecessary-act heuristic is disabled for this specific line.
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => { render(<RepoDocs />); });
 
     expect(screen.getByText('noRepoDocs')).toBeInTheDocument();
   });
@@ -107,9 +108,8 @@ describe('RepoDocs', () => {
     useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en' } });
     global.fetch.mockRejectedValue(new Error('network'));
 
-    await act(async () => {
-      render(<RepoDocs />);
-    });
+    // eslint-disable-next-line testing-library/no-unnecessary-act
+    await act(async () => { render(<RepoDocs />); });
 
     expect(screen.getByText('noRepoDocs')).toBeInTheDocument();
   });
