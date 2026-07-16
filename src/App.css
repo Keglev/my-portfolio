@@ -35,4 +35,9 @@
   min-height: auto; /* Sections are as tall as their content — no artificial gaps */
   /* Must match the mobile top bar height so scroll-to-section lands below it */
   scroll-margin-top: 70px;
+  /* Constrained reading measure: a full-width column next to the sidebar reads
+     as empty; ~820px reads as intentional and keeps line lengths comfortable. */
+  max-width: 820px;
+  margin-left: auto;
+  margin-right: auto;
 }

@@ -7,14 +7,33 @@
   --color-bg-tag: #2b3a59;
   --color-bg-subtle: #0f2238;
   --color-accent: #64ffda;
+  --color-accent-contrast: #04342c;
   --color-text: #ccd6f6;
   --color-text-muted: #8892b0;
+  --color-border: #1d3557;
   --shadow-accent: rgba(0, 255, 150, 0.5);
   --shadow-accent-hover: rgba(0, 255, 150, 0.6);
   --radius-card: 8px;
   --transition-card: background-color 0.3s ease, box-shadow 0.3s ease;
   --padding-section: 5rem 2rem;
   --padding-card: 1.5rem;
+}
+
+/* Light theme — activated by ThemeContext via <html data-theme="light">.
+   Same token names, so every component that uses the variables adapts for free. */
+[data-theme='light'] {
+  --color-bg: #f3f7fc;
+  --color-bg-card: #ffffff;
+  --color-bg-card-hover: #eaf1f9;
+  --color-bg-tag: #e4edf7;
+  --color-bg-subtle: #eef4fb;
+  --color-accent: #0d9488;
+  --color-accent-contrast: #e1f5ee;
+  --color-text: #0f2440;
+  --color-text-muted: #51648a;
+  --color-border: #d6e2f0;
+  --shadow-accent: rgba(13, 148, 136, 0.25);
+  --shadow-accent-hover: rgba(13, 148, 136, 0.35);
 }
 
 /* ─── Base Reset ─────────────────────────────────── */

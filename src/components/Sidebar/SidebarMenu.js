@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Menu, StyledLink, LanguageWrapper, CVDownloadWrapper, CVDownloadLink } from './SidebarStyles';
+import { useTheme } from '../../context/ThemeContext';
 
 const NAV_ITEMS = [
   { id: 'About',      key: 'about' },
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
  */
 const SidebarMenu = ({ activeSection }) => {
   const { t, i18n } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
 
   const cvFile = i18n.language === 'de'
     ? '/Carlos_Keglevich_Lebenslauf_DE.pdf'
@@ -48,6 +50,13 @@ const SidebarMenu = ({ activeSection }) => {
       <LanguageWrapper role="group" aria-label="Language switch">
         <button onClick={() => i18n.changeLanguage('en')} aria-label="Switch to English">{t('language.english')}</button>
         <button onClick={() => i18n.changeLanguage('de')} aria-label="Switch to German">{t('language.german')}</button>
+        <button
+          onClick={toggleTheme}
+          aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+          title={theme === 'dark' ? t('theme.light', 'Light theme') : t('theme.dark', 'Dark theme')}
+        >
+          {theme === 'dark' ? '☀' : '☾'}
+        </button>
       </LanguageWrapper>
 
       <CVDownloadWrapper>

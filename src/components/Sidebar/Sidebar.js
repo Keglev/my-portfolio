@@ -66,7 +66,7 @@ const Sidebar = () => {
           >
             {t('impressumLink')}
           </LegalButton>
-          <span style={{ color: '#8892b0' }}>|</span>
+          <span style={{ color: 'var(--color-text-muted)' }}>|</span>
           <LegalButton
             type="button"
             aria-label="Jump to privacy policy section"

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/Projects/Projects.js</title>
+    <title>JSDoc: Source: components/Hero/Hero.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/Projects/Projects.js</h1>
+    <h1 class="page-title">Source: components/Hero/Hero.js</h1>
 
     
 
@@ -26,45 +26,52 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
+            <pre class="prettyprint source linenums"><code>import React from 'react';
 import { useTranslation } from 'react-i18next';
-import ProjectCard from './ProjectCard';
-import projects from '../../data/projects.config';
-import './Projects.css';
+import './Hero.css';
 
 /**
- * Renders the portfolio's Projects section.
+ * Hero section: the first thing a recruiter sees.
+ * A short eyebrow line (stack + location), a value-proposition headline with
+ * an accented key phrase, a one-paragraph lead, and three CTAs (projects,
+ * CV download, contact). All copy is locale-driven; the CV link serves the
+ * matching language PDF, mirroring the sidebar logic.
  *
- * Reads curated project data directly from src/data/projects.config (no runtime
- * fetch). Card content, titles, tech tags, images and links are all controlled
- * there. `loadedImages` tracks per-card image load state for the entrance
- * animation handled in ProjectCard/Projects.css.
- *
- * @returns {JSX.Element} Grid of curated project cards.
+ * @returns {JSX.Element}
  */
-const Projects = () => {
-  const { t } = useTranslation();
-  const [loadedImages, setLoadedImages] = useState({});
+const Hero = () => {
+  const { t, i18n } = useTranslation();
+  const isGerman = (i18n.language || 'en').toLowerCase().startsWith('de');
+  const cvFile = isGerman
+    ? '/Carlos_Keglevich_Lebenslauf_DE.pdf'
+    : '/Carlos_Keglevich_CV_EN.pdf';
+
+  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    &lt;section className="project-container" id="Projects">
-      &lt;h2>{t('projects', 'Projects')}&lt;/h2>
-      &lt;div className="project-grid">
-        {projects.map((project, idx) => (
-          &lt;ProjectCard
-            key={project.slug || idx}
-            project={project}
-            index={idx}
-            loadedImages={loadedImages}
-            setLoadedImages={setLoadedImages}
-          />
-        ))}
+    &lt;section className="hero" aria-label="Introduction">
+      &lt;p className="hero-eyebrow">{t('hero.eyebrow')}&lt;/p>
+      &lt;h1 className="hero-headline">
+        {t('hero.headlinePre')}{' '}
+        &lt;span className="hero-highlight">{t('hero.headlineHighlight')}&lt;/span>
+      &lt;/h1>
+      &lt;p className="hero-lead">{t('hero.lead')}&lt;/p>
+      &lt;div className="hero-cta">
+        &lt;button type="button" className="hero-btn primary" onClick={() => scrollTo('Projects')}>
+          {t('hero.ctaProjects')}
+        &lt;/button>
+        &lt;a className="hero-btn ghost" href={cvFile} download target="_blank" rel="noopener noreferrer">
+          {t('hero.ctaCv')}
+        &lt;/a>
+        &lt;button type="button" className="hero-btn ghost" onClick={() => scrollTo('Experience')}>
+          {t('hero.ctaExperience')}
+        &lt;/button>
       &lt;/div>
     &lt;/section>
   );
 };
 
-export default Projects;
+export default Hero;
 </code></pre>
         </article>
     </section>

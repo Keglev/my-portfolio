@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/Projects/Projects.js</title>
+    <title>JSDoc: Source: context/ThemeContext.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/Projects/Projects.js</h1>
+    <h1 class="page-title">Source: context/ThemeContext.js</h1>
 
     
 
@@ -26,45 +26,62 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import ProjectCard from './ProjectCard';
-import projects from '../../data/projects.config';
-import './Projects.css';
+            <pre class="prettyprint source linenums"><code>import React, { createContext, useContext, useEffect, useState } from 'react';
 
 /**
- * Renders the portfolio's Projects section.
+ * Theme context for light/dark mode.
  *
- * Reads curated project data directly from src/data/projects.config (no runtime
- * fetch). Card content, titles, tech tags, images and links are all controlled
- * there. `loadedImages` tracks per-card image load state for the entrance
- * animation handled in ProjectCard/Projects.css.
- *
- * @returns {JSX.Element} Grid of curated project cards.
+ * The active theme is exposed to components (e.g. ProjectCard picks
+ * theme-specific screenshots) and mirrored to a `data-theme` attribute on
+ * &lt;html>, which drives the CSS variable overrides in index.css. The choice
+ * persists in localStorage; the default is dark, matching the site's identity.
  */
-const Projects = () => {
-  const { t } = useTranslation();
-  const [loadedImages, setLoadedImages] = useState({});
+const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} });
+
+const STORAGE_KEY = 'portfolio-theme';
+
+const getInitialTheme = () => {
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (stored === 'light' || stored === 'dark') return stored;
+  } catch (e) { /* storage unavailable (SSR/tests/private mode) — fall through */ }
+  return 'dark';
+};
+
+/**
+ * Provides the current theme and a toggle to the component tree, and keeps
+ * the &lt;html data-theme> attribute and localStorage in sync.
+ *
+ * @param {object} props
+ * @param {React.ReactNode} props.children
+ * @returns {JSX.Element}
+ */
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState(getInitialTheme);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try { window.localStorage.setItem(STORAGE_KEY, theme); } catch (e) { /* ignore */ }
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 
   return (
-    &lt;section className="project-container" id="Projects">
-      &lt;h2>{t('projects', 'Projects')}&lt;/h2>
-      &lt;div className="project-grid">
-        {projects.map((project, idx) => (
-          &lt;ProjectCard
-            key={project.slug || idx}
-            project={project}
-            index={idx}
-            loadedImages={loadedImages}
-            setLoadedImages={setLoadedImages}
-          />
-        ))}
-      &lt;/div>
-    &lt;/section>
+    &lt;ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    &lt;/ThemeContext.Provider>
   );
 };
 
-export default Projects;
+/**
+ * Access the active theme. Safe without a provider (defaults to dark),
+ * which keeps isolated component tests simple.
+ *
+ * @returns {{theme: string, toggleTheme: Function}}
+ */
+export const useTheme = () => useContext(ThemeContext);
+
+export default ThemeContext;
 </code></pre>
         </article>
     </section>

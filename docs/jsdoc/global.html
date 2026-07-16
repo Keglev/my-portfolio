@@ -850,6 +850,136 @@ Slides right on hover/active to signal the current section without a full page c
 
         
             
+<h4 class="name" id="ThemeContext"><span class="type-signature">(constant) </span>ThemeContext<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Theme context for light/dark mode.
+
+The active theme is exposed to components (e.g. ProjectCard picks
+theme-specific screenshots) and mirrored to a `data-theme` attribute on
+<html>, which drives the CSS variable overrides in index.css. The choice
+persists in localStorage; the default is dark, matching the site's identity.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="context_ThemeContext.js.html">context/ThemeContext.js</a>, <a href="context_ThemeContext.js.html#line11">line 11</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="ThemeProvider"><span class="type-signature">(constant) </span>ThemeProvider<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Provides the current theme and a toggle to the component tree, and keeps
+the <html data-theme> attribute and localStorage in sync.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="context_ThemeContext.js.html">context/ThemeContext.js</a>, <a href="context_ThemeContext.js.html#line31">line 31</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
 <h4 class="name" id="convertRawToBlob"><span class="type-signature">(constant) </span>convertRawToBlob<span class="type-signature"></span></h4>
 
 
@@ -1429,6 +1559,69 @@ Technologies heading, so sibling sections are not included.
 
 
         
+            
+<h4 class="name" id="useTheme"><span class="type-signature">(constant) </span>useTheme<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    Access the active theme. Safe without a provider (defaults to dark),
+which keeps isolated component tests simple.
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="context_ThemeContext.js.html">context/ThemeContext.js</a>, <a href="context_ThemeContext.js.html#line54">line 54</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
     
 
     
@@ -1603,7 +1796,7 @@ Composes the fixed sidebar with the scrollable main content column.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="App.js.html">App.js</a>, <a href="App.js.html#line20">line 20</a>
+        <a href="App.js.html">App.js</a>, <a href="App.js.html#line22">line 22</a>
     </li></ul></dd>
     
 
@@ -1851,6 +2044,116 @@ Composes the fixed sidebar with the scrollable main content column.
     Experience section with a list of job cards.
 </div>
 
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">JSX.Element</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="Hero"><span class="type-signature"></span>Hero<span class="signature">()</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Hero section: the first thing a recruiter sees.
+A short eyebrow line (stack + location), a value-proposition headline with
+an accented key phrase, a one-paragraph lead, and three CTAs (projects,
+CV download, contact). All copy is locale-driven; the CV link serves the
+matching language PDF, mirroring the sidebar logic.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_Hero_Hero.js.html">components/Hero/Hero.js</a>, <a href="components_Hero_Hero.js.html#line14">line 14</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
 
 
 <dl>
@@ -2161,7 +2464,7 @@ never shows a broken-image icon.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Projects_ProjectCard.js.html">components/Projects/ProjectCard.js</a>, <a href="components_Projects_ProjectCard.js.html#line18">line 18</a>
+        <a href="components_Projects_ProjectCard.js.html">components/Projects/ProjectCard.js</a>, <a href="components_Projects_ProjectCard.js.html#line19">line 19</a>
     </li></ul></dd>
     
 
@@ -2985,7 +3288,7 @@ The CV filename and label are both locale-driven to serve the correct language v
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Sidebar_SidebarMenu.js.html">components/Sidebar/SidebarMenu.js</a>, <a href="components_Sidebar_SidebarMenu.js.html#line20">line 20</a>
+        <a href="components_Sidebar_SidebarMenu.js.html">components/Sidebar/SidebarMenu.js</a>, <a href="components_Sidebar_SidebarMenu.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -3945,13 +4248,13 @@ To add or change a link, edit this file — no fetch pipeline or token needed.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#repoDocs">repoDocs</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#Hero">Hero</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#ThemeContext">ThemeContext</a></li><li><a href="global.html#ThemeProvider">ThemeProvider</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#repoDocs">repoDocs</a></li><li><a href="global.html#useTheme">useTheme</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 15 2026 19:02:55 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jul 16 2026 14:11:51 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

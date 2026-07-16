@@ -5,6 +5,8 @@ import About from './components/About/About';
 import Education from './components/Education/Education';
 import Experience from './components/Experience/Experience';
 import Sidebar from './components/Sidebar/Sidebar';
+import Hero from './components/Hero/Hero';
+import { ThemeProvider } from './context/ThemeContext';
 import RepoDocs from './components/RepoDocs/RepoDocs';
 import Legal from './components/Legal/Legal';
 import { GlobalStyles } from './styles/GlobalStyles';
@@ -19,13 +21,14 @@ import "./i18n"; // must be imported before any translated component renders
  */
 function App() {
   return (
-    <>
+    <ThemeProvider>
       <SpeedInsights />
       <GlobalStyles />
       <div className="container">
         <Sidebar />
         {/* id matches the containerId prop used by react-scroll in SidebarMenu */}
         <div className="main-content" id="scroll-container">
+          <div className="section" id="Hero"><Hero /></div>
           <div className="section" id="About"><About /></div>
           <div className="section" id="Education"><Education /></div>
           <div className="section" id="Projects"><Projects /></div>
@@ -34,7 +37,7 @@ function App() {
           <div className="section" id="Legal"><Legal /></div>
         </div>
       </div>
-    </>
+    </ThemeProvider>
   );
 }
 

@@ -13,8 +13,8 @@ export const GlobalStyles = createGlobalStyle`
 
   body {
     font-family: 'Montserrat', sans-serif;
-    background-color: #0a192f;
-    color: #ccd6f6;
+    background-color: var(--color-bg);
+    color: var(--color-text);
     scroll-behavior: smooth;
     line-height: 1.6;
   }

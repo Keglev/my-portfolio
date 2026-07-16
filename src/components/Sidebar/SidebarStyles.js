@@ -8,8 +8,8 @@ import { Link } from 'react-scroll';
 export const SidebarContainer = styled.div`
   width: 350px;
   height: 100vh;
-  background-color: #0a192f;
-  color: #ccd6f6;
+  background-color: var(--color-bg);
+  color: var(--color-text);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -36,7 +36,7 @@ export const SidebarContainer = styled.div`
 export const StyledLink = styled(Link)`
   display: flex;
   align-items: center;
-  color: #ccd6f6;
+  color: var(--color-text);
   font-size: 1.4rem;
   cursor: pointer;
   text-decoration: none;
@@ -45,7 +45,7 @@ export const StyledLink = styled(Link)`
   &:hover,
   &.active {
     transform: translateX(10px);
-    color: #64ffda;
+    color: var(--color-accent);
   }
 `;
 
@@ -60,13 +60,13 @@ export const NameTitle = styled.div`
     /* clamp keeps the name on one line without overflowing the fixed sidebar width */
     font-size: clamp(1.4rem, 4.8vw, 1.9rem);
     margin-bottom: 0.3rem;
-    color: #64ffda;
+    color: var(--color-accent);
     white-space: nowrap;
   }
 
   h2 {
     font-size: 1.1rem;
-    color: #8892b0;
+    color: var(--color-text-muted);
   }
 
   @media (max-width: 768px) {
@@ -114,11 +114,11 @@ export const SocialLinks = styled.div`
 
   a {
     font-size: 2rem;
-    color: #ccd6f6;
+    color: var(--color-text);
     transition: color 0.3s ease, transform 0.3s ease;
 
     &:hover {
-      color: #64ffda;
+      color: var(--color-accent);
       transform: scale(1.2);
     }
   }
@@ -139,7 +139,7 @@ export const FooterMessage = styled.div`
   margin-bottom: 0;
   text-align: center;
   font-size: 0.9rem;
-  color: #ccd6f6;
+  color: var(--color-text);
 
   p {
     margin: 0;
@@ -162,7 +162,7 @@ export const LanguageWrapper = styled.div`
   button {
     background: rgba(100,255,218,0.04);
     border: 1px solid rgba(100,255,218,0.16);
-    color: #64ffda;
+    color: var(--color-accent);
     padding: 0.5rem 0.8rem;
     border-radius: 6px;
     cursor: pointer;
@@ -172,8 +172,8 @@ export const LanguageWrapper = styled.div`
   }
   button:hover {
     /* Matches tech-box hover: solid accent background with lift shadow */
-    background: #64ffda;
-    color: #0a192f;
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
     transform: translateY(-3px) scale(1.06);
     box-shadow: 0 8px 18px rgba(100,255,218,0.14);
   }
@@ -218,7 +218,7 @@ export const CVDownloadLink = styled.a`
   display: inline-block;
   background: rgba(100, 255, 218, 0.04);
   border: 1px solid rgba(100, 255, 218, 0.16);
-  color: #64ffda;
+  color: var(--color-accent);
   padding: 0.5rem 0.8rem;
   border-radius: 6px;
   cursor: pointer;
@@ -230,8 +230,8 @@ export const CVDownloadLink = styled.a`
     box-shadow 0.12s ease;
 
   &:hover {
-    background: #64ffda;
-    color: #0a192f;
+    background: var(--color-accent);
+    color: var(--color-accent-contrast);
     transform: translateY(-3px) scale(1.06);
     box-shadow: 0 8px 18px rgba(100, 255, 218, 0.14);
   }

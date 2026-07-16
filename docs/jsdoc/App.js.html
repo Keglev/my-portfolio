@@ -33,6 +33,8 @@ import About from './components/About/About';
 import Education from './components/Education/Education';
 import Experience from './components/Experience/Experience';
 import Sidebar from './components/Sidebar/Sidebar';
+import Hero from './components/Hero/Hero';
+import { ThemeProvider } from './context/ThemeContext';
 import RepoDocs from './components/RepoDocs/RepoDocs';
 import Legal from './components/Legal/Legal';
 import { GlobalStyles } from './styles/GlobalStyles';
@@ -47,13 +49,14 @@ import "./i18n"; // must be imported before any translated component renders
  */
 function App() {
   return (
-    &lt;>
+    &lt;ThemeProvider>
       &lt;SpeedInsights />
       &lt;GlobalStyles />
       &lt;div className="container">
         &lt;Sidebar />
         {/* id matches the containerId prop used by react-scroll in SidebarMenu */}
         &lt;div className="main-content" id="scroll-container">
+          &lt;div className="section" id="Hero">&lt;Hero />&lt;/div>
           &lt;div className="section" id="About">&lt;About />&lt;/div>
           &lt;div className="section" id="Education">&lt;Education />&lt;/div>
           &lt;div className="section" id="Projects">&lt;Projects />&lt;/div>
@@ -62,7 +65,7 @@ function App() {
           &lt;div className="section" id="Legal">&lt;Legal />&lt;/div>
         &lt;/div>
       &lt;/div>
-    &lt;/>
+    &lt;/ThemeProvider>
   );
 }
 
@@ -77,13 +80,13 @@ export default App;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#repoDocs">repoDocs</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#Hero">Hero</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#ThemeContext">ThemeContext</a></li><li><a href="global.html#ThemeProvider">ThemeProvider</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#repoDocs">repoDocs</a></li><li><a href="global.html#useTheme">useTheme</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 15 2026 19:02:55 GMT+0200 (Mitteleuropäische Sommerzeit)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jul 16 2026 14:11:51 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>
