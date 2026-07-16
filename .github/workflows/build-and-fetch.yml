@@ -75,7 +75,12 @@ jobs:
         run: node scripts/verifyProjects.js
 
       # Test files are never included — CRA only compiles src/.
+      # REACT_APP_* vars are baked in at build time. The app is built HERE (not
+      # on Vercel — we deploy --prebuilt), so client env vars must be provided
+      # as GitHub secrets on this step. The Web3Forms key is public by design.
       - name: Build
+        env:
+          REACT_APP_WEB3FORMS_KEY: ${{ secrets.REACT_APP_WEB3FORMS_KEY }}
         run: npm run build
 
       - name: Prepare Vercel prebuilt output
