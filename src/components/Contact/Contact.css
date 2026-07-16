@@ -1,0 +1,117 @@
+/* ─── Contact ────────────────────────────────────── */
+
+.contact-container h2 {
+  font-size: 2rem;
+  color: var(--color-accent);
+  margin-bottom: 0.5rem;
+}
+
+.contact-lead {
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+  max-width: 52ch;
+}
+
+.contact-form {
+  display: grid;
+  gap: 1rem;
+  max-width: 560px;
+}
+
+/* Honeypot stays off-screen but focusable order is skipped via tabindex */
+.contact-botcheck {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+}
+
+.contact-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.contact-field label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.contact-field input,
+.contact-field textarea {
+  width: 100%;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.92rem;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.contact-field input:focus,
+.contact-field textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.contact-consent {
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.contact-consent input {
+  margin-top: 0.2rem;
+}
+
+.contact-submit {
+  justify-self: start;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  transition: opacity 0.2s ease;
+}
+
+.contact-submit:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.contact-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.contact-status {
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.contact-status.success {
+  color: var(--color-accent);
+}
+
+.contact-status.error {
+  color: #ff6b6b;
+}
+
+/* ─── Responsive ─────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .contact-row {
+    grid-template-columns: 1fr;
+  }
+}

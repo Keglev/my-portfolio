@@ -98,6 +98,18 @@
     "ctaCv": "Download CV",
     "ctaExperience": "Experience"
   },
-  "theme": { "light": "Light theme", "dark": "Dark theme" }
+  "theme": { "light": "Light theme", "dark": "Dark theme" },
+  "skills": "Skills",
+  "contact": "Contact",
+  "skillsSection": { "backend": "Backend", "frontend": "Frontend", "devops": "DevOps & tools", "databases": "Databases" },
+  "contactSection": {
+    "heading": "Contact",
+    "lead": "Open to Java backend and full-stack roles in Germany (on-site Nuremberg region or remote). The fastest way to reach me is this form or LinkedIn.",
+    "name": "Name", "email": "Email", "message": "Message",
+    "consent": "I have read the privacy policy and consent to the processing of my data to answer my request.",
+    "send": "Send message", "sending": "Sending…",
+    "success": "Thanks — your message has been sent. I will get back to you shortly.",
+    "error": "Something went wrong. Please try again or reach me via LinkedIn or email."
+  }
 }
 

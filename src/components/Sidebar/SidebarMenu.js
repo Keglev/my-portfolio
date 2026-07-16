@@ -6,9 +6,11 @@ import { useTheme } from '../../context/ThemeContext';
 const NAV_ITEMS = [
   { id: 'About',      key: 'about' },
   { id: 'Education',  key: 'education' },
+  { id: 'Skills',     key: 'skills' },
   { id: 'Projects',   key: 'projects' },
   { id: 'RepoDocs',   key: 'repoDocs' },
   { id: 'Experience', key: 'experience.jobExperiences' },
+  { id: 'Contact',    key: 'contact' },
 ];
 
 /**

@@ -99,7 +99,19 @@
     "ctaCv": "Lebenslauf herunterladen",
     "ctaExperience": "Berufserfahrung"
   },
-  "theme": { "light": "Helles Design", "dark": "Dunkles Design" }
+  "theme": { "light": "Helles Design", "dark": "Dunkles Design" },
+  "skills": "Kenntnisse",
+  "contact": "Kontakt",
+  "skillsSection": { "backend": "Backend", "frontend": "Frontend", "devops": "DevOps & Tools", "databases": "Datenbanken" },
+  "contactSection": {
+    "heading": "Kontakt",
+    "lead": "Offen für Java-Backend- und Full-Stack-Positionen in Deutschland (vor Ort Raum Nürnberg oder remote). Am schnellsten erreichen Sie mich über dieses Formular oder LinkedIn.",
+    "name": "Name", "email": "E-Mail", "message": "Nachricht",
+    "consent": "Ich habe die Datenschutzerklärung gelesen und stimme der Verarbeitung meiner Daten zur Beantwortung meiner Anfrage zu.",
+    "send": "Nachricht senden", "sending": "Wird gesendet…",
+    "success": "Danke — Ihre Nachricht wurde gesendet. Ich melde mich in Kürze.",
+    "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder kontaktieren Sie mich über LinkedIn oder E-Mail."
+  }
 }
   
 

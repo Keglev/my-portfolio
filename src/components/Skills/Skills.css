@@ -1,0 +1,50 @@
+/* ─── Skills ─────────────────────────────────────── */
+
+.skills-container h2 {
+  font-size: 2rem;
+  color: var(--color-accent);
+  margin-bottom: 1.5rem;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.skills-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  padding: 1.2rem;
+}
+
+.skills-card h3 {
+  font-size: 1rem;
+  color: var(--color-accent);
+  margin-bottom: 0.7rem;
+}
+
+.skills-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.skills-chip {
+  font-family: 'Courier New', monospace;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg-tag);
+  border: 1px solid var(--color-border);
+  border-radius: 7px;
+  padding: 0.28rem 0.55rem;
+}
+
+/* ─── Responsive ─────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+}

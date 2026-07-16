@@ -15,9 +15,11 @@
 
 /* ─── Card List ──────────────────────────────────── */
 
+/* Two project cards side by side — fills the row instead of stacking
+   two narrow half-empty panels. */
 .repo-docs-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
 
@@ -53,9 +55,44 @@
 
 /* ─── Doc Links ──────────────────────────────────── */
 
+/* Links as a dense 2-column grid of bordered rows (no more single sparse column) */
 .repo-docs-links {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+
+.repo-doc-link {
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 0.85rem;
   display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-top: 0.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.6rem;
+  background: var(--color-bg-subtle);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.repo-doc-link:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.repo-doc-icon {
+  color: var(--color-accent);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .repo-docs-list,
+  .repo-docs-links {
+    grid-template-columns: 1fr;
+  }
 }

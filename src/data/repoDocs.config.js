@@ -10,6 +10,7 @@
  * To add or change a link, edit this file — no fetch pipeline or token needed.
  *
  * @typedef {Object} RepoDocLink
+ * @property {string} icon     Small decorative glyph shown before the label.
  * @property {string} titleEn  Link label in English.
  * @property {string} titleDe  Link label in German.
  * @property {string} url      Absolute URL to the published documentation page.
@@ -26,21 +27,21 @@ const repoDocs = [
     slug: 'smartsupplypro',
     displayName: 'SmartSupplyPro',
     links: [
-      { titleEn: 'Documentation hub', titleDe: 'Dokumentations-Hub', url: 'https://keglev.github.io/inventory-service/' },
-      { titleEn: 'API reference', titleDe: 'API-Referenz', url: 'https://keglev.github.io/inventory-service/backend/api/index.html' },
-      { titleEn: 'Architecture overview', titleDe: 'Architektur-Überblick', url: 'https://keglev.github.io/inventory-service/backend/architecture/overview.html' },
-      { titleEn: 'Backend test coverage', titleDe: 'Backend-Testabdeckung', url: 'https://keglev.github.io/inventory-service/backend/coverage/index.html' },
+      { icon: '◆', titleEn: 'Documentation hub', titleDe: 'Dokumentations-Hub', url: 'https://keglev.github.io/inventory-service/' },
+      { icon: '‹›', titleEn: 'API reference', titleDe: 'API-Referenz', url: 'https://keglev.github.io/inventory-service/backend/api/index.html' },
+      { icon: '▤', titleEn: 'Architecture overview', titleDe: 'Architektur-Überblick', url: 'https://keglev.github.io/inventory-service/backend/architecture/overview.html' },
+      { icon: '✓', titleEn: 'Backend test coverage', titleDe: 'Backend-Testabdeckung', url: 'https://keglev.github.io/inventory-service/backend/coverage/index.html' },
     ],
   },
   {
     slug: 'stockease',
     displayName: 'StockEase',
     links: [
-      { titleEn: 'Documentation hub', titleDe: 'Dokumentations-Hub', url: 'https://keglev.github.io/stockease/' },
-      { titleEn: 'API reference', titleDe: 'API-Referenz', url: 'https://keglev.github.io/stockease/api-docs.html' },
-      { titleEn: 'Architecture & security', titleDe: 'Architektur & Sicherheit', url: 'https://keglev.github.io/stockease/architecture/security.html' },
-      { titleEn: 'Test coverage', titleDe: 'Testabdeckung', url: 'https://keglev.github.io/stockease/coverage/index.html' },
-      { titleEn: 'Frontend documentation', titleDe: 'Frontend-Dokumentation', url: 'https://keglev.github.io/frontend/' },
+      { icon: '◆', titleEn: 'Documentation hub', titleDe: 'Dokumentations-Hub', url: 'https://keglev.github.io/stockease/' },
+      { icon: '‹›', titleEn: 'API reference', titleDe: 'API-Referenz', url: 'https://keglev.github.io/stockease/api-docs.html' },
+      { icon: '▤', titleEn: 'Architecture & security', titleDe: 'Architektur & Sicherheit', url: 'https://keglev.github.io/stockease/architecture/security.html' },
+      { icon: '✓', titleEn: 'Test coverage', titleDe: 'Testabdeckung', url: 'https://keglev.github.io/stockease/coverage/index.html' },
+      { icon: '◈', titleEn: 'Frontend documentation', titleDe: 'Frontend-Dokumentation', url: 'https://keglev.github.io/frontend/' },
     ],
   },
 ];
