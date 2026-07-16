@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: styles/GlobalStyles.js</title>
+    <title>JSDoc: Source: components/Skills/Skills.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: styles/GlobalStyles.js</h1>
+    <h1 class="page-title">Source: components/Skills/Skills.js</h1>
 
     
 
@@ -26,42 +26,41 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import { createGlobalStyle } from 'styled-components';
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { useTranslation } from 'react-i18next';
+import skillGroups from '../../data/skills.config';
+import './Skills.css';
 
 /**
- * CSS reset and base typography applied globally across the entire app.
- * Injected once at the root so all components inherit consistent defaults.
+ * Skills section: a compact 2-column grid of skill groups so a recruiter can
+ * stack-match in seconds. Content comes from src/data/skills.config; group
+ * headings are localized, technology labels are shown as-is.
+ *
+ * @returns {JSX.Element}
  */
-export const GlobalStyles = createGlobalStyle`
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+const Skills = () => {
+  const { t } = useTranslation();
 
-  body {
-    font-family: 'Montserrat', sans-serif;
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    scroll-behavior: smooth;
-    line-height: 1.6;
-  }
+  return (
+    &lt;section className="skills-container" id="SkillsSection" aria-label="Skills">
+      &lt;h2>{t('skills')}&lt;/h2>
+      &lt;div className="skills-grid">
+        {skillGroups.map((group) => (
+          &lt;div className="skills-card" key={group.id}>
+            &lt;h3>{t(group.titleKey)}&lt;/h3>
+            &lt;div className="skills-chips">
+              {group.items.map((item) => (
+                &lt;span className="skills-chip" key={item}>{item}&lt;/span>
+              ))}
+            &lt;/div>
+          &lt;/div>
+        ))}
+      &lt;/div>
+    &lt;/section>
+  );
+};
 
-  h1, h2, h3, h4, h5, h6 {
-    margin: 0;
-    font-weight: 700;
-  }
-
-  p {
-    margin: 0;
-  }
-
-  @media (max-width: 768px) {
-    body {
-      padding: 0 1rem;
-    }
-  }
-`;
+export default Skills;
 </code></pre>
         </article>
     </section>

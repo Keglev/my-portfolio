@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/Contact/Contact.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/Contact/Contact.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import './Contact.css';
+
+/**
+ * Contact section with a Web3Forms-backed form (static-site friendly: no own
+ * backend needed). The public access key comes from the REACT_APP_WEB3FORMS_KEY
+ * environment variable, set in Vercel project settings. Includes a required
+ * DSGVO consent checkbox (submit stays disabled until checked) and a hidden
+ * honeypot field ("botcheck") that Web3Forms uses for spam filtering.
+ *
+ * @returns {JSX.Element}
+ */
+const Contact = () => {
+  const { t } = useTranslation();
+  const [status, setStatus] = useState('idle'); // idle | sending | success | error
+  const [consent, setConsent] = useState(false);
+
+  const accessKey = process.env.REACT_APP_WEB3FORMS_KEY || '';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!consent || status === 'sending') return;
+    setStatus('sending');
+
+    // FormData instead of named-property access: form.name on a &lt;form> returns
+    // the form's own name attribute, not the input, so form.name.value crashes.
+    const form = e.target;
+    const fd = new FormData(form);
+    const senderName = fd.get('name') || '';
+    const payload = {
+      access_key: accessKey,
+      name: senderName,
+      email: fd.get('email') || '',
+      message: fd.get('message') || '',
+      botcheck: fd.get('botcheck') || '',
+      subject: 'Portfolio contact from ' + senderName,
+    };
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus('success');
+        form.reset();
+        setConsent(false);
+      } else {
+        setStatus('error');
+      }
+    } catch (err) {
+      setStatus('error');
+    }
+  };
+
+  return (
+    &lt;section className="contact-container" id="ContactSection" aria-label="Contact">
+      &lt;h2>{t('contactSection.heading')}&lt;/h2>
+      &lt;p className="contact-lead">{t('contactSection.lead')}&lt;/p>
+
+      &lt;form className="contact-form" onSubmit={handleSubmit} noValidate={false}>
+        {/* Honeypot: hidden from users, bots fill it and get filtered by Web3Forms */}
+        &lt;input type="checkbox" name="botcheck" tabIndex="-1" className="contact-botcheck" aria-hidden="true" />
+
+        &lt;div className="contact-row">
+          &lt;div className="contact-field">
+            &lt;label htmlFor="contact-name">{t('contactSection.name')}&lt;/label>
+            &lt;input id="contact-name" name="name" type="text" required autoComplete="name" />
+          &lt;/div>
+          &lt;div className="contact-field">
+            &lt;label htmlFor="contact-email">{t('contactSection.email')}&lt;/label>
+            &lt;input id="contact-email" name="email" type="email" required autoComplete="email" />
+          &lt;/div>
+        &lt;/div>
+
+        &lt;div className="contact-field">
+          &lt;label htmlFor="contact-message">{t('contactSection.message')}&lt;/label>
+          &lt;textarea id="contact-message" name="message" rows="5" required />
+        &lt;/div>
+
+        &lt;label className="contact-consent">
+          &lt;input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            aria-label={t('contactSection.consent')}
+          />
+          &lt;span>{t('contactSection.consent')}&lt;/span>
+        &lt;/label>
+
+        &lt;button type="submit" className="contact-submit" disabled={!consent || status === 'sending'}>
+          {status === 'sending' ? t('contactSection.sending') : t('contactSection.send')}
+        &lt;/button>
+
+        {status === 'success' &amp;&amp; (
+          &lt;p className="contact-status success" role="status">{t('contactSection.success')}&lt;/p>
+        )}
+        {status === 'error' &amp;&amp; (
+          &lt;p className="contact-status error" role="alert">{t('contactSection.error')}&lt;/p>
+        )}
+      &lt;/form>
+    &lt;/section>
+  );
+};
+
+export default Contact;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Contact">Contact</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#Hero">Hero</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#Skills">Skills</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#ThemeContext">ThemeContext</a></li><li><a href="global.html#ThemeProvider">ThemeProvider</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#repoDocs">repoDocs</a></li><li><a href="global.html#skillGroups">skillGroups</a></li><li><a href="global.html#useTheme">useTheme</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Thu Jul 16 2026 13:13:53 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

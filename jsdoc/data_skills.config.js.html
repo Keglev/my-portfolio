@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: styles/GlobalStyles.js</title>
+    <title>JSDoc: Source: data/skills.config.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: styles/GlobalStyles.js</h1>
+    <h1 class="page-title">Source: data/skills.config.js</h1>
 
     
 
@@ -26,42 +26,43 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import { createGlobalStyle } from 'styled-components';
-
-/**
- * CSS reset and base typography applied globally across the entire app.
- * Injected once at the root so all components inherit consistent defaults.
+            <pre class="prettyprint source linenums"><code>/**
+ * Curated skills for the Skills section, grouped the way recruiters scan:
+ * backend first (the target role), then frontend, DevOps, and databases.
+ * Labels are technology names (not translated); group titles are localized
+ * via the `titleKey` i18n key.
+ *
+ * @typedef {Object} SkillGroup
+ * @property {string} id        Stable id.
+ * @property {string} titleKey  i18n key for the group heading.
+ * @property {string[]} items   Technology labels shown as chips.
  */
-export const GlobalStyles = createGlobalStyle`
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
 
-  body {
-    font-family: 'Montserrat', sans-serif;
-    background-color: var(--color-bg);
-    color: var(--color-text);
-    scroll-behavior: smooth;
-    line-height: 1.6;
-  }
+/** @type {SkillGroup[]} */
+const skillGroups = [
+  {
+    id: 'backend',
+    titleKey: 'skillsSection.backend',
+    items: ['Java 17/21', 'Spring Boot 3', 'Spring Security', 'Hibernate / JPA', 'REST APIs', 'OAuth2 / JWT', 'Microservices'],
+  },
+  {
+    id: 'frontend',
+    titleKey: 'skillsSection.frontend',
+    items: ['React', 'TypeScript', 'JavaScript', 'Material UI', 'Tailwind CSS', 'Chart.js'],
+  },
+  {
+    id: 'devops',
+    titleKey: 'skillsSection.devops',
+    items: ['Docker', 'Docker Compose', 'GitHub Actions (CI/CD)', 'JUnit 5', 'Mockito', 'JaCoCo', 'Maven'],
+  },
+  {
+    id: 'databases',
+    titleKey: 'skillsSection.databases',
+    items: ['PostgreSQL', 'Oracle Autonomous DB', 'SQL', 'JDBC'],
+  },
+];
 
-  h1, h2, h3, h4, h5, h6 {
-    margin: 0;
-    font-weight: 700;
-  }
-
-  p {
-    margin: 0;
-  }
-
-  @media (max-width: 768px) {
-    body {
-      padding: 0 1rem;
-    }
-  }
-`;
+export default skillGroups;
 </code></pre>
         </article>
     </section>
