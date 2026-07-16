@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: components/Hero/Hero.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,64 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: components/Hero/Hero.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { useTranslation } from 'react-i18next';
+import './Hero.css';
 
+/**
+ * Hero section: the first thing a recruiter sees.
+ * A short eyebrow line (stack + location), a value-proposition headline with
+ * an accented key phrase, a one-paragraph lead, and three CTAs (projects,
+ * CV download, contact). All copy is locale-driven; the CV link serves the
+ * matching language PDF, mirroring the sidebar logic.
+ *
+ * @returns {JSX.Element}
+ */
+const Hero = () => {
+  const { t, i18n } = useTranslation();
+  const isGerman = (i18n.language || 'en').toLowerCase().startsWith('de');
+  const cvFile = isGerman
+    ? '/Carlos_Keglevich_Lebenslauf_DE.pdf'
+    : '/Carlos_Keglevich_CV_EN.pdf';
 
-    <h3> </h3>
+  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
+  return (
+    &lt;section className="hero" aria-label="Introduction">
+      &lt;p className="hero-eyebrow">{t('hero.eyebrow')}&lt;/p>
+      &lt;h1 className="hero-headline">
+        {t('hero.headlinePre')}{' '}
+        &lt;span className="hero-highlight">{t('hero.headlineHighlight')}&lt;/span>
+      &lt;/h1>
+      &lt;p className="hero-lead">{t('hero.lead')}&lt;/p>
+      &lt;div className="hero-cta">
+        &lt;button type="button" className="hero-btn primary" onClick={() => scrollTo('Projects')}>
+          {t('hero.ctaProjects')}
+        &lt;/button>
+        &lt;a className="hero-btn ghost" href={cvFile} download target="_blank" rel="noopener noreferrer">
+          {t('hero.ctaCv')}
+        &lt;/a>
+        &lt;button type="button" className="hero-btn ghost" onClick={() => scrollTo('Experience')}>
+          {t('hero.ctaExperience')}
+        &lt;/button>
+      &lt;/div>
+    &lt;/section>
+  );
+};
 
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+export default Hero;
+</code></pre>
+        </article>
+    </section>
 
 
 

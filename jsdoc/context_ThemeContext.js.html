@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: context/ThemeContext.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,74 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: context/ThemeContext.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { createContext, useContext, useEffect, useState } from 'react';
 
+/**
+ * Theme context for light/dark mode.
+ *
+ * The active theme is exposed to components (e.g. ProjectCard picks
+ * theme-specific screenshots) and mirrored to a `data-theme` attribute on
+ * &lt;html>, which drives the CSS variable overrides in index.css. The choice
+ * persists in localStorage; the default is dark, matching the site's identity.
+ */
+const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} });
 
-    <h3> </h3>
+const STORAGE_KEY = 'portfolio-theme';
 
+const getInitialTheme = () => {
+  try {
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    if (stored === 'light' || stored === 'dark') return stored;
+  } catch (e) { /* storage unavailable (SSR/tests/private mode) — fall through */ }
+  return 'dark';
+};
 
+/**
+ * Provides the current theme and a toggle to the component tree, and keeps
+ * the &lt;html data-theme> attribute and localStorage in sync.
+ *
+ * @param {object} props
+ * @param {React.ReactNode} props.children
+ * @returns {JSX.Element}
+ */
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState(getInitialTheme);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try { window.localStorage.setItem(STORAGE_KEY, theme); } catch (e) { /* ignore */ }
+  }, [theme]);
 
+  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
 
+  return (
+    &lt;ThemeContext.Provider value={{ theme, toggleTheme }}>
+      {children}
+    &lt;/ThemeContext.Provider>
+  );
+};
 
+/**
+ * Access the active theme. Safe without a provider (defaults to dark),
+ * which keeps isolated component tests simple.
+ *
+ * @returns {{theme: string, toggleTheme: Function}}
+ */
+export const useTheme = () => useContext(ThemeContext);
 
-
-
-
-    
-
-
-
-
-
+export default ThemeContext;
+</code></pre>
+        </article>
+    </section>
 
 
 
