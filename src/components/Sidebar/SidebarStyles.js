@@ -109,6 +109,11 @@ export const FooterMessage = styled.div`
     margin: 0;
   }
 
+  .footer-name {
+    font-weight: 600;
+    margin-top: 0.15rem;
+  }
+
   @media (max-width: 768px) {
     font-size: 0.8rem;
   }

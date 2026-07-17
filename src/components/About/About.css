@@ -2,7 +2,6 @@
 
 .about-container {
   text-align: left;
-  padding: 2rem 0;
   background-color: var(--color-bg);
   color: var(--color-text);
 }
@@ -15,7 +14,6 @@
   align-items: center;
   gap: 1rem;
   text-align: center;
-  margin-bottom: 1.5rem;
 }
 
 .about-header img {
@@ -43,7 +41,9 @@
 .about-header h2 {
   color: var(--color-accent);
   font-size: 2rem;
-  margin: 0;
+  /* Same margin as every other section h2; its own bottom margin now supplies
+     the gap to .about-blocks that .about-header used to provide externally */
+  margin: 0 0 1.5rem;
 }
 
 /* ─── Storytelling Blocks ────────────────────────────── */

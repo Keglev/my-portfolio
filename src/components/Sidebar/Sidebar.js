@@ -56,6 +56,7 @@ const Sidebar = () => {
       <SidebarMenu activeSection={activeSection} />
       <FooterMessage>
         <p>{t('footerMessage')}</p>
+        <p className="footer-name">Carlos Keglevich</p>
         <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <LegalButton
             type="button"

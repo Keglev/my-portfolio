@@ -1,14 +1,13 @@
 /* ─── Container ─────────────────────────────────── */
 
 .project-container {
-  padding: var(--padding-section);
   background-color: var(--color-bg);
   color: var(--color-text);
 }
 
 .project-container h2 {
   font-size: 2rem;
-  margin-bottom: 2rem;
+  margin: 0 0 1.5rem;
   color: var(--color-accent);
 }
 
@@ -101,13 +100,13 @@
   padding: 0.3rem 0.6rem;
   border-radius: 12px;
   font-size: 0.9rem;
-  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  transition: var(--transition-card);
 }
 
 .tech-box:hover {
-  color: var(--color-card-accent);
-  border-color: var(--color-card-accent);
-  transform: translateY(-2px);
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  box-shadow: 0px 4px 10px var(--shadow-accent);
 }
 
 /* ─── Project Links ──────────────────────────────── */
@@ -133,10 +132,6 @@
 /* ─── Responsive ─────────────────────────────────── */
 
 @media (max-width: 768px) {
-  .project-container {
-    padding: 2rem;
-  }
-
   .project-grid {
     grid-template-columns: 1fr;
   }
