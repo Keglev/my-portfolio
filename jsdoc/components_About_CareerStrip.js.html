@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/Skills/Skills.js</title>
+    <title>JSDoc: Source: components/About/CareerStrip.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/Skills/Skills.js</h1>
+    <h1 class="page-title">Source: components/About/CareerStrip.js</h1>
 
     
 
@@ -28,40 +28,42 @@
         <article>
             <pre class="prettyprint source linenums"><code>import React from 'react';
 import { useTranslation } from 'react-i18next';
-import skillGroups from '../../data/skills.config';
-import './Skills.css';
 
 /**
- * Skills section: a compact 2-column grid of skill groups so a recruiter can
- * stack-match in seconds. Content comes from src/data/skills.config; group
- * headings are localized, technology labels are shown as-is.
+ * Condensed career and education strip: one line per station, two columns.
+ * Replaces the former full Experience and Education sections. The wrapper id
+ * "Career" is the scroll target of the Hero "Experience" CTA.
  *
  * @returns {JSX.Element}
  */
-const Skills = () => {
+const CareerStrip = () => {
   const { t } = useTranslation();
 
+  // i18next returns the key string when a list resource is missing; the guard
+  // keeps the render safe in tests and in partially loaded locales
+  const asList = (value) => (Array.isArray(value) ? value : []);
+  const career = asList(t('aboutSection.career', { returnObjects: true }));
+  const education = asList(t('aboutSection.educationItems', { returnObjects: true }));
+
   return (
-    &lt;section className="skills-container" id="SkillsSection" aria-label="Skills">
-      &lt;h2>{t('skills')}&lt;/h2>
-      &lt;div className="skills-grid">
-        {skillGroups.map((group) => (
-          &lt;div className="skills-card" key={group.id}>
-            &lt;h3>{t(group.titleKey)}&lt;/h3>
-            &lt;p className="skills-desc">{t(group.descKey)}&lt;/p>
-            &lt;div className="skills-chips">
-              {group.items.map((item) => (
-                &lt;span className="skills-chip" key={item}>{item}&lt;/span>
-              ))}
-            &lt;/div>
-          &lt;/div>
-        ))}
+    &lt;div className="career-strip" id="Career">
+      &lt;div className="career-column">
+        &lt;h3>{t('aboutSection.careerHeading')}&lt;/h3>
+        &lt;ul>
+          {career.map((line, idx) => &lt;li key={idx}>{line}&lt;/li>)}
+        &lt;/ul>
       &lt;/div>
-    &lt;/section>
+      &lt;div className="career-column">
+        &lt;h3>{t('aboutSection.educationHeading')}&lt;/h3>
+        &lt;ul>
+          {education.map((line, idx) => &lt;li key={idx}>{line}&lt;/li>)}
+        &lt;/ul>
+      &lt;/div>
+    &lt;/div>
   );
 };
 
-export default Skills;
+export default CareerStrip;
 </code></pre>
         </article>
     </section>

@@ -28,54 +28,52 @@
         <article>
             <pre class="prettyprint source linenums"><code>import React from 'react';
 import './About.css';
-import ProfilePic from '../../assets/profile-pic.jpg';
-import { SiReact, SiPostgresql, SiSpringboot, SiDocker, SiTypescript, SiMaterialdesign, SiGit, SiVite } from 'react-icons/si';
-import { FaJava, FaGithub, FaShieldAlt } from 'react-icons/fa';
-import { TbTestPipe } from 'react-icons/tb';
+import ProfilePicFallback from '../../assets/profile-pic.jpg';
 import { useTranslation } from 'react-i18next';
+import CareerStrip from './CareerStrip';
+
+// Render order of the four storytelling blocks; keys map to aboutSection.&lt;key> in the locales
+const BLOCKS = ['block1', 'block2', 'block3', 'block4'];
 
 /**
- * Renders developer profile and technology stack.
- * Displays introductory text from i18n resources alongside a profile picture
- * and icons for key technical skills grouped into categories.
+ * About section: four storytelling blocks (career-changer pitch), a condensed
+ * career/education strip, and the profile photo.
+ * The photo prefers the curated file at public/profile.jpg and falls back to
+ * the bundled asset on load error, so a missing file never breaks the layout.
  *
- * @returns {JSX.Element} About section with profile image, biography text, and tech stack icons.
+ * @returns {JSX.Element}
  */
 const About = () => {
   const { t } = useTranslation();
+
+  const handleImgError = (e) => {
+    const img = e.currentTarget;
+    if (img.getAttribute('data-fallback') !== '1') {
+      img.setAttribute('data-fallback', '1');
+      img.src = ProfilePicFallback;
+    }
+  };
+
   return (
     &lt;div className="about-container" id="About">
       &lt;div className="content">
         &lt;h2>{t('aboutSection.heading')}&lt;/h2>
-        &lt;p>{t('aboutSection.description1')}&lt;/p>
-        &lt;p>{t('aboutSection.description2')}&lt;/p>
-        &lt;p>{t('aboutSection.description3')}&lt;/p>
-      
-        {/* Grouped by domain: backend, frontend, devops */}
-        &lt;p>🔧 &lt;strong>Tech Stack:&lt;/strong>&lt;/p>
-        &lt;ul className="tech-list">
-          &lt;li>&lt;FaJava /> Java 17&lt;/li>
-          &lt;li>&lt;SiSpringboot /> Spring Boot 3&lt;/li>
-          &lt;li>&lt;SiPostgresql /> PostgreSQL &amp; Oracle DB&lt;/li>
-          &lt;li>&lt;SiDocker /> Docker &amp; Docker Compose&lt;/li>
-        &lt;/ul>
-
-        &lt;ul className="tech-list">
-          &lt;li>&lt;TbTestPipe /> JUnit &amp; Mockito&lt;/li>
-          &lt;li>&lt;SiTypescript /> TypeScript&lt;/li>
-          &lt;li>&lt;SiReact /> React.js&lt;/li>
-          &lt;li>&lt;SiMaterialdesign /> Material-UI (MUI)&lt;/li>
-        &lt;/ul>
-
-        &lt;ul className="tech-list">
-          &lt;li>&lt;SiGit /> Git&lt;/li>
-          &lt;li>&lt;FaGithub /> GitHub Actions&lt;/li>
-          &lt;li>&lt;FaShieldAlt /> Security / Auth&lt;/li>
-          &lt;li>&lt;SiVite /> Vite&lt;/li>
-        &lt;/ul>
+        &lt;div className="about-blocks">
+          {BLOCKS.map((key) => (
+            &lt;article className="about-block" key={key}>
+              &lt;h3>{t(`aboutSection.${key}.title`)}&lt;/h3>
+              &lt;p>{t(`aboutSection.${key}.text`)}&lt;/p>
+            &lt;/article>
+          ))}
+        &lt;/div>
+        &lt;CareerStrip />
       &lt;/div>
       &lt;div className="profile">
-        &lt;img src={ProfilePic} alt="Carlos Keglevich Profile" />
+        &lt;img
+          src="/profile.jpg"
+          alt="Carlos Keglevich portrait"
+          onError={handleImgError}
+        />
       &lt;/div>
     &lt;/div>
   );
@@ -92,13 +90,13 @@ export default About;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#Contact">Contact</a></li><li><a href="global.html#Education">Education</a></li><li><a href="global.html#Experience">Experience</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#Hero">Hero</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#RepoDocLinks">RepoDocLinks</a></li><li><a href="global.html#RepoDocs">RepoDocs</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#Skills">Skills</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#ThemeContext">ThemeContext</a></li><li><a href="global.html#ThemeProvider">ThemeProvider</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#repoDocs">repoDocs</a></li><li><a href="global.html#skillGroups">skillGroups</a></li><li><a href="global.html#useTheme">useTheme</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#CareerStrip">CareerStrip</a></li><li><a href="global.html#Contact">Contact</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#Hero">Hero</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#SidebarSocial">SidebarSocial</a></li><li><a href="global.html#Skills">Skills</a></li><li><a href="global.html#SocialLinks">SocialLinks</a></li><li><a href="global.html#SocialLinksWrapper">SocialLinksWrapper</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#ThemeContext">ThemeContext</a></li><li><a href="global.html#ThemeProvider">ThemeProvider</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#skillGroups">skillGroups</a></li><li><a href="global.html#useTheme">useTheme</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Jul 17 2026 08:39:26 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Jul 17 2026 12:03:21 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>
