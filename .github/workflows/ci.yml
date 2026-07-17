@@ -4,14 +4,21 @@
 # Purpose
 # - Lint source files to catch issues before tests run
 # - Run the full test suite and collect coverage
-# - Upload coverage as a pipeline artifact for docs-refresh
+# - Upload coverage as a pipeline artifact for api-docs.yml
+# - On push to main: resolve which downstream work actually changed
+#   (scripts/ci/runPipelineScope.js) and dispatch deploy.yml and
+#   api-docs.yml in parallel — deploy always runs, api-docs only when
+#   the API surface or test coverage could have changed.
 #
 # Triggers
-# - Push to main when source, test, or config files change
-# - Pull requests to main
+# - Push to main when any workflow, source, test, or config file changes
+#   (widened to .github/workflows/** so a change to deploy.yml or
+#   api-docs.yml alone still exercises the pipeline instead of sitting
+#   untested until the next src/** push)
+# - Pull requests to main (lint-and-test only, no dispatch)
 #
-# Does NOT deploy anything. Deployment is handled by
-# build-and-fetch.yml, which runs only after this job succeeds.
+# Does NOT deploy anything itself. Deployment and docs generation are
+# dispatched to deploy.yml / api-docs.yml, which run in parallel.
 ############################################################
 name: CI
 
@@ -24,7 +31,7 @@ on:
       - 'config/**'
       - 'jest.node.config.js'
       - 'package.json'
-      - '.github/workflows/ci.yml'
+      - '.github/workflows/**'
   pull_request:
     branches: [ main ]
 
@@ -34,7 +41,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  test:
+  lint-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -53,7 +60,7 @@ jobs:
         # --runInBand: runs tests serially to avoid resource contention in CI
         run: npx jest --config=jest.node.config.js --runInBand --coverage
 
-      # Upload coverage so docs-refresh can consume it without re-running tests.
+      # Upload coverage so api-docs.yml can consume it without re-running tests.
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
@@ -61,15 +68,46 @@ jobs:
           path: coverage/
           retention-days: 7
 
-  # Runs only on push to main after test job passes.
-  trigger-build:
-    needs: test
+  # Runs only on push to main after lint-and-test passes.
+  start-deploy-stage:
+    needs: lint-and-test
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       actions: write
     steps:
-      - name: Trigger build-and-fetch workflow
-        run: gh workflow run build-and-fetch.yml --repo ${{ github.repository }} --ref main
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Full history: scripts/ci/runPipelineScope.js diffs
+          # github.event.before..github.sha, which needs both commits
+          # reachable. A shallow (depth-1) checkout would make every
+          # push look like an unresolvable range.
+          fetch-depth: 0
+
+      - name: Node setup
+        uses: ./.github/actions/node-setup
+
+      # Resolves which downstream work changed. If the range can't be
+      # diffed (new branch: before is the all-zero SHA; force-push:
+      # before was rewritten out of history), runPipelineScope.js fails
+      # safe and reports every flag as true rather than skipping work.
+      - name: Resolve pipeline scope
+        id: scope
+        run: node scripts/ci/runPipelineScope.js "${{ github.event.before }}" "${{ github.sha }}"
+
+      - name: Trigger deploy workflow
+        run: gh workflow run deploy.yml --repo ${{ github.repository }} --ref main
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Dispatched alongside deploy.yml (not after it) so build/deploy and
+      # docs generation run in parallel instead of docs waiting on deploy.
+      - name: Trigger api-docs workflow
+        if: steps.scope.outputs.apiDocs == 'true' || steps.scope.outputs.coverage == 'true'
+        run: |
+          gh workflow run api-docs.yml --repo ${{ github.repository }} --ref main \
+            -f apiDocs="${{ steps.scope.outputs.apiDocs }}" \
+            -f coverage="${{ steps.scope.outputs.coverage }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
