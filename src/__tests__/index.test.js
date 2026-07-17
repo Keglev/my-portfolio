@@ -7,6 +7,8 @@
  * ignored) and const variables in factories (undefined after hoisting).
  */
 
+const React = require('react');
+
 jest.mock('../App', () => function App() { return null; });
 
 jest.mock('../components/ErrorBoundary', () =>
@@ -47,5 +49,11 @@ describe('src/index.js entry point', () => {
     expect(jsx).toBeDefined();
     expect(typeof jsx).toBe('object');
     expect(jsx.props).toBeDefined();
+  });
+
+  test('render tree is rooted in React.StrictMode', () => {
+    const { __renders } = require('react-dom/client');
+    const jsx = __renders[0].element;
+    expect(jsx.type).toBe(React.StrictMode);
   });
 });
