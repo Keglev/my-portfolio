@@ -12,7 +12,9 @@
 
 ## Status
 
-Accepted
+Accepted. Note: `build-and-fetch.yml`, named below, was renamed `deploy.yml`
+in the workflow rework described in [ADR-004's Update](ADR-004-three-workflow-cicd.md#update-2026-07-17);
+the prebuilt-artifact deployment mechanism itself is unchanged.
 
 ## Context
 

@@ -1,0 +1,134 @@
+############################################################
+# Docs — architecture site
+#
+# Purpose
+# - Apply HTML/CSS doc templates (.md -> .html via build_docs.js)
+# - Pre-render Mermaid diagrams (build_mermaid.js; falls back to CDN
+#   client-side rendering when mmdc is not installed)
+# - Publish the result to gh-pages
+#
+# Triggers
+# - Directly on docs/** or scripts/docs/** pushes to main. NOT dispatched
+#   by ci.yml and NOT run after every deploy -- architecture content only
+#   changes when someone edits docs/ or its templates, which
+#   scripts/ci/detectPipelineScope.js's archDocs flag exists to express
+#   (see api-docs.yml for the sibling apiDocs/coverage half of that split).
+# - Manual via workflow_dispatch for ad-hoc rebuilds.
+#
+# Deployment target: gh-pages only. Nothing here touches Vercel.
+#
+# gh-pages clobber guard and the keep_files tradeoff
+# ----------------------------------------------------
+# api-docs.yml publishes docs/jsdoc/ and docs/coverage/ using
+# destination_dir, which scopes cleanup to that one subdirectory. This
+# workflow's output is NOT confined to one subdirectory -- it spans
+# docs/index.html, docs/architecture/, docs/deploy/, docs/frontend/,
+# docs/templates/, docs/DEPLOY.md, docs/TESTS.md, etc. at gh-pages root --
+# so destination_dir cannot express "everything except jsdoc/ and
+# coverage/" in one publish step. We use keep_files: true instead, and
+# publish a STAGED copy of docs/ with jsdoc/ and coverage/ excluded
+# (not ./docs itself): docs/jsdoc/*.html happens to be git-tracked on
+# main as legacy generated output, so publishing ./docs unfiltered would
+# overwrite api-docs.yml's freshly generated gh-pages/jsdoc/ with stale
+# committed snapshots. keep_files: true also means a page removed from
+# docs/ is never deleted from gh-pages by this workflow -- stale
+# architecture pages must be cleaned up manually if a doc is ever
+# deleted outright.
+# The job-level `gh-pages-deploy` concurrency group is still shared with
+# api-docs.yml's job of the same name (GitHub Actions matches concurrency
+# groups by name across workflows), so the two publishes never race even
+# though this workflow's docs-only trigger is otherwise independent of
+# the portfolio-pipeline lineage that dispatches api-docs.yml.
+############################################################
+name: Docs — architecture site
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'scripts/docs/**'
+  workflow_dispatch:
+
+# Docs-only pushes use a separate group so they don't queue behind
+# portfolio-pipeline (ci.yml / deploy.yml / api-docs.yml).
+concurrency:
+  group: ${{ (github.event_name == 'push') && 'docs-only' || 'portfolio-pipeline' }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # required by peaceiris/actions-gh-pages to push to gh-pages
+    # Shared across workflows by name — see "gh-pages clobber guard" above.
+    concurrency:
+      group: gh-pages-deploy
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node setup
+        uses: ./.github/actions/node-setup
+
+      # ── Doc templates ───────────────────────────────────────────────────
+      # build_docs.js assembles header.html + page.html + footer.html into the doc-page template,
+      # converts docs/*.md → docs/*.html (skipping docs/jsdoc/ and docs/coverage/), concatenates the
+      # split CSS source files into a single docs/templates/styles.css, and assembles
+      # header.html + hub.html + footer.html → docs/index.html as the visual landing page.
+      #
+      # marked must be installed before this step.
+      # The inline install is a no-op once "marked" is committed to package-lock.json
+      # via `npm install --save-dev marked` in the local dev environment.
+      # It ensures CI works in the interim before the lockfile is updated.
+      - name: Apply doc templates
+        run: |
+          node -e "require('marked')" 2>/dev/null || npm install --no-save marked@^9
+          node scripts/docs/build_docs.js
+
+      # ── Mermaid diagrams ────────────────────────────────────────────────
+      # build_mermaid.js looks for mmdc (@mermaid-js/mermaid-cli) on PATH and
+      # in node_modules/.bin. When not found it exits cleanly — diagrams in
+      # the generated HTML pages are rendered client-side by the Mermaid CDN
+      # script already included in scripts/docs/templates/page.html.
+      #
+      # To enable server-side pre-rendering in CI:
+      #   npm install --save-dev @mermaid-js/mermaid-cli
+      - name: Pre-render Mermaid diagrams
+        run: node scripts/docs/build_mermaid.js
+
+      # docs/jsdoc/ is git-tracked on main as legacy generated output —
+      # exclude it (and docs/coverage/, generated only by api-docs.yml) from
+      # this publish so keep_files: true below can't clobber api-docs.yml's
+      # gh-pages content. See header comment.
+      - name: Stage architecture docs (excludes jsdoc/ and coverage/)
+        run: |
+          rm -rf /tmp/gh-pages-arch
+          mkdir -p /tmp/gh-pages-arch
+          rsync -a --exclude 'jsdoc' --exclude 'coverage' docs/ /tmp/gh-pages-arch/
+
+      # ── Deploy ──────────────────────────────────────────────────────────
+      # peaceiris/actions-gh-pages@v4 — use v4, not v3 (v3 has a known token scope bug).
+      - name: Deploy docs to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: /tmp/gh-pages-arch
+          publish_branch: gh-pages
+          keep_files: true
+          force_orphan: false
+          commit_message: "docs: rebuild architecture site [${{ github.sha }}]"
+
+      # gh-pages propagation can take up to 60 s after publish.
+      # This step is informational — the workflow exits 0 regardless of the result.
+      - name: Smoke test gh-pages
+        run: |
+          echo "Waiting 15 s for gh-pages propagation..."
+          sleep 15
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://keglev.github.io/my-portfolio)
+          echo "HTTP status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "WARNING: gh-pages returned $STATUS — may still be propagating."
+          fi

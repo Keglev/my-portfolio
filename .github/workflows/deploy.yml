@@ -1,17 +1,20 @@
 ############################################################
-# Build and Fetch Projects
+# Deploy — build and publish to Vercel
 #
 # Purpose
 # - Run a production build of the React site
 # - Deploy the built app to Vercel (no test files, no docs)
 #
-# Note: this workflow no longer fetches project data from GitHub. The
+# Note: this workflow does not fetch project data from GitHub. The
 # Projects section is 100% static, hand-curated content
 # (src/data/projects.config.js); the old build-time GitHub-fetch pipeline
 # was retired because nothing in the render path consumed its output.
 #
 # Triggers
-# - Dispatched by ci.yml after all tests pass (push to main only)
+# - Dispatched by ci.yml's start-deploy-stage job after lint-and-test
+#   passes (push to main only) — dispatched at the same time as
+#   api-docs.yml, not before or after it, so build/deploy and docs
+#   generation run in parallel.
 # - Manual via workflow_dispatch for ad-hoc builds or debugging
 #
 # Design notes
@@ -20,8 +23,10 @@
 # - Security-sensitive values are provided through repository secrets.
 #   The workflow never prints secret values.
 # - Steps are idempotent where possible.
+# - Does not trigger any docs workflow — ci.yml dispatches api-docs.yml
+#   directly and independently.
 ############################################################
-name: Build and Fetch Projects
+name: Deploy — build and publish to Vercel
 
 on:
   workflow_dispatch:
@@ -32,11 +37,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  fetch-and-build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      actions: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -70,7 +74,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: npx --yes vercel --prod --token "$VERCEL_TOKEN" --yes --prebuilt .
 
-      # Confirm the deployed app is reachable before triggering docs.
+      # Confirm the deployed app is reachable.
       - name: Smoke test Vercel deployment
         run: |
           echo "Checking Vercel deployment is reachable..."
@@ -79,8 +83,3 @@ jobs:
           if [ "$STATUS" != "200" ]; then
             echo "ERROR: Vercel deployment returned $STATUS"; exit 1;
           fi
-
-      - name: Trigger docs-refresh workflow
-        run: gh workflow run docs-refresh.yml --repo ${{ github.repository }} --ref main
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
