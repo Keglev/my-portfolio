@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: data/skills.config.js</title>
+    <title>JSDoc: Source: components/About/CareerStrip.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: data/skills.config.js</h1>
+    <h1 class="page-title">Source: components/About/CareerStrip.js</h1>
 
     
 
@@ -26,48 +26,44 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Curated skills for the Skills section, grouped the way recruiters scan:
- * backend first (the target role), then frontend, DevOps, and databases.
- * Labels are technology names (not translated); group titles are localized
- * via the `titleKey` i18n key.
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { useTranslation } from 'react-i18next';
+
+/**
+ * Condensed career and education strip: one line per station, two columns.
+ * Replaces the former full Experience and Education sections. The wrapper id
+ * "Career" is the scroll target of the Hero "Experience" CTA.
  *
- * @typedef {Object} SkillGroup
- * @property {string} id        Stable id.
- * @property {string} titleKey  i18n key for the group heading.
- * @property {string[]} items   Technology labels shown as chips.
- * @property {string} descKey   i18n key for the one-line group description.
+ * @returns {JSX.Element}
  */
+const CareerStrip = () => {
+  const { t } = useTranslation();
 
-/** @type {SkillGroup[]} */
-const skillGroups = [
-  {
-    id: 'backend',
-    titleKey: 'skillsSection.backend',
-    descKey: 'skillsSection.backendDesc',
-    items: ['Java 17/21', 'Spring Boot 3', 'Spring Security', 'Hibernate / JPA', 'REST APIs', 'OAuth2 / JWT', 'Microservices'],
-  },
-  {
-    id: 'frontend',
-    titleKey: 'skillsSection.frontend',
-    descKey: 'skillsSection.frontendDesc',
-    items: ['React', 'Angular', 'TypeScript', 'JavaScript', 'Material UI', 'Tailwind CSS', 'Chart.js'],
-  },
-  {
-    id: 'devops',
-    titleKey: 'skillsSection.devops',
-    descKey: 'skillsSection.devopsDesc',
-    items: ['Docker', 'Docker Compose', 'GitHub Actions (CI/CD)', 'JUnit 5', 'Mockito', 'JaCoCo', 'Maven'],
-  },
-  {
-    id: 'databases',
-    titleKey: 'skillsSection.databases',
-    descKey: 'skillsSection.databasesDesc',
-    items: ['PostgreSQL', 'Oracle Autonomous DB', 'SQL', 'JDBC'],
-  },
-];
+  // i18next returns the key string when a list resource is missing; the guard
+  // keeps the render safe in tests and in partially loaded locales
+  const asList = (value) => (Array.isArray(value) ? value : []);
+  const career = asList(t('aboutSection.career', { returnObjects: true }));
+  const education = asList(t('aboutSection.educationItems', { returnObjects: true }));
 
-export default skillGroups;
+  return (
+    &lt;div className="career-strip" id="Career">
+      &lt;div className="career-column">
+        &lt;h3>{t('aboutSection.careerHeading')}&lt;/h3>
+        &lt;ul>
+          {career.map((line, idx) => &lt;li key={idx}>{line}&lt;/li>)}
+        &lt;/ul>
+      &lt;/div>
+      &lt;div className="career-column">
+        &lt;h3>{t('aboutSection.educationHeading')}&lt;/h3>
+        &lt;ul>
+          {education.map((line, idx) => &lt;li key={idx}>{line}&lt;/li>)}
+        &lt;/ul>
+      &lt;/div>
+    &lt;/div>
+  );
+};
+
+export default CareerStrip;
 </code></pre>
         </article>
     </section>

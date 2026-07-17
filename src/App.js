@@ -2,14 +2,11 @@ import React from 'react';
 import './App.css';
 import Projects from './components/Projects/Projects';
 import About from './components/About/About';
-import Education from './components/Education/Education';
-import Experience from './components/Experience/Experience';
 import Sidebar from './components/Sidebar/Sidebar';
 import Hero from './components/Hero/Hero';
 import Skills from './components/Skills/Skills';
 import Contact from './components/Contact/Contact';
 import { ThemeProvider } from './context/ThemeContext';
-import RepoDocs from './components/RepoDocs/RepoDocs';
 import Legal from './components/Legal/Legal';
 import { GlobalStyles } from './styles/GlobalStyles';
 import { SpeedInsights } from "@vercel/speed-insights/react";
@@ -32,11 +29,8 @@ function App() {
         <div className="main-content" id="scroll-container">
           <div className="section" id="Hero"><Hero /></div>
           <div className="section" id="About"><About /></div>
-          <div className="section" id="Education"><Education /></div>
           <div className="section" id="Skills"><Skills /></div>
           <div className="section" id="Projects"><Projects /></div>
-          <div className="section" id="RepoDocs"><RepoDocs /></div>
-          <div className="section" id="Experience"><Experience /></div>
           <div className="section" id="Contact"><Contact /></div>
           <div className="section" id="Legal"><Legal /></div>
         </div>

@@ -6,7 +6,7 @@ import './Hero.css';
  * Hero section: the first thing a recruiter sees.
  * A short eyebrow line (stack + location), a value-proposition headline with
  * an accented key phrase, a one-paragraph lead, and three CTAs (projects,
- * CV download, contact). All copy is locale-driven; the CV link serves the
+ * CV download, career strip). All copy is locale-driven; the CV link serves the
  * matching language PDF, mirroring the sidebar logic.
  *
  * @returns {JSX.Element}
@@ -35,7 +35,7 @@ const Hero = () => {
         <a className="hero-btn ghost" href={cvFile} download target="_blank" rel="noopener noreferrer">
           {t('hero.ctaCv')}
         </a>
-        <button type="button" className="hero-btn ghost" onClick={() => scrollTo('Experience')}>
+        <button type="button" className="hero-btn ghost" onClick={() => scrollTo('Career')}>
           {t('hero.ctaExperience')}
         </button>
       </div>

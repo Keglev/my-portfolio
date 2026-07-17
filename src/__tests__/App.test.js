@@ -1,7 +1,7 @@
 /*
  * Tests for App.js
- * Covers: top-level render, presence of all major sections (About, Projects,
- * Education, Experience, RepoDocs, Legal), and i18n integration.
+ * Covers: top-level render, presence of all major sections (Hero, About,
+ * Skills, Projects, Contact, Legal), and i18n integration.
  */
 /* eslint-disable testing-library/no-node-access */
 import App from '../App';
@@ -40,12 +40,6 @@ jest.mock('../components/Projects/Projects', () => {
   return { __esModule: true, default: () => React.createElement('section', { 'data-testid': 'projects' }) };
 });
 
-// Stub RepoDocs to avoid async fetching
-jest.mock('../components/RepoDocs/RepoDocs', () => {
-  const React = require('react');
-  return { __esModule: true, default: () => React.createElement('section', { 'data-testid': 'repodocs' }) };
-});
-
 describe('App', () => {
   function setup() {
     render(<App />);
@@ -66,9 +60,9 @@ describe('App', () => {
     expect(document.getElementById('About')).toBeInTheDocument();
   });
 
-  test('renders the Education section', () => {
+  test('renders the Skills section', () => {
     setup();
-    expect(document.getElementById('Education')).toBeInTheDocument();
+    expect(document.getElementById('Skills')).toBeInTheDocument();
   });
 
   test('renders the Projects section', () => {
@@ -76,18 +70,19 @@ describe('App', () => {
     expect(document.getElementById('Projects')).toBeInTheDocument();
   });
 
-  test('renders the RepoDocs section', () => {
+  test('renders the Contact section', () => {
     setup();
-    expect(document.getElementById('RepoDocs')).toBeInTheDocument();
-  });
-
-  test('renders the Experience section', () => {
-    setup();
-    expect(document.getElementById('Experience')).toBeInTheDocument();
+    expect(document.getElementById('Contact')).toBeInTheDocument();
   });
 
   test('renders the Legal section', () => {
     setup();
     expect(document.getElementById('Legal')).toBeInTheDocument();
+  });
+
+  test('renders the sections in the expected order', () => {
+    setup();
+    const ids = Array.from(document.querySelectorAll('.section')).map((el) => el.id);
+    expect(ids).toEqual(['Hero', 'About', 'Skills', 'Projects', 'Contact', 'Legal']);
   });
 });

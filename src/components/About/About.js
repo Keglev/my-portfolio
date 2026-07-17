@@ -1,53 +1,51 @@
 import React from 'react';
 import './About.css';
-import ProfilePic from '../../assets/profile-pic.jpg';
-import { SiReact, SiPostgresql, SiSpringboot, SiDocker, SiTypescript, SiMaterialdesign, SiGit, SiVite } from 'react-icons/si';
-import { FaJava, FaGithub, FaShieldAlt } from 'react-icons/fa';
-import { TbTestPipe } from 'react-icons/tb';
+import ProfilePicFallback from '../../assets/profile-pic.jpg';
 import { useTranslation } from 'react-i18next';
+import CareerStrip from './CareerStrip';
+
+// Render order of the four storytelling blocks; keys map to aboutSection.<key> in the locales
+const BLOCKS = ['block1', 'block2', 'block3', 'block4'];
 
 /**
- * Renders developer profile and technology stack.
- * Displays introductory text from i18n resources alongside a profile picture
- * and icons for key technical skills grouped into categories.
+ * About section: four storytelling blocks (career-changer pitch), a condensed
+ * career/education strip, and the profile photo.
+ * The photo prefers the curated file at public/profile.jpg and falls back to
+ * the bundled asset on load error, so a missing file never breaks the layout.
  *
- * @returns {JSX.Element} About section with profile image, biography text, and tech stack icons.
+ * @returns {JSX.Element}
  */
 const About = () => {
   const { t } = useTranslation();
+
+  const handleImgError = (e) => {
+    const img = e.currentTarget;
+    if (img.getAttribute('data-fallback') !== '1') {
+      img.setAttribute('data-fallback', '1');
+      img.src = ProfilePicFallback;
+    }
+  };
+
   return (
     <div className="about-container" id="About">
       <div className="content">
         <h2>{t('aboutSection.heading')}</h2>
-        <p>{t('aboutSection.description1')}</p>
-        <p>{t('aboutSection.description2')}</p>
-        <p>{t('aboutSection.description3')}</p>
-      
-        {/* Grouped by domain: backend, frontend, devops */}
-        <p>🔧 <strong>Tech Stack:</strong></p>
-        <ul className="tech-list">
-          <li><FaJava /> Java 17</li>
-          <li><SiSpringboot /> Spring Boot 3</li>
-          <li><SiPostgresql /> PostgreSQL & Oracle DB</li>
-          <li><SiDocker /> Docker & Docker Compose</li>
-        </ul>
-
-        <ul className="tech-list">
-          <li><TbTestPipe /> JUnit & Mockito</li>
-          <li><SiTypescript /> TypeScript</li>
-          <li><SiReact /> React.js</li>
-          <li><SiMaterialdesign /> Material-UI (MUI)</li>
-        </ul>
-
-        <ul className="tech-list">
-          <li><SiGit /> Git</li>
-          <li><FaGithub /> GitHub Actions</li>
-          <li><FaShieldAlt /> Security / Auth</li>
-          <li><SiVite /> Vite</li>
-        </ul>
+        <div className="about-blocks">
+          {BLOCKS.map((key) => (
+            <article className="about-block" key={key}>
+              <h3>{t(`aboutSection.${key}.title`)}</h3>
+              <p>{t(`aboutSection.${key}.text`)}</p>
+            </article>
+          ))}
+        </div>
+        <CareerStrip />
       </div>
       <div className="profile">
-        <img src={ProfilePic} alt="Carlos Keglevich Profile" />
+        <img
+          src="/profile.jpg"
+          alt="Carlos Keglevich portrait"
+          onError={handleImgError}
+        />
       </div>
     </div>
   );

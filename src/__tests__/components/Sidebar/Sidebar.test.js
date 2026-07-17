@@ -34,13 +34,10 @@ describe('Sidebar', () => {
     <>
       <Sidebar />
       <div id="About" data-offset-top="0" />
-      <div id="Education" data-offset-top="100" />
-      <div id="Skills" data-offset-top="200" />
-      <div id="Projects" data-offset-top="300" />
-      <div id="RepoDocs" data-offset-top="400" />
-      <div id="Experience" data-offset-top="500" />
-      <div id="Contact" data-offset-top="600" />
-      <div id="Legal" data-offset-top="700" />
+      <div id="Skills" data-offset-top="100" />
+      <div id="Projects" data-offset-top="200" />
+      <div id="Contact" data-offset-top="300" />
+      <div id="Legal" data-offset-top="400" />
       <div id="Impressum" />
       <div id="Datenschutz" />
     </>
@@ -87,13 +84,10 @@ describe('Sidebar', () => {
 
     const cases = [
       [0, 'About'],
-      [100, 'Education'],
-      [200, 'Skills'],
-      [300, 'Projects'],
-      [400, 'RepoDocs'],
-      [500, 'Experience'],
-      [600, 'Contact'],
-      [700, 'Legal'],
+      [100, 'Skills'],
+      [200, 'Projects'],
+      [300, 'Contact'],
+      [400, 'Legal'],
     ];
 
     for (const [scrollY, expectedSection] of cases) {
@@ -120,7 +114,7 @@ describe('Sidebar', () => {
     render(
       <>
         <Sidebar />
-        <div id="Education" data-offset-top="100" />
+        <div id="Skills" data-offset-top="100" />
         <div id="Projects" data-offset-top="200" />
       </>
     );
@@ -135,7 +129,7 @@ describe('Sidebar', () => {
     render(
       <>
         <Sidebar />
-        <div id="Education" data-offset-top="100" />
+        <div id="Skills" data-offset-top="100" />
         <div id="Projects" data-offset-top="200" />
       </>
     );

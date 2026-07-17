@@ -26,7 +26,7 @@ describe('SidebarMenu', () => {
     // use role/name queries to avoid ambiguous matches (e.g. "Projects Documentation")
     expect(screen.getByRole('link', { name: /^projects$/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /about/i })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /experience/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^contact$/i })).toBeInTheDocument();
   });
 
   it('calls i18n.changeLanguage with the correct locale when a language button is clicked', () => {
@@ -66,18 +66,18 @@ describe('SidebarMenu', () => {
 
     const { rerender } = render(
       <I18nextProvider i18n={i18n}>
-        <SidebarMenu activeSection="RepoDocs" />
+        <SidebarMenu activeSection="Skills" />
       </I18nextProvider>
     );
 
-    expect(screen.getByRole('link', { name: /projects documentation/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^skills$/i })).toBeInTheDocument();
 
     rerender(
       <I18nextProvider i18n={i18n}>
-        <SidebarMenu activeSection="Experience" />
+        <SidebarMenu activeSection="Contact" />
       </I18nextProvider>
     );
 
-    expect(screen.getByRole('link', { name: /job experiences/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^contact$/i })).toBeInTheDocument();
   });
 });

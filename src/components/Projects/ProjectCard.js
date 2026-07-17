@@ -6,9 +6,10 @@ import { useTheme } from '../../context/ThemeContext';
 
 /**
  * Renders a single curated project card: preview image, title, summary,
- * technology tags, and up to four links (repo, optional second repo, live app,
- * docs). Image load failures fall back to an inline SVG placeholder — the card
- * never shows a broken-image icon.
+ * technology tags, and up to five links in a locked order (live app, docs hub,
+ * repo, optional second repo, API reference), plus an optional secondary row
+ * of deep documentation links. Image load failures fall back to an inline SVG
+ * placeholder — the card never shows a broken-image icon.
  *
  * @param {Object} project - Curated project data (ProjectConfig shape from src/data/projects.config)
  * @param {number} index - Position in the projects array; key into loadedImages
@@ -62,6 +63,16 @@ const ProjectCard = ({ project, index, loadedImages = {}, setLoadedImages = () =
           ))}
         </div>
         <div className="project-links">
+          {project.liveUrl && (
+            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="project-link">
+              {t('urlLabel')}
+            </a>
+          )}
+          {project.docsUrl && (
+            <a href={project.docsUrl} target="_blank" rel="noopener noreferrer" className="project-link">
+              {t('viewDocs', 'Documentation hub')}
+            </a>
+          )}
           <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="project-link">
             {t('viewOnGithub')}
           </a>
@@ -70,17 +81,25 @@ const ProjectCard = ({ project, index, loadedImages = {}, setLoadedImages = () =
               {t('viewOnGithubFrontend', 'Frontend on GitHub')}
             </a>
           )}
-          {project.liveUrl && (
-            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="project-link">
-              {t('urlLabel')}
-            </a>
-          )}
-          {project.docsUrl && (
-            <a href={project.docsUrl} target="_blank" rel="noopener noreferrer" className="project-link">
-              {t('viewDocs', 'Documentation')}
+          {project.apiUrl && (
+            <a href={project.apiUrl} target="_blank" rel="noopener noreferrer" className="project-link">
+              {t('apiRefLabel', 'API reference')}
             </a>
           )}
         </div>
+        {/* Secondary doc-links row (on trial): deep documentation links, kept
+            visually quieter than the primary links above */}
+        {Array.isArray(project.docLinks) && project.docLinks.length > 0 && (
+          <ul className="doc-links-row">
+            {project.docLinks.map((link, idx) => (
+              <li key={idx}>
+                <a href={link.url} target="_blank" rel="noopener noreferrer">
+                  {lang === 'de' ? link.titleDe : link.titleEn}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

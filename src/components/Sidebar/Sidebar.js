@@ -10,7 +10,7 @@ import SidebarMenu from './SidebarMenu';
 import SidebarSocial from './SidebarSocial';
 
 // Ordered bottom-to-top so the first match is always the deepest section currently in view
-const SECTIONS = ['Legal', 'Contact', 'Experience', 'RepoDocs', 'Projects', 'Skills', 'Education'];
+const SECTIONS = ['Legal', 'Contact', 'Projects', 'Skills'];
 
 /**
  * Returns the id of the section currently most visible in the viewport.

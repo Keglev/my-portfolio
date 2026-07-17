@@ -2,12 +2,7 @@
   "name": "Carlos Keglevich",
   "title": "Software Engineer",
   "about": "Über mich",
-  "education": "Ausbildung",
   "projects": "Projekte",
-  "experience": {
-    "label": "Erfahrung",
-    "jobExperiences": "Berufserfahrungen"
-  },
   "footerMessage": "Entworfen & entwickelt von Carlos Keglevich",
   "language": {
     "english": "Englisch",
@@ -15,75 +10,47 @@
   },
   "aboutSection": {
     "heading": "Über mich",
-    "description1": "Hallo! Ich bin Carlos Keglevich, ein Full-Stack-Entwickler mit Backend-Fokus, wohnhaft in Deutschland. Ich konzentriere mich auf die Entwicklung sicherer und skalierbarer Enterprise-Anwendungen.",
-    "description2": "Ich spezialisiere mich auf Java Spring Boot und React/TypeScript und entwickle robuste REST-APIs mit solider Architektur, CI/CD-Pipelines und End-to-End-Tests.",
-    "description3": "Außerhalb der Programmierung genieße ich lange Spaziergänge in der Natur, Schachspielen, körperliche Aktivität und das Lesen über Technologie und Innovation."
-  },
-  "educationSection": {
-    "heading": "Bildung & Weiterbildung",
-    "entry1": {
-      "title": "Bachelor of Arts — Betriebswirtschaftslehre (BWL)",
-      "institution": "Pontifícia Universidade Católica do Rio Grande do Sul (PUCRS), Brasilien",
-      "note": "Offiziell anerkannt in Deutschland — Zeugnisbewertung KMK"
+    "block1": {
+      "title": "Vom Business in den Code",
+      "text": "Vor der Softwareentwicklung habe ich dort gearbeitet, wo Fehler teuer sind: Einkauf und Datenanalyse im internationalen Handel, Kriminalermittlung im öffentlichen Dienst, Präzisionsfertigung in den USA und Deutschland. Daraus stammt Domänenwissen in Finanzen, Sicherheit und Betriebsabläufen, das die meisten Entwickler nur aus Tickets kennen — ich habe die Prozesse gelebt, die ich heute automatisiere."
     },
-    "entry2": {
-      "title": "Qualifizierung Anwendungs- und Datenbankentwicklung (modular)",
-      "institution": "Comcave College, Deutschland (remote, 2025–2026)",
-      "note": "Schwerpunkte: Java SE, Oracle-Datenbankentwicklung, Anwendungsentwicklung"
+    "block2": {
+      "title": "Qualität als Standard",
+      "text": "Qualität ist keine Phase am Ende, sondern mein Arbeitsprinzip ab dem ersten Commit. Dokumentierte APIs, klare Architektur und eine hohe Testabdeckung sind bei mir Standard — denn Software schafft nur dann Wert, wenn das nächste Teammitglied sie warten, erweitern und ihr vertrauen kann."
     },
-    "entry3": {
-      "title": "Oracle Java SE Zertifizierung (OCA / OCP) — in Vorbereitung",
-      "institution": "",
-      "note": ""
+    "block3": {
+      "title": "Worauf Sie sich verlassen können",
+      "text": "Ich habe viele Jahre in Berufen gearbeitet, in denen Qualität, Präzision, Sicherheit und Vertraulichkeit nicht verhandelbar waren. Daraus bringe ich mit, was Teams im Alltag wirklich brauchen: eine strukturierte, eigenverantwortliche Arbeitsweise, Ruhe unter Zeitdruck, Lean/Kanban-Erfahrung von echten Produktionslinien und klare Kommunikation auf Deutsch, Englisch und Portugiesisch. Fertig heißt bei mir getestet, dokumentiert und deployt."
     },
-    "entry4": {
-      "title": "Full-Stack Development",
-      "institution": "DIO — Digital Innovation One (remote, 2023–2024)",
-      "note": "React, TypeScript, JavaScript, Java, GraphQL"
-    }
-  },
-  "experienceSection": {
-    "experience1": {
-      "title": "Backend-orientierter Full-Stack-Entwickler | Eigenes Projekt",
-      "date": "11.2024 – heute",
-      "summary": "Entwicklung eines Enterprise-Systems für Inventar- und Lieferantenmanagement mit Java Spring Boot, React und CI/CD-Automatisierung."
+    "block4": {
+      "title": "Wohin ich will",
+      "text": "Ich gehe in der Softwareentwicklung aus einem Grund immer tiefer: Ich will komplexe Systeme einfacher, sicherer und verlässlicher machen. Dafür entwickle ich — Software, die ein Unternehmen am schlechtesten Tag am Laufen hält und am besten Tag wachsen lässt."
     },
-    "experience2": {
-      "title": "Duagon GmbH, Elektronikfabrik | Maschinenbediener & Softwareanalyst",
-      "date": "04.2023 – 08.2025",
-      "summary": "Bedienung von Produktionsmaschinen und Analyse von Software für PCB-Lötprozesse zur Sicherung von Qualität und Prozessoptimierung."
-    },
-    "experience3": {
-      "title": "K&K Brands, Atlanta (USA/Brasilien) | Einkäufer & Datenanalyst",
-      "date": "03.2019 – 09.2021",
-      "summary": "Analysierte Preistrends und entwickelte datenbasierte Einkaufsstrategien zur Steigerung von Effizienz und Gewinn."
-    },
-    "experience4": {
-      "title": "Alcon-Novartis, Atlanta USA | Produktionsmitarbeiter",
-      "date": "02.2018 – 12.2018",
-      "summary": "Überwachte Produktionsqualität und entwickelte Strategien zur Prozessoptimierung – steigerte die Effizienz um 45 %."
-    },
-    "experience5": {
-      "title": "Thriftshopper Stores & Warehouse | Logistikmitarbeiter",
-      "date": "05.2015 – 11.2017",
-      "summary": "Optimierte Lagerorganisation und Preisprozesse zur Steigerung von Effizienz und Produktverfügbarkeit."
-    },
-    "experience6": {
-      "title": "Polícia Civil – Goiânia, Brasilien | Ermittler",
-      "date": "10.2005 – 03.2015",
-      "summary": "Leitete Ermittlungen und Konfliktlösungen in komplexen Fällen – mit Fokus auf Analyse, Kommunikation und Verantwortung."
-    }
+    "careerHeading": "Werdegang im Überblick",
+    "educationHeading": "Bildung & Zertifizierung",
+    "career": [
+      "11.2024 – heute · SmartSupplyPro — Full-Stack-Entwicklung (Java/Spring Boot, React), eigenes Produktivprojekt",
+      "04.2023 – 08.2025 · Duagon GmbH — Maschinenbediener & Software-Analyst, Elektronikfertigung",
+      "03.2019 – 09.2021 · K&K Brands (USA/Brasilien) — Einkäufer & Datenanalyst, internationaler Handel",
+      "02.2018 – 12.2018 · Alcon-Novartis (USA) — Produktion & Prozessoptimierung",
+      "05.2015 – 11.2017 · Thriftshopper (USA) — Logistik",
+      "10.2005 – 03.2015 · Polícia Civil (Brasilien) — Kriminalermittler"
+    ],
+    "educationItems": [
+      "B.A. Betriebswirtschaftslehre (BWL) — PUCRS, Brasilien · KMK-anerkannt in Deutschland",
+      "Anwendungs- und Datenbankentwicklung — Comcave College, Deutschland (2025–2026)",
+      "Oracle Java SE Zertifizierung (OCA/OCP) — in Vorbereitung",
+      "Full-Stack-Entwicklung — DIO (2023–2024)"
+    ]
   },
   "viewOnGithub": "Auf GitHub ansehen",
   "viewOnGithubFrontend": "Frontend auf GitHub",
-  "viewDocs": "Dokumentation ansehen",
+  "viewDocs": "Dokumentations-Hub",
   "translationMissing": "Übersetzung fehlt",
-  "repoDocs": "Projekte Documentation",
-  
-  "noRepoDocs": "Keine Dokumentations-Links gefunden.",
   "urlLabel": "Zur Live-Anwendung",
   "impressumLink": "Impressum",
   "datenschutzLink": "Datenschutzerklärung",
+  "apiRefLabel": "API-Referenz",
   "legal": {
     "impressumHeading": "Impressum",
     "impressumContent": "<p>Angaben gemäß § 5 DDG (ehem. TMG)</p><p>Carlos Keglevich</p><p><strong>Kontakt:</strong><br/>E-Mail: Bitte klicken Sie auf das Brief-Icon, um zu kontaktieren</p><p><strong>Verantwortlich für den Inhalt:</strong><br/>Carlos Keglevich</p><h4>Haftung für Inhalte</h4><p>Die Inhalte dieser Website wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der Inhalte kann ich jedoch keine Gewähr übernehmen.</p><h4>Haftung für Links</h4><p>Diese Website enthält Links zu externen Websites Dritter, auf deren Inhalte ich keinen Einfluss habe. Deshalb kann ich für diese fremden Inhalte keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber verantwortlich.</p><h4>Urheberrecht</h4><p>Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht.</p>",
@@ -119,5 +86,3 @@
     "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder kontaktieren Sie mich über LinkedIn oder E-Mail."
   }
 }
-  
-

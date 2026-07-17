@@ -2,87 +2,55 @@
   "name": "Carlos Keglevich",
   "title": "Software Engineer",
   "about": "About",
-  "education": "Education",
   "projects": "Projects",
-  "experience": {
-    "label": "Experience",
-    "jobExperiences": "Job Experiences"
-  },
   "footerMessage": "Designed & Built by Carlos Keglevich",
   "language": {
     "english": "English",
     "german": "Deutsch"
   },
   "aboutSection": {
-    "heading": "About Me",
-    "description1": "Hi! I'm Carlos Keglevich, a Backend-oriented Full-Stack Developer based in Germany, focused on building secure and scalable enterprise applications.",
-    "description2": "I specialize in Java Spring Boot and React/TypeScript, developing robust REST APIs with strong architecture, CI/CD pipelines, and end-to-end testing.",
-    "description3": "Outside of coding, I enjoy long walks in nature, playing chess, staying active, and reading about technology and innovation."
-  },
-  "educationSection": {
-    "heading": "Education & Professional Development",
-    "entry1": {
-      "title": "Bachelor of Arts — Business Administration (BWL)",
-      "institution": "Pontifícia Universidade Católica do Rio Grande do Sul (PUCRS), Brazil",
-      "note": "Officially recognized in Germany — KMK credential evaluation"
+    "heading": "About me",
+    "block1": {
+      "title": "From business to codebase",
+      "text": "Before software, I worked where mistakes are expensive: procurement and data analysis in international trade, criminal investigation in public service, precision manufacturing in the USA and Germany. That gave me domain knowledge in finance, security, and operations that most developers only meet through tickets — I've lived the processes I now automate."
     },
-    "entry2": {
-      "title": "Qualification in Application and Database Development (modular)",
-      "institution": "Comcave College, Germany (remote, 2025–2026)",
-      "note": "Focus areas: Java SE, Oracle Database Development, Application Development"
+    "block2": {
+      "title": "Built for quality",
+      "text": "Quality is not a phase at the end — it's how I work from the first commit. Documented APIs, clear architecture, and high test coverage are my default, because software only creates value when the next person can maintain, extend, and trust it."
     },
-    "entry3": {
-      "title": "Oracle Java SE Certification (OCA / OCP) — in progress",
-      "institution": "",
-      "note": ""
+    "block3": {
+      "title": "What you can rely on",
+      "text": "I spent many years in professions where quality, precision, security, and confidentiality were non-negotiable. From them I bring what teams actually need day to day: a structured, self-reliant way of working, calm under time pressure, Lean/Kanban experience from real production lines, and clear communication in German, English, and Portuguese. Done means tested, documented, and deployed."
     },
-    "entry4": {
-      "title": "Full-Stack Development",
-      "institution": "DIO — Digital Innovation One (remote, 2023–2024)",
-      "note": "React, TypeScript, JavaScript, Java, GraphQL"
-    }
-  },
-  "experienceSection": {
-    "experience1": {
-      "title": "Backend-oriented Full-Stack Developer | Personal Project",
-      "date": "11.2024 – present",
-      "summary": "Built an enterprise inventory and supplier management system using Java Spring Boot, React, and automated CI/CD."
+    "block4": {
+      "title": "Where I'm heading",
+      "text": "I go deeper into software engineering for one reason: I want to make complex systems simpler, safer, and more reliable. That's what I build for — software that keeps a business running on its worst day and lets it grow on its best."
     },
-    "experience2": {
-      "title": "Duagon GmbH, Electronics Factory | Machine Operator & Software Analyst",
-      "date": "04.2023 – 08.2025",
-      "summary": "Operated production machinery and analyzed software for PCB soldering processes to ensure quality and optimize processes."
-    },
-    "experience3": {
-      "title": "K&K Brands, Atlanta (USA/Brazil) | Buyer & Data Analyst",
-      "date": "03.2019 – 09.2021",
-      "summary": "Analyzed pricing trends and developed data-driven purchasing strategies to improve efficiency and profitability."
-    },
-    "experience4": {
-      "title": "Alcon-Novartis, Atlanta USA | Production Worker",
-      "date": "02.2018 – 12.2018",
-      "summary": "Monitored production quality and implemented process improvements — increased efficiency by 45%."
-    },
-    "experience5": {
-      "title": "Thriftshopper Stores & Warehouse | Logistics Associate",
-      "date": "05.2015 – 11.2017",
-      "summary": "Optimized warehouse organization and pricing workflows to increase efficiency and product availability."
-    },
-    "experience6": {
-      "title": "Polícia Civil – Goiânia, Brazil | Investigator",
-      "date": "10.2005 – 03.2015",
-      "summary": "Led investigations and conflict resolutions in complex cases — focused on analysis, communication, and accountability."
-    }
+    "careerHeading": "Career at a glance",
+    "educationHeading": "Education & certification",
+    "career": [
+      "11.2024 – present · SmartSupplyPro — full-stack development (Java/Spring Boot, React), personal production project",
+      "04.2023 – 08.2025 · Duagon GmbH — machine operator & software analyst, electronics manufacturing",
+      "03.2019 – 09.2021 · K&K Brands (USA/Brazil) — buyer & data analyst, international trade",
+      "02.2018 – 12.2018 · Alcon-Novartis (USA) — production & process improvement",
+      "05.2015 – 11.2017 · Thriftshopper (USA) — logistics",
+      "10.2005 – 03.2015 · Polícia Civil (Brazil) — criminal investigator"
+    ],
+    "educationItems": [
+      "B.A. Business Administration (BWL) — PUCRS, Brazil · KMK-recognized in Germany",
+      "Application & Database Development — Comcave College, Germany (2025–2026)",
+      "Oracle Java SE Certification (OCA/OCP) — in progress",
+      "Full-Stack Development — DIO (2023–2024)"
+    ]
   },
   "viewOnGithub": "View on GitHub",
   "viewOnGithubFrontend": "Frontend on GitHub",
-  "viewDocs": "View docs",
+  "viewDocs": "Documentation hub",
   "translationMissing": "Translation missing",
-  "repoDocs": "Projects Documentation",
   "urlLabel": "View Live Application",
-  "noRepoDocs": "No repository documentation links found.",
   "impressumLink": "Impressum",
   "datenschutzLink": "Privacy Policy",
+  "apiRefLabel": "API reference",
   "legal": {
     "impressumHeading": "Impressum",
     "impressumContent": "<p>Information according to § 5 DDG (formerly TMG)</p><p>Carlos Keglevich</p><p><strong>Contact:</strong><br/>Email: click the envelope icon to contact</p><p><strong>Responsible for content:</strong><br/>Carlos Keglevich</p><h4>Liability for content</h4><p>The contents of this website were created with the greatest care. However, no guarantee can be given for the accuracy, completeness and topicality of the contents.</p><h4>Liability for links</h4><p>This website contains links to external third-party websites, over which I have no influence. Therefore, I cannot accept any liability for these external contents. The respective provider or operator of the pages is always responsible for the content of the linked pages.</p><h4>Copyright</h4><p>The content and works created by the site operator on these pages are subject to German copyright law.</p>",
@@ -118,4 +86,3 @@
     "error": "Something went wrong. Please try again or reach me via LinkedIn or email."
   }
 }
-

@@ -29,6 +29,8 @@
  * @property {string|null} liveUrl    Live application URL, or null if none.
  * @property {string|null} docsUrl    Documentation hub URL, or null if none.
  * @property {boolean} featured       Featured projects render first / larger.
+ * @property {string|null} apiUrl     Direct link to the published API reference, or null.
+ * @property {Array<{titleEn: string, titleDe: string, url: string}>} docLinks  Secondary documentation links shown in a compact row.
  */
 
 /** @type {ProjectConfig[]} */
@@ -62,6 +64,11 @@ const projects = [
     repoUrlSecondary: null,
     liveUrl: 'https://www.smartsupplypro.de',
     docsUrl: 'https://keglev.github.io/inventory-service/',
+    apiUrl: 'https://keglev.github.io/inventory-service/backend/api/index.html',
+    docLinks: [
+      { titleEn: 'Architecture overview', titleDe: 'Architektur-Überblick', url: 'https://keglev.github.io/inventory-service/backend/architecture/overview.html' },
+      { titleEn: 'Backend test coverage', titleDe: 'Backend-Testabdeckung', url: 'https://keglev.github.io/inventory-service/backend/coverage/index.html' },
+    ],
     featured: true,
   },
   {
@@ -92,6 +99,12 @@ const projects = [
     repoUrlSecondary: 'https://github.com/Keglev/frontend',
     liveUrl: 'https://stockeasefrontend.vercel.app',
     docsUrl: 'https://keglev.github.io/stockease/',
+    apiUrl: 'https://keglev.github.io/stockease/api-docs.html',
+    docLinks: [
+      { titleEn: 'Architecture & security', titleDe: 'Architektur & Sicherheit', url: 'https://keglev.github.io/stockease/architecture/security.html' },
+      { titleEn: 'Test coverage', titleDe: 'Testabdeckung', url: 'https://keglev.github.io/stockease/coverage/index.html' },
+      { titleEn: 'Frontend documentation', titleDe: 'Frontend-Dokumentation', url: 'https://keglev.github.io/frontend/' },
+    ],
     featured: true,
   },
 ];
