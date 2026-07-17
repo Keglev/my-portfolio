@@ -29,8 +29,8 @@
 }
 
 .hero-headline {
-  font-size: 2.6rem;
-  line-height: 1.1;
+  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+  line-height: 1.2;
   letter-spacing: -0.02em;
   margin: 0.9rem 0;
   color: var(--color-text);
@@ -70,15 +70,21 @@
   transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
+/* Shared "outline" button recipe — kept in sync with .contact-clear and
+   .contact-submit in Contact.css. A pale/page-level border reads as
+   near-invisible in light mode, so all three use the accent color at rest,
+   not just on hover, and fill solid on hover/focus for a clear pressed state. */
 .hero-btn.ghost {
   background: transparent;
-  border-color: var(--color-border);
   color: var(--color-text);
+  border: 1.5px solid var(--color-accent);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-.hero-btn.ghost:hover {
-  border-color: var(--color-accent);
-  color: var(--color-accent);
+.hero-btn.ghost:hover,
+.hero-btn.ghost:focus-visible {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
 }
 
 /* ─── Responsive ─────────────────────────────────── */
@@ -86,9 +92,5 @@
 @media (max-width: 768px) {
   .hero {
     padding: 1.5rem 0 1rem;
-  }
-
-  .hero-headline {
-    font-size: 1.9rem;
   }
 }

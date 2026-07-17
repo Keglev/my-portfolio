@@ -61,7 +61,7 @@
     "eyebrow": "Java · Spring Boot · Full-Stack · Fürth",
     "headlinePre": "Aus Fachproblemen mache ich",
     "headlineHighlight": "produktionsreife Java-Systeme.",
-    "lead": "Backend-orientierter Entwickler mit Domänenwissen aus Einkauf, Fertigung und öffentlichem Dienst — heute mit gesicherten Spring-Boot-APIs, echter CI/CD und über 85 % Testabdeckung.",
+    "lead": "Backend-orientierter Entwickler mit Domänenwissen aus Einkauf, Fertigung und öffentlichem Dienst — mit gesicherten Spring-Boot-APIs und echter CI/CD. Fertig heißt bei mir getestet, dokumentiert und deployt.",
     "ctaProjects": "Projekte ansehen",
     "ctaCv": "Lebenslauf herunterladen",
     "ctaExperience": "Berufserfahrung"
@@ -78,7 +78,7 @@
   },
   "contactSection": {
     "heading": "Kontakt",
-    "lead": "Offen für Java-Backend- und Full-Stack-Positionen in Deutschland (vor Ort Raum Nürnberg oder remote). Am schnellsten erreichen Sie mich über dieses Formular oder LinkedIn.",
+    "lead": "Fragen zu einem Projekt, Feedback oder eine Idee, über die Sie sprechen möchten? Am schnellsten erreichen Sie mich über dieses Formular oder LinkedIn.",
     "name": "Name", "email": "E-Mail", "message": "Nachricht",
     "consent": "Ich habe die Datenschutzerklärung gelesen und stimme der Verarbeitung meiner Daten zur Beantwortung meiner Anfrage zu.",
     "send": "Nachricht senden", "sending": "Wird gesendet…", "clear": "Felder leeren",

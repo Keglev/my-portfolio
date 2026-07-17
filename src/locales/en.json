@@ -61,7 +61,7 @@
     "eyebrow": "Java · Spring Boot · Full-Stack · Fürth",
     "headlinePre": "I turn business problems into",
     "headlineHighlight": "production-ready Java systems.",
-    "lead": "Backend-focused developer with domain depth from procurement, manufacturing and public service — now shipping secured Spring Boot APIs with real CI/CD and 85%+ test coverage.",
+    "lead": "Backend-focused developer with domain depth from procurement, manufacturing and public service — shipping secured Spring Boot APIs with real CI/CD, where done means tested, documented, and deployed.",
     "ctaProjects": "View projects",
     "ctaCv": "Download CV",
     "ctaExperience": "Experience"
@@ -78,7 +78,7 @@
   },
   "contactSection": {
     "heading": "Contact",
-    "lead": "Open to Java backend and full-stack roles in Germany (on-site Nuremberg region or remote). The fastest way to reach me is this form or LinkedIn.",
+    "lead": "Questions about a project, feedback, or an idea you'd like to discuss? The fastest way to reach me is this form or LinkedIn.",
     "name": "Name", "email": "Email", "message": "Message",
     "consent": "I have read the privacy policy and consent to the processing of my data to answer my request.",
     "send": "Send message", "sending": "Sending…", "clear": "Clear fields",
