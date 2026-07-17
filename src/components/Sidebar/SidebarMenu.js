@@ -50,8 +50,23 @@ const SidebarMenu = ({ activeSection }) => {
       </Menu>
 
       <LanguageWrapper role="group" aria-label="Language switch">
-        <button onClick={() => i18n.changeLanguage('en')} aria-label="Switch to English">{t('language.english')}</button>
-        <button onClick={() => i18n.changeLanguage('de')} aria-label="Switch to German">{t('language.german')}</button>
+        {/* Compact DE | EN text switch (flags are ambiguous for languages); active one is accented */}
+        <button
+          onClick={() => i18n.changeLanguage('de')}
+          aria-label="Auf Deutsch umschalten"
+          aria-pressed={i18n.language.startsWith('de')}
+          style={i18n.language.startsWith('de') ? { color: 'var(--color-accent)', fontWeight: 700 } : undefined}
+        >
+          DE
+        </button>
+        <button
+          onClick={() => i18n.changeLanguage('en')}
+          aria-label="Switch to English"
+          aria-pressed={!i18n.language.startsWith('de')}
+          style={!i18n.language.startsWith('de') ? { color: 'var(--color-accent)', fontWeight: 700 } : undefined}
+        >
+          EN
+        </button>
         <button
           onClick={toggleTheme}
           aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}

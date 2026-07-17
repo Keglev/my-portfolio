@@ -102,7 +102,13 @@
   "theme": { "light": "Helles Design", "dark": "Dunkles Design" },
   "skills": "Kenntnisse",
   "contact": "Kontakt",
-  "skillsSection": { "backend": "Backend", "frontend": "Frontend", "devops": "DevOps & Tools", "databases": "Datenbanken" },
+  "skillsSection": {
+    "backend": "Backend", "frontend": "Frontend", "devops": "DevOps & Tools", "databases": "Datenbanken",
+    "backendDesc": "Zwei Spring-Boot-Systeme mit gesicherten REST-APIs gebaut und ausgeliefert — mein Kernbereich.",
+    "frontendDesc": "React-+-TypeScript-Oberflächen für beide Projekte und dieses Portfolio; aktuell entwickle ich mit Angular.",
+    "devopsDesc": "Drei-Workflow-CI/CD-Pipeline, Docker-Deployments, Coverage-Gates — selbst aufgebaut, nicht kopiert.",
+    "databasesDesc": "PostgreSQL und Oracle Autonomous DB im Produktivbetrieb; SQL aus Jahren der Datenanalyse."
+  },
   "contactSection": {
     "heading": "Kontakt",
     "lead": "Offen für Java-Backend- und Full-Stack-Positionen in Deutschland (vor Ort Raum Nürnberg oder remote). Am schnellsten erreichen Sie mich über dieses Formular oder LinkedIn.",

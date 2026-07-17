@@ -101,7 +101,13 @@
   "theme": { "light": "Light theme", "dark": "Dark theme" },
   "skills": "Skills",
   "contact": "Contact",
-  "skillsSection": { "backend": "Backend", "frontend": "Frontend", "devops": "DevOps & tools", "databases": "Databases" },
+  "skillsSection": {
+    "backend": "Backend", "frontend": "Frontend", "devops": "DevOps & tools", "databases": "Databases",
+    "backendDesc": "Built and shipped two Spring Boot systems with secured REST APIs — my core stack.",
+    "frontendDesc": "React + TypeScript interfaces for both projects and this portfolio; currently building with Angular.",
+    "devopsDesc": "Three-workflow CI/CD pipeline, Docker deployments, coverage gates — built from scratch, not copied.",
+    "databasesDesc": "PostgreSQL and Oracle Autonomous DB in production; SQL from years of data analysis."
+  },
   "contactSection": {
     "heading": "Contact",
     "lead": "Open to Java backend and full-stack roles in Germany (on-site Nuremberg region or remote). The fastest way to reach me is this form or LinkedIn.",

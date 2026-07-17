@@ -108,6 +108,24 @@
   color: #ff6b6b;
 }
 
+/* ─── Socials ────────────────────────────────────── */
+
+.contact-socials {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 1.4rem;
+  font-size: 1.4rem;
+}
+
+.contact-socials a {
+  color: var(--color-text-muted);
+  transition: color 0.2s ease;
+}
+
+.contact-socials a:hover {
+  color: var(--color-accent);
+}
+
 /* ─── Responsive ─────────────────────────────────── */
 
 @media (max-width: 768px) {

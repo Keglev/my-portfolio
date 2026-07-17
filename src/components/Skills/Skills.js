@@ -20,6 +20,7 @@ const Skills = () => {
         {skillGroups.map((group) => (
           <div className="skills-card" key={group.id}>
             <h3>{t(group.titleKey)}</h3>
+            <p className="skills-desc">{t(group.descKey)}</p>
             <div className="skills-chips">
               {group.items.map((item) => (
                 <span className="skills-chip" key={item}>{item}</span>

@@ -40,7 +40,7 @@ describe('SidebarMenu', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: /switch to english/i }));
-    fireEvent.click(screen.getByRole('button', { name: /switch to german/i }));
+    fireEvent.click(screen.getByRole('button', { name: /auf deutsch umschalten/i }));
 
     expect(changeLanguageSpy).toHaveBeenCalledWith('en');
     expect(changeLanguageSpy).toHaveBeenCalledWith('de');

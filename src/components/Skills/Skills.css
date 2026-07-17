@@ -22,7 +22,14 @@
 .skills-card h3 {
   font-size: 1rem;
   color: var(--color-accent);
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.35rem;
+}
+
+/* One-line provenance for the group — evidence, not just a chip list */
+.skills-desc {
+  font-size: 0.83rem;
+  color: var(--color-text-muted);
+  margin: 0 0 0.7rem;
 }
 
 .skills-chips {
