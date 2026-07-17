@@ -129,10 +129,24 @@ only on <code>docs/**</code> pushes, unchanged from before). The sequential
 ci → build-and-fetch → docs-refresh dispatch chain became a fan-out: <code>ci.yml</code>
 now dispatches <code>deploy.yml</code> and <code>api-docs.yml</code> at the same time instead of
 docs waiting on deploy to finish, and <code>scripts/ci/detectPipelineScope.js</code>
-decides which workflows need to run at all. See
-<a href="../ci-cd-pipeline.html">ci-cd-pipeline.md</a> for the current topology; the
-<code>Decision</code> and <code>Consequences</code> sections above describe the original
-three-workflow shape as it was when accepted.</p>
+decides which workflows need to run at all.</p>
+<p>The shared <code>portfolio-pipeline</code> concurrency group described in <code>Decision</code>
+above does <strong>not</strong> carry over to the fan-out. <code>deploy.yml</code> and
+<code>api-docs.yml</code> were first put in <code>portfolio-pipeline</code> alongside <code>ci.yml</code>
+to match this ADR&#39;s original model, and it broke deploys in production:
+GitHub Actions only protects an already <strong>in-progress</strong> run from
+cancellation under <code>cancel-in-progress: false</code> — a <strong>queued</strong> run is not
+protected, and is silently cancelled if a second run joins the same
+group&#39;s queue first. Since <code>ci.yml</code> dispatches both workflows back to
+back while its own run still holds the group, <code>api-docs.yml</code>&#39;s queued run
+was cancelling <code>deploy.yml</code>&#39;s queued run on every push. The fix gives each
+of <code>deploy.yml</code> and <code>api-docs.yml</code> its own concurrency group
+(<code>deploy-pipeline</code>, <code>api-docs-pipeline</code>); <code>ci.yml</code> keeps <code>portfolio-pipeline</code>
+for itself. See <a href="../ci-cd-pipeline.html#concurrency-strategy">ci-cd-pipeline.md</a>
+for the current four-group topology; the <code>Decision</code> and <code>Consequences</code>
+sections above describe the original three-workflow shape, including its
+single shared concurrency group, as it was when accepted — not the
+corrected model in effect today.</p>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://docs.github.com/en/actions">GitHub Actions documentation</a></li>

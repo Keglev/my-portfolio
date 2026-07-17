@@ -59,7 +59,7 @@
       <!-- Replaced at build time by convertMd() in build_docs.js -->
       <h1 id="cicd-pipeline">CI/CD Pipeline</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>The portfolio uses four GitHub Actions workflows. <code>ci.yml</code> runs first (lint, test, coverage) and, on a successful push to <code>main</code>, dispatches <code>deploy.yml</code> and <code>api-docs.yml</code> in parallel — deploy always runs; api-docs only runs when the changed files could affect the API surface or test coverage. <code>architecture-docs.yml</code> is independent of that chain: it triggers directly on <code>docs/**</code> or <code>scripts/docs/**</code> pushes. A shared concurrency group ensures no two portfolio-pipeline runs overlap; docs-only pushes use a separate group so they don&#39;t queue behind it.</p>
+<p>The portfolio uses four GitHub Actions workflows. <code>ci.yml</code> runs first (lint, test, coverage) and, on a successful push to <code>main</code>, dispatches <code>deploy.yml</code> and <code>api-docs.yml</code> in parallel — deploy always runs; api-docs only runs when the changed files could affect the API surface or test coverage. <code>architecture-docs.yml</code> is independent of that chain: it triggers directly on <code>docs/**</code> or <code>scripts/docs/**</code> pushes. Each of the four workflows has its own concurrency group (see <a href="#concurrency-strategy">Concurrency Strategy</a>), so <code>deploy.yml</code> and <code>api-docs.yml</code> can genuinely run at the same time instead of queuing behind each other.</p>
 <p><code>deploy.yml</code> does not fetch project data — the Projects section renders from the static, hand-curated <code>src/data/projects.config.js</code>. The workflow only builds and deploys.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
@@ -200,8 +200,38 @@
 <li>Smoke-test <code>https://keglev.github.io/my-portfolio</code> (warning-only)</li>
 </ol>
 <h2 id="concurrency-strategy">Concurrency Strategy</h2>
-<p><code>ci.yml</code>, <code>deploy.yml</code>, and <code>api-docs.yml</code> (when dispatched) share the <code>portfolio-pipeline</code> concurrency group with <code>cancel-in-progress: false</code>. Runs queue rather than cancel.</p>
-<p>Docs-only pushes — changes to <code>docs/**</code> or <code>scripts/docs/**</code> — trigger <code>architecture-docs.yml</code> directly using the separate <code>docs-only</code> concurrency group, so small documentation edits don&#39;t queue behind an active portfolio-pipeline run.</p>
+<p>Four separate concurrency groups are in play, deliberately <strong>not</strong> one shared group:</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Scope</th>
+<th>Why not shared</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>portfolio-pipeline</code></td>
+<td><code>ci.yml</code> only</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>deploy-pipeline</code></td>
+<td><code>deploy.yml</code> only</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>api-docs-pipeline</code></td>
+<td><code>api-docs.yml</code> only</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>docs-only</code></td>
+<td><code>architecture-docs.yml</code>&#39;s direct <code>docs/**</code> push trigger</td>
+<td>—</td>
+</tr>
+</tbody></table>
+<p><code>ci.yml</code>&#39;s <code>start-deploy-stage</code> job dispatches <code>deploy.yml</code> and <code>api-docs.yml</code> back to back, while <code>ci.yml</code>&#39;s own run is still holding <code>portfolio-pipeline</code>. GitHub Actions only protects an <strong>already in-progress</strong> run from cancellation when <code>cancel-in-progress: false</code> — a run that is still <strong>queued</strong> is not protected, and is silently cancelled if a second run joins the same group&#39;s queue before the first one starts. An earlier version of this pipeline put <code>deploy.yml</code> and <code>api-docs.yml</code> in the shared <code>portfolio-pipeline</code> group; in practice this meant <code>api-docs.yml</code>&#39;s queued run cancelled <code>deploy.yml</code>&#39;s queued run on every push, so builds silently never reached Vercel. Giving each workflow its own group (<code>deploy-pipeline</code>, <code>api-docs-pipeline</code>) removes the race and lets them run in parallel, at the cost of <code>ci.yml</code> runs no longer queuing behind <code>deploy.yml</code>/<code>api-docs.yml</code> runs — accepted deliberately, since <code>ci.yml</code> never touches Vercel or <code>gh-pages</code> and each of the other two workflows still self-serializes within its own group.</p>
+<p>Docs-only pushes — changes to <code>docs/**</code> or <code>scripts/docs/**</code> — trigger <code>architecture-docs.yml</code> directly using the separate <code>docs-only</code> concurrency group, so small documentation edits don&#39;t queue behind any of the portfolio-pipeline/deploy-pipeline/api-docs-pipeline lineage.</p>
 <p><code>api-docs.yml</code> and <code>architecture-docs.yml</code> publish to the same <code>gh-pages</code> branch from independent trigger paths and could in principle run concurrently. Both declare a job-level <code>gh-pages-deploy</code> concurrency group (matched by name across workflows), which serializes just their publish jobs without changing either workflow&#39;s top-level trigger concurrency.</p>
 <h2 id="references">References</h2>
 <ul>
