@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/components/RepoDocs/RepoDocLinks.js</title>
+    <title>Code coverage report for src/components/About/CareerStrip.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/components/RepoDocs</a> RepoDocLinks.js</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/components/About</a> CareerStrip.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/5</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">71.42% </span>
-                <span class="quiet">Branches</span>
-                <span class='fraction'>5/7</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
-                <span class="quiet">Functions</span>
+                <span class="quiet">Branches</span>
                 <span class='fraction'>2/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>4/4</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -94,7 +94,14 @@
 <a name='L29'></a><a href='#L29'>29</a>
 <a name='L30'></a><a href='#L30'>30</a>
 <a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -104,13 +111,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
@@ -118,6 +130,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -129,33 +143,40 @@
 import { useTranslation } from 'react-i18next';
 &nbsp;
 /**
- * Renders the curated documentation links for a single project as a compact
- * two-column grid of bordered rows. Each row shows a small decorative glyph
- * (aria-hidden, so the accessible name stays the localized label) and the
- * localized link label from the config.
+ * Condensed career and education strip: one line per station, two columns.
+ * Replaces the former full Experience and Education sections. The wrapper id
+ * "Career" is the scroll target of the Hero "Experience" CTA.
  *
- * @param {Object[]} links - Curated doc links (RepoDocLink shape from src/data/repoDocs.config)
  * @returns {JSX.Element}
  */
-const RepoDocLinks = ({ links = <span class="branch-0 cbranch-no" title="branch not covered" >[] </span>}) =&gt; {
-  const { i18n } = useTranslation();
-  const isGerman = (i18n.language || <span class="branch-1 cbranch-no" title="branch not covered" >'en')</span>.toLowerCase().startsWith('de');
+const CareerStrip = () =&gt; {
+  const { t } = useTranslation();
+&nbsp;
+  // i18next returns the key string when a list resource is missing; the guard
+  // keeps the render safe in tests and in partially loaded locales
+  const asList = (value) =&gt; (Array.isArray(value) ? value : []);
+  const career = asList(t('aboutSection.career', { returnObjects: true }));
+  const education = asList(t('aboutSection.educationItems', { returnObjects: true }));
 &nbsp;
   return (
-    &lt;ul className="repo-docs-links"&gt;
-      {links.map((link, idx) =&gt; (
-        &lt;li key={idx}&gt;
-          &lt;a href={link.url} target="_blank" rel="noopener noreferrer" className="repo-doc-link"&gt;
-            &lt;span className="repo-doc-icon" aria-hidden="true"&gt;{link.icon || '❯'}&lt;/span&gt;
-            &lt;span&gt;{isGerman ? link.titleDe : link.titleEn}&lt;/span&gt;
-          &lt;/a&gt;
-        &lt;/li&gt;
-      ))}
-    &lt;/ul&gt;
+    &lt;div className="career-strip" id="Career"&gt;
+      &lt;div className="career-column"&gt;
+        &lt;h3&gt;{t('aboutSection.careerHeading')}&lt;/h3&gt;
+        &lt;ul&gt;
+          {career.map((line, idx) =&gt; &lt;li key={idx}&gt;{line}&lt;/li&gt;)}
+        &lt;/ul&gt;
+      &lt;/div&gt;
+      &lt;div className="career-column"&gt;
+        &lt;h3&gt;{t('aboutSection.educationHeading')}&lt;/h3&gt;
+        &lt;ul&gt;
+          {education.map((line, idx) =&gt; &lt;li key={idx}&gt;{line}&lt;/li&gt;)}
+        &lt;/ul&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
   );
 };
 &nbsp;
-export default RepoDocLinks;
+export default CareerStrip;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -163,7 +184,7 @@ export default RepoDocLinks;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-17T08:37:36.006Z
+                at 2026-07-17T12:03:30.418Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

@@ -25,28 +25,28 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -117,14 +117,14 @@
 <a name='L52'></a><a href='#L52'>52</a>
 <a name='L53'></a><a href='#L53'>53</a>
 <a name='L54'></a><a href='#L54'>54</a>
-<a name='L55'></a><a href='#L55'>55</a>
-<a name='L56'></a><a href='#L56'>56</a>
-<a name='L57'></a><a href='#L57'>57</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L55'></a><a href='#L55'>55</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -136,26 +136,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">44x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -177,54 +173,52 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
 import './About.css';
-import ProfilePic from '../../assets/profile-pic.jpg';
-import { SiReact, SiPostgresql, SiSpringboot, SiDocker, SiTypescript, SiMaterialdesign, SiGit, SiVite } from 'react-icons/si';
-import { FaJava, FaGithub, FaShieldAlt } from 'react-icons/fa';
-import { TbTestPipe } from 'react-icons/tb';
+import ProfilePicFallback from '../../assets/profile-pic.jpg';
 import { useTranslation } from 'react-i18next';
+import CareerStrip from './CareerStrip';
+&nbsp;
+// Render order of the four storytelling blocks; keys map to aboutSection.&lt;key&gt; in the locales
+const BLOCKS = ['block1', 'block2', 'block3', 'block4'];
 &nbsp;
 /**
- * Renders developer profile and technology stack.
- * Displays introductory text from i18n resources alongside a profile picture
- * and icons for key technical skills grouped into categories.
+ * About section: four storytelling blocks (career-changer pitch), a condensed
+ * career/education strip, and the profile photo.
+ * The photo prefers the curated file at public/profile.jpg and falls back to
+ * the bundled asset on load error, so a missing file never breaks the layout.
  *
- * @returns {JSX.Element} About section with profile image, biography text, and tech stack icons.
+ * @returns {JSX.Element}
  */
 const About = () =&gt; {
   const { t } = useTranslation();
+&nbsp;
+  const handleImgError = (e) =&gt; {
+    const img = e.currentTarget;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (img.getAttribute('data-fallback') !== '1') {
+      img.setAttribute('data-fallback', '1');
+      img.src = ProfilePicFallback;
+    }
+  };
+&nbsp;
   return (
     &lt;div className="about-container" id="About"&gt;
       &lt;div className="content"&gt;
         &lt;h2&gt;{t('aboutSection.heading')}&lt;/h2&gt;
-        &lt;p&gt;{t('aboutSection.description1')}&lt;/p&gt;
-        &lt;p&gt;{t('aboutSection.description2')}&lt;/p&gt;
-        &lt;p&gt;{t('aboutSection.description3')}&lt;/p&gt;
-      
-        {/* Grouped by domain: backend, frontend, devops */}
-        &lt;p&gt;🔧 &lt;strong&gt;Tech Stack:&lt;/strong&gt;&lt;/p&gt;
-        &lt;ul className="tech-list"&gt;
-          &lt;li&gt;&lt;FaJava /&gt; Java 17&lt;/li&gt;
-          &lt;li&gt;&lt;SiSpringboot /&gt; Spring Boot 3&lt;/li&gt;
-          &lt;li&gt;&lt;SiPostgresql /&gt; PostgreSQL &amp; Oracle DB&lt;/li&gt;
-          &lt;li&gt;&lt;SiDocker /&gt; Docker &amp; Docker Compose&lt;/li&gt;
-        &lt;/ul&gt;
-&nbsp;
-        &lt;ul className="tech-list"&gt;
-          &lt;li&gt;&lt;TbTestPipe /&gt; JUnit &amp; Mockito&lt;/li&gt;
-          &lt;li&gt;&lt;SiTypescript /&gt; TypeScript&lt;/li&gt;
-          &lt;li&gt;&lt;SiReact /&gt; React.js&lt;/li&gt;
-          &lt;li&gt;&lt;SiMaterialdesign /&gt; Material-UI (MUI)&lt;/li&gt;
-        &lt;/ul&gt;
-&nbsp;
-        &lt;ul className="tech-list"&gt;
-          &lt;li&gt;&lt;SiGit /&gt; Git&lt;/li&gt;
-          &lt;li&gt;&lt;FaGithub /&gt; GitHub Actions&lt;/li&gt;
-          &lt;li&gt;&lt;FaShieldAlt /&gt; Security / Auth&lt;/li&gt;
-          &lt;li&gt;&lt;SiVite /&gt; Vite&lt;/li&gt;
-        &lt;/ul&gt;
+        &lt;div className="about-blocks"&gt;
+          {BLOCKS.map((key) =&gt; (
+            &lt;article className="about-block" key={key}&gt;
+              &lt;h3&gt;{t(`aboutSection.${key}.title`)}&lt;/h3&gt;
+              &lt;p&gt;{t(`aboutSection.${key}.text`)}&lt;/p&gt;
+            &lt;/article&gt;
+          ))}
+        &lt;/div&gt;
+        &lt;CareerStrip /&gt;
       &lt;/div&gt;
       &lt;div className="profile"&gt;
-        &lt;img src={ProfilePic} alt="Carlos Keglevich Profile" /&gt;
+        &lt;img
+          src="/profile.jpg"
+          alt="Carlos Keglevich portrait"
+          onError={handleImgError}
+        /&gt;
       &lt;/div&gt;
     &lt;/div&gt;
   );
@@ -238,7 +232,7 @@ export default About;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-17T08:37:35.945Z
+                at 2026-07-17T12:03:30.418Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
