@@ -47,6 +47,7 @@
   <li><a href="#context">Context</a></li>
   <li><a href="#decision">Decision</a></li>
   <li><a href="#consequences">Consequences</a></li>
+  <li><a href="#update-2026-07-17">Update (2026-07-17)</a></li>
   <li><a href="#references">References</a></li>
 </ul>
     </aside>
@@ -61,10 +62,11 @@
 <li><a href="#context">Context</a></li>
 <li><a href="#decision">Decision</a></li>
 <li><a href="#consequences">Consequences</a></li>
+<li><a href="#update-2026-07-17">Update (2026-07-17)</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="status">Status</h2>
-<p>Accepted</p>
+<p>Accepted — topology since evolved to four workflows with parallel docs dispatch; see <a href="#update-2026-07-17">Update</a> below. This section describes the original decision as made and is left unedited.</p>
 <h2 id="context">Context</h2>
 <p>An initial single-workflow approach covering lint, test, build, fetch, and
 deploy became difficult to maintain. It also caused unnecessary full re-runs
@@ -116,13 +118,28 @@ than a single file</li>
 <li>The concurrency group prevents race conditions when multiple pushes land
 in quick succession</li>
 </ul>
+<h2 id="update-2026-07-17">Update (2026-07-17)</h2>
+<p><code>build-and-fetch.yml</code> was renamed <code>deploy.yml</code> (it had already stopped fetching
+project data — see <a href="ADR-006-build-time-github-data-fetch.html">ADR-006</a>) and
+<code>docs-refresh.yml</code> was split into two independently-triggered workflows,
+<code>api-docs.yml</code> (JSDoc + coverage, dispatched by <code>ci.yml</code> in parallel with
+<code>deploy.yml</code>, gated on whether the pushed diff could affect the API surface
+or test coverage) and <code>architecture-docs.yml</code> (Markdown/Mermaid, triggers
+only on <code>docs/**</code> pushes, unchanged from before). The sequential
+ci → build-and-fetch → docs-refresh dispatch chain became a fan-out: <code>ci.yml</code>
+now dispatches <code>deploy.yml</code> and <code>api-docs.yml</code> at the same time instead of
+docs waiting on deploy to finish, and <code>scripts/ci/detectPipelineScope.js</code>
+decides which workflows need to run at all. See
+<a href="../ci-cd-pipeline.html">ci-cd-pipeline.md</a> for the current topology; the
+<code>Decision</code> and <code>Consequences</code> sections above describe the original
+three-workflow shape as it was when accepted.</p>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://docs.github.com/en/actions">GitHub Actions documentation</a></li>
 <li><a href="../ci-cd-pipeline.html">ci-cd-pipeline.md</a> — pipeline diagram and per-step breakdown</li>
 <li><code>.github/workflows/ci.yml</code></li>
-<li><code>.github/workflows/build-and-fetch.yml</code></li>
-<li><code>.github/workflows/docs-refresh.yml</code></li>
+<li><code>.github/workflows/build-and-fetch.yml</code> (now <code>deploy.yml</code>)</li>
+<li><code>.github/workflows/docs-refresh.yml</code> (now split into <code>api-docs.yml</code> and <code>architecture-docs.yml</code>)</li>
 <li><code>.github/actions/node-setup/</code> — composite action</li>
 </ul>
 

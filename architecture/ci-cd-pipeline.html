@@ -47,8 +47,9 @@
   <li><a href="#workflow-files">Workflow Files</a></li>
   <li><a href="#step-details">Step Details</a></li>
   <li class="toc-h3"><a href="#ciyml">ci.yml</a></li>
-  <li class="toc-h3"><a href="#build-and-fetchyml">build-and-fetch.yml</a></li>
-  <li class="toc-h3"><a href="#docs-refreshyml">docs-refresh.yml</a></li>
+  <li class="toc-h3"><a href="#deployyml">deploy.yml</a></li>
+  <li class="toc-h3"><a href="#api-docsyml">api-docs.yml</a></li>
+  <li class="toc-h3"><a href="#architecture-docsyml">architecture-docs.yml</a></li>
   <li><a href="#concurrency-strategy">Concurrency Strategy</a></li>
   <li><a href="#references">References</a></li>
 </ul>
@@ -58,8 +59,8 @@
       <!-- Replaced at build time by convertMd() in build_docs.js -->
       <h1 id="cicd-pipeline">CI/CD Pipeline</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>The portfolio uses three GitHub Actions workflows that form a sequential pipeline: CI runs first, build-and-fetch builds and deploys the app to Vercel, and docs-refresh publishes documentation to GitHub Pages. A shared concurrency group ensures no two pipeline runs overlap.</p>
-<p>Despite its name, <code>build-and-fetch.yml</code> no longer fetches project data — the Projects section renders from the static, hand-curated <code>src/data/projects.config.js</code>. The workflow only builds and deploys.</p>
+<p>The portfolio uses four GitHub Actions workflows. <code>ci.yml</code> runs first (lint, test, coverage) and, on a successful push to <code>main</code>, dispatches <code>deploy.yml</code> and <code>api-docs.yml</code> in parallel — deploy always runs; api-docs only runs when the changed files could affect the API surface or test coverage. <code>architecture-docs.yml</code> is independent of that chain: it triggers directly on <code>docs/**</code> or <code>scripts/docs/**</code> pushes. A shared concurrency group ensures no two portfolio-pipeline runs overlap; docs-only pushes use a separate group so they don&#39;t queue behind it.</p>
+<p><code>deploy.yml</code> does not fetch project data — the Projects section renders from the static, hand-curated <code>src/data/projects.config.js</code>. The workflow only builds and deploys.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#pipeline-diagram">Pipeline Diagram</a></li>
@@ -76,31 +77,42 @@
         Lint[&quot;Lint&quot;]
         Test[&quot;Test + Coverage&quot;]
         Artifact[&quot;Upload coverage artifact&quot;]
-        Lint --&gt; Test --&gt; Artifact
+        Scope[&quot;Resolve pipeline scope\n(scripts/ci/runPipelineScope.js)&quot;]
+        Lint --&gt; Test --&gt; Artifact --&gt; Scope
     end
 
-    subgraph BF[&quot;build-and-fetch.yml&quot;]
+    subgraph DP[&quot;deploy.yml&quot;]
         BuildReact[&quot;Build React app&quot;]
         VercelDeploy[&quot;Deploy to Vercel&quot;]
         BuildReact --&gt; VercelDeploy
     end
 
-    subgraph DR[&quot;docs-refresh.yml&quot;]
-        JSDoc[&quot;Generate JSDoc&quot;]
-        Templates[&quot;Apply doc templates&quot;]
-        Coverage[&quot;Download coverage artifact&quot;]
-        GHPages[&quot;Publish to GitHub Pages&quot;]
-        JSDoc --&gt; Templates --&gt; Coverage --&gt; GHPages
+    subgraph AD[&quot;api-docs.yml&quot;]
+        JSDoc[&quot;Generate JSDoc\n(if apiDocs)&quot;]
+        Coverage[&quot;Download coverage artifact\n(if coverage)&quot;]
+        GHPagesAPI[&quot;Publish jsdoc/, coverage/\nto gh-pages&quot;]
+        JSDoc --&gt; GHPagesAPI
+        Coverage --&gt; GHPagesAPI
     end
 
-    Push --&gt; Lint
-    Artifact --&gt;|&quot;workflow_dispatch&quot;| BuildReact
-    VercelDeploy --&gt;|&quot;workflow_dispatch&quot;| JSDoc
+    subgraph AR[&quot;architecture-docs.yml&quot;]
+        Templates[&quot;Apply doc templates&quot;]
+        Mermaid[&quot;Pre-render Mermaid diagrams&quot;]
+        GHPagesArch[&quot;Publish staged docs/\nto gh-pages&quot;]
+        Templates --&gt; Mermaid --&gt; GHPagesArch
+    end
 
-    class Push l1
-    class Lint,Test,Artifact l2
+    DocsPush[&quot;Push to docs/** or scripts/docs/**&quot;]
+
+    Push --&gt; Lint
+    Scope --&gt;|&quot;workflow_dispatch, always&quot;| BuildReact
+    Scope --&gt;|&quot;workflow_dispatch, if apiDocs||coverage&quot;| JSDoc
+    DocsPush --&gt; Templates
+
+    class Push,DocsPush l1
+    class Lint,Test,Artifact,Scope l2
     class BuildReact,VercelDeploy l3
-    class JSDoc,Templates,Coverage,GHPages l4
+    class JSDoc,Coverage,GHPagesAPI,Templates,Mermaid,GHPagesArch l4
 
     classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
     classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
@@ -118,60 +130,79 @@
 </thead>
 <tbody><tr>
 <td><code>.github/workflows/ci.yml</code></td>
-<td>Push to <code>main</code> (<code>src/**</code>, <code>scripts/**</code>, <code>config/**</code>, <code>jest.node.config.js</code>, <code>package.json</code>, <code>.github/workflows/ci.yml</code>), PRs to <code>main</code></td>
-<td>Lint, run full test suite, upload coverage artifact; dispatches <code>build-and-fetch.yml</code> on successful push</td>
+<td>Push to <code>main</code> (<code>src/**</code>, <code>scripts/**</code>, <code>config/**</code>, <code>jest.node.config.js</code>, <code>package.json</code>, <code>.github/workflows/**</code>), PRs to <code>main</code></td>
+<td>Lint, run full test suite, upload coverage artifact; on push, resolve scope and dispatch <code>deploy.yml</code> (always) and <code>api-docs.yml</code> (conditionally) in parallel</td>
 </tr>
 <tr>
-<td><code>.github/workflows/build-and-fetch.yml</code></td>
-<td>Dispatched by <code>ci.yml</code> after tests pass; manual <code>workflow_dispatch</code></td>
-<td>Build React app, deploy prebuilt output to Vercel, dispatch <code>docs-refresh.yml</code></td>
+<td><code>.github/workflows/deploy.yml</code></td>
+<td>Dispatched by <code>ci.yml</code>; manual <code>workflow_dispatch</code></td>
+<td>Build React app, deploy prebuilt output to Vercel. Does not dispatch anything else.</td>
 </tr>
 <tr>
-<td><code>.github/workflows/docs-refresh.yml</code></td>
-<td>Dispatched by <code>build-and-fetch.yml</code>; push to <code>docs/**</code> or <code>scripts/docs/**</code>; manual <code>workflow_dispatch</code></td>
-<td>Apply HTML templates to Markdown, pre-render Mermaid diagrams, generate JSDoc, download coverage artifact from latest CI run, publish <code>docs/</code> to <code>gh-pages</code></td>
+<td><code>.github/workflows/api-docs.yml</code></td>
+<td>Dispatched by <code>ci.yml</code> with <code>apiDocs</code>/<code>coverage</code> inputs; manual <code>workflow_dispatch</code> (defaults both inputs to true)</td>
+<td>Generate JSDoc (if <code>apiDocs</code>), download the coverage artifact from the latest CI run and publish it (if <code>coverage</code>); publishes <code>jsdoc/</code> and <code>coverage/</code> to <code>gh-pages</code> via separate <code>destination_dir</code> scoped steps</td>
+</tr>
+<tr>
+<td><code>.github/workflows/architecture-docs.yml</code></td>
+<td>Push to <code>docs/**</code> or <code>scripts/docs/**</code>; manual <code>workflow_dispatch</code></td>
+<td>Apply HTML templates to Markdown, pre-render Mermaid diagrams, publish a staged copy of <code>docs/</code> (excluding <code>jsdoc/</code> and <code>coverage/</code>) to <code>gh-pages</code></td>
 </tr>
 <tr>
 <td><code>.github/actions/node-setup/</code></td>
-<td>Composite action used by all three workflows</td>
-<td>Sets up Node.js 20, restores the npm cache, and runs <code>npm ci --legacy-peer-deps</code>; called after <code>actions/checkout@v4</code> in each workflow</td>
+<td>Composite action used by all four workflows</td>
+<td>Sets up Node.js 22, restores the npm cache, and runs <code>npm ci --legacy-peer-deps</code>; called after <code>actions/checkout@v4</code> in each workflow</td>
 </tr>
 </tbody></table>
 <h2 id="step-details">Step Details</h2>
 <h3 id="ciyml">ci.yml</h3>
+<p>Job <code>lint-and-test</code>:</p>
 <ol>
 <li>Checkout the repository</li>
 <li>Run the <code>node-setup</code> composite action</li>
 <li>Run <code>npm run lint</code> — fails fast before any test runs</li>
 <li>Run <code>npx jest --config=jest.node.config.js --runInBand --coverage</code> — serial execution prevents resource contention in CI</li>
 <li>Upload <code>coverage/</code> as the <code>coverage-report</code> artifact (7-day retention)</li>
-<li>Dispatch <code>build-and-fetch.yml</code> (push to <code>main</code> only; skipped on pull requests)</li>
 </ol>
-<h3 id="build-and-fetchyml">build-and-fetch.yml</h3>
+<p>Job <code>start-deploy-stage</code> (push to <code>main</code> only; skipped on pull requests):</p>
+<ol>
+<li>Checkout with <code>fetch-depth: 0</code> (full history, required to diff <code>before</code>..<code>sha</code>)</li>
+<li>Run <code>scripts/ci/runPipelineScope.js &quot;$before&quot; &quot;$sha&quot;</code> — resolves <code>apiDocs</code>/<code>coverage</code>/<code>archDocs</code>/<code>deploy</code> flags from the changed-file list. If the diff range can&#39;t be resolved (new branch, force-push), every flag defaults to <code>true</code> rather than skipping work.</li>
+<li>Dispatch <code>deploy.yml</code> unconditionally</li>
+<li>Dispatch <code>api-docs.yml</code> (with <code>apiDocs</code>/<code>coverage</code> inputs) only when at least one of those flags is <code>true</code> — dispatched immediately after step 3, not waiting for <code>deploy.yml</code> to finish, so build/deploy and docs generation run in parallel</li>
+</ol>
+<h3 id="deployyml">deploy.yml</h3>
 <ol>
 <li>Checkout and <code>node-setup</code></li>
 <li>Run <code>npm run build</code> — production CRA build</li>
 <li>Run <code>scripts/prepareVercelOutput.sh</code> — assemble <code>.vercel/output/static/</code></li>
 <li>Verify prebuilt static artifacts — confirms <code>index.html</code> is present in <code>.vercel/output/static/</code>; fails the workflow if missing</li>
 <li>Deploy with <code>vercel --prod --prebuilt</code></li>
-<li>Smoke-test the Vercel URL (HTTP 200 required before proceeding)</li>
-<li>Dispatch <code>docs-refresh.yml</code></li>
+<li>Smoke-test the Vercel URL (HTTP 200 required)</li>
 </ol>
-<h3 id="docs-refreshyml">docs-refresh.yml</h3>
+<h3 id="api-docsyml">api-docs.yml</h3>
+<ol>
+<li>Checkout and <code>node-setup</code></li>
+<li>Generate JSDoc API docs with <code>npm run docs:jsdoc</code> (skipped if <code>apiDocs</code> input is <code>false</code>)</li>
+<li>Locate the latest successful <code>ci.yml</code> run via the <code>gh</code> CLI (skipped if <code>coverage</code> input is <code>false</code>)</li>
+<li>Download the <code>coverage-report</code> artifact from that run into <code>docs/coverage/</code></li>
+<li>Publish <code>docs/jsdoc/</code> to <code>gh-pages</code> under <code>destination_dir: jsdoc</code> (skipped if <code>apiDocs</code> is <code>false</code>)</li>
+<li>Publish <code>docs/coverage/</code> to <code>gh-pages</code> under <code>destination_dir: coverage</code> (skipped if <code>coverage</code> is <code>false</code>)</li>
+<li>Smoke-test <code>https://keglev.github.io/my-portfolio/jsdoc/index.html</code> (warning-only)</li>
+</ol>
+<h3 id="architecture-docsyml">architecture-docs.yml</h3>
 <ol>
 <li>Checkout and <code>node-setup</code></li>
 <li>Apply doc templates via <code>scripts/docs/build_docs.js</code></li>
 <li>Pre-render Mermaid diagrams via <code>scripts/docs/build_mermaid.js</code>; falls back to CDN client-side rendering when <code>mmdc</code> is not installed</li>
-<li>Generate JSDoc API docs with <code>npm run docs:jsdoc</code></li>
-<li>Locate the latest successful <code>ci.yml</code> run via the <code>gh</code> CLI</li>
-<li>Download the <code>coverage-report</code> artifact from that run</li>
-<li>Copy <code>coverage/</code> into <code>docs/coverage/</code></li>
-<li>Deploy <code>docs/</code> to the <code>gh-pages</code> branch via <code>peaceiris/actions-gh-pages@v4</code></li>
-<li>Smoke-test <code>https://keglev.github.io/my-portfolio</code> (warning-only; workflow exits 0 regardless)</li>
+<li>Stage <code>docs/</code> into a temp directory excluding <code>jsdoc/</code> and <code>coverage/</code> (those are api-docs.yml&#39;s territory; <code>docs/jsdoc/*.html</code> is also git-tracked on <code>main</code> as legacy generated output, so publishing <code>./docs</code> unfiltered would overwrite api-docs.yml&#39;s fresher <code>gh-pages/jsdoc/</code> with stale committed snapshots)</li>
+<li>Deploy the staged copy to the <code>gh-pages</code> branch via <code>peaceiris/actions-gh-pages@v4</code> with <code>keep_files: true</code></li>
+<li>Smoke-test <code>https://keglev.github.io/my-portfolio</code> (warning-only)</li>
 </ol>
 <h2 id="concurrency-strategy">Concurrency Strategy</h2>
-<p>All three workflows share the <code>portfolio-pipeline</code> concurrency group with <code>cancel-in-progress: false</code>. Runs queue rather than cancel, so a second push waits for the first full pipeline to complete.</p>
-<p>Docs-only pushes — changes to <code>docs/**</code> or <code>scripts/docs/**</code> — trigger <code>docs-refresh.yml</code> directly using the separate <code>docs-only</code> concurrency group. This keeps small documentation edits fast without queuing behind an active full-pipeline run.</p>
+<p><code>ci.yml</code>, <code>deploy.yml</code>, and <code>api-docs.yml</code> (when dispatched) share the <code>portfolio-pipeline</code> concurrency group with <code>cancel-in-progress: false</code>. Runs queue rather than cancel.</p>
+<p>Docs-only pushes — changes to <code>docs/**</code> or <code>scripts/docs/**</code> — trigger <code>architecture-docs.yml</code> directly using the separate <code>docs-only</code> concurrency group, so small documentation edits don&#39;t queue behind an active portfolio-pipeline run.</p>
+<p><code>api-docs.yml</code> and <code>architecture-docs.yml</code> publish to the same <code>gh-pages</code> branch from independent trigger paths and could in principle run concurrently. Both declare a job-level <code>gh-pages-deploy</code> concurrency group (matched by name across workflows), which serializes just their publish jobs without changing either workflow&#39;s top-level trigger concurrency.</p>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://docs.github.com/en/actions">GitHub Actions documentation</a></li>

@@ -8,11 +8,12 @@
 - [Context](#context)
 - [Decision](#decision)
 - [Consequences](#consequences)
+- [Update (2026-07-17)](#update-2026-07-17)
 - [References](#references)
 
 ## Status
 
-Accepted
+Accepted — topology since evolved to four workflows with parallel docs dispatch; see [Update](#update-2026-07-17) below. This section describes the original decision as made and is left unedited.
 
 ## Context
 
@@ -70,11 +71,28 @@ dependency caching step used by all three workflows.
 - The concurrency group prevents race conditions when multiple pushes land
   in quick succession
 
+## Update (2026-07-17)
+
+`build-and-fetch.yml` was renamed `deploy.yml` (it had already stopped fetching
+project data — see [ADR-006](ADR-006-build-time-github-data-fetch.md)) and
+`docs-refresh.yml` was split into two independently-triggered workflows,
+`api-docs.yml` (JSDoc + coverage, dispatched by `ci.yml` in parallel with
+`deploy.yml`, gated on whether the pushed diff could affect the API surface
+or test coverage) and `architecture-docs.yml` (Markdown/Mermaid, triggers
+only on `docs/**` pushes, unchanged from before). The sequential
+ci → build-and-fetch → docs-refresh dispatch chain became a fan-out: `ci.yml`
+now dispatches `deploy.yml` and `api-docs.yml` at the same time instead of
+docs waiting on deploy to finish, and `scripts/ci/detectPipelineScope.js`
+decides which workflows need to run at all. See
+[ci-cd-pipeline.md](../ci-cd-pipeline.md) for the current topology; the
+`Decision` and `Consequences` sections above describe the original
+three-workflow shape as it was when accepted.
+
 ## References
 
 - [GitHub Actions documentation](https://docs.github.com/en/actions)
 - [ci-cd-pipeline.md](../ci-cd-pipeline.md) — pipeline diagram and per-step breakdown
 - `.github/workflows/ci.yml`
-- `.github/workflows/build-and-fetch.yml`
-- `.github/workflows/docs-refresh.yml`
+- `.github/workflows/build-and-fetch.yml` (now `deploy.yml`)
+- `.github/workflows/docs-refresh.yml` (now split into `api-docs.yml` and `architecture-docs.yml`)
 - `.github/actions/node-setup/` — composite action

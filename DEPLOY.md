@@ -33,14 +33,14 @@ Deployment runs through GitHub Actions using a prebuilt artifact. Vercel does no
 A `vercel.json` in the project root configures two fields: `github.productionBranch: "main"` anchors any Vercel GitHub integration to the `main` branch (preventing the `gh-pages` documentation branch from being treated as a production source), and `buildCommand: "react-scripts build"` records the correct build command. The `buildCommand` is never invoked in practice because `vercel --prod --prebuilt` delivers a finished artifact and Vercel performs no build step.
 
 1. Connect the GitHub repository to a Vercel project and record `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and `VERCEL_PROJECT_ID` as GitHub Actions secrets (first-time setup only).
-2. Push to `main` — `ci.yml` detects the push, runs linting and tests, then dispatches `build-and-fetch.yml`.
-3. `build-and-fetch.yml` runs `npm run build` and assembles the prebuilt artifact in `.vercel/output/static/` via `scripts/prepareVercelOutput.sh`.
+2. Push to `main` — `ci.yml` detects the push, runs linting and tests, then dispatches `deploy.yml`.
+3. `deploy.yml` runs `npm run build` and assembles the prebuilt artifact in `.vercel/output/static/` via `scripts/prepareVercelOutput.sh`.
 4. GitHub Actions deploys the prebuilt artifact to Vercel via `vercel --prod --prebuilt`.
 
 ```mermaid
 flowchart LR
     A[Push to main] --> B[ci.yml passes]
-    B --> C[build-and-fetch.yml\nnpm run build]
+    B --> C[deploy.yml\nnpm run build]
     C --> D[prepareVercelOutput.sh\n.vercel/output/static/]
     D --> E[vercel --prod --prebuilt\nVercel CDN]
 ```

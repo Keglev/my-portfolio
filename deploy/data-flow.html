@@ -82,7 +82,7 @@
 <tr>
 <td><code>GITHUB_TOKEN</code></td>
 <td>Automatically injected by Actions</td>
-<td><code>gh</code> CLI calls in all three workflows</td>
+<td><code>gh</code> CLI calls in <code>ci.yml</code>, <code>api-docs.yml</code>, <code>architecture-docs.yml</code></td>
 <td>Yes (automatic)</td>
 </tr>
 </tbody></table>
@@ -99,7 +99,7 @@
     GHPages[&quot;GitHub Pages\nkeglev.github.io/my-portfolio&quot;]
 
     CIJob --&gt;|&quot;actions/upload-artifact&quot;| CoverageArtifact
-    CoverageArtifact --&gt;|&quot;gh run download in docs-refresh&quot;| GHPages
+    CoverageArtifact --&gt;|&quot;gh run download in api-docs.yml&quot;| GHPages
     MarkdownDocs --&gt;|&quot;converted to HTML&quot;| BuildDocs
     BuildDocs --&gt;|&quot;docs/*.html&quot;| GHPages
     SrcCode --&gt;|&quot;npm run docs:jsdoc&quot;| JSDocOutput
@@ -113,7 +113,7 @@
     classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
     classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
 </pre></div>
-<p>The <code>docs-refresh.yml</code> workflow is responsible for the entire right side of this diagram. It is triggered after a successful Vercel deployment (dispatched by <code>build-and-fetch.yml</code>) and also directly on pushes to <code>docs/**</code> or <code>scripts/docs/**</code>, which lets small documentation edits publish without running the full pipeline.</p>
+<p>The right side of this diagram is split across two workflows. <code>api-docs.yml</code> handles the coverage and JSDoc branches — it is dispatched by <code>ci.yml</code> in parallel with <code>deploy.yml</code> (not after it), and only when the changed files could affect the API surface or test coverage. <code>architecture-docs.yml</code> handles the Markdown-to-HTML branch — it triggers directly on pushes to <code>docs/**</code> or <code>scripts/docs/**</code>, independently of the deploy chain, which lets small documentation edits publish without running the full pipeline.</p>
 <h2 id="artifact-summary">Artifact Summary</h2>
 <p>The table below lists every intermediate and final artifact produced by the deployment system, where it originates, and where it lands.</p>
 <table>
@@ -141,24 +141,24 @@
 <td><code>coverage/</code></td>
 <td>Jest (<code>--coverage</code> flag in CI)</td>
 <td>CI</td>
-<td>Uploaded as <code>coverage-report</code> artifact; later copied to <code>docs/coverage/</code></td>
+<td>Uploaded as <code>coverage-report</code> artifact; later downloaded into <code>docs/coverage/</code> by api-docs.yml</td>
 </tr>
 <tr>
 <td><code>docs/jsdoc/</code></td>
 <td><code>npm run docs:jsdoc</code> (JSDoc)</td>
-<td>Docs-refresh</td>
-<td>Published to <code>gh-pages</code> branch</td>
+<td>api-docs.yml</td>
+<td>Published to <code>gh-pages</code> under <code>destination_dir: jsdoc</code></td>
 </tr>
 <tr>
 <td><code>docs/*.html</code></td>
 <td><code>scripts/docs/build_docs.js</code></td>
-<td>Docs-refresh</td>
-<td>Published to <code>gh-pages</code> branch</td>
+<td>architecture-docs.yml</td>
+<td>Published to <code>gh-pages</code> branch (staged copy excluding <code>jsdoc/</code> and <code>coverage/</code>)</td>
 </tr>
 <tr>
 <td><code>docs/templates/styles.css</code></td>
 <td><code>scripts/docs/build_docs.js</code> (copied from <code>scripts/docs/templates/</code>)</td>
-<td>Docs-refresh</td>
+<td>architecture-docs.yml</td>
 <td>Published to <code>gh-pages</code> branch alongside <code>docs/*.html</code></td>
 </tr>
 </tbody></table>
