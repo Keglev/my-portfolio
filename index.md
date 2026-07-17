@@ -10,6 +10,7 @@ A personal portfolio built with React (Create React App), styled-components, i18
 | Deploy data flow | How data moves through the build pipeline to Vercel and GitHub Pages | [deploy/data-flow.md](deploy/data-flow.md) |
 | Tests | Test strategy, runners, coverage thresholds, and how to run locally | [TESTS.md](TESTS.md) |
 | Architecture | Component structure and data flow diagrams | [architecture/index.md](architecture/index.md) |
+| Pipeline topology | CI/CD workflow map, concurrency groups, and live verification results | [pipeline.md](pipeline.md) |
 | Frontend | Component reference and i18n guide | [frontend/index.md](frontend/index.md) |
 | Scripts | Build and quality-check tooling reference | [scripts/index.md](scripts/index.md) |
 | Templates | Blank templates for ADRs, component docs, and test plans | [templates/index.md](templates/index.md) |

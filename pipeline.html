@@ -6,7 +6,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Replaced at build time: full page title set by each consumer (page vs. hub) -->
-  <title>Documentation Index — my-portfolio docs</title>
+  <title>Pipeline Topology — my-portfolio docs</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -41,76 +41,94 @@
       <p class="doc-toc__label">On this page</p>
       <!-- Replaced at build time by buildToc() in build_docs.js;
            empty string when the page has fewer than two headings -->
-      
+      <ul class="doc-toc__list">
+  <li><a href="#workflows-and-concurrency-groups">Workflows and concurrency groups</a></li>
+  <li><a href="#live-verification-results-2026-07-17">Live verification results (2026-07-17)</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
     </aside>
 
     <article class="article">
       <!-- Replaced at build time by convertMd() in build_docs.js -->
-      <h1 id="documentation-index">Documentation Index</h1>
-<p>A personal portfolio built with React (Create React App), styled-components, i18next, and React Router — deployed on Vercel (live site) and GitHub Pages (generated API docs).</p>
+      <h1 id="pipeline-topology">Pipeline Topology</h1>
+<p><a href="https://keglev.github.io/my-portfolio/index.html">← Hub</a> · <a href="docs-index.html">← Docs index</a></p>
+<p>Short summary of the four-workflow CI/CD topology after the P4/P5 rework (2026-07-17). For full detail see <a href="architecture/ci-cd-pipeline.html">architecture/ci-cd-pipeline.md</a>.</p>
+<h2 id="workflows-and-concurrency-groups">Workflows and concurrency groups</h2>
 <table>
 <thead>
 <tr>
-<th>Section</th>
-<th>Description</th>
-<th>Link</th>
+<th>Workflow</th>
+<th>Trigger</th>
+<th>Concurrency group</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>API Docs</td>
-<td>Auto-generated JSDoc reference from source</td>
-<td><a href="/my-portfolio/jsdoc/index.html">jsdoc/index.html</a></td>
+<td><code>ci.yml</code></td>
+<td>Push to <code>main</code> (<code>src/**</code>, <code>scripts/**</code>, <code>config/**</code>, <code>jest.node.config.js</code>, <code>package.json</code>, <code>.github/workflows/**</code>), PRs</td>
+<td><code>portfolio-pipeline</code></td>
 </tr>
 <tr>
-<td>Test Coverage</td>
-<td>Istanbul / Jest HTML coverage report</td>
-<td><a href="https://keglev.github.io/my-portfolio/coverage/index.html">coverage/index.html</a></td>
+<td><code>deploy.yml</code></td>
+<td>Dispatched by <code>ci.yml</code> (always, on push); manual</td>
+<td><code>deploy-pipeline</code></td>
 </tr>
 <tr>
-<td>Deployment</td>
-<td>Vercel configuration, environment variables, and build process</td>
-<td><a href="DEPLOY.html">DEPLOY.md</a></td>
+<td><code>api-docs.yml</code></td>
+<td>Dispatched by <code>ci.yml</code> (only if <code>apiDocs</code> or <code>coverage</code> is true); manual</td>
+<td><code>api-docs-pipeline</code></td>
 </tr>
 <tr>
-<td>Deploy data flow</td>
-<td>How data moves through the build pipeline to Vercel and GitHub Pages</td>
-<td><a href="deploy/data-flow.html">deploy/data-flow.md</a></td>
-</tr>
-<tr>
-<td>Tests</td>
-<td>Test strategy, runners, coverage thresholds, and how to run locally</td>
-<td><a href="TESTS.html">TESTS.md</a></td>
-</tr>
-<tr>
-<td>Architecture</td>
-<td>Component structure and data flow diagrams</td>
-<td><a href="architecture/index.html">architecture/index.md</a></td>
-</tr>
-<tr>
-<td>Pipeline topology</td>
-<td>CI/CD workflow map, concurrency groups, and live verification results</td>
-<td><a href="pipeline.html">pipeline.md</a></td>
-</tr>
-<tr>
-<td>Frontend</td>
-<td>Component reference and i18n guide</td>
-<td><a href="frontend/index.html">frontend/index.md</a></td>
-</tr>
-<tr>
-<td>Scripts</td>
-<td>Build and quality-check tooling reference</td>
-<td><a href="scripts/index.html">scripts/index.md</a></td>
-</tr>
-<tr>
-<td>Templates</td>
-<td>Blank templates for ADRs, component docs, and test plans</td>
-<td><a href="templates/index.html">templates/index.md</a></td>
+<td><code>architecture-docs.yml</code></td>
+<td>Push to <code>docs/**</code> or <code>scripts/docs/**</code>; manual</td>
+<td><code>docs-only</code></td>
 </tr>
 </tbody></table>
+<p>Each of the four workflows has its <strong>own</strong> concurrency group. <code>deploy.yml</code> and <code>api-docs.yml</code> run in genuine parallel because they don&#39;t share a group — an earlier version that put them in <code>portfolio-pipeline</code> alongside <code>ci.yml</code> caused <code>deploy.yml</code> to be silently cancelled on every push (a queued run in a shared group is not protected by <code>cancel-in-progress: false</code>, only an in-progress run is). <code>api-docs.yml</code> and <code>architecture-docs.yml</code> additionally share a job-level <code>gh-pages-deploy</code> group so their <code>gh-pages</code> publishes never race.</p>
+<h2 id="live-verification-results-2026-07-17">Live verification results (2026-07-17)</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Scenario</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>src-only push</td>
+<td><code>lint-and-test</code> → <code>deploy.yml</code> + <code>api-docs.yml</code> in parallel; <code>architecture-docs.yml</code> skipped</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>test-only push</td>
+<td><code>deploy.yml</code> + coverage publish; JSDoc rebuild skipped; <code>architecture-docs.yml</code> skipped</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>docs/**</code>-only push</td>
+<td>Only <code>architecture-docs.yml</code> runs; <code>ci.yml</code> doesn&#39;t trigger</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>4</td>
+<td>gh-pages content</td>
+<td><code>/jsdoc/</code>, <code>/coverage/</code>, architecture pages, and root all reachable</td>
+<td>Pass</td>
+</tr>
+</tbody></table>
+<p>Two bugs were found and fixed during this verification, both now on <code>main</code>:</p>
+<ul>
+<li>Shared <code>portfolio-pipeline</code> concurrency group across <code>ci.yml</code>, <code>deploy.yml</code>, and <code>api-docs.yml</code> caused <code>deploy.yml</code>&#39;s queued run to be silently cancelled by <code>api-docs.yml</code>&#39;s queued run on every push — no Vercel deploy actually went out until this was fixed.</li>
+<li>An edit that expanded <code>deploy.yml</code>&#39;s concurrency-group header comment accidentally deleted its <code>name:</code> and <code>on:</code> keys, leaving the workflow with no trigger.</li>
+</ul>
 <h2 id="references">References</h2>
 <ul>
-<li><a href="https://github.com/Keglev/my-portfolio">GitHub repository — Keglev/my-portfolio</a></li>
-<li><a href="https://keglev.github.io/my-portfolio/">Live docs — GitHub Pages</a></li>
+<li><a href="architecture/ci-cd-pipeline.html">architecture/ci-cd-pipeline.md</a> — full pipeline diagram, per-workflow step breakdown, concurrency strategy</li>
+<li><a href="architecture/decisions/ADR-004-three-workflow-cicd.html">architecture/decisions/ADR-004-three-workflow-cicd.md</a> — original three-workflow decision and its 2026-07-17 updates</li>
+<li><a href="deploy/data-flow.html">deploy/data-flow.md</a> — data flow into Vercel and GitHub Pages</li>
 </ul>
 
     </article>
