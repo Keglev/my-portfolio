@@ -49,6 +49,12 @@
 # dispatches (it never touches Vercel or gh-pages), and deploys still
 # self-serialize within deploy-pipeline. Do not "fix" this by putting
 # ci.yml and deploy.yml back in the same group.
+############################################################
+name: Deploy — build and publish to Vercel
+
+on:
+  workflow_dispatch:
+
 concurrency:
   group: deploy-pipeline
   cancel-in-progress: false
