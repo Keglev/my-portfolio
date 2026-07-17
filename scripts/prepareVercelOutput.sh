@@ -5,23 +5,16 @@
 # production build. Must run after `npm run build` and before `vercel --prebuilt`.
 #
 # Output layout:
-#   .vercel/output/static/   — compiled React app + projects.json + media
+#   .vercel/output/static/   — compiled React app
 #   .vercel/output/functions/ — empty placeholder required by Vercel's spec
 #   .vercel/output/config.json — routing rules for client-side navigation
 #   .vercel/output/.vc-config.json — empty placeholder required by spec validation
-#
-# All cp steps use `|| true` so a missing optional directory (e.g. projects_media)
-# does not fail the script.
 set -e
 
 # Idempotent reset — output dir may already exist from a previous attempt.
 rm -rf .vercel/output || true
 mkdir -p .vercel/output/static
 cp -r build/* .vercel/output/static/ || true
-cp -f public/projects.json .vercel/output/static/projects.json || true
-
-# projects_media is optional — only present when the fetch step ran successfully.
-cp -r public/projects_media .vercel/output/static/projects_media || true
 
 # Empty placeholder required by Vercel's output spec even for static-only projects.
 mkdir -p .vercel/output/functions || true

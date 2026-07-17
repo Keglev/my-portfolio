@@ -25,8 +25,8 @@ Two deployment strategies were evaluated:
 
 1. **Standard Vercel GitHub integration** — Vercel pulls the source code and
    runs its own build. This would duplicate the CRA build that already runs in
-   GitHub Actions and would prevent the project data fetch step (which requires
-   a `GH_PROJECTS_TOKEN`) from being tightly controlled in CI.
+   GitHub Actions and gives up the tight control over the build environment
+   that running the build in CI provides.
 
 2. **Prebuilt artifact deployment** — GitHub Actions builds the app and
    assembles a Vercel Build Output API v3 artifact, then deploys the
@@ -61,7 +61,7 @@ receives a finished static artifact and skips any build step of its own.
 
 - Zero redundant builds: the artifact built and smoke-tested in CI is
   exactly what is served in production
-- Secrets (`GH_PROJECTS_TOKEN`, `DEEPL_API_KEY`) never leave GitHub Actions
+- Deploy secrets (`VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`) never leave GitHub Actions
 - Vercel's global edge CDN serves the SPA with automatic HTTPS and HTTP/2
 - The `.vercel/output/config.json` routes all unmatched paths to `index.html`
   so client-side React Router navigation works without server configuration

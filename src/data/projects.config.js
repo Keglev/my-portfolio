@@ -4,9 +4,7 @@
  * Single source of truth for the portfolio cards. It intentionally does NOT
  * fetch from the GitHub API at build time: cards are hand-curated for a
  * recruiter audience, so copy, titles, tech tags and images are controlled
- * here instead of inherited (with bugs) from README files. The old fetch
- * pipeline is retained only as an optional dev tool (`npm run refresh:projects`)
- * and is no longer on the render path.
+ * here instead of inherited (with bugs) from README files.
  *
  * Copy is aligned to the CV (EN + DE) so the portfolio and CV tell the same
  * story. Summaries are plain text only — no Markdown, no leading section labels.

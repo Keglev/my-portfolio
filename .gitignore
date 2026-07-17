@@ -9,10 +9,6 @@
 # production
 /build
 
-# generated at build time
-/public/projects.json
-/public/projects_media/
-
 # misc
 .env
 .DS_Store

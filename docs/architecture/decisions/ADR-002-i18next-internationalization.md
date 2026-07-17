@@ -49,29 +49,28 @@ The i18next instance is configured in `src/i18n.js` with:
   disabling prevents double-escaping
 - `compatibilityJSON: 'v3'` — matches the plural-key format in the locale files
 
+> **Update:** the build-time GitHub fetch pipeline described below (and its
+> DeepL translation step) was retired — see [ADR-006](ADR-006-build-time-github-data-fetch.md).
+> Project descriptions are now hand-authored in both languages directly in
+> `src/data/projects.config.js`; there is no DeepL call at build time. The
+> i18next decision for static UI strings below is unaffected.
+
 For dynamic project descriptions, the DeepL free-tier API
-(`https://api-free.deepl.com/v2/translate`) translates English GitHub
-descriptions to German during the `scripts/fetchProjects.js` build step.
-Translations are cached per repository in
-`public/projects_media/{repo}/meta.json` using an md5 key so identical
-strings are only sent to DeepL once. If the DeepL API is unavailable or
-the key is absent, the translation result is `null` and the React component
-falls back to displaying the English original.
+(`https://api-free.deepl.com/v2/translate`) translated English GitHub
+descriptions to German during the build step. Translations were cached per
+repository using an md5 key so identical strings were only sent to DeepL
+once. If the DeepL API was unavailable or the key was absent, the
+translation result was `null` and the React component fell back to
+displaying the English original.
 
 ## Consequences
 
 - Language switching is instant with no network request after initial load,
   because both locale files are bundled at build time
-- Adding a third language requires new locale JSON files and a corresponding
-  DeepL target language in the fetch script
+- Adding a third language requires new locale JSON files and hand-authored
+  copy in `src/data/projects.config.js`
 - The `fallbackLng: 'en'` setting means a missing German key silently
   displays English rather than an error; locale files must be kept in sync
-- DeepL translations for project descriptions are cached; unchanged
-  descriptions do not consume API quota on subsequent builds
-- The DeepL free tier has a monthly character limit; very large numbers of
-  project descriptions could exhaust it
-- Strings longer than 300 characters are not sent to DeepL to avoid
-  exceeding the per-request limit; long descriptions remain in English
 
 ## References
 
@@ -79,6 +78,5 @@ falls back to displaying the English original.
 - [react-i18next documentation](https://react.i18next.com)
 - [DeepL API documentation](https://www.deepl.com/docs-api)
 - [i18n-flow.md](../i18n-flow.md) — sequence diagram of the language-switch flow
-- [REFRESH.md](../../REFRESH.md) — how the fetch step and DeepL translation run
+- [ADR-006](ADR-006-build-time-github-data-fetch.md) — retirement of the DeepL-based fetch pipeline
 - `src/i18n.js` — i18next configuration
-- `scripts/lib/translation/translate.js` — DeepL integration and cache logic

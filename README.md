@@ -60,7 +60,7 @@ Welcome to my personal portfolio website, showcasing my skills, projects, and ex
 
 - ✅ **Testing documentation**: two-runner Jest strategy, coverage thresholds, and CI commands (TESTS.md)
 
-- ✅ **Deployment documentation**: Vercel configuration, environment variables, and build pipeline (DEPLOY.md, REFRESH.md)
+- ✅ **Deployment documentation**: Vercel configuration, environment variables, and build pipeline (DEPLOY.md)
 
 ## Testing & Code Quality
 

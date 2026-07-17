@@ -2,10 +2,13 @@
 # Build and Fetch Projects
 #
 # Purpose
-# - Fetch repository READMEs and documentation links for the portfolio
-# - Post-process and normalize links for offline use
 # - Run a production build of the React site
 # - Deploy the built app to Vercel (no test files, no docs)
+#
+# Note: this workflow no longer fetches project data from GitHub. The
+# Projects section is 100% static, hand-curated content
+# (src/data/projects.config.js); the old build-time GitHub-fetch pipeline
+# was retired because nothing in the render path consumed its output.
 #
 # Triggers
 # - Dispatched by ci.yml after all tests pass (push to main only)
@@ -41,39 +44,6 @@ jobs:
       - name: Node setup
         uses: ./.github/actions/node-setup
 
-      # Refreshing projects.json from GitHub is best-effort. The portfolio cards
-      # render from src/data/projects.config.js (static), and RepoDocs falls back
-      # to the committed public/projects.json snapshot. A token/network failure
-      # here must never block a deploy.
-      - name: Fetch GitHub pinned projects
-        id: fetch
-        if: github.event_name != 'pull_request'
-        continue-on-error: true
-        env:
-          GH_PROJECTS_TOKEN: ${{ secrets.GH_PROJECTS_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
-          DEEPL_SECRET: ${{ secrets.DEEPL_SECRET }}
-        run: |
-          echo "Running fetchProjects.js (DeepL used only if secret present)"
-          node -e "console.log('DeepL present?', !!process.env.DEEPL_SECRET || !!process.env.DEEPL_API_KEY)"
-          node scripts/fetchProjects.js
-
-      # The next three steps only make sense on a fresh fetch. If the fetch was
-      # skipped or failed, the committed projects.json snapshot is used as-is.
-      # Fallback runs before post-processing so all data is complete before normalization.
-      - name: Fallback README doc-scan
-        if: github.event_name != 'pull_request' && steps.fetch.outcome == 'success'
-        run: node scripts/applyFallbackDocScan.js
-
-      - name: Post-process fetched projects
-        if: github.event_name != 'pull_request' && steps.fetch.outcome == 'success'
-        run: node scripts/postprocessProjects.js
-
-      - name: Verify projects.json contents
-        if: github.event_name != 'pull_request' && steps.fetch.outcome == 'success'
-        run: node scripts/verifyProjects.js
-
       # Test files are never included — CRA only compiles src/.
       # REACT_APP_* vars are baked in at build time. The app is built HERE (not
       # on Vercel — we deploy --prebuilt), so client env vars must be provided
@@ -89,10 +59,8 @@ jobs:
       - name: Verify prebuilt static artifacts
         run: |
           ls -la .vercel/output/static || true
-          if [ -f .vercel/output/static/projects.json ]; then
-            echo "projects.json size:" $(stat -c%s .vercel/output/static/projects.json)
-          else
-            echo "ERROR: projects.json not found in prebuilt output"; exit 1;
+          if [ ! -f .vercel/output/static/index.html ]; then
+            echo "ERROR: index.html not found in prebuilt output"; exit 1;
           fi
 
       - name: Deploy to Vercel

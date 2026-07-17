@@ -40,7 +40,7 @@ graph TD
     Vercel["Vercel CDN"]
     ReactApp["React App\n(CRA bundle)"]
     i18next["i18next\n(language state)"]
-    ProjectsJSON["projects.json\n(static asset)"]
+    ProjectsConfig["projects.config.js\n(bundled into CRA build)"]
     GHPages["GitHub Pages\n(docs + coverage)"]
 
     Browser -->|"page request"| Vercel
@@ -48,13 +48,12 @@ graph TD
     Vercel -->|"serves bundle + assets"| ReactApp
     ReactApp -->|"language key lookup"| i18next
     i18next -->|"translated strings"| ReactApp
-    ReactApp -->|"fetch /projects.json"| ProjectsJSON
-    ProjectsJSON -->|"project data"| ReactApp
+    ProjectsConfig -->|"import"| ReactApp
 
     class Browser l1
     class Vercel,GHPages l2
     class ReactApp l3
-    class i18next,ProjectsJSON l4
+    class i18next,ProjectsConfig l4
 
     classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
     classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
@@ -66,7 +65,7 @@ graph TD
 
 Each decision below links to the document where it is discussed in detail.
 
-- **Static data pre-generation** — project data is fetched from GitHub at build time, not at runtime, removing any API dependency from the live site. See [REFRESH.md](../REFRESH.md).
+- **Static, hand-curated project data** — project copy, tech tags, and images live in `src/data/projects.config.js` and are bundled at build time, removing any GitHub API dependency from the live site. See [ADR-006](decisions/ADR-006-build-time-github-data-fetch.md) for why an earlier build-time fetch pipeline was retired in favor of this.
 - **Vercel prebuilt artifact** — the app is built in GitHub Actions and deployed as a `.vercel/output` artifact, giving full control over the build environment. See [DEPLOY.md](../DEPLOY.md).
 - **Two test runners** — Node-only scripts use a separate Jest config from the CRA runner to avoid Babel/CSS transform conflicts. See [TESTS.md](../TESTS.md).
 - **Default locale German** — `lng: 'de'` in i18next because the portfolio targets a German-speaking job market. See [i18n-flow.md](i18n-flow.md).
