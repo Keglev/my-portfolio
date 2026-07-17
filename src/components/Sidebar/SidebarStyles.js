@@ -6,7 +6,7 @@ import { Link } from 'react-scroll';
  * Becomes a static block on mobile so it doesn't obscure the scrollable content area.
  */
 export const SidebarContainer = styled.div`
-  width: 350px;
+  width: 280px;
   height: 100vh;
   background-color: var(--color-bg);
   color: var(--color-text);
@@ -97,42 +97,6 @@ export const Menu = styled.div`
 `;
 
 /**
- * Centering wrapper for the social icon row.
- */
-export const SocialLinksWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
-
-/**
- * Social icon links with scale-and-color hover effect.
- */
-export const SocialLinks = styled.div`
-  display: flex;
-  gap: 1.5rem;
-
-  a {
-    font-size: 2rem;
-    color: var(--color-text);
-    transition: color 0.3s ease, transform 0.3s ease;
-
-    &:hover {
-      color: var(--color-accent);
-      transform: scale(1.2);
-    }
-  }
-
-  @media (max-width: 768px) {
-    gap: 1rem;
-
-    a {
-      font-size: 1.5rem;
-    }
-  }
-`;
-
-/**
  * Footer area at the bottom of the sidebar containing the tagline and legal links.
  */
 export const FooterMessage = styled.div`
@@ -160,22 +124,29 @@ export const LanguageWrapper = styled.div`
   gap: 1.5rem;
   margin-top: 1rem;
   button {
-    background: rgba(100,255,218,0.04);
+    background: transparent;
+    color: var(--color-text);
     border: 1px solid rgba(100,255,218,0.16);
-    color: var(--color-accent);
     padding: 0.5rem 0.8rem;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     box-shadow: 0 2px 6px rgba(10,25,47,0.25);
-    transition: background 0.15s ease, color 0.15s ease, transform 0.08s ease, box-shadow 0.12s ease;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.08s ease, box-shadow 0.12s ease;
   }
+  /* Hover never touches background — only border/color — so it can never land
+     on the same color as the (possibly accent) background underneath it */
   button:hover {
-    /* Matches tech-box hover: solid accent background with lift shadow */
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    transform: translateY(-3px) scale(1.06);
+  }
+  /* Active language is always readable: solid accent background paired with
+     the accent-contrast text color, driven by the aria attribute (not inline styles) */
+  button[aria-pressed='true'] {
     background: var(--color-accent);
     color: var(--color-accent-contrast);
-    transform: translateY(-3px) scale(1.06);
-    box-shadow: 0 8px 18px rgba(100,255,218,0.14);
+    font-weight: 700;
   }
   /* Slight border to visually separate language buttons from the rest of the footer */
   & {

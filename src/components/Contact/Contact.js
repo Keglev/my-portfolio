@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FaLinkedin, FaEnvelope } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
 import { SiXing } from 'react-icons/si';
 import './Contact.css';
 
@@ -107,6 +107,9 @@ const Contact = () => {
 
       {/* Direct channels for people who skip forms — same targets as the sidebar */}
       <div className="contact-socials">
+        <a href="https://github.com/keglev" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          <FaGithub />
+        </a>
         <a href="https://linkedin.com/in/carloskeglevich" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
           <FaLinkedin />
         </a>

@@ -52,7 +52,6 @@ const SidebarMenu = ({ activeSection }) => {
           onClick={() => i18n.changeLanguage('de')}
           aria-label="Auf Deutsch umschalten"
           aria-pressed={i18n.language.startsWith('de')}
-          style={i18n.language.startsWith('de') ? { color: 'var(--color-accent)', fontWeight: 700 } : undefined}
         >
           DE
         </button>
@@ -60,7 +59,6 @@ const SidebarMenu = ({ activeSection }) => {
           onClick={() => i18n.changeLanguage('en')}
           aria-label="Switch to English"
           aria-pressed={!i18n.language.startsWith('de')}
-          style={!i18n.language.startsWith('de') ? { color: 'var(--color-accent)', fontWeight: 700 } : undefined}
         >
           EN
         </button>

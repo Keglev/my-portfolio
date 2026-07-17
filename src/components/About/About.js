@@ -8,10 +8,10 @@ import CareerStrip from './CareerStrip';
 const BLOCKS = ['block1', 'block2', 'block3', 'block4'];
 
 /**
- * About section: four storytelling blocks (career-changer pitch), a condensed
- * career/education strip, and the profile photo.
- * The photo prefers the curated file at public/profile.jpg and falls back to
- * the bundled asset on load error, so a missing file never breaks the layout.
+ * About section: a header pairing the profile photo with the heading, four
+ * storytelling blocks (career-changer pitch), and a condensed career/education
+ * strip. The photo prefers the curated file at public/profile.jpg and falls
+ * back to the bundled asset on load error, so a missing file never breaks the layout.
  *
  * @returns {JSX.Element}
  */
@@ -28,25 +28,23 @@ const About = () => {
 
   return (
     <div className="about-container" id="About">
-      <div className="content">
-        <h2>{t('aboutSection.heading')}</h2>
-        <div className="about-blocks">
-          {BLOCKS.map((key) => (
-            <article className="about-block" key={key}>
-              <h3>{t(`aboutSection.${key}.title`)}</h3>
-              <p>{t(`aboutSection.${key}.text`)}</p>
-            </article>
-          ))}
-        </div>
-        <CareerStrip />
-      </div>
-      <div className="profile">
+      <div className="about-header">
         <img
           src="/profile.jpg"
           alt="Carlos Keglevich portrait"
           onError={handleImgError}
         />
+        <h2>{t('aboutSection.heading')}</h2>
       </div>
+      <div className="about-blocks">
+        {BLOCKS.map((key) => (
+          <article className="about-block" key={key}>
+            <h3>{t(`aboutSection.${key}.title`)}</h3>
+            <p>{t(`aboutSection.${key}.text`)}</p>
+          </article>
+        ))}
+      </div>
+      <CareerStrip />
     </div>
   );
 };

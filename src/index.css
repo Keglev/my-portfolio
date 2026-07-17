@@ -2,8 +2,8 @@
 
 :root {
   --color-bg: #0a192f;
-  --color-bg-card: #112240;
-  --color-bg-card-hover: #1f4068;
+  --color-bg-card: #17335f;
+  --color-bg-card-hover: #234a80;
   --color-bg-tag: #2b3a59;
   --color-bg-subtle: #0f2238;
   --color-accent: #6cb6ff;
@@ -13,6 +13,13 @@
   --color-border: #1d3557;
   --shadow-accent: rgba(108, 182, 255, 0.45);
   --shadow-accent-hover: rgba(108, 182, 255, 0.6);
+  /* Card-scoped colors: cards intentionally invert in light mode (dark cards
+     on a light page), so text inside cards must not use the page-level vars */
+  --color-card-text: #e2e9fb;
+  --color-card-text-muted: #a7b3d6;
+  --color-card-accent: #7fc0ff;
+  --color-card-border: #2a4a7a;
+  --color-card-tag-bg: #22406e;
   --radius-card: 8px;
   --transition-card: background-color 0.3s ease, box-shadow 0.3s ease;
   --padding-section: 5rem 2rem;
@@ -22,9 +29,9 @@
 /* Light theme — activated by ThemeContext via <html data-theme="light">.
    Same token names, so every component that uses the variables adapts for free. */
 [data-theme='light'] {
-  --color-bg: #f3f7fc;
-  --color-bg-card: #ffffff;
-  --color-bg-card-hover: #eaf1f9;
+  --color-bg: #dce7f5;
+  --color-bg-card: #10233f;
+  --color-bg-card-hover: #17335f;
   --color-bg-tag: #e4edf7;
   --color-bg-subtle: #eef4fb;
   --color-accent: #0b66c3;
@@ -34,6 +41,13 @@
   --color-border: #d6e2f0;
   --shadow-accent: rgba(11, 102, 195, 0.25);
   --shadow-accent-hover: rgba(11, 102, 195, 0.35);
+  /* Card-scoped colors: cards intentionally invert in light mode (dark cards
+     on a light page), so text inside cards must not use the page-level vars */
+  --color-card-text: #e6eefc;
+  --color-card-text-muted: #b8c6e2;
+  --color-card-accent: #7fc0ff;
+  --color-card-border: #2a4a7a;
+  --color-card-tag-bg: #1b3a63;
 }
 
 /* ─── Base Reset ─────────────────────────────────── */

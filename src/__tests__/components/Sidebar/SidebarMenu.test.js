@@ -70,7 +70,7 @@ describe('SidebarMenu', () => {
       </I18nextProvider>
     );
 
-    expect(screen.getByRole('link', { name: /^skills$/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^technologies$/i })).toBeInTheDocument();
 
     rerender(
       <I18nextProvider i18n={i18n}>

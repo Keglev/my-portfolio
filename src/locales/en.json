@@ -3,7 +3,7 @@
   "title": "Software Engineer",
   "about": "About",
   "projects": "Projects",
-  "footerMessage": "Designed & Built by Carlos Keglevich",
+  "footerMessage": "Design & development by Carlos Keglevich",
   "language": {
     "english": "English",
     "german": "Deutsch"
@@ -67,7 +67,7 @@
     "ctaExperience": "Experience"
   },
   "theme": { "light": "Light theme", "dark": "Dark theme" },
-  "skills": "Skills",
+  "skills": "Technologies",
   "contact": "Contact",
   "skillsSection": {
     "backend": "Backend", "frontend": "Frontend", "devops": "DevOps & tools", "databases": "Databases",

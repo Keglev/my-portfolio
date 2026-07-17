@@ -19,13 +19,13 @@ const CareerStrip = () => {
 
   return (
     <div className="career-strip" id="Career">
-      <div className="career-column">
+      <div className="about-block career-card">
         <h3>{t('aboutSection.careerHeading')}</h3>
         <ul>
           {career.map((line, idx) => <li key={idx}>{line}</li>)}
         </ul>
       </div>
-      <div className="career-column">
+      <div className="about-block career-card">
         <h3>{t('aboutSection.educationHeading')}</h3>
         <ul>
           {education.map((line, idx) => <li key={idx}>{line}</li>)}

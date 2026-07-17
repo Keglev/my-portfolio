@@ -1,24 +1,47 @@
 /* ─── Container Layout ──────────────────────────────── */
 
 .about-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   text-align: left;
-  padding: var(--padding-section);
+  padding: 2rem 0;
   background-color: var(--color-bg);
   color: var(--color-text);
 }
 
-.content {
-  max-width: 640px;
-  text-align: left;
+/* ─── Header (photo + heading) ───────────────────────── */
+
+.about-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
 }
 
-.content h2 {
+.about-header img {
+  width: 280px;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid var(--color-accent);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
+}
+
+/* Light theme shows the photo in B&W; dark theme in color (locked decision) */
+[data-theme='light'] .about-header img {
+  filter: grayscale(1);
+}
+
+/* Subtle hover: light theme reveals color, both themes lift slightly */
+.about-header img:hover {
+  transform: scale(1.03);
+  box-shadow: 0px 12px 20px var(--shadow-accent-hover);
+  filter: grayscale(0);
+}
+
+.about-header h2 {
   color: var(--color-accent);
   font-size: 2rem;
-  margin-bottom: 1.5rem;
+  margin: 0;
 }
 
 /* ─── Storytelling Blocks ────────────────────────────── */
@@ -31,7 +54,7 @@
 
 .about-block {
   background-color: var(--color-bg-card);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-card-border);
   border-radius: var(--radius-card);
   padding: var(--padding-card);
   transition: var(--transition-card);
@@ -42,7 +65,7 @@
 }
 
 .about-block h3 {
-  color: var(--color-accent);
+  color: var(--color-card-accent);
   font-size: 1.05rem;
   margin: 0 0 0.6rem;
 }
@@ -50,7 +73,7 @@
 .about-block p {
   margin: 0;
   font-size: 0.95rem;
-  color: var(--color-text-muted);
+  color: var(--color-card-text-muted);
   line-height: 1.55;
 }
 
@@ -65,53 +88,25 @@
   border-top: 1px solid var(--color-border);
 }
 
-.career-column h3 {
-  color: var(--color-text);
+.career-card h3 {
+  color: var(--color-card-text);
   font-size: 0.95rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0 0 0.75rem;
 }
 
-.career-column ul {
+.career-card ul {
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.career-column li {
+.career-card li {
   font-size: 0.85rem;
-  color: var(--color-text-muted);
+  color: var(--color-card-text-muted);
   line-height: 1.5;
   margin-bottom: 0.5rem;
-}
-
-/* ─── Profile Image ──────────────────────────────────── */
-
-.profile {
-  max-width: 320px;
-  margin-left: 3rem;
-}
-
-.profile img {
-  width: 100%;
-  max-width: 300px;
-  border-radius: 50%;
-  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
-  border: 4px solid var(--color-accent);
-  transition: transform 0.3s ease, box-shadow 0.3s ease, filter 0.3s ease;
-}
-
-/* Light theme shows the photo in B&W; dark theme in color (locked decision) */
-[data-theme='light'] .profile img {
-  filter: grayscale(1);
-}
-
-/* Subtle hover: light theme reveals color, both themes lift slightly */
-.profile img:hover {
-  transform: scale(1.03);
-  box-shadow: 0px 12px 20px var(--shadow-accent-hover);
-  filter: grayscale(0);
 }
 
 /* ─── Responsive ─────────────────────────────────────── */
@@ -124,13 +119,13 @@
 }
 
 @media (max-width: 768px) {
-  .about-container {
-    flex-direction: column-reverse;
+  .about-header {
+    flex-direction: column;
     align-items: center;
+    text-align: center;
   }
-  .profile {
-    margin-left: 0;
-    margin-bottom: 2rem;
-    max-width: 260px;
+  .about-header img {
+    width: 220px;
+    height: 220px;
   }
 }

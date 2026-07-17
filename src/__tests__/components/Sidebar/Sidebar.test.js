@@ -20,11 +20,6 @@ jest.mock('../../../components/Sidebar/SidebarMenu', () => ({
   ),
 }));
 
-jest.mock('../../../components/Sidebar/SidebarSocial', () => ({
-  __esModule: true,
-  default: () => <div data-testid="sidebar-social" />,
-}));
-
 describe('Sidebar', () => {
   let originalInnerHeight;
   let originalOffsetTop;

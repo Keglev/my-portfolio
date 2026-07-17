@@ -68,4 +68,16 @@ describe('Contact', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('contactSection.error');
   });
+
+  it('renders the social links with GitHub first, followed by LinkedIn, Xing and Email', () => {
+    render(<Contact />);
+    const socialLinks = screen.getAllByRole('link');
+    expect(socialLinks.map((a) => a.getAttribute('aria-label'))).toEqual([
+      'GitHub',
+      'LinkedIn',
+      'Xing',
+      'Email',
+    ]);
+    expect(screen.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', 'https://github.com/keglev');
+  });
 });

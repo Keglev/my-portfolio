@@ -112,18 +112,19 @@
 
 .contact-socials {
   display: flex;
-  gap: 1.2rem;
-  margin-top: 1.4rem;
-  font-size: 1.4rem;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .contact-socials a {
+  font-size: 2rem;
   color: var(--color-text-muted);
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, transform 0.2s ease;
 }
 
 .contact-socials a:hover {
   color: var(--color-accent);
+  transform: translateY(-3px);
 }
 
 /* ─── Responsive ─────────────────────────────────── */

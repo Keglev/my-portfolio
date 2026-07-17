@@ -4,9 +4,9 @@ import skillGroups from '../../data/skills.config';
 import './Skills.css';
 
 /**
- * Skills section: a compact 2-column grid of skill groups so a recruiter can
- * stack-match in seconds. Content comes from src/data/skills.config; group
- * headings are localized, technology labels are shown as-is.
+ * Skills section: a single-column stack of full-width skill groups so a
+ * recruiter can stack-match in seconds. Content comes from src/data/skills.config;
+ * group headings are localized, technology labels are shown as-is.
  *
  * @returns {JSX.Element}
  */

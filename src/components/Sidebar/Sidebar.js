@@ -7,7 +7,6 @@ import {
   LegalButton,
 } from './SidebarStyles';
 import SidebarMenu from './SidebarMenu';
-import SidebarSocial from './SidebarSocial';
 
 // Ordered bottom-to-top so the first match is always the deepest section currently in view
 const SECTIONS = ['Legal', 'Contact', 'Projects', 'Skills'];
@@ -55,7 +54,6 @@ const Sidebar = () => {
         <h2>{t('title')}</h2>
       </NameTitle>
       <SidebarMenu activeSection={activeSection} />
-      <SidebarSocial />
       <FooterMessage>
         <p>{t('footerMessage')}</p>
         <div style={{ marginTop: '1rem', display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
