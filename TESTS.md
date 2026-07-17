@@ -29,7 +29,6 @@ Combined commands:
 |---------|-------------|
 | `npm run test:all` | Runs both runners sequentially |
 | `npm run test:ci` | Non-interactive CI mode for both runners |
-| `npm run test:helpers` | Runs only `src/__tests__/fetchHelpers` |
 
 ## Coverage
 
