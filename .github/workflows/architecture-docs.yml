@@ -38,7 +38,7 @@
 # api-docs.yml's job of the same name (GitHub Actions matches concurrency
 # groups by name across workflows), so the two publishes never race even
 # though this workflow's docs-only trigger is otherwise independent of
-# the portfolio-pipeline lineage that dispatches api-docs.yml.
+# the ci.yml-dispatched chain that reaches api-docs.yml.
 ############################################################
 name: Docs — architecture site
 
@@ -50,10 +50,13 @@ on:
       - 'scripts/docs/**'
   workflow_dispatch:
 
-# Docs-only pushes use a separate group so they don't queue behind
-# portfolio-pipeline (ci.yml / deploy.yml / api-docs.yml).
+# Always docs-only, regardless of trigger. Manual workflow_dispatch runs
+# used to fall back to portfolio-pipeline, but portfolio-pipeline is now
+# ci.yml's dedicated group (see deploy.yml's header for why shared groups
+# cancel queued runs) — this workflow never needs to coordinate with
+# ci.yml, deploy.yml, or api-docs.yml, so it always uses its own group.
 concurrency:
-  group: ${{ (github.event_name == 'push') && 'docs-only' || 'portfolio-pipeline' }}
+  group: docs-only
   cancel-in-progress: false
 
 jobs:

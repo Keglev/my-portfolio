@@ -15,12 +15,12 @@
 # - Manual via workflow_dispatch; both inputs default true so an ad-hoc
 #   run always regenerates everything.
 #
-# gh-pages clobber guard: this workflow (portfolio-pipeline lineage) and
-# architecture-docs.yml (docs-only lineage, triggers independently on
-# docs/** pushes) both publish to gh-pages and could run concurrently.
-# The job-level `gh-pages-deploy` concurrency group below is shared by
-# name with architecture-docs.yml's job, serializing the two publishes
-# without touching either workflow's top-level trigger concurrency.
+# gh-pages clobber guard: this workflow and architecture-docs.yml
+# (docs-only lineage, triggers independently on docs/** pushes) both
+# publish to gh-pages and could run concurrently. The job-level
+# `gh-pages-deploy` concurrency group below is shared by name with
+# architecture-docs.yml's job, serializing the two publishes without
+# touching either workflow's top-level trigger concurrency.
 # destination_dir additionally scopes each publish's cleanup to its own
 # subdirectory, so neither run can delete the other's files.
 #
@@ -28,6 +28,14 @@
 # actions/download-artifact@v4 only searches the CURRENT run by default —
 # so we use the gh CLI to locate the latest successful ci.yml run and
 # download its artifact directly.
+#
+# Concurrency group: api-docs-pipeline, NOT shared with ci.yml or
+# deploy.yml — see deploy.yml's header for the full root cause (a shared
+# group let this workflow's queued run silently cancel deploy.yml's
+# queued run every time, in production). Within api-docs-pipeline
+# itself, a newer queued run replacing an older one is intentional: it
+# reflects the latest push's scope, so superseding a stale queued run is
+# correct, not a bug.
 ############################################################
 name: Docs — API reference and coverage
 
@@ -44,7 +52,7 @@ on:
         default: true
 
 concurrency:
-  group: portfolio-pipeline
+  group: api-docs-pipeline
   cancel-in-progress: false
 
 jobs:
@@ -65,13 +73,12 @@ jobs:
       - name: Node setup
         uses: ./.github/actions/node-setup
 
-      # ── JSDoc ───────────────────────────────────────────────────────────
-      # Generates API reference from src/ into docs/jsdoc/ (see jsdoc.json).
+      # ── JSDoc ── Generates API reference from src/ into docs/jsdoc/ (see jsdoc.json).
       - name: Generate JSDoc API docs
         if: inputs.apiDocs
         run: npm run docs:jsdoc
 
-      # ── Coverage ────────────────────────────────────────────────────────
+      # ── Coverage ──
       # If no successful CI run exists (e.g. very first run with no prior
       # CI history), the download step is skipped and the copy step below
       # leaves docs/coverage/ untouched for this run.
@@ -91,8 +98,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # continue-on-error guards against the artifact expiring
-      # (retention-days: 7 in ci.yml) or being unavailable.
+      # continue-on-error guards against artifact expiry (retention-days: 7 in ci.yml) or unavailability.
       - name: Download coverage artifact from CI run
         if: inputs.coverage && steps.ci-run.outputs.run-id != ''
         run: |

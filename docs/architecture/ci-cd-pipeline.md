@@ -2,7 +2,7 @@
 
 [← Architecture index](index.md)
 
-The portfolio uses four GitHub Actions workflows. `ci.yml` runs first (lint, test, coverage) and, on a successful push to `main`, dispatches `deploy.yml` and `api-docs.yml` in parallel — deploy always runs; api-docs only runs when the changed files could affect the API surface or test coverage. `architecture-docs.yml` is independent of that chain: it triggers directly on `docs/**` or `scripts/docs/**` pushes. A shared concurrency group ensures no two portfolio-pipeline runs overlap; docs-only pushes use a separate group so they don't queue behind it.
+The portfolio uses four GitHub Actions workflows. `ci.yml` runs first (lint, test, coverage) and, on a successful push to `main`, dispatches `deploy.yml` and `api-docs.yml` in parallel — deploy always runs; api-docs only runs when the changed files could affect the API surface or test coverage. `architecture-docs.yml` is independent of that chain: it triggers directly on `docs/**` or `scripts/docs/**` pushes. Each of the four workflows has its own concurrency group (see [Concurrency Strategy](#concurrency-strategy)), so `deploy.yml` and `api-docs.yml` can genuinely run at the same time instead of queuing behind each other.
 
 `deploy.yml` does not fetch project data — the Projects section renders from the static, hand-curated `src/data/projects.config.js`. The workflow only builds and deploys.
 
@@ -124,9 +124,18 @@ Job `start-deploy-stage` (push to `main` only; skipped on pull requests):
 
 ## Concurrency Strategy
 
-`ci.yml`, `deploy.yml`, and `api-docs.yml` (when dispatched) share the `portfolio-pipeline` concurrency group with `cancel-in-progress: false`. Runs queue rather than cancel.
+Four separate concurrency groups are in play, deliberately **not** one shared group:
 
-Docs-only pushes — changes to `docs/**` or `scripts/docs/**` — trigger `architecture-docs.yml` directly using the separate `docs-only` concurrency group, so small documentation edits don't queue behind an active portfolio-pipeline run.
+| Group | Scope | Why not shared |
+|-------|-------|-----------------|
+| `portfolio-pipeline` | `ci.yml` only | — |
+| `deploy-pipeline` | `deploy.yml` only | — |
+| `api-docs-pipeline` | `api-docs.yml` only | — |
+| `docs-only` | `architecture-docs.yml`'s direct `docs/**` push trigger | — |
+
+`ci.yml`'s `start-deploy-stage` job dispatches `deploy.yml` and `api-docs.yml` back to back, while `ci.yml`'s own run is still holding `portfolio-pipeline`. GitHub Actions only protects an **already in-progress** run from cancellation when `cancel-in-progress: false` — a run that is still **queued** is not protected, and is silently cancelled if a second run joins the same group's queue before the first one starts. An earlier version of this pipeline put `deploy.yml` and `api-docs.yml` in the shared `portfolio-pipeline` group; in practice this meant `api-docs.yml`'s queued run cancelled `deploy.yml`'s queued run on every push, so builds silently never reached Vercel. Giving each workflow its own group (`deploy-pipeline`, `api-docs-pipeline`) removes the race and lets them run in parallel, at the cost of `ci.yml` runs no longer queuing behind `deploy.yml`/`api-docs.yml` runs — accepted deliberately, since `ci.yml` never touches Vercel or `gh-pages` and each of the other two workflows still self-serializes within its own group.
+
+Docs-only pushes — changes to `docs/**` or `scripts/docs/**` — trigger `architecture-docs.yml` directly using the separate `docs-only` concurrency group, so small documentation edits don't queue behind any of the portfolio-pipeline/deploy-pipeline/api-docs-pipeline lineage.
 
 `api-docs.yml` and `architecture-docs.yml` publish to the same `gh-pages` branch from independent trigger paths and could in principle run concurrently. Both declare a job-level `gh-pages-deploy` concurrency group (matched by name across workflows), which serializes just their publish jobs without changing either workflow's top-level trigger concurrency.
 

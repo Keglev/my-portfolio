@@ -83,10 +83,25 @@ only on `docs/**` pushes, unchanged from before). The sequential
 ci → build-and-fetch → docs-refresh dispatch chain became a fan-out: `ci.yml`
 now dispatches `deploy.yml` and `api-docs.yml` at the same time instead of
 docs waiting on deploy to finish, and `scripts/ci/detectPipelineScope.js`
-decides which workflows need to run at all. See
-[ci-cd-pipeline.md](../ci-cd-pipeline.md) for the current topology; the
-`Decision` and `Consequences` sections above describe the original
-three-workflow shape as it was when accepted.
+decides which workflows need to run at all.
+
+The shared `portfolio-pipeline` concurrency group described in `Decision`
+above does **not** carry over to the fan-out. `deploy.yml` and
+`api-docs.yml` were first put in `portfolio-pipeline` alongside `ci.yml`
+to match this ADR's original model, and it broke deploys in production:
+GitHub Actions only protects an already **in-progress** run from
+cancellation under `cancel-in-progress: false` — a **queued** run is not
+protected, and is silently cancelled if a second run joins the same
+group's queue first. Since `ci.yml` dispatches both workflows back to
+back while its own run still holds the group, `api-docs.yml`'s queued run
+was cancelling `deploy.yml`'s queued run on every push. The fix gives each
+of `deploy.yml` and `api-docs.yml` its own concurrency group
+(`deploy-pipeline`, `api-docs-pipeline`); `ci.yml` keeps `portfolio-pipeline`
+for itself. See [ci-cd-pipeline.md](../ci-cd-pipeline.md#concurrency-strategy)
+for the current four-group topology; the `Decision` and `Consequences`
+sections above describe the original three-workflow shape, including its
+single shared concurrency group, as it was when accepted — not the
+corrected model in effect today.
 
 ## References
 
