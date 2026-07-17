@@ -856,70 +856,6 @@ the <html data-theme> attribute and localStorage in sync.
 
         
             
-<h4 class="name" id="convertRawToBlob"><span class="type-signature">(constant) </span>convertRawToBlob<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Converts a raw.githubusercontent.com URL to its GitHub blob viewer equivalent.
-Raw URLs serve plain text; blob URLs render with GitHub's syntax highlighting
-and standard file navigation UI.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Projects_projectsUtils.js.html">components/Projects/projectsUtils.js</a>, <a href="components_Projects_projectsUtils.js.html#line161">line 161</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
 <h4 class="name" id="fetchPinnedRepositories"><span class="type-signature">(constant) </span>fetchPinnedRepositories<span class="type-signature"></span></h4>
 
 
@@ -1028,261 +964,7 @@ Escapes the title to prevent SVG text injection.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Projects_projectsUtils.js.html">components/Projects/projectsUtils.js</a>, <a href="components_Projects_projectsUtils.js.html#line43">line 43</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="getAboutSection"><span class="type-signature">(constant) </span>getAboutSection<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Extracts and sanitizes the text under an "About" heading in a README.
-Strips Markdown syntax so the result can render as plain text in a card summary.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Projects_projectsUtils.js.html">components/Projects/projectsUtils.js</a>, <a href="components_Projects_projectsUtils.js.html#line56">line 56</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="getPrimaryImage"><span class="type-signature">(constant) </span>getPrimaryImage<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Resolves the best available preview image for a project.
-Prefers an explicit primaryImage field, then a /projects_media/ path found in
-the README, and finally falls back to the raw GitHub URL.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Projects_projectsUtils.js.html">components/Projects/projectsUtils.js</a>, <a href="components_Projects_projectsUtils.js.html#line21">line 21</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="getProjectImageUrl"><span class="type-signature">(constant) </span>getProjectImageUrl<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Builds the raw GitHub URL for a project's preview image.
-Used as a fallback when the local /projects_media/ copy is absent.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Projects_projectsUtils.js.html">components/Projects/projectsUtils.js</a>, <a href="components_Projects_projectsUtils.js.html#line9">line 9</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-            
-<h4 class="name" id="getTechnologyWords"><span class="type-signature">(constant) </span>getTechnologyWords<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    Parses **bold** technology names from the Technologies section of a README.
-Stops collecting at the next heading that is the same level or higher than the
-Technologies heading, so sibling sections are not included.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_Projects_projectsUtils.js.html">components/Projects/projectsUtils.js</a>, <a href="components_Projects_projectsUtils.js.html#line90">line 90</a>
+        <a href="components_Projects_projectsUtils.js.html">components/Projects/projectsUtils.js</a>, <a href="components_Projects_projectsUtils.js.html#line8">line 8</a>
     </li></ul></dd>
     
 
@@ -1350,7 +1032,7 @@ Technologies heading, so sibling sections are not included.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="data_projects.config.js.html">data/projects.config.js</a>, <a href="data_projects.config.js.html#line37">line 37</a>
+        <a href="data_projects.config.js.html">data/projects.config.js</a>, <a href="data_projects.config.js.html#line35">line 35</a>
     </li></ul></dd>
     
 
@@ -3234,9 +2916,7 @@ Iterates from bottom to top so the deepest section the user has scrolled past wi
 Single source of truth for the portfolio cards. It intentionally does NOT
 fetch from the GitHub API at build time: cards are hand-curated for a
 recruiter audience, so copy, titles, tech tags and images are controlled
-here instead of inherited (with bugs) from README files. The old fetch
-pipeline is retained only as an optional dev tool (`npm run refresh:projects`)
-and is no longer on the render path.
+here instead of inherited (with bugs) from README files.
 
 Copy is aligned to the CV (EN + DE) so the portfolio and CV tell the same
 story. Summaries are plain text only — no Markdown, no leading section labels.
@@ -3859,13 +3539,13 @@ via the `titleKey` i18n key.
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#CareerStrip">CareerStrip</a></li><li><a href="global.html#Contact">Contact</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#Hero">Hero</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#Skills">Skills</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#ThemeContext">ThemeContext</a></li><li><a href="global.html#ThemeProvider">ThemeProvider</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#skillGroups">skillGroups</a></li><li><a href="global.html#useTheme">useTheme</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#CareerStrip">CareerStrip</a></li><li><a href="global.html#Contact">Contact</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#Hero">Hero</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#Skills">Skills</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#ThemeContext">ThemeContext</a></li><li><a href="global.html#ThemeProvider">ThemeProvider</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#skillGroups">skillGroups</a></li><li><a href="global.html#useTheme">useTheme</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Jul 17 2026 17:10:16 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Jul 17 2026 19:08:06 GMT+0000 (Coordinated Universal Time)
 </footer>
 
 <script> prettyPrint(); </script>

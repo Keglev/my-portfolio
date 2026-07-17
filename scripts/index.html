@@ -51,7 +51,7 @@
       <!-- Replaced at build time by convertMd() in build_docs.js -->
       <h1 id="scripts-index">Scripts Index</h1>
 <p><a href="../index.html">← Documentation root</a></p>
-<p>This index covers the documentation for the build-time scripts in <code>scripts/</code>. The scripts form the data pipeline that fetches GitHub repository data, processes it, and writes the static <code>public/projects.json</code> consumed by the portfolio&#39;s React frontend. The documentation tooling scripts (<code>scripts/docs/</code>) are also documented here.</p>
+<p>This index covers the documentation for the standalone build and quality-check tooling in <code>scripts/</code>. There is no data-fetch pipeline: the Projects section renders from the static, hand-curated <code>src/data/projects.config.js</code>. The documentation tooling scripts (<code>scripts/docs/</code>) are also documented here.</p>
 <h2 id="documents">Documents</h2>
 <table>
 <thead>
@@ -62,14 +62,13 @@
 </thead>
 <tbody><tr>
 <td><a href="overview.html">overview.md</a></td>
-<td>What every script does — root-level entry points, <code>scripts/docs/</code> tooling, and all <code>scripts/lib/</code> submodules (<code>pipeline/</code>, <code>parseReadme/</code>, <code>docs/</code>, <code>media/</code>, <code>translation/</code>, <code>normalize/</code>, <code>readme/</code>, <code>summary/</code>)</td>
+<td>What every script does — root-level entry points and <code>scripts/docs/</code> tooling</td>
 </tr>
 </tbody></table>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="../index.html">Documentation root index</a></li>
-<li><a href="../REFRESH.html">REFRESH.md</a> — when and how to trigger a pipeline run</li>
-<li><a href="../deploy/data-flow.html">deploy/data-flow.md</a> — how pipeline outputs reach Vercel and GitHub Pages</li>
+<li><a href="../deploy/data-flow.html">deploy/data-flow.md</a> — how build outputs reach Vercel and GitHub Pages</li>
 <li><a href="../architecture/ci-cd-pipeline.html">architecture/ci-cd-pipeline.md</a> — which CI/CD step runs which script</li>
 </ul>
 

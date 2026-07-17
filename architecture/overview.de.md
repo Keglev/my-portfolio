@@ -40,7 +40,7 @@ graph TD
     Vercel["Vercel CDN"]
     ReactApp["React App\n(CRA-Bundle)"]
     i18next["i18next\n(Sprachzustand)"]
-    ProjectsJSON["projects.json\n(statisches Asset)"]
+    ProjectsConfig["projects.config.js\n(im CRA-Build gebündelt)"]
     GHPages["GitHub Pages\n(Docs + Coverage)"]
 
     Browser -->|"Seitenaufruf"| Vercel
@@ -48,13 +48,12 @@ graph TD
     Vercel -->|"liefert Bundle + Assets"| ReactApp
     ReactApp -->|"Sprachschlüssel-Abfrage"| i18next
     i18next -->|"übersetzte Strings"| ReactApp
-    ReactApp -->|"fetch /projects.json"| ProjectsJSON
-    ProjectsJSON -->|"Projektdaten"| ReactApp
+    ProjectsConfig -->|"Import"| ReactApp
 
     class Browser l1
     class Vercel,GHPages l2
     class ReactApp l3
-    class i18next,ProjectsJSON l4
+    class i18next,ProjectsConfig l4
 
     classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
     classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
@@ -66,7 +65,7 @@ graph TD
 
 Jede Entscheidung unten verweist auf das Dokument, in dem sie ausführlich erläutert wird.
 
-- **Statische Datenvorgenerierung** — Projektdaten werden zur Build-Zeit von GitHub abgerufen, nicht zur Laufzeit, sodass keine API-Abhängigkeit im Live-Betrieb besteht. Siehe [REFRESH.md](../REFRESH.md).
+- **Statische, handkuratierte Projektdaten** — Projekttexte, Tech-Tags und Bilder liegen in `src/data/projects.config.js` und werden zur Build-Zeit gebündelt, sodass keine GitHub-API-Abhängigkeit im Live-Betrieb besteht. Siehe [ADR-006](decisions/ADR-006-build-time-github-data-fetch.md) für die Gründe, warum eine frühere Build-Time-Fetch-Pipeline zugunsten dieses Ansatzes abgeschafft wurde.
 - **Vercel Prebuilt Artifact** — Die App wird in GitHub Actions gebaut und als `.vercel/output`-Artifact deployed, was vollständige Kontrolle über die Build-Umgebung gibt. Siehe [DEPLOY.md](../DEPLOY.md).
 - **Zwei Test-Runner** — Node-only-Skripte verwenden eine separate Jest-Konfiguration vom CRA-Runner, um Babel/CSS-Transform-Konflikte zu vermeiden. Siehe [TESTS.md](../TESTS.md).
 - **Standard-Locale Deutsch** — `lng: 'de'` in i18next, da das Portfolio auf einen deutschsprachigen Jobmarkt ausgerichtet ist. Siehe [i18n-flow.md](i18n-flow.md).

@@ -12,7 +12,11 @@
 
 ## Status
 
-Accepted
+Superseded — the build-time fetch pipeline described below was retired.
+The Projects section now renders exclusively from the static, hand-curated
+`src/data/projects.config.js`; no runtime or build-time GitHub fetch remains.
+This ADR is kept as a historical record of why build-time fetch was
+originally chosen over a runtime API call.
 
 ## Context
 
@@ -77,8 +81,7 @@ the output is complete and schema-valid before the React build proceeds.
 
 - [GitHub GraphQL API documentation](https://docs.github.com/en/graphql)
 - [DeepL API documentation](https://www.deepl.com/docs-api)
-- [REFRESH.md](../../REFRESH.md) — how to trigger a manual data refresh
-- [data-flow.md](../data-flow.md) — how projects.json flows into the React component tree
+- [data-flow.md](../data-flow.md) — how project data flows into the React component tree today
 - `scripts/fetchProjects.js` — entry point for the build-time fetch
 - `scripts/lib/graphql/pinnedGraphql.js` — GraphQL query definition
 - `scripts/lib/translation/translate.js` — DeepL integration and cache logic

@@ -58,7 +58,7 @@
       <!-- Replaced at build time by convertMd() in build_docs.js -->
       <h1 id="deployment">Deployment</h1>
 <p><a href="https://keglev.github.io/my-portfolio/index.html">← Hub</a> · <a href="docs-index.html">← Docs index</a></p>
-<p>This project deploys the React app to Vercel (live site). At build time, <code>scripts/fetchProjects.js</code> fetches GitHub data and writes static artifacts to <code>public/</code> before the React build starts. The generated API docs are published separately to GitHub Pages via the <code>gh-pages</code> branch.</p>
+<p>This project deploys the React app to Vercel (live site). The Projects section is static, hand-curated content in <code>src/data/projects.config.js</code> — there is no data-fetch step before the build. The generated API docs are published separately to GitHub Pages via the <code>gh-pages</code> branch.</p>
 <h2 id="contents">Contents</h2>
 <ul>
 <li><a href="#deployment-targets">Deployment targets</a></li>
@@ -94,79 +94,35 @@
 </tr>
 </tbody></table>
 <h2 id="environment-variables">Environment variables</h2>
-<p>Set these in the Vercel dashboard under <strong>Project → Settings → Environment Variables</strong>, targeting the <strong>Build</strong> step for both <strong>Production</strong> and <strong>Preview</strong> environments.</p>
-<table>
-<thead>
-<tr>
-<th>Variable</th>
-<th>Required</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>GH_PROJECTS_TOKEN</code></td>
-<td>Yes</td>
-<td>GitHub PAT. Use <code>public_repo</code> scope for public repos, <code>repo</code> for private</td>
-</tr>
-<tr>
-<td><code>DEEPL_API_KEY</code> or <code>DEEPL_SECRET</code></td>
-<td>No</td>
-<td>If either is set, translates project summaries to German via DeepL. Both variable names are accepted by the fetch script.</td>
-</tr>
-<tr>
-<td><code>DEBUG_FETCH</code></td>
-<td>No</td>
-<td>Set to <code>1</code> to emit extra debug logs. Disable in production</td>
-</tr>
-</tbody></table>
+<p>The build itself needs no secrets — the Vercel token/org/project IDs used to deploy the prebuilt artifact are configured as GitHub Actions secrets (see <a href="architecture/ci-cd-pipeline.html">architecture/ci-cd-pipeline.md</a>), not as Vercel build-time environment variables.</p>
 <h2 id="deploying-to-vercel">Deploying to Vercel</h2>
 <p>Deployment runs through GitHub Actions using a prebuilt artifact. Vercel does not run the build itself — GitHub Actions builds the app and hands Vercel a ready-to-serve <code>.vercel/output/</code> directory.</p>
 <p>A <code>vercel.json</code> in the project root configures two fields: <code>github.productionBranch: &quot;main&quot;</code> anchors any Vercel GitHub integration to the <code>main</code> branch (preventing the <code>gh-pages</code> documentation branch from being treated as a production source), and <code>buildCommand: &quot;react-scripts build&quot;</code> records the correct build command. The <code>buildCommand</code> is never invoked in practice because <code>vercel --prod --prebuilt</code> delivers a finished artifact and Vercel performs no build step.</p>
 <ol>
 <li>Connect the GitHub repository to a Vercel project and record <code>VERCEL_TOKEN</code>, <code>VERCEL_ORG_ID</code>, and <code>VERCEL_PROJECT_ID</code> as GitHub Actions secrets (first-time setup only).</li>
-<li>Set <code>GH_PROJECTS_TOKEN</code> as a GitHub Actions secret.</li>
-<li>Optionally set <code>DEEPL_API_KEY</code> or <code>DEEPL_SECRET</code> as GitHub Actions secrets for German translation.</li>
 <li>Push to <code>main</code> — <code>ci.yml</code> detects the push, runs linting and tests, then dispatches <code>build-and-fetch.yml</code>.</li>
-<li><code>build-and-fetch.yml</code> runs the fetch scripts, executes <code>npm run build</code>, and assembles the prebuilt artifact in <code>.vercel/output/static/</code> via <code>scripts/prepareVercelOutput.sh</code>.</li>
+<li><code>build-and-fetch.yml</code> runs <code>npm run build</code> and assembles the prebuilt artifact in <code>.vercel/output/static/</code> via <code>scripts/prepareVercelOutput.sh</code>.</li>
 <li>GitHub Actions deploys the prebuilt artifact to Vercel via <code>vercel --prod --prebuilt</code>.</li>
 </ol>
 <div class="mermaid-wrapper"><pre class="mermaid">flowchart LR
     A[Push to main] --&gt; B[ci.yml passes]
-    B --&gt; C[build-and-fetch.yml\nfetch scripts + npm run build]
+    B --&gt; C[build-and-fetch.yml\nnpm run build]
     C --&gt; D[prepareVercelOutput.sh\n.vercel/output/static/]
     D --&gt; E[vercel --prod --prebuilt\nVercel CDN]
 </pre></div>
 <h2 id="running-locally">Running locally</h2>
-<p>Use these steps to preview generated artifacts before committing or deploying.</p>
+<p>Use these steps to preview a prebuilt Vercel output before committing or deploying.</p>
 <ol>
-<li>Create a <code>.env.local</code> file at the repository root (gitignored by CRA):</li>
-</ol>
-<pre><code>GH_PROJECTS_TOKEN=your_github_pat_here
-DEEPL_API_KEY=optional_deepl_key
-</code></pre>
-<ol start="2">
-<li>Optionally enable debug output in the current shell only:</li>
-</ol>
-<pre><code class="language-powershell">$env:DEBUG_FETCH = &#39;1&#39;
-</code></pre>
-<ol start="3">
-<li>Run the fetch script to generate artifacts:</li>
-</ol>
-<pre><code class="language-powershell">node .\scripts\fetchProjects.js
-</code></pre>
-<ol start="4">
 <li>Run the React build:</li>
 </ol>
 <pre><code class="language-powershell">npm run build
 </code></pre>
-<ol start="5">
+<ol start="2">
 <li>Optionally prepare and deploy a prebuilt Vercel output:</li>
 </ol>
 <pre><code class="language-powershell">Remove-Item -Recurse -Force .vercel\output -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force .vercel\output\static | Out-Null
 Copy-Item -Path build\* -Destination .vercel\output\static -Recurse -Force
-Copy-Item -Path public\projects.json -Destination .vercel\output\static\projects.json -Force
-Copy-Item -Path public\projects_media -Destination .vercel\output\static\projects_media -Recurse -Force
 
 @&quot;
 {
@@ -181,18 +137,14 @@ Copy-Item -Path public\projects_media -Destination .vercel\output\static\project
 npx vercel --prebuilt . --token $env:VERCEL_TOKEN --yes
 </code></pre>
 <h2 id="build-artifacts">Build artifacts</h2>
-<p>The files <code>public/projects.json</code> and <code>public/projects_media/</code> are generated by <code>scripts/fetchProjects.js</code> and are intentionally excluded from version control. CI regenerates them on every build. If these files appear committed in the repository, remove them — committing them risks leaking tokens or including large binary blobs.</p>
+<p><code>build/</code> (the CRA production bundle) is generated by <code>npm run build</code> and is intentionally excluded from version control. CI regenerates it on every build.</p>
 <h2 id="security">Security</h2>
 <ul>
-<li>Scope the GitHub PAT to the minimum required permissions and rotate it regularly.</li>
-<li>Do not commit tokens to source control — store them in Vercel environment variables or GitHub Actions secrets.</li>
-<li><code>DEBUG_FETCH</code> can expose sensitive request details in build logs; disable it after debugging.</li>
+<li>Do not commit tokens to source control — store them in GitHub Actions secrets.</li>
 </ul>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <ul>
-<li><strong>GraphQL errors during build</strong> — verify that <code>GH_PROJECTS_TOKEN</code> is valid and has the correct scope.</li>
-<li><strong>Missing artifacts after build</strong> — enable <code>DEBUG_FETCH=1</code> on a single preview deploy to inspect build logs, then remove it.</li>
-<li><strong>Prebuild failures blocking deployment</strong> — the default behaviour is fail-fast. To allow deployments to continue when the fetch fails, modify <code>prebuild</code> in <code>package.json</code> to: <code>node ./scripts/fetchProjects.js || echo &#39;fetch failed&#39;</code>.</li>
+<li><strong>Missing <code>index.html</code> in prebuilt output</strong> — confirm <code>npm run build</code> completed successfully before <code>prepareVercelOutput.sh</code> runs.</li>
 </ul>
 <h2 id="references">References</h2>
 <ul>

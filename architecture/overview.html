@@ -137,7 +137,7 @@
     Vercel[&quot;Vercel CDN&quot;]
     ReactApp[&quot;React App\n(CRA bundle)&quot;]
     i18next[&quot;i18next\n(language state)&quot;]
-    ProjectsJSON[&quot;projects.json\n(static asset)&quot;]
+    ProjectsConfig[&quot;projects.config.js\n(bundled into CRA build)&quot;]
     GHPages[&quot;GitHub Pages\n(docs + coverage)&quot;]
 
     Browser --&gt;|&quot;page request&quot;| Vercel
@@ -145,13 +145,12 @@
     Vercel --&gt;|&quot;serves bundle + assets&quot;| ReactApp
     ReactApp --&gt;|&quot;language key lookup&quot;| i18next
     i18next --&gt;|&quot;translated strings&quot;| ReactApp
-    ReactApp --&gt;|&quot;fetch /projects.json&quot;| ProjectsJSON
-    ProjectsJSON --&gt;|&quot;project data&quot;| ReactApp
+    ProjectsConfig --&gt;|&quot;import&quot;| ReactApp
 
     class Browser l1
     class Vercel,GHPages l2
     class ReactApp l3
-    class i18next,ProjectsJSON l4
+    class i18next,ProjectsConfig l4
 
     classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
     classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
@@ -161,7 +160,7 @@
 <h2 id="key-design-decisions">Key Design Decisions</h2>
 <p>Each decision below links to the document where it is discussed in detail.</p>
 <ul>
-<li><strong>Static data pre-generation</strong> — project data is fetched from GitHub at build time, not at runtime, removing any API dependency from the live site. See <a href="../REFRESH.html">REFRESH.md</a>.</li>
+<li><strong>Static, hand-curated project data</strong> — project copy, tech tags, and images live in <code>src/data/projects.config.js</code> and are bundled at build time, removing any GitHub API dependency from the live site. See <a href="decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a> for why an earlier build-time fetch pipeline was retired in favor of this.</li>
 <li><strong>Vercel prebuilt artifact</strong> — the app is built in GitHub Actions and deployed as a <code>.vercel/output</code> artifact, giving full control over the build environment. See <a href="../DEPLOY.html">DEPLOY.md</a>.</li>
 <li><strong>Two test runners</strong> — Node-only scripts use a separate Jest config from the CRA runner to avoid Babel/CSS transform conflicts. See <a href="../TESTS.html">TESTS.md</a>.</li>
 <li><strong>Default locale German</strong> — <code>lng: &#39;de&#39;</code> in i18next because the portfolio targets a German-speaking job market. See <a href="i18n-flow.html">i18n-flow.md</a>.</li>

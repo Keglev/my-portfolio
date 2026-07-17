@@ -44,7 +44,6 @@
       <ul class="doc-toc__list">
   <li><a href="#table-of-contents">Table of Contents</a></li>
   <li><a href="#configuration-inputs">Configuration Inputs</a></li>
-  <li><a href="#build-time-project-data-flow">Build-Time Project Data Flow</a></li>
   <li><a href="#documentation-and-coverage-flow">Documentation and Coverage Flow</a></li>
   <li><a href="#artifact-summary">Artifact Summary</a></li>
   <li><a href="#references">References</a></li>
@@ -59,13 +58,12 @@
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#configuration-inputs">Configuration Inputs</a></li>
-<li><a href="#build-time-project-data-flow">Build-Time Project Data Flow</a></li>
 <li><a href="#documentation-and-coverage-flow">Documentation and Coverage Flow</a></li>
 <li><a href="#artifact-summary">Artifact Summary</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="configuration-inputs">Configuration Inputs</h2>
-<p>Before any data can flow through the build pipeline, three categories of external input must be available as environment variables in the GitHub Actions runner.</p>
+<p>Before the build pipeline can deploy, one category of external input must be available as environment variables in the GitHub Actions runner.</p>
 <table>
 <thead>
 <tr>
@@ -76,18 +74,6 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>GH_PROJECTS_TOKEN</code></td>
-<td>GitHub repository secret</td>
-<td><code>scripts/fetchProjects.js</code> — authenticates the GraphQL API call</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td><code>DEEPL_API_KEY</code> / <code>DEEPL_SECRET</code></td>
-<td>GitHub repository secret</td>
-<td><code>scripts/fetchProjects.js</code> — translates project summaries to German</td>
-<td>No</td>
-</tr>
-<tr>
 <td><code>VERCEL_TOKEN</code>, <code>VERCEL_ORG_ID</code>, <code>VERCEL_PROJECT_ID</code></td>
 <td>GitHub repository secrets</td>
 <td>Vercel CLI deploy step</td>
@@ -99,50 +85,8 @@
 <td><code>gh</code> CLI calls in all three workflows</td>
 <td>Yes (automatic)</td>
 </tr>
-<tr>
-<td><code>DEBUG_FETCH</code></td>
-<td>Optional manual env var</td>
-<td><code>scripts/fetchProjects.js</code> — emits extra debug output</td>
-<td>No</td>
-</tr>
 </tbody></table>
-<h2 id="build-time-project-data-flow">Build-Time Project Data Flow</h2>
-<p>The diagram below shows how project data moves from the GitHub GraphQL API and optional DeepL translation service through the fetch scripts to the final Vercel deployment.</p>
-<div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
-    GHGraphQL[&quot;GitHub GraphQL API\n(pinned repos, READMEs, media URLs)&quot;]
-    DeepL[&quot;DeepL API\n(optional — German summaries)&quot;]
-    Secrets[&quot;Repository Secrets\n(GH_PROJECTS_TOKEN, DEEPL_API_KEY)&quot;]
-    FetchScripts[&quot;Fetch Scripts\nfetchProjects.js → applyFallbackDocScan.js\n→ postprocessProjects.js → verifyProjects.js&quot;]
-    ProjectsJSON[&quot;public/projects.json\n+ public/projects_media/\n(static build assets)&quot;]
-    CRABuild[&quot;npm run build\n(react-scripts — bundles app + assets)&quot;]
-    VercelOutput[&quot;.vercel/output/static/\n(prebuilt artifact)&quot;]
-    VercelCDN[&quot;Vercel CDN\ncarloskeglevich.vercel.app&quot;]
-
-    Secrets --&gt;|&quot;injected as env vars&quot;| FetchScripts
-    GHGraphQL --&gt;|&quot;repo metadata + README text&quot;| FetchScripts
-    DeepL --&gt;|&quot;translated summary_de fields&quot;| FetchScripts
-    FetchScripts --&gt;|&quot;writes normalized JSON + media&quot;| ProjectsJSON
-    ProjectsJSON --&gt;|&quot;copied into public/ before build&quot;| CRABuild
-    CRABuild --&gt;|&quot;prepareVercelOutput.sh&quot;| VercelOutput
-    VercelOutput --&gt;|&quot;vercel --prod --prebuilt&quot;| VercelCDN
-
-    class GHGraphQL,DeepL,Secrets l1
-    class FetchScripts l2
-    class ProjectsJSON l3
-    class CRABuild,VercelOutput,VercelCDN l4
-
-    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
-    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
-    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
-    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
-</pre></div>
-<p>The four fetch scripts run sequentially and form a single logical stage:</p>
-<ol>
-<li><code>fetchProjects.js</code> — calls the GitHub GraphQL API, downloads README files and project media, optionally calls DeepL for German summaries, and writes the raw <code>public/projects.json</code>.</li>
-<li><code>applyFallbackDocScan.js</code> — scans READMEs for documentation links when the primary fetch yields none, filling gaps before normalization.</li>
-<li><code>postprocessProjects.js</code> — upgrades raw <code>githubusercontent.com</code> URLs to GitHub Pages equivalents and splits compound technology tokens.</li>
-<li><code>verifyProjects.js</code> — validates the final <code>projects.json</code> against the expected schema; the build fails if validation does not pass.</li>
-</ol>
+<p>The Projects section is static, hand-curated content in <code>src/data/projects.config.js</code> — there is no GitHub API or translation API call at build time, so no corresponding secrets are needed.</p>
 <h2 id="documentation-and-coverage-flow">Documentation and Coverage Flow</h2>
 <p>The diagram below shows how documentation sources and the test coverage report flow into GitHub Pages independently of the Vercel deployment.</p>
 <div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
@@ -182,18 +126,6 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>public/projects.json</code></td>
-<td><code>scripts/fetchProjects.js</code></td>
-<td>Build-time</td>
-<td>Copied into <code>.vercel/output/static/</code></td>
-</tr>
-<tr>
-<td><code>public/projects_media/</code></td>
-<td><code>scripts/fetchProjects.js</code></td>
-<td>Build-time</td>
-<td>Copied into <code>.vercel/output/static/projects_media/</code></td>
-</tr>
-<tr>
 <td><code>build/</code></td>
 <td><code>npm run build</code> (CRA)</td>
 <td>Build-time</td>
@@ -234,7 +166,6 @@
 <ul>
 <li><a href="../DEPLOY.html">DEPLOY.md</a> — environment variables, manual deployment commands, and security notes</li>
 <li><a href="../architecture/ci-cd-pipeline.html">architecture/ci-cd-pipeline.md</a> — workflow trigger chain and step details</li>
-<li><a href="../REFRESH.html">REFRESH.md</a> — how to regenerate <code>projects.json</code> and trigger a redeployment</li>
 </ul>
 
     </article>

@@ -58,7 +58,8 @@
       <!-- Replaced at build time by convertMd() in build_docs.js -->
       <h1 id="cicd-pipeline">CI/CD Pipeline</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>The portfolio uses three GitHub Actions workflows that form a sequential pipeline: CI runs first, build-and-fetch deploys the app to Vercel, and docs-refresh publishes documentation to GitHub Pages. A shared concurrency group ensures no two pipeline runs overlap.</p>
+<p>The portfolio uses three GitHub Actions workflows that form a sequential pipeline: CI runs first, build-and-fetch builds and deploys the app to Vercel, and docs-refresh publishes documentation to GitHub Pages. A shared concurrency group ensures no two pipeline runs overlap.</p>
+<p>Despite its name, <code>build-and-fetch.yml</code> no longer fetches project data — the Projects section renders from the static, hand-curated <code>src/data/projects.config.js</code>. The workflow only builds and deploys.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#pipeline-diagram">Pipeline Diagram</a></li>
@@ -79,10 +80,9 @@
     end
 
     subgraph BF[&quot;build-and-fetch.yml&quot;]
-        FetchGH[&quot;Fetch GitHub projects&quot;]
         BuildReact[&quot;Build React app&quot;]
         VercelDeploy[&quot;Deploy to Vercel&quot;]
-        FetchGH --&gt; BuildReact --&gt; VercelDeploy
+        BuildReact --&gt; VercelDeploy
     end
 
     subgraph DR[&quot;docs-refresh.yml&quot;]
@@ -94,12 +94,12 @@
     end
 
     Push --&gt; Lint
-    Artifact --&gt;|&quot;workflow_dispatch&quot;| FetchGH
+    Artifact --&gt;|&quot;workflow_dispatch&quot;| BuildReact
     VercelDeploy --&gt;|&quot;workflow_dispatch&quot;| JSDoc
 
     class Push l1
     class Lint,Test,Artifact l2
-    class FetchGH,BuildReact,VercelDeploy l3
+    class BuildReact,VercelDeploy l3
     class JSDoc,Templates,Coverage,GHPages l4
 
     classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
@@ -124,7 +124,7 @@
 <tr>
 <td><code>.github/workflows/build-and-fetch.yml</code></td>
 <td>Dispatched by <code>ci.yml</code> after tests pass; manual <code>workflow_dispatch</code></td>
-<td>Fetch pinned GitHub repos + READMEs, post-process links, build React app, deploy prebuilt output to Vercel, dispatch <code>docs-refresh.yml</code></td>
+<td>Build React app, deploy prebuilt output to Vercel, dispatch <code>docs-refresh.yml</code></td>
 </tr>
 <tr>
 <td><code>.github/workflows/docs-refresh.yml</code></td>
@@ -150,13 +150,9 @@
 <h3 id="build-and-fetchyml">build-and-fetch.yml</h3>
 <ol>
 <li>Checkout and <code>node-setup</code></li>
-<li>Run <code>scripts/fetchProjects.js</code> — fetches GitHub GraphQL data, READMEs, and media files</li>
-<li>Run <code>scripts/applyFallbackDocScan.js</code> — fallback doc-link discovery before normalization</li>
-<li>Run <code>scripts/postprocessProjects.js</code> — normalize links for offline use</li>
-<li>Run <code>scripts/verifyProjects.js</code> — validate <code>public/projects.json</code> against schema</li>
 <li>Run <code>npm run build</code> — production CRA build</li>
 <li>Run <code>scripts/prepareVercelOutput.sh</code> — assemble <code>.vercel/output/static/</code></li>
-<li>Verify prebuilt static artifacts — confirms <code>projects.json</code> is present in <code>.vercel/output/static/</code> and reports its size; fails the workflow if missing</li>
+<li>Verify prebuilt static artifacts — confirms <code>index.html</code> is present in <code>.vercel/output/static/</code>; fails the workflow if missing</li>
 <li>Deploy with <code>vercel --prod --prebuilt</code></li>
 <li>Smoke-test the Vercel URL (HTTP 200 required before proceeding)</li>
 <li>Dispatch <code>docs-refresh.yml</code></li>

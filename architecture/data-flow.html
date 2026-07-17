@@ -63,13 +63,12 @@
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="build-time-data-preparation">Build-Time Data Preparation</h2>
-<p>Before the React bundle is served, GitHub Actions runs <code>scripts/fetchProjects.js</code> to fetch pinned repository metadata via the GitHub GraphQL API. The output — <code>public/projects.json</code> and <code>public/projects_media/</code> — is bundled into the Vercel deployment as static assets. Every project card and documentation link in the live site originates from this pre-generation step; there are no runtime calls to the GitHub API.</p>
+<p>The Projects section renders from <code>src/data/projects.config.js</code>, a hand-curated static module bundled directly into the JavaScript build. There is no build-time or runtime call to the GitHub API — project copy, tech tags, and images are authored and reviewed as code, not inherited from README files.</p>
 <h2 id="runtime-data-flow">Runtime Data Flow</h2>
 <p>The diagram below shows the principal data flows during a user session. Arrows represent data movement; node labels identify the source or consumer.</p>
 <div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
-    ProjectsJSON[&quot;public/projects.json\n(static asset on Vercel)&quot;]
-    useProjects[&quot;useProjects hook\n(fetch on mount)&quot;]
-    ProjectsState[&quot;projects state\n(useState in Projects)&quot;]
+    ProjectsConfig[&quot;src/data/projects.config.js\n(static, bundled at build)&quot;]
+    ProjectsState[&quot;projects array\n(imported in Projects)&quot;]
     ProjectCard[&quot;ProjectCard\n(project prop)&quot;]
     ProjectSummary[&quot;ProjectSummary\n(project prop)&quot;]
     LocaleFiles[&quot;Locale JSON\n(en.json / de.json)&quot;]
@@ -79,8 +78,7 @@
     ActiveSectionState[&quot;activeSection state\n(useState in Sidebar)&quot;]
     SidebarMenu[&quot;SidebarMenu\n(activeSection prop)&quot;]
 
-    ProjectsJSON --&gt;|&quot;HTTP GET at mount&quot;| useProjects
-    useProjects --&gt;|&quot;setProjects&quot;| ProjectsState
+    ProjectsConfig --&gt;|&quot;import&quot;| ProjectsState
     ProjectsState --&gt;|&quot;project prop&quot;| ProjectCard
     ProjectsState --&gt;|&quot;project prop&quot;| ProjectSummary
     LocaleFiles --&gt;|&quot;bundled at build&quot;| i18next
@@ -88,8 +86,8 @@
     ScrollEvent --&gt;|&quot;setActiveSection&quot;| ActiveSectionState
     ActiveSectionState --&gt;|&quot;activeSection prop&quot;| SidebarMenu
 
-    class ProjectsJSON,LocaleFiles,ScrollEvent l1
-    class useProjects,i18next,ActiveSectionState l2
+    class ProjectsConfig,LocaleFiles,ScrollEvent l1
+    class i18next,ActiveSectionState l2
     class ProjectsState,AllComponents,SidebarMenu l3
     class ProjectCard,ProjectSummary l4
 
@@ -109,8 +107,8 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>Project list (fetch lifecycle)</td>
-<td><code>useProjects</code> hook → <code>Projects</code></td>
+<td>Project list (static import)</td>
+<td><code>projects.config.js</code> → <code>Projects</code></td>
 <td>Props to <code>ProjectCard</code>, <code>ProjectSummary</code></td>
 </tr>
 <tr>

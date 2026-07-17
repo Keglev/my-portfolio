@@ -13,7 +13,7 @@ This document explains how data moves through the portfolio at build time and at
 
 ## Build-Time Data Preparation
 
-Before the React bundle is served, GitHub Actions runs `scripts/fetchProjects.js` to fetch pinned repository metadata via the GitHub GraphQL API. The output — `public/projects.json` and `public/projects_media/` — is bundled into the Vercel deployment as static assets. Every project card and documentation link in the live site originates from this pre-generation step; there are no runtime calls to the GitHub API.
+The Projects section renders from `src/data/projects.config.js`, a hand-curated static module bundled directly into the JavaScript build. There is no build-time or runtime call to the GitHub API — project copy, tech tags, and images are authored and reviewed as code, not inherited from README files.
 
 ## Runtime Data Flow
 
@@ -21,9 +21,8 @@ The diagram below shows the principal data flows during a user session. Arrows r
 
 ```mermaid
 flowchart TD
-    ProjectsJSON["public/projects.json\n(static asset on Vercel)"]
-    useProjects["useProjects hook\n(fetch on mount)"]
-    ProjectsState["projects state\n(useState in Projects)"]
+    ProjectsConfig["src/data/projects.config.js\n(static, bundled at build)"]
+    ProjectsState["projects array\n(imported in Projects)"]
     ProjectCard["ProjectCard\n(project prop)"]
     ProjectSummary["ProjectSummary\n(project prop)"]
     LocaleFiles["Locale JSON\n(en.json / de.json)"]
@@ -33,8 +32,7 @@ flowchart TD
     ActiveSectionState["activeSection state\n(useState in Sidebar)"]
     SidebarMenu["SidebarMenu\n(activeSection prop)"]
 
-    ProjectsJSON -->|"HTTP GET at mount"| useProjects
-    useProjects -->|"setProjects"| ProjectsState
+    ProjectsConfig -->|"import"| ProjectsState
     ProjectsState -->|"project prop"| ProjectCard
     ProjectsState -->|"project prop"| ProjectSummary
     LocaleFiles -->|"bundled at build"| i18next
@@ -42,8 +40,8 @@ flowchart TD
     ScrollEvent -->|"setActiveSection"| ActiveSectionState
     ActiveSectionState -->|"activeSection prop"| SidebarMenu
 
-    class ProjectsJSON,LocaleFiles,ScrollEvent l1
-    class useProjects,i18next,ActiveSectionState l2
+    class ProjectsConfig,LocaleFiles,ScrollEvent l1
+    class i18next,ActiveSectionState l2
     class ProjectsState,AllComponents,SidebarMenu l3
     class ProjectCard,ProjectSummary l4
 
@@ -59,7 +57,7 @@ The app uses no global state management library such as Redux, Zustand, or MobX.
 
 | State | Owner | Shared via |
 |-------|-------|-----------|
-| Project list (fetch lifecycle) | `useProjects` hook → `Projects` | Props to `ProjectCard`, `ProjectSummary` |
+| Project list (static import) | `projects.config.js` → `Projects` | Props to `ProjectCard`, `ProjectSummary` |
 | Active nav section | `Sidebar` | Prop to `SidebarMenu` |
 | Current language | i18next module instance | `react-i18next` context (not component state) |
 | Legal / nav scroll targets | No state — DOM `getElementById` calls | — |

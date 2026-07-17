@@ -64,7 +64,11 @@
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="status">Status</h2>
-<p>Accepted</p>
+<p>Superseded — the build-time fetch pipeline described below was retired.
+The Projects section now renders exclusively from the static, hand-curated
+<code>src/data/projects.config.js</code>; no runtime or build-time GitHub fetch remains.
+This ADR is kept as a historical record of why build-time fetch was
+originally chosen over a runtime API call.</p>
 <h2 id="context">Context</h2>
 <p>The portfolio needs to display project information — repository names,
 descriptions, technology tags, README-derived documentation links — that
@@ -124,8 +128,7 @@ portfolio on the next successful build without any code change</li>
 <ul>
 <li><a href="https://docs.github.com/en/graphql">GitHub GraphQL API documentation</a></li>
 <li><a href="https://www.deepl.com/docs-api">DeepL API documentation</a></li>
-<li><a href="../../REFRESH.html">REFRESH.md</a> — how to trigger a manual data refresh</li>
-<li><a href="../data-flow.html">data-flow.md</a> — how projects.json flows into the React component tree</li>
+<li><a href="../data-flow.html">data-flow.md</a> — how project data flows into the React component tree today</li>
 <li><code>scripts/fetchProjects.js</code> — entry point for the build-time fetch</li>
 <li><code>scripts/lib/graphql/pinnedGraphql.js</code> — GraphQL query definition</li>
 <li><code>scripts/lib/translation/translate.js</code> — DeepL integration and cache logic</li>

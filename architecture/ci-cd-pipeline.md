@@ -2,7 +2,9 @@
 
 [← Architecture index](index.md)
 
-The portfolio uses three GitHub Actions workflows that form a sequential pipeline: CI runs first, build-and-fetch deploys the app to Vercel, and docs-refresh publishes documentation to GitHub Pages. A shared concurrency group ensures no two pipeline runs overlap.
+The portfolio uses three GitHub Actions workflows that form a sequential pipeline: CI runs first, build-and-fetch builds and deploys the app to Vercel, and docs-refresh publishes documentation to GitHub Pages. A shared concurrency group ensures no two pipeline runs overlap.
+
+Despite its name, `build-and-fetch.yml` no longer fetches project data — the Projects section renders from the static, hand-curated `src/data/projects.config.js`. The workflow only builds and deploys.
 
 ## Table of Contents
 
@@ -26,10 +28,9 @@ flowchart TD
     end
 
     subgraph BF["build-and-fetch.yml"]
-        FetchGH["Fetch GitHub projects"]
         BuildReact["Build React app"]
         VercelDeploy["Deploy to Vercel"]
-        FetchGH --> BuildReact --> VercelDeploy
+        BuildReact --> VercelDeploy
     end
 
     subgraph DR["docs-refresh.yml"]
@@ -41,12 +42,12 @@ flowchart TD
     end
 
     Push --> Lint
-    Artifact -->|"workflow_dispatch"| FetchGH
+    Artifact -->|"workflow_dispatch"| BuildReact
     VercelDeploy -->|"workflow_dispatch"| JSDoc
 
     class Push l1
     class Lint,Test,Artifact l2
-    class FetchGH,BuildReact,VercelDeploy l3
+    class BuildReact,VercelDeploy l3
     class JSDoc,Templates,Coverage,GHPages l4
 
     classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
@@ -60,7 +61,7 @@ flowchart TD
 | File | Trigger | Responsibility |
 |------|---------|---------------|
 | `.github/workflows/ci.yml` | Push to `main` (`src/**`, `scripts/**`, `config/**`, `jest.node.config.js`, `package.json`, `.github/workflows/ci.yml`), PRs to `main` | Lint, run full test suite, upload coverage artifact; dispatches `build-and-fetch.yml` on successful push |
-| `.github/workflows/build-and-fetch.yml` | Dispatched by `ci.yml` after tests pass; manual `workflow_dispatch` | Fetch pinned GitHub repos + READMEs, post-process links, build React app, deploy prebuilt output to Vercel, dispatch `docs-refresh.yml` |
+| `.github/workflows/build-and-fetch.yml` | Dispatched by `ci.yml` after tests pass; manual `workflow_dispatch` | Build React app, deploy prebuilt output to Vercel, dispatch `docs-refresh.yml` |
 | `.github/workflows/docs-refresh.yml` | Dispatched by `build-and-fetch.yml`; push to `docs/**` or `scripts/docs/**`; manual `workflow_dispatch` | Apply HTML templates to Markdown, pre-render Mermaid diagrams, generate JSDoc, download coverage artifact from latest CI run, publish `docs/` to `gh-pages` |
 | `.github/actions/node-setup/` | Composite action used by all three workflows | Sets up Node.js 20, restores the npm cache, and runs `npm ci --legacy-peer-deps`; called after `actions/checkout@v4` in each workflow |
 
@@ -78,16 +79,12 @@ flowchart TD
 ### build-and-fetch.yml
 
 1. Checkout and `node-setup`
-2. Run `scripts/fetchProjects.js` — fetches GitHub GraphQL data, READMEs, and media files
-3. Run `scripts/applyFallbackDocScan.js` — fallback doc-link discovery before normalization
-4. Run `scripts/postprocessProjects.js` — normalize links for offline use
-5. Run `scripts/verifyProjects.js` — validate `public/projects.json` against schema
-6. Run `npm run build` — production CRA build
-7. Run `scripts/prepareVercelOutput.sh` — assemble `.vercel/output/static/`
-8. Verify prebuilt static artifacts — confirms `projects.json` is present in `.vercel/output/static/` and reports its size; fails the workflow if missing
-9. Deploy with `vercel --prod --prebuilt`
-10. Smoke-test the Vercel URL (HTTP 200 required before proceeding)
-11. Dispatch `docs-refresh.yml`
+2. Run `npm run build` — production CRA build
+3. Run `scripts/prepareVercelOutput.sh` — assemble `.vercel/output/static/`
+4. Verify prebuilt static artifacts — confirms `index.html` is present in `.vercel/output/static/`; fails the workflow if missing
+5. Deploy with `vercel --prod --prebuilt`
+6. Smoke-test the Vercel URL (HTTP 200 required before proceeding)
+7. Dispatch `docs-refresh.yml`
 
 ### docs-refresh.yml
 

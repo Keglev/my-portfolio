@@ -137,7 +137,7 @@
     Vercel[&quot;Vercel CDN&quot;]
     ReactApp[&quot;React App\n(CRA-Bundle)&quot;]
     i18next[&quot;i18next\n(Sprachzustand)&quot;]
-    ProjectsJSON[&quot;projects.json\n(statisches Asset)&quot;]
+    ProjectsConfig[&quot;projects.config.js\n(im CRA-Build gebündelt)&quot;]
     GHPages[&quot;GitHub Pages\n(Docs + Coverage)&quot;]
 
     Browser --&gt;|&quot;Seitenaufruf&quot;| Vercel
@@ -145,13 +145,12 @@
     Vercel --&gt;|&quot;liefert Bundle + Assets&quot;| ReactApp
     ReactApp --&gt;|&quot;Sprachschlüssel-Abfrage&quot;| i18next
     i18next --&gt;|&quot;übersetzte Strings&quot;| ReactApp
-    ReactApp --&gt;|&quot;fetch /projects.json&quot;| ProjectsJSON
-    ProjectsJSON --&gt;|&quot;Projektdaten&quot;| ReactApp
+    ProjectsConfig --&gt;|&quot;Import&quot;| ReactApp
 
     class Browser l1
     class Vercel,GHPages l2
     class ReactApp l3
-    class i18next,ProjectsJSON l4
+    class i18next,ProjectsConfig l4
 
     classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
     classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
@@ -161,7 +160,7 @@
 <h2 id="wichtige-designentscheidungen">Wichtige Designentscheidungen</h2>
 <p>Jede Entscheidung unten verweist auf das Dokument, in dem sie ausführlich erläutert wird.</p>
 <ul>
-<li><strong>Statische Datenvorgenerierung</strong> — Projektdaten werden zur Build-Zeit von GitHub abgerufen, nicht zur Laufzeit, sodass keine API-Abhängigkeit im Live-Betrieb besteht. Siehe <a href="../REFRESH.html">REFRESH.md</a>.</li>
+<li><strong>Statische, handkuratierte Projektdaten</strong> — Projekttexte, Tech-Tags und Bilder liegen in <code>src/data/projects.config.js</code> und werden zur Build-Zeit gebündelt, sodass keine GitHub-API-Abhängigkeit im Live-Betrieb besteht. Siehe <a href="decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a> für die Gründe, warum eine frühere Build-Time-Fetch-Pipeline zugunsten dieses Ansatzes abgeschafft wurde.</li>
 <li><strong>Vercel Prebuilt Artifact</strong> — Die App wird in GitHub Actions gebaut und als <code>.vercel/output</code>-Artifact deployed, was vollständige Kontrolle über die Build-Umgebung gibt. Siehe <a href="../DEPLOY.html">DEPLOY.md</a>.</li>
 <li><strong>Zwei Test-Runner</strong> — Node-only-Skripte verwenden eine separate Jest-Konfiguration vom CRA-Runner, um Babel/CSS-Transform-Konflikte zu vermeiden. Siehe <a href="../TESTS.html">TESTS.md</a>.</li>
 <li><strong>Standard-Locale Deutsch</strong> — <code>lng: &#39;de&#39;</code> in i18next, da das Portfolio auf einen deutschsprachigen Jobmarkt ausgerichtet ist. Siehe <a href="i18n-flow.html">i18n-flow.md</a>.</li>
