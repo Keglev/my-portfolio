@@ -84,5 +84,9 @@
     "send": "Nachricht senden", "sending": "Wird gesendet…", "clear": "Felder leeren",
     "success": "Danke — Ihre Nachricht wurde gesendet. Ich melde mich in Kürze.",
     "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut oder kontaktieren Sie mich über LinkedIn oder E-Mail."
+  },
+  "portfolioMeta": {
+    "text": "Auch diese Website ist nach demselben Standard gebaut:",
+    "source": "Quellcode", "docs": "Dokumentation", "coverage": "Testabdeckung"
   }
 }

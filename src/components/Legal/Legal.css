@@ -1,3 +1,7 @@
+/* ─── Legal Heading ──────────────────────────────── */
+
+.legal-heading { text-align: center; }
+
 /* ─── Legal Content ──────────────────────────────── */
 
 .legal-content { max-width: 780px; line-height: 1.6; color: var(--color-text); }

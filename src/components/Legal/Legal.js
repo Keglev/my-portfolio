@@ -13,7 +13,7 @@ const Legal = () => {
   return (
     <>
       <div className="project-container" id="Impressum">
-        <h2>{t('legal.impressumHeading')}</h2>
+        <h2 className="legal-heading">{t('legal.impressumHeading')}</h2>
         <div className="project-grid">
           <div className="project-card visible">
             <div className="project-content legal-content">
@@ -25,7 +25,7 @@ const Legal = () => {
       </div>
 
       <div className="project-container" id="Datenschutz">
-        <h2>{t('legal.datenschutzHeading')}</h2>
+        <h2 className="legal-heading">{t('legal.datenschutzHeading')}</h2>
         <div className="project-grid">
           <div className="project-card visible">
             <div className="project-content legal-content">

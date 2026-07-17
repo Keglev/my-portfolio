@@ -221,3 +221,23 @@
   color: var(--color-card-accent);
   text-decoration: underline;
 }
+
+/* ─── Portfolio Meta Strip ────────────────────────── */
+
+.portfolio-meta {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.portfolio-meta a {
+  color: var(--color-text-muted);
+  text-decoration: underline;
+}
+
+.portfolio-meta a:hover {
+  color: var(--color-accent);
+}

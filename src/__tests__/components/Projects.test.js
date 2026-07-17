@@ -38,4 +38,23 @@ describe('Projects component', () => {
     expect(cards[0].getAttribute('data-index')).toBe('0');
     expect(cards[1].getAttribute('data-slug')).toBe('proj-b');
   });
+
+  it('renders the portfolio-meta strip with links to source, docs and coverage', () => {
+    // eslint-disable-next-line global-require
+    const Projects = require('../../components/Projects/Projects').default;
+    render(<Projects />);
+
+    expect(screen.getByText('portfolioMeta.text', { exact: false })).toBeInTheDocument();
+
+    const source = screen.getByRole('link', { name: 'portfolioMeta.source' });
+    expect(source).toHaveAttribute('href', 'https://github.com/Keglev/my-portfolio');
+    expect(source).toHaveAttribute('target', '_blank');
+    expect(source).toHaveAttribute('rel', 'noopener noreferrer');
+
+    const docs = screen.getByRole('link', { name: 'portfolioMeta.docs' });
+    expect(docs).toHaveAttribute('href', 'https://keglev.github.io/my-portfolio/');
+
+    const coverage = screen.getByRole('link', { name: 'portfolioMeta.coverage' });
+    expect(coverage).toHaveAttribute('href', 'https://keglev.github.io/my-portfolio/coverage/index.html');
+  });
 });

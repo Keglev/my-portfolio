@@ -84,5 +84,9 @@
     "send": "Send message", "sending": "Sending…", "clear": "Clear fields",
     "success": "Thanks — your message has been sent. I will get back to you shortly.",
     "error": "Something went wrong. Please try again or reach me via LinkedIn or email."
+  },
+  "portfolioMeta": {
+    "text": "This website itself is built to the same standard:",
+    "source": "Source code", "docs": "Documentation", "coverage": "Test coverage"
   }
 }
