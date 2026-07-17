@@ -29,7 +29,7 @@ const Hero = () => {
       </h1>
       <p className="hero-lead">{t('hero.lead')}</p>
       <div className="hero-cta">
-        <button type="button" className="hero-btn primary" onClick={() => scrollTo('Projects')}>
+        <button type="button" className="hero-btn ghost" onClick={() => scrollTo('Projects')}>
           {t('hero.ctaProjects')}
         </button>
         <a className="hero-btn ghost" href={cvFile} download target="_blank" rel="noopener noreferrer">

@@ -39,8 +39,7 @@
 }
 
 .skills-chip {
-  font-family: 'Courier New', monospace;
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   color: var(--color-card-text-muted);
   background: var(--color-card-tag-bg);
   border: 1px solid var(--color-card-border);

@@ -69,6 +69,23 @@ describe('Contact', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('contactSection.error');
   });
 
+  it('renders the clear button and empties the fields when clicked', () => {
+    render(<Contact />);
+    expect(screen.getByRole('button', { name: 'contactSection.clear' })).toBeInTheDocument();
+
+    fill();
+    fireEvent.click(screen.getByRole('checkbox', { name: 'contactSection.consent' }));
+    expect(screen.getByLabelText('contactSection.name')).toHaveValue('Max');
+    expect(screen.getByLabelText('contactSection.consent')).toBeChecked();
+
+    fireEvent.click(screen.getByRole('button', { name: 'contactSection.clear' }));
+
+    expect(screen.getByLabelText('contactSection.name')).toHaveValue('');
+    expect(screen.getByLabelText('contactSection.email')).toHaveValue('');
+    expect(screen.getByLabelText('contactSection.message')).toHaveValue('');
+    expect(screen.getByLabelText('contactSection.consent')).not.toBeChecked();
+  });
+
   it('renders the social links with GitHub first, followed by LinkedIn, Xing and Email', () => {
     render(<Contact />);
     const socialLinks = screen.getAllByRole('link');

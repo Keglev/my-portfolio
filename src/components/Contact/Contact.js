@@ -58,6 +58,16 @@ const Contact = () => {
     }
   };
 
+  // Name/email/message are uncontrolled and reset natively via the button's own
+  // type="reset" default action; consent and the status message are React state,
+  // so they're cleared here. Wired to onClick (not the form's onReset) because
+  // handleSubmit also calls form.reset() imperatively on success, and that must
+  // not clear the just-set success status.
+  const handleClear = () => {
+    setConsent(false);
+    setStatus('idle');
+  };
+
   return (
     <section className="contact-container" id="ContactSection" aria-label="Contact">
       <h2>{t('contactSection.heading')}</h2>
@@ -93,9 +103,12 @@ const Contact = () => {
           <span>{t('contactSection.consent')}</span>
         </label>
 
-        <button type="submit" className="contact-submit" disabled={!consent || status === 'sending'}>
-          {status === 'sending' ? t('contactSection.sending') : t('contactSection.send')}
-        </button>
+        <div className="contact-actions">
+          <button type="reset" className="contact-clear" onClick={handleClear}>{t('contactSection.clear')}</button>
+          <button type="submit" className="contact-submit" disabled={!consent || status === 'sending'}>
+            {status === 'sending' ? t('contactSection.sending') : t('contactSection.send')}
+          </button>
+        </div>
 
         {status === 'success' && (
           <p className="contact-status success" role="status">{t('contactSection.success')}</p>

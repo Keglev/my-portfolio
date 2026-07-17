@@ -88,8 +88,14 @@
   margin-top: 0.2rem;
 }
 
+.contact-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
 .contact-submit {
-  justify-self: start;
   font: inherit;
   font-size: 0.92rem;
   font-weight: 600;
@@ -109,6 +115,24 @@
 .contact-submit:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.contact-clear {
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.7rem 1.4rem;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--color-card-border);
+  color: var(--color-card-text-muted);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.contact-clear:hover {
+  border-color: var(--color-card-accent);
+  color: var(--color-card-accent);
 }
 
 .contact-status {
