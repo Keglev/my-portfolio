@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/About/CareerStrip.js</title>
+    <title>JSDoc: Source: index.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/About/CareerStrip.js</h1>
+    <h1 class="page-title">Source: index.js</h1>
 
     
 
@@ -26,44 +26,26 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import React from 'react';
-import { useTranslation } from 'react-i18next';
-
-/**
- * Condensed career and education strip: one line per station, two columns.
- * Replaces the former full Experience and Education sections. The wrapper id
- * "Career" is the scroll target of the Hero "Experience" CTA.
- *
- * @returns {JSX.Element}
+            <pre class="prettyprint source linenums"><code>/**
+ * @file index.js
+ * @module src/index
+ * @summary React app entry point: mounts App inside ErrorBoundary and
+ * React.StrictMode onto the #root DOM node.
  */
-const CareerStrip = () => {
-  const { t } = useTranslation();
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import ErrorBoundary from './components/ErrorBoundary';
 
-  // i18next returns the key string when a list resource is missing; the guard
-  // keeps the render safe in tests and in partially loaded locales
-  const asList = (value) => (Array.isArray(value) ? value : []);
-  const career = asList(t('aboutSection.career', { returnObjects: true }));
-  const education = asList(t('aboutSection.educationItems', { returnObjects: true }));
-
-  return (
-    &lt;div className="career-strip" id="Career">
-      &lt;div className="about-block career-card">
-        &lt;h3>{t('aboutSection.careerHeading')}&lt;/h3>
-        &lt;ul>
-          {career.map((line, idx) => &lt;li key={idx}>{line}&lt;/li>)}
-        &lt;/ul>
-      &lt;/div>
-      &lt;div className="about-block career-card">
-        &lt;h3>{t('aboutSection.educationHeading')}&lt;/h3>
-        &lt;ul>
-          {education.map((line, idx) => &lt;li key={idx}>{line}&lt;/li>)}
-        &lt;/ul>
-      &lt;/div>
-    &lt;/div>
-  );
-};
-
-export default CareerStrip;
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  &lt;React.StrictMode>
+    &lt;ErrorBoundary>
+      &lt;App />
+    &lt;/ErrorBoundary>
+  &lt;/React.StrictMode>
+);
 </code></pre>
         </article>
     </section>
