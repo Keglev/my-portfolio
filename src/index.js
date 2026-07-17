@@ -1,3 +1,9 @@
+/**
+ * @file index.js
+ * @module src/index
+ * @summary React app entry point: mounts App inside ErrorBoundary and
+ * React.StrictMode onto the #root DOM node.
+ */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
