@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/Projects/projectsUtils.js</title>
+    <title>JSDoc: Module: src/__tests__/scripts/ci/detectPipelineScope</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,30 +17,152 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/Projects/projectsUtils.js</h1>
+    <h1 class="page-title">Module: src/__tests__/scripts/ci/detectPipelineScope</h1>
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * Generates an inline SVG data URI to show when no real project image is found.
- * Escapes the title to prevent SVG text injection.
- *
- * @param {string} title - Project name displayed inside the placeholder
- * @returns {string} data:image/svg+xml URI
- */
-export const generatePlaceholderSVGDataUrl = (title) => {
-  const safe = (title || 'Project').replace(/&lt;/g, '&amp;lt;').replace(/>/g, '&amp;gt;');
-  const svg = `&lt;?xml version="1.0" encoding="UTF-8"?>&lt;svg xmlns='http://www.w3.org/2000/svg' width='1200' height='675' viewBox='0 0 1200 675'>&lt;rect width='100%' height='100%' fill='%230f2238' rx='8'/>&lt;text x='50%' y='45%' fill='%239ec7ef' font-family='Arial, Helvetica, sans-serif' font-size='36' font-weight='600' text-anchor='middle'>Image not available&lt;/text>&lt;text x='50%' y='58%' fill='%237aa7d9' font-family='Arial, Helvetica, sans-serif' font-size='20' text-anchor='middle'>${safe}&lt;/text>&lt;/svg>`;
-  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
-};
-</code></pre>
-        </article>
-    </section>
+        
+            
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">Contract tests for resolveScope(changedFiles), the pure
+function that maps a push diff's changed file paths to
+{ apiDocs, coverage, archDocs, deploy } so ci.yml can decide which
+downstream workflows to dispatch without over- or under-triggering
+JSDoc/coverage/architecture-doc regeneration.
+
+Contract:
+- apiDocs: true when the exported API surface could have changed — any
+  path under src/** (excluding src/__tests__/**), any path under
+  scripts/lib/**, or the jsdoc.json config file.
+- coverage: true whenever apiDocs is true, OR any src/__tests__/** path
+  changed (a test-only change still invalidates the coverage report but
+  does not require a JSDoc rebuild).
+- archDocs: true when any path under docs/** or scripts/docs/** changed.
+- deploy: true when at least one changed file is not a pure
+  documentation path (docs/** or scripts/docs/**). An empty change list
+  deploys nothing.
+
+Out of scope: the GitHub Actions CLI entry point (stdin/argument parsing,
+$GITHUB_OUTPUT writing) is covered separately once scripts/ci/
+detectPipelineScope.js grows a CLI wrapper around this pure function.</div>
+        
+
+        
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="-__tests___scripts_ci_detectPipelineScope.test.js.html">__tests__/scripts/ci/detectPipelineScope.test.js</a>, <a href="-__tests___scripts_ci_detectPipelineScope.test.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
