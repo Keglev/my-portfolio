@@ -101,13 +101,13 @@
   padding: 0.3rem 0.6rem;
   border-radius: 12px;
   font-size: 0.9rem;
-  transition: var(--transition-card);
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
 .tech-box:hover {
-  background-color: var(--color-accent);
-  color: var(--color-bg);
-  box-shadow: 0px 4px 10px var(--shadow-accent);
+  color: var(--color-card-accent);
+  border-color: var(--color-card-accent);
+  transform: translateY(-2px);
 }
 
 /* ─── Project Links ──────────────────────────────── */

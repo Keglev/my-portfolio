@@ -33,8 +33,9 @@
 .section {
   padding: 1.25rem 0;
   min-height: auto; /* Sections are as tall as their content — no artificial gaps */
-  /* Must match the mobile top bar height so scroll-to-section lands below it */
-  scroll-margin-top: 70px;
+  /* The sidebar is static on mobile (no fixed top bar), so we only need a
+     small buffer to stop slightly before the heading, not scroll past it */
+  scroll-margin-top: 10px;
   /* Constrained reading measure: a full-width column next to the sidebar reads
      as empty; ~1100px reads as intentional and keeps line lengths comfortable. */
   max-width: 1100px;

@@ -38,8 +38,9 @@ const SidebarMenu = ({ activeSection }) => {
             spy={true}
             activeClass={activeSection === id ? 'active' : ''}
             containerId="scroll-container"
-            // Offset keeps the section heading clear of the mobile top bar
-            offset={70}
+            // The sidebar is static on mobile (no fixed top bar), so we stop
+            // slightly BEFORE the heading instead of scrolling past it
+            offset={-10}
           >
             {t(key)}
           </StyledLink>
