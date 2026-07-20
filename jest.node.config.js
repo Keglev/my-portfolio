@@ -16,8 +16,6 @@ module.exports = {
       }
     ]
   },
-  // axios ships as ESM and must be transformed; all other node_modules are excluded
-  transformIgnorePatterns: ['node_modules/(?!(axios)/)'],
   moduleNameMapper: {
     // Prevent style imports from throwing in jsdom
     '^.+\\.(css|less|scss|sass)$': '<rootDir>/config/jest/styleMock.js',
