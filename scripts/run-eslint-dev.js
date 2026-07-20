@@ -1,13 +1,16 @@
 #!/usr/bin/env node
 /**
- * run-eslint-dev.js
- *
- * Runs ESLint against the src/ directory with the CRA development config.
- * NODE_ENV must be 'development' to activate React-specific rules that CRA
- * suppresses in test and production environments.
- *
- * Exits 0 on clean lint, 1 on any warning or error (--max-warnings 0).
- * Used locally and in CI before the build step.
+ * @file run-eslint-dev.js
+ * @module scripts/run-eslint-dev
+ * @summary Runs ESLint against src/ with the CRA development config active.
+ * @enterprise NODE_ENV must be 'development' to activate React-specific
+ * rules that CRA suppresses in test and production environments -- the
+ * plain `npm run lint` script (eslint src --ext .js,.jsx) does not set
+ * this, so it misses those dev-only rules. Exits 0 on clean lint, 1 on any
+ * warning or error (--max-warnings 0). Documented in
+ * docs/scripts/overview.md as a standalone tool; not currently wired into
+ * package.json or any CI workflow, so it's a manual/local check a
+ * developer runs on demand, not an automated gate.
  */
 const { execSync } = require('child_process');
 

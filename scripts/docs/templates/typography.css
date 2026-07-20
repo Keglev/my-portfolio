@@ -1,4 +1,14 @@
-/* ─── Typography: article (rendered markdown content) ─────────── */
+/*
+ * File: typography.css
+ * Module: scripts/docs/templates/typography.css
+ * Summary: Styling for rendered markdown content inside .article -- prose,
+ *   headings, tables, inline code, code blocks, block quotes.
+ * Enterprise: Fourth of five files concatenated into
+ *   docs/templates/styles.css (see base.css's header); relies on base.css's
+ *   custom properties already being in scope.
+ */
+
+/* --- Typography: article (rendered markdown content) --- */
 
 /* min-width: 0 prevents the article from overflowing its grid track */
 .article { min-width: 0; }
@@ -48,7 +58,7 @@
 .article li > ul,
 .article li > ol { margin-top: 0.3rem; margin-bottom: 0.1rem; }
 
-/* ─── Tables ─────────────────────────────────────────────────── */
+/* --- Tables --- */
 .article table {
   width: 100%;
   border-collapse: collapse;
@@ -73,7 +83,7 @@
 }
 .article tr:nth-child(even) td { background: var(--bg-soft); }
 
-/* ─── Inline code ────────────────────────────────────────────── */
+/* --- Inline code --- */
 .article code {
   font-family: var(--font-mono);
   font-size: 0.85em;
@@ -84,7 +94,7 @@
   color: var(--accent-hover);
 }
 
-/* ─── Code blocks ────────────────────────────────────────────── */
+/* --- Code blocks --- */
 .article pre {
   background: var(--code-bg);
   border: 1px solid var(--border);
@@ -94,7 +104,7 @@
   margin-bottom: 1.25rem;
   position: relative;
 }
-/* Reset inline-code styles inside a block — the block already provides its own background */
+/* Reset inline-code styles inside a block -- the block already provides its own background */
 .article pre code {
   background: none;
   border: none;
@@ -104,7 +114,7 @@
   color: var(--text);
 }
 
-/* ─── Block quotes ───────────────────────────────────────────── */
+/* --- Block quotes --- */
 .article blockquote {
   border-left: 4px solid var(--border);
   padding: 0.5rem 1.25rem;

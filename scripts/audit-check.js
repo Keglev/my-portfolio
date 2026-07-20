@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 /**
- * audit-check.js
- *
- * Runs `npm audit --json` and fails the process if high or critical
- * vulnerabilities are found. Intended for CI — exits 1 on findings,
- * 2 on execution or parse failure, 0 when clean.
- *
- * Called by the audit:ci npm script and the CI workflow audit step.
+ * @file audit-check.js
+ * @module scripts/audit-check
+ * @summary Runs `npm audit --json` and fails the process if high or
+ * critical vulnerabilities are found.
+ * @enterprise Exits 1 on findings, 2 on execution or parse failure, 0 when
+ * clean -- a distinct exit code for parse/exec failure vs. a real finding
+ * lets a caller tell "audit itself broke" apart from "audit ran and found
+ * problems." Invoked via the audit:ci npm script; not currently wired into
+ * any CI workflow step, so it's a manual/local gate a developer runs
+ * on demand, not an automated one.
  */
 const { exec } = require('child_process');
 
@@ -35,7 +38,7 @@ exec('npm audit --json', { maxBuffer: 1024 * 1024 * 5 }, (err, stdout) => {
   console.log(`Vulnerabilities summary: low=${vulns.low||0} moderate=${vulns.moderate||0} high=${high} critical=${critical}`);
 
   if (high > 0 || critical > 0) {
-    console.error('High or critical vulnerabilities found — failing audit job.');
+    console.error('High or critical vulnerabilities found -- failing audit job.');
     process.exit(1);
   }
 

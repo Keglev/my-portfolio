@@ -1,5 +1,9 @@
-<!-- ─── Shared page shell: DOCTYPE, head, body open, site header ── -->
-<!-- Assembled into every generated page by build_docs.js             -->
+<!--
+  File: header.html
+  Summary: Shared page shell (DOCTYPE, head, body open, site header)
+    assembled into every generated docs page by build_docs.js via
+    scripts/docs/lib/renderPages.js.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,12 +14,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in build_docs.js) -->
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in scripts/docs/lib/renderPages.js) -->
   <link rel="stylesheet" href="templates/styles.css" />
 </head>
 <body>
 
-  <!-- ─── Site header: breadcrumb + external nav ──────────────── -->
+  <!-- --- Site header: breadcrumb + external nav --- -->
   <header class="site-header">
     <div class="site-header__inner">
       <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>

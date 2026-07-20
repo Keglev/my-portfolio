@@ -8,7 +8,7 @@
  * parallel, and skip JSDoc/architecture-doc regeneration when nothing that
  * feeds them changed. GitHub Actions path filters can gate an entire
  * trigger but cannot express "test-only changes need coverage but not a
- * JSDoc rebuild" on a single trigger — that distinction needs real logic,
+ * JSDoc rebuild" on a single trigger -- that distinction needs real logic,
  * which also means it can be unit tested (see
  * src/__tests__/scripts/ci/detectPipelineScope.test.js), unlike a paths:
  * filter block.
