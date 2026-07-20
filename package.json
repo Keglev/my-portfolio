@@ -5,20 +5,16 @@
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
     "@vercel/speed-insights": "^2.0.0",
-    "ajv": "^8.17.1",
     "axios": "^1.7.7",
     "i18next": "^25.5.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^14.0.0",
     "react-icons": "^5.3.0",
-    "react-router-dom": "^6.26.2",
     "react-scripts": "^5.0.1",
     "react-scroll": "^1.9.0",
-    "styled-components": "^6.1.13",
-    "web-vitals": "^2.1.4"
+    "styled-components": "^6.1.13"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -54,9 +50,6 @@
     "serialize-javascript": ">=7.0.5"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.18.6",
-    "@babel/plugin-proposal-optional-chaining": "^7.21.0",
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.29.7",
     "@babel/preset-react": "^7.29.7",
     "babel-jest": "^29.7.0",
@@ -65,8 +58,6 @@
     "jest-environment-jsdom": "^29.7.0",
     "jsdoc": "^4.0.2",
     "marked": "^9.0.0",
-    "node-fetch": "^2.7.0",
-    "remark": "^14.0.3",
-    "remark-parse": "^10.0.1"
+    "node-fetch": "^2.7.0"
   }
 }
