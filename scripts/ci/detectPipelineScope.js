@@ -17,14 +17,12 @@ const fs = require('fs');
 
 const SRC_TESTS_PREFIX = 'src/__tests__/';
 const SRC_PREFIX = 'src/';
-const SCRIPTS_LIB_PREFIX = 'scripts/lib/';
 const SCRIPTS_DOCS_PREFIX = 'scripts/docs/';
 const DOCS_PREFIX = 'docs/';
 const JSDOC_CONFIG_FILE = 'jsdoc.json';
 
 const isSrcTestPath = (file) => file.startsWith(SRC_TESTS_PREFIX);
 const isSrcNonTestPath = (file) => file.startsWith(SRC_PREFIX) && !isSrcTestPath(file);
-const isScriptsLibPath = (file) => file.startsWith(SCRIPTS_LIB_PREFIX);
 const isJsdocConfigFile = (file) => file === JSDOC_CONFIG_FILE;
 const isDocsPath = (file) => file.startsWith(DOCS_PREFIX) || file.startsWith(SCRIPTS_DOCS_PREFIX);
 
@@ -34,7 +32,7 @@ const isDocsPath = (file) => file.startsWith(DOCS_PREFIX) || file.startsWith(SCR
  */
 function resolveScope(changedFiles) {
   const apiDocs = changedFiles.some(
-    (file) => isSrcNonTestPath(file) || isScriptsLibPath(file) || isJsdocConfigFile(file)
+    (file) => isSrcNonTestPath(file) || isJsdocConfigFile(file)
   );
   const coverage = apiDocs || changedFiles.some(isSrcTestPath);
   const archDocs = changedFiles.some(isDocsPath);
