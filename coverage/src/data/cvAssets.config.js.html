@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/components/ErrorBoundary/ErrorBoundary.js</title>
+    <title>Code coverage report for src/data/cvAssets.config.js</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../../prettify.css" />
-    <link rel="stylesheet" href="../../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../../sort-arrow-sprite.png);
+            background-image: url(../../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/components/ErrorBoundary</a> ErrorBoundary.js</h1>
+        <h1><a href="../../index.html">All files</a> / <a href="index.html">src/data</a> cvAssets.config.js</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>7/7</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>3/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>4/4</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>7/7</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
@@ -90,21 +90,7 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a>
-<a name='L29'></a><a href='#L29'>29</a>
-<a name='L30'></a><a href='#L30'>30</a>
-<a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a>
-<a name='L36'></a><a href='#L36'>36</a>
-<a name='L37'></a><a href='#L37'>37</a>
-<a name='L38'></a><a href='#L38'>38</a>
-<a name='L39'></a><a href='#L39'>39</a>
-<a name='L40'></a><a href='#L40'>40</a>
-<a name='L41'></a><a href='#L41'>41</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -119,20 +105,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -141,48 +114,36 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">24x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * @file ErrorBoundary.js
- * @module components/ErrorBoundary/ErrorBoundary
- * @summary Catches unhandled React rendering errors and displays a
- * fallback UI instead of a blank page.
- * @enterprise Wraps App (see src/index.js) as the outermost boundary, so
- * it must render even if App itself -- including i18n init -- fails to
- * load. The fallback text is deliberately hardcoded in English rather than
- * routed through t(): if the crash is i18n-related, a translation call
- * inside the fallback UI could itself throw, defeating the boundary.
+ * @file cvAssets.config.js
+ * @module data/cvAssets.config
+ * @summary Language -&gt; CV PDF asset path mapping.
+ * @enterprise Single source of truth for the locale-conditional CV
+ * download, per the i18n standing decision: the mapping lives in one
+ * place, not scattered ternaries. Previously duplicated independently in
+ * Hero.js and SidebarMenu.js, which had drifted to two different matching
+ * rules (exact 'de' equality vs. a 'de' prefix check) -- a real
+ * inconsistency for regional codes like 'de-DE'. getCvFile() standardizes
+ * on the prefix check so both consumers resolve regional German variants
+ * to the German PDF.
  */
-import React from 'react';
 &nbsp;
-export default class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
+const CV_ASSETS = {
+  de: '/Carlos_Keglevich_Lebenslauf_DE.pdf',
+  en: '/Carlos_Keglevich_CV_EN.pdf',
+};
 &nbsp;
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
+/**
+ * @param {string} language - i18next language code (e.g. 'de', 'de-DE', 'en')
+ * @returns {string} Public path to the matching CV PDF
+ */
+export const getCvFile = (language) =&gt;
+  (language || <span class="branch-1 cbranch-no" title="branch not covered" >'')</span>.toLowerCase().startsWith('de') ? CV_ASSETS.de : CV_ASSETS.en;
 &nbsp;
-  componentDidCatch(error, info) {
-    console.error('ErrorBoundary caught an error:', error, info);
-  }
-&nbsp;
-  render() {
-    if (this.state.hasError) {
-      return (
-        &lt;div style={{ padding: 20, color: '#ffcccb', background: '#0a0a0a' }}&gt;
-          &lt;h2&gt;Something went wrong while rendering the app.&lt;/h2&gt;
-          &lt;pre style={{ whiteSpace: 'pre-wrap' }}&gt;{String(this.state.error)}&lt;/pre&gt;
-        &lt;/div&gt;
-      );
-    }
-&nbsp;
-    return this.props.children;
-  }
-}
+export default CV_ASSETS;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -190,16 +151,16 @@ export default class ErrorBoundary extends React.Component {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-20T10:15:30.475Z
+                at 2026-07-20T10:15:30.450Z
             </div>
-        <script src="../../../prettify.js"></script>
+        <script src="../../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../../sorter.js"></script>
-        <script src="../../../block-navigation.js"></script>
+        <script src="../../sorter.js"></script>
+        <script src="../../block-navigation.js"></script>
     </body>
 </html>
     

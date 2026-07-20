@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">70% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>9/12</span>
+                <span class='fraction'>7/10</span>
             </div>
         
             
@@ -153,7 +153,34 @@
 <a name='L88'></a><a href='#L88'>88</a>
 <a name='L89'></a><a href='#L89'>89</a>
 <a name='L90'></a><a href='#L90'>90</a>
-<a name='L91'></a><a href='#L91'>91</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -169,16 +196,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">13x</span>
@@ -243,10 +265,26 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React from 'react';
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * @file SidebarMenu.js
+ * @module components/Sidebar/SidebarMenu
+ * @summary Sidebar navigation links, language switcher, and CV download button.
+ * @enterprise NAV_ITEMS ids must match the section wrapper ids in App.js
+ * exactly (react-scroll's `to` prop targets them by id). CV file selection
+ * delegates to data/cvAssets.config, the single source of truth shared
+ * with Hero's own CV link. The DE|EN language labels are deliberately
+ * hardcoded literals, not i18n keys -- they name the language itself, so
+ * translating "DE" through i18n would be circular. cvLabel, by contrast,
+ * is real UI copy hardcoded per-language rather than routed through i18n;
+ * unlike the language labels this is inconsistent with the rest of the
+ * codebase, but left as-is here since fixing it is outside the CV-asset
+ * dedup this file just received.
+ */
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Menu, StyledLink, LanguageWrapper, CVDownloadWrapper, CVDownloadLink } from './SidebarStyles';
 import { useTheme } from '../../context/ThemeContext';
+import { getCvFile } from '../../data/cvAssets.config';
 &nbsp;
 const NAV_ITEMS = [
   { id: 'About',    key: 'about' },
@@ -256,9 +294,6 @@ const NAV_ITEMS = [
 ];
 &nbsp;
 /**
- * Renders the sidebar navigation links, language switcher, and CV download button.
- * The CV filename and label are both locale-driven to serve the correct language version.
- *
  * @param {string} activeSection - Id of the section currently in view
  * @returns {JSX.Element}
  */
@@ -266,9 +301,7 @@ const SidebarMenu = ({ activeSection }) =&gt; {
   const { t, i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
 &nbsp;
-  const cvFile = i18n.language === 'de'
-    ? '/Carlos_Keglevich_Lebenslauf_DE.pdf'
-    : '/Carlos_Keglevich_CV_EN.pdf';
+  const cvFile = getCvFile(i18n.language);
   const cvLabel = i18n.language === 'de' ? 'Lebenslauf herunterladen' : 'Download Resume';
 &nbsp;
   return (
@@ -340,7 +373,7 @@ export default SidebarMenu;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-20T09:34:47.542Z
+                at 2026-07-20T10:15:30.450Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
