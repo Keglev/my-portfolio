@@ -10,8 +10,10 @@
  *
  * Contract:
  * - apiDocs: true when the exported API surface could have changed — any
- *   path under src/** (excluding src/__tests__/**), any path under
- *   scripts/lib/**, or the jsdoc.json config file.
+ *   path under src/** (excluding src/__tests__/**), or the jsdoc.json
+ *   config file. scripts/lib/** was in this contract until the P1
+ *   build-time-fetch retirement deleted that directory outright; the
+ *   path class no longer exists, so resolveScope no longer checks it.
  * - coverage: true whenever apiDocs is true, OR any src/__tests__/** path
  *   changed (a test-only change still invalidates the coverage report but
  *   does not require a JSDoc rebuild).
