@@ -74,7 +74,7 @@ describe('runPipelineScope', () => {
       expect(result).toBeNull();
     });
 
-    it('should filter out blank lines from the diff output', () => {
+    it('should filter out blank lines when the diff output contains them', () => {
       const exec = jest.fn()
         .mockReturnValueOnce('')
         .mockReturnValueOnce('src/App.js\n\n\nsrc/index.js\n');

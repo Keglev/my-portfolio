@@ -1,7 +1,11 @@
-/*
- * Tests for i18n.js
- * Covers: initialization, default language, fallback locale, English and German
- * resource bundles, escaping config, and known key translation.
+/**
+ * @file i18n.test.js
+ * @module src/__tests__/i18n
+ * @testing i18n/index.js
+ * @description Contract tests for the i18next configuration: it
+ * initializes on import, defaults to German with English as fallback,
+ * ships both resource bundles, disables React-redundant escaping, and
+ * resolves a known translation key to a real string.
  */
 import i18n from '../i18n';
 // Prevent react-i18next from running browser-specific plugin setup
@@ -9,35 +13,37 @@ jest.mock('react-i18next', () => ({
   initReactI18next: { type: '3rdParty', init: jest.fn() },
 }));
 
-describe('i18n module', () => {
-  test('is initialized after import', () => {
+describe('i18n', () => {
+  it('should be initialized when the module is imported', () => {
     expect(i18n.isInitialized).toBe(true);
   });
 
-  test('default language is German (de)', () => {
+  it('should default to German (de) when the module is imported', () => {
     expect(i18n.language).toBe('de');
   });
 
-  test('fallback language includes English (en)', () => {
+  it('should include English (en) in the fallback language list', () => {
     const fallback = i18n.options.fallbackLng;
     const langs = Array.isArray(fallback) ? fallback : [fallback];
+
     expect(langs).toContain('en');
   });
 
-  test('has English resource bundle', () => {
+  it('should have an English resource bundle when the module is imported', () => {
     expect(i18n.hasResourceBundle('en', 'translation')).toBe(true);
   });
 
-  test('has German resource bundle', () => {
+  it('should have a German resource bundle when the module is imported', () => {
     expect(i18n.hasResourceBundle('de', 'translation')).toBe(true);
   });
 
-  test('React escaping is disabled (React already handles it)', () => {
+  it('should keep interpolation escaping disabled when React already escapes values', () => {
     expect(i18n.options.interpolation.escapeValue).toBe(false);
   });
 
-  test('returns a translation string for a known key', () => {
+  it('should return a non-empty translation string when a known key is requested', () => {
     const value = i18n.t('aboutSection.heading');
+
     expect(typeof value).toBe('string');
     expect(value.length).toBeGreaterThan(0);
   });
