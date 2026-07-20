@@ -4,10 +4,6 @@
   "about": "Über mich",
   "projects": "Projekte",
   "footerMessage": "Design & Entwicklung von",
-  "language": {
-    "english": "Englisch",
-    "german": "Deutsch"
-  },
   "aboutSection": {
     "heading": "Über mich",
     "block1": {
@@ -46,7 +42,6 @@
   "viewOnGithub": "Auf GitHub ansehen",
   "viewOnGithubFrontend": "Frontend auf GitHub",
   "viewDocs": "Dokumentations-Hub",
-  "translationMissing": "Übersetzung fehlt",
   "urlLabel": "Zur Live-Anwendung",
   "impressumLink": "Impressum",
   "datenschutzLink": "Datenschutzerklärung",
