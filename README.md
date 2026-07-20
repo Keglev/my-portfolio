@@ -20,11 +20,11 @@ Welcome to my personal portfolio website, showcasing my skills, projects, and ex
 
 # Main image: A screenshot of the homepage showing the layout and header
 
-<img src="./src/assets/imgs/project-image.png" alt="Screenshot 1" width="600" height="300"/>
+<img src="./docs/assets/readme/project-image.png" alt="Screenshot 1" width="600" height="300"/>
 
 # Image from the projects section: Displays the project cards fetched from GitHub.
 
-<img src="./src/assets/imgs/project-image2.png" alt="Screenshot 2" width="600" height="300"/>
+<img src="./docs/assets/readme/project-image2.png" alt="Screenshot 2" width="600" height="300"/>
 
 ## Features
 
