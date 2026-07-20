@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: exports</title>
+    <title>JSDoc: Source: i18n/index.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,138 +17,48 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: exports</h1>
+    <h1 class="page-title">Source: i18n/index.js</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2><span class="attribs"><span class="type-signature"></span></span>exports<span class="signature">()</span><span class="type-signature"></span></h2>
-        
-            <div class="class-description">Catches unhandled React rendering errors and displays a fallback UI
-instead of a blank page. Wrap any subtree that may throw during render.</div>
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-
-    
-    <h2>Constructor</h2>
-    
-
-    
-    <h4 class="name" id="exports"><span class="type-signature"></span>new exports<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="components_ErrorBoundary_ErrorBoundary.js.html">components/ErrorBoundary/ErrorBoundary.js</a>, <a href="components_ErrorBoundary_ErrorBoundary.js.html#line7">line 7</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file index.js
+ * @module i18n/index
+ * @summary Initializes i18next with the bundled EN/DE translation resources.
+ * @enterprise Must be imported before any translated component renders (see
+ * the import order note in App.js). Default language is German (lng: 'de')
+ * because the portfolio targets a German-speaking market; English is the
+ * fallback. compatibilityJSON: 'v3' matches the plural-key format used in
+ * the locale JSON files -- changing it without migrating the JSON breaks
+ * pluralization silently.
+ */
+import i18n from 'i18next';
+import { initReactI18next } from 'react-i18next';
+import enTranslation from './locales/en.json';
+import deTranslation from './locales/de.json';
+
+i18n
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en: { translation: enTranslation },
+      de: { translation: deTranslation }
+    },
+    lng: 'de',                              // default locale is German; portfolio targets a German-speaking market
+    fallbackLng: 'en',
+    interpolation: { escapeValue: false },  // React already escapes values; this prevents double-escaping
+    compatibilityJSON: 'v3'                 // matches the plural-key format used in the locale JSON files
+  });
+
+export default i18n;
+</code></pre>
+        </article>
+    </section>
 
 
 
