@@ -1,6 +1,16 @@
-/* ─── Components: header, card, TOC sidebar, mermaid, footer ─── */
+/*
+ * File: components.css
+ * Module: scripts/docs/templates/components.css
+ * Summary: Reusable UI pieces shared across docs pages: site header, hub
+ *   card, TOC sidebar, mermaid diagram wrapper, and site footer.
+ * Enterprise: Third of five files concatenated into
+ *   docs/templates/styles.css (see base.css's header); relies on base.css's
+ *   custom properties already being in scope.
+ */
 
-/* ─── Site header ────────────────────────────────────────────── */
+/* --- Components: header, card, TOC sidebar, mermaid, footer --- */
+
+/* --- Site header --- */
 .site-header {
   position: sticky;
   top: 0;
@@ -69,7 +79,7 @@
   background: var(--accent-bg);
 }
 
-/* ─── Card ───────────────────────────────────────────────────── */
+/* --- Card --- */
 .card {
   display: flex;
   flex-direction: column;
@@ -109,7 +119,7 @@
   line-height: 1.45;
 }
 
-/* ─── TOC sidebar ────────────────────────────────────────────── */
+/* --- TOC sidebar --- */
 .doc-toc {
   position: sticky;
   /* 56px header height + 16px breathing room */
@@ -164,7 +174,7 @@
   font-size: 0.75rem;
 }
 
-/* ─── Mermaid diagram wrapper ────────────────────────────────── */
+/* --- Mermaid diagram wrapper --- */
 .mermaid-wrapper {
   background: var(--bg-soft);
   border: 1px solid var(--border);
@@ -208,7 +218,7 @@
   stroke-width: 2px !important;
 }
 
-/* ─── Site footer ────────────────────────────────────────────── */
+/* --- Site footer --- */
 .site-footer {
   border-top: 1px solid var(--border);
   margin-top: 2rem;

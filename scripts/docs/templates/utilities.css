@@ -1,6 +1,16 @@
-/* ─── Utilities: responsive overrides ───────────────────────── */
+/*
+ * File: utilities.css
+ * Module: scripts/docs/templates/utilities.css
+ * Summary: Responsive overrides for narrow viewports.
+ * Enterprise: Last of five files concatenated into
+ *   docs/templates/styles.css (see base.css's header) -- deliberately
+ *   last in cascade order so its overrides win against every earlier
+ *   file's rules at the same specificity.
+ */
 
-/* ─── Narrow viewport (≤ 620px) ─────────────────────────────── */
+/* --- Utilities: responsive overrides --- */
+
+/* --- Narrow viewport (<= 620px) --- */
 @media (max-width: 620px) {
   /* Collapse hub card grid to a single column */
   .hub__grid { grid-template-columns: 1fr; }

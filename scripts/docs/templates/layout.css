@@ -1,6 +1,16 @@
-/* ─── Layout: page structure, grids, hub shell ──────────────── */
+/*
+ * File: layout.css
+ * Module: scripts/docs/templates/layout.css
+ * Summary: Page-level structure: hub landing shell and the doc-page
+ *   sidebar/article two-column grid.
+ * Enterprise: Second of five files concatenated into
+ *   docs/templates/styles.css (see base.css's header); relies on base.css's
+ *   custom properties already being in scope.
+ */
 
-/* ─── Hub (landing page shell) ──────────────────────────────── */
+/* --- Layout: page structure, grids, hub shell --- */
+
+/* --- Hub (landing page shell) --- */
 .hub {
   max-width: 960px;
   margin: 4rem auto;
@@ -43,7 +53,7 @@
   gap: 0.875rem;
 }
 
-/* ─── Doc layout (sidebar + article two-column grid) ─────────── */
+/* --- Doc layout (sidebar + article two-column grid) --- */
 .doc-layout {
   display: grid;
   /* 220px fixed sidebar; minmax(0,1fr) prevents the article from overflowing its track */

@@ -5,7 +5,7 @@
  * the changed-file list for a push's before/after SHA range and writes the
  * resulting scope flags to $GITHUB_OUTPUT.
  * @enterprise ci.yml's start-deploy-stage job only has a before/after SHA
- * pair, not a ready-made file list, and that range is not always usable —
+ * pair, not a ready-made file list, and that range is not always usable --
  * github.event.before is the all-zero SHA on a brand-new branch, and a
  * force-push can rewrite the before commit out of reachable history. A
  * diff that cannot be computed must not silently skip docs/coverage work,

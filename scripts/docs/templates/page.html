@@ -1,16 +1,24 @@
+<!--
+  File: page.html
+  Summary: Doc-page body partial (TOC sidebar + article + client-side
+    Mermaid/TOC-highlight/nav-active scripts), assembled between
+    header.html and footer.html by build_docs.js.
+-->
 
-  <!-- ─── Doc layout: sticky TOC sidebar + article ────────────── -->
+  <!-- --- Doc layout: sticky TOC sidebar + article --- -->
   <div class="doc-layout">
 
     <aside class="doc-toc" aria-label="On this page">
       <p class="doc-toc__label">On this page</p>
-      <!-- Replaced at build time by buildToc() in build_docs.js;
-           empty string when the page has fewer than two headings -->
+      <!-- Replaced at build time by tocBuilder.buildToc() (see
+           scripts/docs/lib/tocBuilder.js); empty string when the page
+           has fewer than two headings -->
       {{TOC}}
     </aside>
 
     <article class="article">
-      <!-- Replaced at build time by convertMd() in build_docs.js -->
+      <!-- Replaced at build time by renderPages.convertMd() (see
+           scripts/docs/lib/renderPages.js) -->
       {{CONTENT}}
     </article>
 
