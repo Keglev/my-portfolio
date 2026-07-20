@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { getCvFile } from '../../data/cvAssets.config';
 import './Hero.css';
 
 /**
@@ -13,10 +14,7 @@ import './Hero.css';
  */
 const Hero = () => {
   const { t, i18n } = useTranslation();
-  const isGerman = (i18n.language || 'en').toLowerCase().startsWith('de');
-  const cvFile = isGerman
-    ? '/Carlos_Keglevich_Lebenslauf_DE.pdf'
-    : '/Carlos_Keglevich_CV_EN.pdf';
+  const cvFile = getCvFile(i18n.language);
 
   const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 

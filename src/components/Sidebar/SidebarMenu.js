@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Menu, StyledLink, LanguageWrapper, CVDownloadWrapper, CVDownloadLink } from './SidebarStyles';
 import { useTheme } from '../../context/ThemeContext';
+import { getCvFile } from '../../data/cvAssets.config';
 
 const NAV_ITEMS = [
   { id: 'About',    key: 'about' },
@@ -21,9 +22,7 @@ const SidebarMenu = ({ activeSection }) => {
   const { t, i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
 
-  const cvFile = i18n.language === 'de'
-    ? '/Carlos_Keglevich_Lebenslauf_DE.pdf'
-    : '/Carlos_Keglevich_CV_EN.pdf';
+  const cvFile = getCvFile(i18n.language);
   const cvLabel = i18n.language === 'de' ? 'Lebenslauf herunterladen' : 'Download Resume';
 
   return (
