@@ -1,7 +1,23 @@
+/**
+ * @file SidebarMenu.js
+ * @module components/Sidebar/SidebarMenu
+ * @summary Sidebar navigation links, language switcher, and CV download button.
+ * @enterprise NAV_ITEMS ids must match the section wrapper ids in App.js
+ * exactly (react-scroll's `to` prop targets them by id). CV file selection
+ * delegates to data/cvAssets.config, the single source of truth shared
+ * with Hero's own CV link. The DE|EN language labels are deliberately
+ * hardcoded literals, not i18n keys -- they name the language itself, so
+ * translating "DE" through i18n would be circular. cvLabel, by contrast,
+ * is real UI copy hardcoded per-language rather than routed through i18n;
+ * unlike the language labels this is inconsistent with the rest of the
+ * codebase, but left as-is here since fixing it is outside the CV-asset
+ * dedup this file just received.
+ */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Menu, StyledLink, LanguageWrapper, CVDownloadWrapper, CVDownloadLink } from './SidebarStyles';
 import { useTheme } from '../../context/ThemeContext';
+import { getCvFile } from '../../data/cvAssets.config';
 
 const NAV_ITEMS = [
   { id: 'About',    key: 'about' },
@@ -11,9 +27,6 @@ const NAV_ITEMS = [
 ];
 
 /**
- * Renders the sidebar navigation links, language switcher, and CV download button.
- * The CV filename and label are both locale-driven to serve the correct language version.
- *
  * @param {string} activeSection - Id of the section currently in view
  * @returns {JSX.Element}
  */
@@ -21,9 +34,7 @@ const SidebarMenu = ({ activeSection }) => {
   const { t, i18n } = useTranslation();
   const { theme, toggleTheme } = useTheme();
 
-  const cvFile = i18n.language === 'de'
-    ? '/Carlos_Keglevich_Lebenslauf_DE.pdf'
-    : '/Carlos_Keglevich_CV_EN.pdf';
+  const cvFile = getCvFile(i18n.language);
   const cvLabel = i18n.language === 'de' ? 'Lebenslauf herunterladen' : 'Download Resume';
 
   return (

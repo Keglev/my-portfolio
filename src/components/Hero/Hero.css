@@ -1,4 +1,13 @@
-/* ─── Hero ───────────────────────────────────────── */
+/*
+ * File: Hero.css
+ * Module: components/Hero/Hero.css
+ * Summary: Styling for the Hero section (eyebrow, headline, lead, CTAs).
+ * Enterprise: .hero-btn.ghost is shared visual language with
+ *   .contact-submit/.contact-clear in Contact.css -- kept in sync
+ *   deliberately (see the WHY comment below), not accidental duplication.
+ */
+
+/* --- Hero --- */
 
 .hero {
   display: flex;
@@ -70,7 +79,7 @@
   transition: opacity 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-/* Shared "outline" button recipe — kept in sync with .contact-clear and
+/* Shared "outline" button recipe -- kept in sync with .contact-clear and
    .contact-submit in Contact.css. A pale/page-level border reads as
    near-invisible in light mode, so all three use the accent color at rest,
    not just on hover, and fill solid on hover/focus for a clear pressed state. */
@@ -87,7 +96,7 @@
   color: var(--color-accent-contrast);
 }
 
-/* ─── Responsive ─────────────────────────────────── */
+/* --- Responsive --- */
 
 @media (max-width: 768px) {
   .hero {

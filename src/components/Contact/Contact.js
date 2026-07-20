@@ -1,3 +1,15 @@
+/**
+ * @file Contact.js
+ * @module components/Contact/Contact
+ * @summary Contact section with a Web3Forms-backed form and social links.
+ * @enterprise Web3Forms is static-site friendly (no own backend needed);
+ * the public access key comes from the REACT_APP_WEB3FORMS_KEY environment
+ * variable, set in Vercel project settings. Includes a required DSGVO
+ * consent checkbox (submit stays disabled until checked) and a hidden
+ * honeypot field ("botcheck") that Web3Forms uses for spam filtering. The
+ * social links (GitHub/LinkedIn/Xing/email) are a direct-contact fallback
+ * for visitors who skip the form entirely.
+ */
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
@@ -5,12 +17,6 @@ import { SiXing } from 'react-icons/si';
 import './Contact.css';
 
 /**
- * Contact section with a Web3Forms-backed form (static-site friendly: no own
- * backend needed). The public access key comes from the REACT_APP_WEB3FORMS_KEY
- * environment variable, set in Vercel project settings. Includes a required
- * DSGVO consent checkbox (submit stays disabled until checked) and a hidden
- * honeypot field ("botcheck") that Web3Forms uses for spam filtering.
- *
  * @returns {JSX.Element}
  */
 const Contact = () => {
@@ -118,7 +124,7 @@ const Contact = () => {
         )}
       </form>
 
-      {/* Direct channels for people who skip forms — same targets as the sidebar */}
+      {/* Direct channels for people who skip the form entirely */}
       <div className="contact-socials">
         <a href="https://github.com/keglev" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
           <FaGithub />

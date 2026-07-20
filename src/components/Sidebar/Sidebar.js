@@ -1,3 +1,12 @@
+/**
+ * @file Sidebar.js
+ * @module components/Sidebar/Sidebar
+ * @summary Fixed left-hand navigation sidebar.
+ * @enterprise Tracks the active section via scroll position (see
+ * getActiveSection below) and exposes language switching, CV download, and
+ * links to the German legal pages -- all delegated to SidebarMenu, which
+ * this component only feeds the current activeSection into.
+ */
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -27,10 +36,6 @@ const getActiveSection = (scrollPosition) => {
 };
 
 /**
- * Fixed left-hand navigation sidebar.
- * Tracks the active section via scroll position and exposes language switching,
- * CV download, and links to German legal pages.
- *
  * @returns {JSX.Element}
  */
 const Sidebar = () => {
