@@ -65,6 +65,14 @@ Intentionally excluded from coverage:
 - CRA test setup (`setupTests.js`)
 - Standalone audit scripts (`audit-check.js`)
 
+`audit-check.js` runs `npm audit --json` and fails on any high/critical
+finding. `package.json`'s `overrides` block (`nth-check`, `postcss`,
+`svgo`, `resolve-url-loader`, `serialize-javascript`) exists to force
+patched versions of transitive dependencies that `npm audit` flagged --
+`react-scripts` itself pins older ranges that resolve to the vulnerable
+versions. `@pmmmwh/react-refresh-webpack-plugin` is pinned for a
+different reason: a missing-tarball CI failure, not a vulnerability.
+
 ## Troubleshooting
 
 - **CSS parsing errors when running raw `jest`** — use `npm run test:cra` instead, which uses CRA's transform pipeline.
