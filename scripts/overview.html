@@ -1,5 +1,9 @@
-<!-- ─── Shared page shell: DOCTYPE, head, body open, site header ── -->
-<!-- Assembled into every generated page by build_docs.js             -->
+<!--
+  File: header.html
+  Summary: Shared page shell (DOCTYPE, head, body open, site header)
+    assembled into every generated docs page by build_docs.js via
+    scripts/docs/lib/renderPages.js.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,12 +14,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in build_docs.js) -->
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in scripts/docs/lib/renderPages.js) -->
   <link rel="stylesheet" href="../templates/styles.css" />
 </head>
 <body>
 
-  <!-- ─── Site header: breadcrumb + external nav ──────────────── -->
+  <!-- --- Site header: breadcrumb + external nav --- -->
   <header class="site-header">
     <div class="site-header__inner">
       <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
@@ -33,14 +37,21 @@
     </div>
   </header>
 
+<!--
+  File: page.html
+  Summary: Doc-page body partial (TOC sidebar + article + client-side
+    Mermaid/TOC-highlight/nav-active scripts), assembled between
+    header.html and footer.html by build_docs.js.
+-->
 
-  <!-- ─── Doc layout: sticky TOC sidebar + article ────────────── -->
+  <!-- --- Doc layout: sticky TOC sidebar + article --- -->
   <div class="doc-layout">
 
     <aside class="doc-toc" aria-label="On this page">
       <p class="doc-toc__label">On this page</p>
-      <!-- Replaced at build time by buildToc() in build_docs.js;
-           empty string when the page has fewer than two headings -->
+      <!-- Replaced at build time by tocBuilder.buildToc() (see
+           scripts/docs/lib/tocBuilder.js); empty string when the page
+           has fewer than two headings -->
       <ul class="doc-toc__list">
   <li><a href="#table-of-contents">Table of Contents</a></li>
   <li><a href="#root-level-scripts">Root-Level Scripts</a></li>
@@ -50,7 +61,8 @@
     </aside>
 
     <article class="article">
-      <!-- Replaced at build time by convertMd() in build_docs.js -->
+      <!-- Replaced at build time by renderPages.convertMd() (see
+           scripts/docs/lib/renderPages.js) -->
       <h1 id="scripts-overview">Scripts Overview</h1>
 <p><a href="index.html">← Scripts index</a></p>
 <p>The <code>scripts/</code> directory holds standalone build and quality-check tooling. There is no data-fetch pipeline: the Projects section renders from the static, hand-curated <code>src/data/projects.config.js</code>. The <code>scripts/docs/</code> subdirectory holds the documentation build tooling used by the <code>docs-refresh</code> workflow.</p>
@@ -192,8 +204,13 @@
     })();
   </script>
 
+<!--
+  File: footer.html
+  Summary: Shared site footer + closing body/html tags, assembled at the
+    end of every generated docs page by build_docs.js.
+-->
 
-  <!-- ─── Site footer ──────────────────────────────────────────── -->
+  <!-- --- Site footer --- -->
   <footer class="site-footer">
     <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
     <span>

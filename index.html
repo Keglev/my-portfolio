@@ -1,5 +1,9 @@
-<!-- ─── Shared page shell: DOCTYPE, head, body open, site header ── -->
-<!-- Assembled into every generated page by build_docs.js             -->
+<!--
+  File: header.html
+  Summary: Shared page shell (DOCTYPE, head, body open, site header)
+    assembled into every generated docs page by build_docs.js via
+    scripts/docs/lib/renderPages.js.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,12 +14,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in build_docs.js) -->
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in scripts/docs/lib/renderPages.js) -->
   <link rel="stylesheet" href="templates/styles.css" />
 </head>
 <body>
 
-  <!-- ─── Site header: breadcrumb + external nav ──────────────── -->
+  <!-- --- Site header: breadcrumb + external nav --- -->
   <header class="site-header">
     <div class="site-header__inner">
       <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
@@ -33,8 +37,13 @@
     </div>
   </header>
 
+<!--
+  File: hub.html
+  Summary: docs/index.html landing page body (hero title + card grid),
+    assembled between header.html and footer.html by build_docs.js.
+-->
 
-  <!-- ─── Hub: landing page — hero title + card grid ──────────── -->
+  <!-- --- Hub: landing page (hero title + card grid) --- -->
   <main class="hub">
 
     <div class="hub__hero">
@@ -42,7 +51,7 @@
       <p>Personal portfolio built with React — documentation hub</p>
     </div>
 
-    <!-- ─── Generated references ─────────────────────────────── -->
+    <!-- --- Generated references --- -->
     <p class="hub__section-label">Generated references</p>
     <div class="hub__grid">
 
@@ -61,7 +70,7 @@
 
     </div>
 
-    <!-- ─── Developer guides ──────────────────────────────────── -->
+    <!-- --- Developer guides --- -->
     <p class="hub__section-label">Developer guides</p>
     <div class="hub__grid">
 
@@ -79,7 +88,7 @@
 
     </div>
 
-    <!-- ─── Architecture & design ─────────────────────────────── -->
+    <!-- --- Architecture & design --- -->
     <p class="hub__section-label">Architecture &amp; design</p>
     <div class="hub__grid">
 
@@ -123,8 +132,13 @@
 
   </main>
 
+<!--
+  File: footer.html
+  Summary: Shared site footer + closing body/html tags, assembled at the
+    end of every generated docs page by build_docs.js.
+-->
 
-  <!-- ─── Site footer ──────────────────────────────────────────── -->
+  <!-- --- Site footer --- -->
   <footer class="site-footer">
     <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
     <span>
