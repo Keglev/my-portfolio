@@ -1,11 +1,15 @@
+/**
+ * @file CareerStrip.js
+ * @module components/About/CareerStrip
+ * @summary Condensed career and education strip: one line per station, two columns.
+ * @enterprise Replaces the former full Experience and Education sections.
+ * The wrapper id "Career" is the scroll target of the Hero "Experience"
+ * CTA. Rendered as About's final section, not standalone.
+ */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 /**
- * Condensed career and education strip: one line per station, two columns.
- * Replaces the former full Experience and Education sections. The wrapper id
- * "Career" is the scroll target of the Hero "Experience" CTA.
- *
  * @returns {JSX.Element}
  */
 const CareerStrip = () => {

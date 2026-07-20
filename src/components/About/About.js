@@ -1,3 +1,15 @@
+/**
+ * @file About.js
+ * @module components/About/About
+ * @summary About section: profile photo, four storytelling blocks, and a
+ * condensed career/education strip.
+ * @enterprise Storytelling blocks are the career-changer pitch, in a fixed
+ * order (BLOCKS) matching aboutSection.<key> in the locale files. The photo
+ * prefers /profile.jpg (a curated public/ file, swappable without a
+ * rebuild) and falls back to the bundled src/assets asset on load error, so
+ * a missing public file never breaks the layout. Renders CareerStrip as its
+ * final section.
+ */
 import React from 'react';
 import './About.css';
 import ProfilePicFallback from '../../assets/profile-pic.jpg';
@@ -8,11 +20,6 @@ import CareerStrip from './CareerStrip';
 const BLOCKS = ['block1', 'block2', 'block3', 'block4'];
 
 /**
- * About section: a header pairing the profile photo with the heading, four
- * storytelling blocks (career-changer pitch), and a condensed career/education
- * strip. The photo prefers the curated file at public/profile.jpg and falls
- * back to the bundled asset on load error, so a missing file never breaks the layout.
- *
  * @returns {JSX.Element}
  */
 const About = () => {

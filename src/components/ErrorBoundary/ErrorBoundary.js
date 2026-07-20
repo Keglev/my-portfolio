@@ -1,9 +1,16 @@
+/**
+ * @file ErrorBoundary.js
+ * @module components/ErrorBoundary/ErrorBoundary
+ * @summary Catches unhandled React rendering errors and displays a
+ * fallback UI instead of a blank page.
+ * @enterprise Wraps App (see src/index.js) as the outermost boundary, so
+ * it must render even if App itself -- including i18n init -- fails to
+ * load. The fallback text is deliberately hardcoded in English rather than
+ * routed through t(): if the crash is i18n-related, a translation call
+ * inside the fallback UI could itself throw, defeating the boundary.
+ */
 import React from 'react';
 
-/**
- * Catches unhandled React rendering errors and displays a fallback UI
- * instead of a blank page. Wrap any subtree that may throw during render.
- */
 export default class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);

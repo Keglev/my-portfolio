@@ -1,4 +1,15 @@
-/* ─── Container Layout ──────────────────────────────── */
+/*
+ * File: About.css
+ * Module: components/About/About.css
+ * Summary: Layout and styling for the About section (photo header,
+ *   storytelling blocks, career/education strip).
+ * Enterprise: Colors reference CSS custom properties (--color-*) so
+ *   ThemeContext's <html data-theme> toggle recolors this section without
+ *   any JS involvement. Grid layouts collapse to a single column under the
+ *   two breakpoints at the bottom (900px, 768px).
+ */
+
+/* --- Container Layout --- */
 
 .about-container {
   text-align: left;
@@ -6,7 +17,7 @@
   color: var(--color-text);
 }
 
-/* ─── Header (photo + heading) ───────────────────────── */
+/* --- Header (photo + heading) --- */
 
 .about-header {
   display: flex;
@@ -46,7 +57,7 @@
   margin: 0 0 1.5rem;
 }
 
-/* ─── Storytelling Blocks ────────────────────────────── */
+/* --- Storytelling Blocks --- */
 
 .about-blocks {
   display: grid;
@@ -79,7 +90,7 @@
   line-height: 1.55;
 }
 
-/* ─── Career Strip ───────────────────────────────────── */
+/* --- Career Strip --- */
 
 .career-strip {
   display: grid;
@@ -111,7 +122,7 @@
   margin-bottom: 0.5rem;
 }
 
-/* ─── Responsive ─────────────────────────────────────── */
+/* --- Responsive --- */
 
 @media (max-width: 900px) {
   .about-blocks,

@@ -1,13 +1,18 @@
+/**
+ * @file Skills.js
+ * @module components/Skills/Skills
+ * @summary Skills section: a single-column stack of full-width skill groups.
+ * @enterprise Single-column (not a grid) is deliberate so a recruiter can
+ * stack-match in seconds without horizontal scanning. Content comes from
+ * data/skills.config; group headings and descriptions are localized via
+ * i18n keys, technology labels are shown as-is (not translated).
+ */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import skillGroups from '../../data/skills.config';
 import './Skills.css';
 
 /**
- * Skills section: a single-column stack of full-width skill groups so a
- * recruiter can stack-match in seconds. Content comes from src/data/skills.config;
- * group headings are localized, technology labels are shown as-is.
- *
  * @returns {JSX.Element}
  */
 const Skills = () => {
