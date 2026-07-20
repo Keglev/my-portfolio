@@ -1,4 +1,5 @@
 /** Jest setup for node/jsdom runs: polyfills React global and fetch, loads jest-dom matchers, suppresses known deprecation noise. */
+// BUCKET: verify React polyfill necessity + cross-realm behavior under CRA runner (CB-P8-01)
 try {
   if (typeof global.React === 'undefined') global.React = require('react');
 } catch (e) {}
