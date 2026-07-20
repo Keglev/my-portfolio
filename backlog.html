@@ -1,0 +1,197 @@
+<!--
+  File: header.html
+  Summary: Shared page shell (DOCTYPE, head, body open, site header)
+    assembled into every generated docs page by build_docs.js via
+    scripts/docs/lib/renderPages.js.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Replaced at build time: full page title set by each consumer (page vs. hub) -->
+  <title>Backlog — my-portfolio docs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in scripts/docs/lib/renderPages.js) -->
+  <link rel="stylesheet" href="templates/styles.css" />
+</head>
+<body>
+
+  <!-- --- Site header: breadcrumb + external nav --- -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <!-- href adjusted at build time for subdirectory pages -->
+      <a class="site-header__title" href="index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+<!--
+  File: page.html
+  Summary: Doc-page body partial (TOC sidebar + article + client-side
+    Mermaid/TOC-highlight/nav-active scripts), assembled between
+    header.html and footer.html by build_docs.js.
+-->
+
+  <!-- --- Doc layout: sticky TOC sidebar + article --- -->
+  <div class="doc-layout">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <!-- Replaced at build time by tocBuilder.buildToc() (see
+           scripts/docs/lib/tocBuilder.js); empty string when the page
+           has fewer than two headings -->
+      <ul class="doc-toc__list">
+  <li><a href="#open">Open</a></li>
+  <li class="toc-h3"><a href="#cb-p8-01-verify-react-polyfill-necessity-cross-realm-behavior-under-cra-runner">CB-P8-01 — verify React polyfill necessity + cross-realm behavior under CRA runner</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <!-- Replaced at build time by renderPages.convertMd() (see
+           scripts/docs/lib/renderPages.js) -->
+      <h1 id="backlog">Backlog</h1>
+<p><a href="https://keglev.github.io/my-portfolio/index.html">← Hub</a> · <a href="docs-index.html">← Docs index</a></p>
+<p>Master list of deferred work tracked via <code>// BUCKET: &lt;text&gt; (ID)</code> markers in
+source. Open items keep their marker at the site; only closed IDs are
+purged from both the marker and this list.</p>
+<h2 id="open">Open</h2>
+<h3 id="cb-p8-01-verify-react-polyfill-necessity-cross-realm-behavior-under-cra-runner">CB-P8-01 — verify React polyfill necessity + cross-realm behavior under CRA runner</h3>
+<p><strong>Site:</strong> <code>config/jest/setupTestsNode.js</code>, the <code>global.React = require(&#39;react&#39;)</code>
+polyfill block.</p>
+<p><strong>Context:</strong> while fixing a vacuous test assertion in
+<code>src/__tests__/config/jest/setupTestsNode.test.js</code> (P8 batch 4a), discovered
+that this polyfill behaves differently across the two Jest runners this repo
+uses:</p>
+<ul>
+<li>Under <code>test:node</code> (the standalone <code>jest.node.config.js</code> runner), the
+polyfill works as intended: <code>global.React</code> is set to the real <code>react</code>
+module and is visible to code that reads it afterward.</li>
+<li>Under <code>test:cra</code> (<code>react-scripts test</code>, CRA&#39;s own Jest environment), the
+module executes in a different realm than the test file that requires it
+-- <code>global</code> inside <code>config/jest/setupTestsNode.js</code> is not the same object
+as <code>global</code> in the requiring test file. The assignment happens (verified
+via temporary debug logging during the P8 investigation) but is not
+observable from test code, making the polyfill effectively inert under
+this runner.</li>
+</ul>
+<p><strong>Likely outcome:</strong> CRA&#39;s runner uses the modern JSX transform and its own
+<code>src/setupTests.js</code> bootstrap, which may mean a <code>global.React</code> polyfill was
+never actually needed there in the first place -- older code sometimes
+required a global React for the classic JSX transform or for
+<code>react-dom/test-utils</code> compat shims, neither of which should apply here.
+If so, the right fix is scoping (skip/remove the polyfill for the CRA
+runner, or document that it&#39;s node-runner-only) rather than repairing the
+cross-realm assignment to somehow work under CRA too.</p>
+<p><strong>Why deferred:</strong> proving which of those is true, and fixing it, is
+source-level work (<code>config/jest/</code>) outside P8 batch 4&#39;s test-file-only
+scope. The test itself now asserts only what is verifiably true per
+runner (see <code>setupTestsNode.test.js</code>), so this doesn&#39;t block correctness
+of the test suite -- it&#39;s a source-behavior question to resolve later.</p>
+
+    </article>
+
+  </div>
+
+  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active section heading as the user scrolls -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        /* rootMargin pushes the activation zone toward the top quarter of the viewport */
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active in the site header -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+<!--
+  File: footer.html
+  Summary: Shared site footer + closing body/html tags, assembled at the
+    end of every generated docs page by build_docs.js.
+-->
+
+  <!-- --- Site footer --- -->
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+</body>
+</html>
