@@ -1,7 +1,15 @@
-/*
- * Tests for App.js
- * Covers: top-level render, presence of all major sections (Hero, About,
- * Skills, Projects, Contact, Legal), and i18n integration.
+/**
+ * @file App.test.js
+ * @module src/__tests__/App
+ * @testing App.js
+ * @description Contract tests for the root App component: the top-level
+ * render produces the container/scroll wrapper and all six section
+ * wrappers (Hero, About, Skills, Projects, Contact, Legal) in the order
+ * the sidebar nav expects.
+ *
+ * Out of scope: each section's own internal rendering (covered by that
+ * section's own test file); Projects is stubbed here to a bare marker
+ * element.
  */
 /* eslint-disable testing-library/no-node-access */
 import App from '../App';
@@ -22,7 +30,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 // Prevent react-scroll from being used (it needs a real DOM scroll container)
-// Use require('react') inside the factory — jest.mock factories are hoisted before imports
+// Use require('react') inside the factory -- jest.mock factories are hoisted before imports
 jest.mock('react-scroll', () => {
   const R = require('react');
   return {
@@ -34,7 +42,9 @@ jest.mock('react-scroll', () => {
   };
 });
 
-// Stub Projects to avoid the runtime fetch('/projects.json') call
+// Stub Projects to a bare marker element -- Projects.js itself renders from static
+// config (data/projects.config), not a fetch, but this test only cares that App
+// mounts a Projects section, not what Projects itself renders.
 jest.mock('../components/Projects/Projects', () => {
   const React = require('react');
   return { __esModule: true, default: () => React.createElement('section', { 'data-testid': 'projects' }) };
@@ -45,44 +55,52 @@ describe('App', () => {
     render(<App />);
   }
 
-  test('renders the outer container div', () => {
+  it('should render the outer container div when App mounts', () => {
     setup();
+
     expect(document.querySelector('.container')).toBeInTheDocument();
   });
 
-  test('renders the main-content scroll container', () => {
+  it('should render the main-content scroll container when App mounts', () => {
     setup();
+
     expect(document.getElementById('scroll-container')).toBeInTheDocument();
   });
 
-  test('renders the About section', () => {
+  it('should render the About section when App mounts', () => {
     setup();
+
     expect(document.getElementById('About')).toBeInTheDocument();
   });
 
-  test('renders the Skills section', () => {
+  it('should render the Skills section when App mounts', () => {
     setup();
+
     expect(document.getElementById('Skills')).toBeInTheDocument();
   });
 
-  test('renders the Projects section', () => {
+  it('should render the Projects section when App mounts', () => {
     setup();
+
     expect(document.getElementById('Projects')).toBeInTheDocument();
   });
 
-  test('renders the Contact section', () => {
+  it('should render the Contact section when App mounts', () => {
     setup();
+
     expect(document.getElementById('Contact')).toBeInTheDocument();
   });
 
-  test('renders the Legal section', () => {
+  it('should render the Legal section when App mounts', () => {
     setup();
+
     expect(document.getElementById('Legal')).toBeInTheDocument();
   });
 
-  test('renders the sections in the expected order', () => {
+  it('should render all sections in the expected order when App mounts', () => {
     setup();
     const ids = Array.from(document.querySelectorAll('.section')).map((el) => el.id);
+
     expect(ids).toEqual(['Hero', 'About', 'Skills', 'Projects', 'Contact', 'Legal']);
   });
 });

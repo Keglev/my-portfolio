@@ -1,12 +1,16 @@
-/*
- * Tests for src/index.js entry point
- * Covers: ReactDOM.createRoot call with #root element and render with the App tree.
+/**
+ * @file index.test.js
+ * @module src/__tests__/index
+ * @testing index.js
+ * @description Contract tests for the entry point: it calls
+ * ReactDOM.createRoot on the #root element, calls render exactly once
+ * with a React element, and roots that tree in React.StrictMode.
  *
- * Note: createRoot/render calls are tracked via a plain array in the factory closure
- * to avoid two CRA Jest incompatibilities: jest.fn(impl) in factories (silently
- * ignored) and const variables in factories (undefined after hoisting).
+ * Note: createRoot/render calls are tracked via a plain array in the
+ * mock factory closure to avoid two CRA Jest incompatibilities:
+ * jest.fn(impl) in factories (silently ignored) and const variables in
+ * factories (undefined after hoisting).
  */
-
 const React = require('react');
 
 jest.mock('../App', () => function App() { return null; });
@@ -23,7 +27,7 @@ jest.mock('react-dom/client', () => {
   return { createRoot, __renders: renders };
 });
 
-describe('src/index.js entry point', () => {
+describe('index', () => {
   beforeAll(() => {
     // Reset so index.js (and the mock) are loaded fresh, guaranteeing the
     // __renders array is from the same module instance that index.js uses.
@@ -32,28 +36,32 @@ describe('src/index.js entry point', () => {
     require('../index');
   });
 
-  test('calls createRoot with the #root DOM element', () => {
+  it('should call createRoot with the #root DOM element when index.js runs', () => {
     const { __renders } = require('react-dom/client');
+
     expect(__renders).toHaveLength(1);
     expect(__renders[0].container).toBe(document.getElementById('root'));
   });
 
-  test('calls root.render exactly once', () => {
+  it('should call root.render exactly once when index.js runs', () => {
     const { __renders } = require('react-dom/client');
+
     expect(__renders).toHaveLength(1);
   });
 
-  test('render receives a React element (JSX tree)', () => {
+  it('should pass a React element (JSX tree) to render when index.js runs', () => {
     const { __renders } = require('react-dom/client');
     const jsx = __renders[0].element;
+
     expect(jsx).toBeDefined();
     expect(typeof jsx).toBe('object');
     expect(jsx.props).toBeDefined();
   });
 
-  test('render tree is rooted in React.StrictMode', () => {
+  it('should root the render tree in React.StrictMode when index.js runs', () => {
     const { __renders } = require('react-dom/client');
     const jsx = __renders[0].element;
+
     expect(jsx.type).toBe(React.StrictMode);
   });
 });
