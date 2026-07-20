@@ -1,4 +1,13 @@
-/* ─── Container ─────────────────────────────────── */
+/*
+ * File: Projects.css
+ * Module: components/Projects/Projects.css
+ * Summary: Styling for the Projects grid, cards, and portfolio-meta strip.
+ * Enterprise: .project-container/.project-grid/.project-card are reused
+ *   by Legal.css for visual consistency between sections -- changes here
+ *   ripple into the Legal page too.
+ */
+
+/* --- Container --- */
 
 .project-container {
   background-color: var(--color-bg);
@@ -11,7 +20,7 @@
   color: var(--color-accent);
 }
 
-/* ─── Grid ───────────────────────────────────────── */
+/* --- Grid --- */
 
 .project-grid {
   display: grid;
@@ -19,7 +28,7 @@
   gap: 2rem;
 }
 
-/* ─── Card ───────────────────────────────────────── */
+/* --- Card --- */
 
 /* Cards render hidden and slightly offset; .visible class triggers the entrance transition */
 .project-card {
@@ -42,7 +51,7 @@
   transform: none;
 }
 
-/* ─── Project Image ──────────────────────────────── */
+/* --- Project Image --- */
 
 .image-wrap {
   width: 100%;
@@ -71,7 +80,7 @@
   transform: none;
 }
 
-/* ─── Project Content ────────────────────────────── */
+/* --- Project Content --- */
 
 .project-content h3 {
   color: var(--color-card-accent);
@@ -83,7 +92,7 @@
   margin-bottom: 1rem;
 }
 
-/* ─── Tech Tags ──────────────────────────────────── */
+/* --- Tech Tags --- */
 
 .technologies {
   margin-top: 1rem;
@@ -109,7 +118,7 @@
   box-shadow: 0px 4px 10px var(--shadow-accent);
 }
 
-/* ─── Project Links ──────────────────────────────── */
+/* --- Project Links --- */
 
 /* Stacked link column; replaces the former inline flex styles on the card. */
 .project-links {
@@ -129,7 +138,7 @@
   color: var(--color-card-accent);
 }
 
-/* ─── Responsive ─────────────────────────────────── */
+/* --- Responsive --- */
 
 @media (max-width: 768px) {
   .project-grid {
@@ -137,7 +146,7 @@
   }
 }
 
-/* ─── Secondary Doc-Links Row (trial) ────────────────── */
+/* --- Secondary Doc-Links Row (trial) --- */
 
 .doc-links-row {
   display: flex;
@@ -160,7 +169,7 @@
   text-decoration: underline;
 }
 
-/* ─── Portfolio Meta Strip ────────────────────────── */
+/* --- Portfolio Meta Strip --- */
 
 .portfolio-meta {
   margin-top: 2rem;

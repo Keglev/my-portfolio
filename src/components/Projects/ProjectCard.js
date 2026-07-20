@@ -1,3 +1,19 @@
+/**
+ * @file ProjectCard.js
+ * @module components/Projects/ProjectCard
+ * @summary Renders a single curated project card: preview image, title,
+ * summary, technology tags, and up to five links in a locked order (live
+ * app, docs hub, repo, optional second repo, API reference), plus an
+ * optional secondary row of deep documentation links.
+ * @enterprise Image load failures fall back to an inline SVG placeholder
+ * (projectsUtils.generatePlaceholderSVGDataUrl) -- the card never shows a
+ * broken-image icon. The local `lang` variable (line ~27) independently
+ * re-derives "is this German" via a startsWith check; ProjectSummary
+ * receives the raw i18n.language instead and re-derives its own version
+ * via strict equality. Both resolve to the same result for this app's
+ * only two real language codes ('de'/'en') but are duplicated logic, not
+ * unified here -- flagging rather than expanding this pass's scope.
+ */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { generatePlaceholderSVGDataUrl } from './projectsUtils';
@@ -5,15 +21,9 @@ import ProjectSummary from './ProjectSummary';
 import { useTheme } from '../../context/ThemeContext';
 
 /**
- * Renders a single curated project card: preview image, title, summary,
- * technology tags, and up to five links in a locked order (live app, docs hub,
- * repo, optional second repo, API reference), plus an optional secondary row
- * of deep documentation links. Image load failures fall back to an inline SVG
- * placeholder — the card never shows a broken-image icon.
- *
  * @param {Object} project - Curated project data (ProjectConfig shape from src/data/projects.config)
  * @param {number} index - Position in the projects array; key into loadedImages
- * @param {object} loadedImages - Map of index → boolean tracking loaded images
+ * @param {object} loadedImages - Map of index -> boolean tracking loaded images
  * @param {Function} setLoadedImages - Setter for loadedImages state
  * @returns {JSX.Element}
  */
@@ -32,7 +42,7 @@ const ProjectCard = ({ project, index, loadedImages = {}, setLoadedImages = () =
     (project.images && project.images.dark && project.images.dark.en) ||
     '';
 
-  // Single, deterministic fallback: config image → inline SVG placeholder.
+  // Single, deterministic fallback: config image -> inline SVG placeholder.
   const handleError = (e) => {
     const img = e.currentTarget;
     if (img.getAttribute('data-fallback') !== '1') {

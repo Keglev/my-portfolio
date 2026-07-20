@@ -1,3 +1,15 @@
+/**
+ * @file Projects.js
+ * @module components/Projects/Projects
+ * @summary Renders the portfolio's Projects section.
+ * @enterprise Reads curated project data directly from data/projects.config
+ * (no runtime fetch). Card content, titles, tech tags, images, and links
+ * are all controlled there. `loadedImages` tracks per-card image load
+ * state for the entrance animation handled in ProjectCard/Projects.css.
+ * Below the grid, a small "portfolio meta" strip links to this site's own
+ * source, docs, and coverage report -- proof the same documentation and
+ * testing standard applies to itself.
+ */
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ProjectCard from './ProjectCard';
@@ -5,15 +17,6 @@ import projects from '../../data/projects.config';
 import './Projects.css';
 
 /**
- * Renders the portfolio's Projects section.
- *
- * Reads curated project data directly from src/data/projects.config (no runtime
- * fetch). Card content, titles, tech tags, images and links are all controlled
- * there. `loadedImages` tracks per-card image load state for the entrance
- * animation handled in ProjectCard/Projects.css. Below the grid, a small
- * "portfolio meta" strip links to this site's own source, docs and coverage
- * report — proof the same documentation/testing standard applies to itself.
- *
  * @returns {JSX.Element} Grid of curated project cards plus the portfolio-meta strip.
  */
 const Projects = () => {
