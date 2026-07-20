@@ -11,7 +11,7 @@ const React = require('react');
 
 jest.mock('../App', () => function App() { return null; });
 
-jest.mock('../components/ErrorBoundary', () =>
+jest.mock('../components/ErrorBoundary/ErrorBoundary', () =>
   function ErrorBoundary({ children }) { return children || null; }
 );
 
