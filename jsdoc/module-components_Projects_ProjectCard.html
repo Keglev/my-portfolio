@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: context/ThemeContext</title>
+    <title>JSDoc: Module: components/Projects/ProjectCard</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: context/ThemeContext</h1>
+    <h1 class="page-title">Module: components/Projects/ProjectCard</h1>
 
     
 
@@ -38,7 +38,7 @@
     <div class="container-overview">
     
         
-            <div class="description">ThemeContext.js</div>
+            <div class="description">ProjectCard.js</div>
         
 
         
@@ -87,7 +87,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="context_ThemeContext.js.html">context/ThemeContext.js</a>, <a href="context_ThemeContext.js.html#line1">line 1</a>
+        <a href="components_Projects_ProjectCard.js.html">components/Projects/ProjectCard.js</a>, <a href="components_Projects_ProjectCard.js.html#line1">line 1</a>
     </li></ul></dd>
     
 
@@ -134,20 +134,147 @@
     
 
     
-        <h3 class="subsection-title">Members</h3>
+
+    
+        <h3 class="subsection-title">Methods</h3>
 
         
             
-<h4 class="name" id=".ThemeProvider"><span class="type-signature">(static, constant) </span>ThemeProvider<span class="type-signature"></span></h4>
+
+    
+
+    
+    <h4 class="name" id="~ProjectCard"><span class="type-signature">(inner) </span>ProjectCard<span class="signature">(project, index, loadedImages, setLoadedImages)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    
+
+    
 
 
 
 
-<div class="description">
-    Provides the current theme and a toggle to the component tree, and keeps
-the <html data-theme> attribute and localStorage in sync.
-</div>
 
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>project</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Curated project data (ProjectConfig shape from src/data/projects.config)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Position in the projects array; key into loadedImages</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>loadedImages</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Map of index -> boolean tracking loaded images</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>setLoadedImages</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Setter for loadedImages state</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -183,7 +310,7 @@ the <html data-theme> attribute and localStorage in sync.
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="context_ThemeContext.js.html">context/ThemeContext.js</a>, <a href="context_ThemeContext.js.html#line37">line 37</a>
+        <a href="components_Projects_ProjectCard.js.html">components/Projects/ProjectCard.js</a>, <a href="components_Projects_ProjectCard.js.html#line30">line 30</a>
     </li></ul></dd>
     
 
@@ -199,72 +326,39 @@ the <html data-theme> attribute and localStorage in sync.
 
 
 
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
         
-            
-<h4 class="name" id=".useTheme"><span class="type-signature">(static, constant) </span>useTheme<span class="type-signature"></span></h4>
 
 
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">JSX.Element</span>
 
 
-<div class="description">
-    Access the active theme. Safe without a provider (defaults to dark),
-which keeps isolated component tests simple.
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="context_ThemeContext.js.html">context/ThemeContext.js</a>, <a href="context_ThemeContext.js.html#line60">line 60</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
+    </dd>
 </dl>
 
+    
 
 
 
 
 
         
-    
-
     
 
     
