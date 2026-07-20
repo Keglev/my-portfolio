@@ -1,4 +1,13 @@
-/* ─── Contact ────────────────────────────────────── */
+/*
+ * File: Contact.css
+ * Module: components/Contact/Contact.css
+ * Summary: Styling for the Contact form and social links.
+ * Enterprise: .contact-submit/.contact-clear share visual language with
+ *   .hero-btn.ghost in Hero.css -- kept in sync deliberately (see the WHY
+ *   comment below), not accidental duplication.
+ */
+
+/* --- Contact --- */
 
 /* Centers the intro + form + socials as one block; labels/inputs inside
    stay left-aligned since block-level children don't inherit centering. */
@@ -105,10 +114,10 @@
   margin-top: 1rem;
 }
 
-/* Shared "outline" button recipe — kept in sync with .hero-btn.ghost in
+/* Shared "outline" button recipe -- kept in sync with .hero-btn.ghost in
    Hero.css. Both sit on the page background (not a card), so they use
-   page-level text with an accent border at rest — a pale/page-level border
-   or accent-on-page text reads as near-invisible in light mode — and fill
+   page-level text with an accent border at rest -- a pale/page-level border
+   or accent-on-page text reads as near-invisible in light mode -- and fill
    solid accent on hover/focus for a clear pressed state. */
 .contact-submit,
 .contact-clear {
@@ -151,7 +160,7 @@
   color: #ff6b6b;
 }
 
-/* ─── Socials ────────────────────────────────────── */
+/* --- Socials --- */
 
 .contact-socials {
   display: flex;
@@ -171,7 +180,7 @@
   transform: translateY(-3px);
 }
 
-/* ─── Responsive ─────────────────────────────────── */
+/* --- Responsive --- */
 
 @media (max-width: 768px) {
   .contact-row {

@@ -1,15 +1,19 @@
+/**
+ * @file Hero.js
+ * @module components/Hero/Hero
+ * @summary Hero section: the first thing a recruiter sees.
+ * @enterprise A short eyebrow line (stack + location), a value-proposition
+ * headline with an accented key phrase, a one-paragraph lead, and three
+ * CTAs (projects, CV download, career strip). All copy is locale-driven;
+ * the CV link's file comes from data/cvAssets.config, the same single
+ * source of truth SidebarMenu uses.
+ */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { getCvFile } from '../../data/cvAssets.config';
 import './Hero.css';
 
 /**
- * Hero section: the first thing a recruiter sees.
- * A short eyebrow line (stack + location), a value-proposition headline with
- * an accented key phrase, a one-paragraph lead, and three CTAs (projects,
- * CV download, career strip). All copy is locale-driven; the CV link serves the
- * matching language PDF, mirroring the sidebar logic.
- *
  * @returns {JSX.Element}
  */
 const Hero = () => {

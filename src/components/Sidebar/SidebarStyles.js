@@ -1,3 +1,18 @@
+/**
+ * @file SidebarStyles.js
+ * @module components/Sidebar/SidebarStyles
+ * @summary styled-components definitions for the Sidebar component tree.
+ * @enterprise This is Sidebar's CSS-in-JS equivalent of a .css file --
+ * Sidebar/SidebarMenu have no separate .css file, so all their styling
+ * lives here. Sized and reviewed against the CSS soft/hard caps (300/400
+ * lines), not the JS-component caps, since its content is style
+ * definitions, not render logic. Several colors (the rgba teal literals)
+ * are hardcoded rather than referencing the --color-accent custom
+ * property; that's an existing design choice (buttons stay this exact
+ * teal in both themes) noted here rather than changed, since introducing
+ * a color source of truth for it is beyond the scope of this
+ * comment-only pass.
+ */
 import styled from 'styled-components';
 import { Link } from 'react-scroll';
 
@@ -139,7 +154,7 @@ export const LanguageWrapper = styled.div`
     box-shadow: 0 2px 6px rgba(10,25,47,0.25);
     transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.08s ease, box-shadow 0.12s ease;
   }
-  /* Hover never touches background — only border/color — so it can never land
+  /* Hover never touches background -- only border/color -- so it can never land
      on the same color as the (possibly accent) background underneath it */
   button:hover {
     border-color: var(--color-accent);
