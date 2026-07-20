@@ -1,25 +1,25 @@
-name: Node 20 Setup
-description: Set up Node 20, restore npm cache, install dependencies (run after checkout)
+name: Node 24 Setup
+description: Set up Node 24, restore npm cache, install dependencies (run after checkout)
 
 runs:
   using: composite
   steps:
     - name: Use Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v7
       with:
-        node-version: '22'
+        node-version: '24'
 
     - name: Cache node_modules
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         # ~/.npm is the npm download cache (tarballs), not node_modules itself —
         # portable across OSes and safe to share between jobs.
         path: ~/.npm
-        key: ${{ runner.os }}-node-22-${{ hashFiles('package-lock.json') }}
+        key: ${{ runner.os }}-node-24-${{ hashFiles('package-lock.json') }}
         # Partial-match fallback: allows cache reuse when only some deps changed
         # and the lockfile hash no longer matches exactly.
         restore-keys: |
-          ${{ runner.os }}-node-22-
+          ${{ runner.os }}-node-24-
 
     - name: Install dependencies
       # --legacy-peer-deps: react-scripts v5 conflicts with newer peer dep resolution
