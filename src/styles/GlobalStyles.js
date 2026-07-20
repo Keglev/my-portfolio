@@ -1,9 +1,16 @@
+/**
+ * @file GlobalStyles.js
+ * @module styles/GlobalStyles
+ * @summary CSS reset and base typography applied globally via styled-components.
+ * @enterprise Injected once at the root (see App.js) so every component
+ * inherits consistent defaults without re-declaring its own box-sizing and
+ * margin resets. Color values reference CSS custom properties (--color-bg,
+ * --color-text) rather than literals so ThemeContext's <html data-theme>
+ * toggle recolors the whole app without this file needing to know about
+ * themes at all.
+ */
 import { createGlobalStyle } from 'styled-components';
 
-/**
- * CSS reset and base typography applied globally across the entire app.
- * Injected once at the root so all components inherit consistent defaults.
- */
 export const GlobalStyles = createGlobalStyle`
   * {
     margin: 0;

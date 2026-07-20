@@ -1,3 +1,14 @@
+/**
+ * @file index.js
+ * @module i18n/index
+ * @summary Initializes i18next with the bundled EN/DE translation resources.
+ * @enterprise Must be imported before any translated component renders (see
+ * the import order note in App.js). Default language is German (lng: 'de')
+ * because the portfolio targets a German-speaking market; English is the
+ * fallback. compatibilityJSON: 'v3' matches the plural-key format used in
+ * the locale JSON files -- changing it without migrating the JSON breaks
+ * pluralization silently.
+ */
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import enTranslation from './locales/en.json';
