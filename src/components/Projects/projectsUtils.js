@@ -1,5 +1,14 @@
 /**
- * Generates an inline SVG data URI to show when no real project image is found.
+ * @file projectsUtils.js
+ * @module components/Projects/projectsUtils
+ * @summary Generates an inline SVG data URI to show when no real project
+ * image is found.
+ * @enterprise Used by ProjectCard's image onError handler as the final
+ * fallback after both the theme/language-specific image and the English
+ * default fail to load, so a project card never shows a broken-image icon.
+ */
+
+/**
  * Escapes the title to prevent SVG text injection.
  *
  * @param {string} title - Project name displayed inside the placeholder
