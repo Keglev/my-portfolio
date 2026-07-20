@@ -1,3 +1,16 @@
+/**
+ * @file App.js
+ * @module App
+ * @summary Root application component; composes the fixed sidebar with the
+ * scrollable main content column.
+ * @enterprise Single-page portfolio: no router, no pages/ layer -- each
+ * section (Hero/About/Skills/Projects/Contact/Legal) renders exactly once,
+ * in the order the sidebar nav expects (SidebarMenu's NAV_ITEMS ids match
+ * these section ids for react-scroll). Wraps everything in ThemeProvider so
+ * every descendant can read the active theme. "./i18n" is imported for its
+ * side effect only (i18next init) and must run before any translated
+ * component renders.
+ */
 import React from 'react';
 import './App.css';
 import Projects from './components/Projects/Projects';
@@ -13,9 +26,6 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import "./i18n"; // must be imported before any translated component renders
 
 /**
- * Root application component.
- * Composes the fixed sidebar with the scrollable main content column.
- *
  * @returns {JSX.Element}
  */
 function App() {

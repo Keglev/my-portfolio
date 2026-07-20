@@ -1,8 +1,12 @@
 /**
- * Curated skills for the Skills section, grouped the way recruiters scan:
- * backend first (the target role), then frontend, DevOps, and databases.
- * Labels are technology names (not translated); group titles are localized
- * via the `titleKey` i18n key.
+ * @file skills.config.js
+ * @module data/skills.config
+ * @summary Curated skills for the Skills section, grouped for recruiter scanning.
+ * @enterprise Backend-first ordering is deliberate -- it's the target role,
+ * so it needs to be seen first, then frontend, DevOps, and databases.
+ * Labels are technology names (not translated); group titles and
+ * descriptions resolve through i18n keys so the same data drives both
+ * locales. Consumed exclusively by src/components/Skills/Skills.js.
  *
  * @typedef {Object} SkillGroup
  * @property {string} id        Stable id.

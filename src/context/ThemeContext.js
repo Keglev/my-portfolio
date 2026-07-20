@@ -1,13 +1,19 @@
+/**
+ * @file ThemeContext.js
+ * @module context/ThemeContext
+ * @summary Provides light/dark theme state and a toggle to the component tree.
+ * @enterprise Single source of truth for theme state, consumed by Sidebar
+ * (toggle UI) and ProjectCard (theme-specific screenshot selection). Mirrors
+ * state to the <html data-theme> attribute so index.css's CSS variable
+ * overrides apply without prop-drilling into every styled component.
+ * Persists the choice in localStorage; getInitialTheme() falls back to dark
+ * (the site's default identity) if storage throws, which keeps SSR,
+ * private-mode, and test environments working without a special case.
+ * useTheme() works without a provider so isolated component tests don't
+ * need to wrap in ThemeProvider.
+ */
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-/**
- * Theme context for light/dark mode.
- *
- * The active theme is exposed to components (e.g. ProjectCard picks
- * theme-specific screenshots) and mirrored to a `data-theme` attribute on
- * <html>, which drives the CSS variable overrides in index.css. The choice
- * persists in localStorage; the default is dark, matching the site's identity.
- */
 const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} });
 
 const STORAGE_KEY = 'portfolio-theme';
@@ -16,7 +22,7 @@ const getInitialTheme = () => {
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored === 'light' || stored === 'dark') return stored;
-  } catch (e) { /* storage unavailable (SSR/tests/private mode) — fall through */ }
+  } catch (e) { /* storage unavailable (SSR/tests/private mode) -- fall through */ }
   return 'dark';
 };
 

@@ -1,18 +1,19 @@
 /**
- * Curated project data for the Projects section.
- *
- * Single source of truth for the portfolio cards. It intentionally does NOT
- * fetch from the GitHub API at build time: cards are hand-curated for a
- * recruiter audience, so copy, titles, tech tags and images are controlled
- * here instead of inherited (with bugs) from README files.
- *
- * Copy is aligned to the CV (EN + DE) so the portfolio and CV tell the same
- * story. Summaries are plain text only — no Markdown, no leading section labels.
+ * @file projects.config.js
+ * @module data/projects.config
+ * @summary Curated project data for the Projects section.
+ * @enterprise Single source of truth for the portfolio cards; deliberately
+ * NOT fetched from the GitHub API at build time (see ADR-006) so copy,
+ * titles, tech tags, and images stay reviewer-controlled instead of
+ * inherited -- bugs included -- from README drift. Copy is aligned to the
+ * CV (EN + DE) so the portfolio and CV tell the same story. Summaries are
+ * plain text only -- no Markdown, no leading section labels. Consumed
+ * exclusively by src/components/Projects/Projects.js.
  *
  * Image convention:
  *   Put curated PNGs in `public/projects/` and reference them by absolute
  *   public path. Resolves the same under CRA and Vite and never breaks the
- *   build if a file is missing — ProjectCard falls back to an inline SVG
+ *   build if a file is missing -- ProjectCard falls back to an inline SVG
  *   placeholder on load error.
  *
  * @typedef {Object} ProjectConfig
