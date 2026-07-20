@@ -1,6 +1,10 @@
-/*
- * Tests for Skills.js (curated static config).
- * Covers: one card per group with localized heading key, and all chips rendered.
+/**
+ * @file Skills.test.js
+ * @module src/__tests__/components/Skills
+ * @testing components/Skills/Skills.js
+ * @description Contract test for the Skills section: one card renders
+ * per curated group with its localized heading key, and every technology
+ * chip within each group renders.
  */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
@@ -17,8 +21,9 @@ jest.mock('../../data/skills.config', () => ({
 const Skills = require('../../components/Skills/Skills').default;
 
 describe('Skills', () => {
-  it('renders a card per group and every chip', () => {
+  it('should render a card per group and every chip when Skills mounts', () => {
     render(<Skills />);
+
     expect(screen.getByText('skillsSection.backend')).toBeInTheDocument();
     expect(screen.getByText('skillsSection.frontend')).toBeInTheDocument();
     expect(screen.getByText('Java')).toBeInTheDocument();

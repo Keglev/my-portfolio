@@ -1,8 +1,14 @@
-/*
- * Tests for Projects.js
- * Covers: rendering one ProjectCard per curated config entry, and passing the
- * correct project + index props. Data now comes from the static config module,
- * so there is no fetch to mock.
+/**
+ * @file Projects.test.js
+ * @module src/__tests__/components/Projects
+ * @testing components/Projects/Projects.js
+ * @description Contract tests for the Projects section: it renders one
+ * ProjectCard per curated config entry with the correct project + index
+ * props, and renders the portfolio-meta strip's source/docs/coverage
+ * links. ProjectCard is stubbed to assert wiring, not card internals.
+ *
+ * Out of scope: ProjectCard's own rendering (see ProjectCard.test.js).
+ * Data comes from the static config module, so there is no fetch to mock.
  */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
@@ -26,34 +32,33 @@ jest.mock('../../components/Projects/ProjectCard', () => ({
   ),
 }));
 
-describe('Projects component', () => {
-  it('renders one ProjectCard per curated config entry', () => {
+describe('Projects', () => {
+  it('should render one ProjectCard per curated config entry when Projects mounts', () => {
     // eslint-disable-next-line global-require
     const Projects = require('../../components/Projects/Projects').default;
-    render(<Projects />);
 
+    render(<Projects />);
     const cards = screen.getAllByTestId('project-card');
+
     expect(cards).toHaveLength(2);
     expect(cards[0].getAttribute('data-slug')).toBe('proj-a');
     expect(cards[0].getAttribute('data-index')).toBe('0');
     expect(cards[1].getAttribute('data-slug')).toBe('proj-b');
   });
 
-  it('renders the portfolio-meta strip with links to source, docs and coverage', () => {
+  it('should render the portfolio-meta strip with links to source, docs, and coverage when Projects mounts', () => {
     // eslint-disable-next-line global-require
     const Projects = require('../../components/Projects/Projects').default;
+
     render(<Projects />);
 
     expect(screen.getByText('portfolioMeta.text', { exact: false })).toBeInTheDocument();
-
     const source = screen.getByRole('link', { name: 'portfolioMeta.source' });
     expect(source).toHaveAttribute('href', 'https://github.com/Keglev/my-portfolio');
     expect(source).toHaveAttribute('target', '_blank');
     expect(source).toHaveAttribute('rel', 'noopener noreferrer');
-
     const docs = screen.getByRole('link', { name: 'portfolioMeta.docs' });
     expect(docs).toHaveAttribute('href', 'https://keglev.github.io/my-portfolio/');
-
     const coverage = screen.getByRole('link', { name: 'portfolioMeta.coverage' });
     expect(coverage).toHaveAttribute('href', 'https://keglev.github.io/my-portfolio/coverage/index.html');
   });

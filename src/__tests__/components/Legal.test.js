@@ -1,6 +1,11 @@
-/*
- * Tests for Legal.js
- * Covers: Impressum and Datenschutz headings, dangerouslySetInnerHTML content injection from i18n.
+/**
+ * @file Legal.test.js
+ * @module src/__tests__/components/Legal
+ * @testing components/Legal/Legal.js
+ * @description Contract test for the Legal section: Impressum and
+ * Datenschutz headings render, and their dangerouslySetInnerHTML content
+ * (developer-authored HTML from the locale files, per Legal.js's header)
+ * is injected correctly.
  */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
@@ -9,10 +14,10 @@ import Legal from '../../components/Legal/Legal';
 jest.mock('react-i18next', () => ({ useTranslation: jest.fn() }));
 const { useTranslation } = require('react-i18next');
 
-describe('Legal component', () => {
+describe('Legal', () => {
   afterEach(() => jest.clearAllMocks());
 
-  it('renders impressum and datenschutz headings and HTML content', () => {
+  it('should render the Impressum and Datenschutz headings with their injected HTML content when Legal mounts', () => {
     useTranslation.mockReturnValue({
       t: (k) => {
         if (k === 'legal.impressumHeading') return 'Impressum';
@@ -27,7 +32,6 @@ describe('Legal component', () => {
 
     expect(screen.getByRole('heading', { name: 'Impressum' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Datenschutz' })).toBeInTheDocument();
-
     expect(screen.getByText('Details')).toBeInTheDocument();
     expect(screen.getByText('Info')).toBeInTheDocument();
   });

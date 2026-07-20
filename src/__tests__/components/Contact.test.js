@@ -1,8 +1,15 @@
-/*
- * Tests for Contact.js (Web3Forms form).
- * Covers: consent gating of the submit button, successful submit posting the
- * expected payload and showing the success status, and API failure showing the
- * error status. fetch is mocked; no network involved.
+/**
+ * @file Contact.test.js
+ * @module src/__tests__/components/Contact
+ * @testing components/Contact/Contact.js
+ * @description Contract tests for the Web3Forms-backed contact form:
+ * consent gating of the submit button, successful submit posting the
+ * expected payload and showing the success status, API/network failure
+ * showing the error status, the clear button resetting all fields, and
+ * the social-links order.
+ *
+ * Out of scope: Web3Forms' own API behavior. fetch is mocked; no network
+ * call is ever made.
  */
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -20,19 +27,23 @@ describe('Contact', () => {
   beforeEach(() => {
     global.fetch = jest.fn();
   });
+
   afterEach(() => {
     delete global.fetch;
   });
 
-  it('keeps submit disabled until the consent checkbox is checked', () => {
+  it('should enable the submit button only when the consent checkbox is checked', () => {
     render(<Contact />);
     const submit = screen.getByRole('button', { name: 'contactSection.send' });
+
     expect(submit).toBeDisabled();
+
     fireEvent.click(screen.getByRole('checkbox', { name: 'contactSection.consent' }));
+
     expect(submit).toBeEnabled();
   });
 
-  it('posts the form to Web3Forms and shows the success status', async () => {
+  it('should post the form to Web3Forms and show the success status when the API call succeeds', async () => {
     global.fetch.mockResolvedValue({ json: async () => ({ success: true }) });
     render(<Contact />);
     fill();
@@ -49,7 +60,7 @@ describe('Contact', () => {
     expect(body.message).toBe('Hallo');
   });
 
-  it('shows the error status when the API reports failure', async () => {
+  it('should show the error status when the API reports failure', async () => {
     global.fetch.mockResolvedValue({ json: async () => ({ success: false }) });
     render(<Contact />);
     fill();
@@ -59,7 +70,7 @@ describe('Contact', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('contactSection.error');
   });
 
-  it('shows the error status when the request throws', async () => {
+  it('should show the error status when the request throws', async () => {
     global.fetch.mockRejectedValue(new Error('network'));
     render(<Contact />);
     fill();
@@ -69,12 +80,14 @@ describe('Contact', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('contactSection.error');
   });
 
-  it('renders the clear button and empties the fields when clicked', () => {
+  it('should render the clear button and empty all fields when it is clicked', () => {
     render(<Contact />);
+
     expect(screen.getByRole('button', { name: 'contactSection.clear' })).toBeInTheDocument();
 
     fill();
     fireEvent.click(screen.getByRole('checkbox', { name: 'contactSection.consent' }));
+
     expect(screen.getByLabelText('contactSection.name')).toHaveValue('Max');
     expect(screen.getByLabelText('contactSection.consent')).toBeChecked();
 
@@ -86,9 +99,10 @@ describe('Contact', () => {
     expect(screen.getByLabelText('contactSection.consent')).not.toBeChecked();
   });
 
-  it('renders the social links with GitHub first, followed by LinkedIn, Xing and Email', () => {
+  it('should render the social links in GitHub, LinkedIn, Xing, Email order when Contact mounts', () => {
     render(<Contact />);
     const socialLinks = screen.getAllByRole('link');
+
     expect(socialLinks.map((a) => a.getAttribute('aria-label'))).toEqual([
       'GitHub',
       'LinkedIn',
