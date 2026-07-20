@@ -63,7 +63,7 @@ Intentionally excluded from coverage:
 
 - Test files (`__tests__/`, `*.test.js`, `*.spec.js`)
 - CRA test setup (`setupTests.js`)
-- Standalone debug and audit scripts (`debugRepoDocs.js`, `audit-check.js`)
+- Standalone audit scripts (`audit-check.js`)
 
 ## Troubleshooting
 

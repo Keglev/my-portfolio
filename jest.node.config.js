@@ -41,7 +41,6 @@ module.exports = {
     '\\.test\\.js$',
     '\\.spec\\.js$',
     'setupTests\\.js',
-    'debugRepoDocs\\.js',
     'audit-check\\.js',
   ],
   // lcov enables CI coverage upload; json-summary drives badge generation
