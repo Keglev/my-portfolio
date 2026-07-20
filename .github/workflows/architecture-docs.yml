@@ -76,31 +76,29 @@ jobs:
       - name: Node setup
         uses: ./.github/actions/node-setup
 
-      # ── Doc templates ───────────────────────────────────────────────────
-      # build_docs.js assembles header.html + page.html + footer.html into the doc-page template,
-      # converts docs/*.md → docs/*.html (skipping docs/jsdoc/ and docs/coverage/), concatenates the
-      # split CSS source files into a single docs/templates/styles.css, and assembles
-      # header.html + hub.html + footer.html → docs/index.html as the visual landing page.
+      # ── Doc build ────────────────────────────────────────────────────────
+      # npm run docs:build is the single source of truth for this two-step
+      # pipeline (also runnable locally): build_docs.js assembles
+      # header.html + page.html + footer.html into the doc-page template,
+      # converts docs/*.md → docs/*.html (skipping docs/jsdoc/ and
+      # docs/coverage/), concatenates the split CSS source files into a
+      # single docs/templates/styles.css, and assembles header.html +
+      # hub.html + footer.html → docs/index.html. build_mermaid.js then
+      # looks for mmdc (@mermaid-js/mermaid-cli) on PATH and in
+      # node_modules/.bin; when not found it exits cleanly and diagrams in
+      # the generated HTML pages fall back to client-side rendering via the
+      # Mermaid CDN script already included in scripts/docs/templates/page.html.
+      # To enable server-side pre-rendering in CI: npm install --save-dev
+      # @mermaid-js/mermaid-cli.
       #
-      # marked must be installed before this step.
-      # The inline install is a no-op once "marked" is committed to package-lock.json
+      # marked must be installed before build_docs.js runs. The inline
+      # install is a no-op once "marked" is committed to package-lock.json
       # via `npm install --save-dev marked` in the local dev environment.
       # It ensures CI works in the interim before the lockfile is updated.
-      - name: Apply doc templates
+      - name: Build docs (templates + Mermaid pre-render)
         run: |
           node -e "require('marked')" 2>/dev/null || npm install --no-save marked@^9
-          node scripts/docs/build_docs.js
-
-      # ── Mermaid diagrams ────────────────────────────────────────────────
-      # build_mermaid.js looks for mmdc (@mermaid-js/mermaid-cli) on PATH and
-      # in node_modules/.bin. When not found it exits cleanly — diagrams in
-      # the generated HTML pages are rendered client-side by the Mermaid CDN
-      # script already included in scripts/docs/templates/page.html.
-      #
-      # To enable server-side pre-rendering in CI:
-      #   npm install --save-dev @mermaid-js/mermaid-cli
-      - name: Pre-render Mermaid diagrams
-        run: node scripts/docs/build_mermaid.js
+          npm run docs:build
 
       # docs/jsdoc/ is git-tracked on main as legacy generated output —
       # exclude it (and docs/coverage/, generated only by api-docs.yml) from

@@ -57,8 +57,10 @@ jobs:
       - name: Run tests with coverage
         env:
           CI: true
-        # --runInBand: runs tests serially to avoid resource contention in CI
-        run: npx jest --config=jest.node.config.js --runInBand --coverage
+        # npm run test:node is the single source of truth for this jest
+        # invocation (config, --runInBand, --testPathPattern); --coverage
+        # is forwarded on top of it for CI's coverage-artifact upload.
+        run: npm run test:node -- --coverage
 
       # Upload coverage so api-docs.yml can consume it without re-running tests.
       - name: Upload coverage artifact
