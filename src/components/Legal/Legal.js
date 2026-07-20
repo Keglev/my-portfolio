@@ -1,11 +1,19 @@
+/**
+ * @file Legal.js
+ * @module components/Legal/Legal
+ * @summary Renders the German legal pages: Impressum and Datenschutzerklarung.
+ * @enterprise Both sections reuse the project-card layout for visual
+ * consistency with the rest of the site. dangerouslySetInnerHTML is safe
+ * here specifically because legal.impressumContent/datenschutzContent are
+ * developer-authored strings in the locale JSON files, not user input --
+ * the trust boundary is "whoever can edit en.json/de.json", same as any
+ * other hardcoded copy in this repo.
+ */
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import './Legal.css';
 
 /**
- * Renders the German legal pages: Impressum and Datenschutzerklärung.
- * Both sections reuse the project-card layout for visual consistency with the rest of the site.
- *
  * @returns {JSX.Element} Fragment containing Impressum and Datenschutz sections.
  */
 const Legal = () => {

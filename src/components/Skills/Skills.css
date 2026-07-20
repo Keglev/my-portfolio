@@ -1,4 +1,13 @@
-/* ─── Skills ─────────────────────────────────────── */
+/*
+ * File: Skills.css
+ * Module: components/Skills/Skills.css
+ * Summary: Styling for the Skills section (single-column stacked cards).
+ * Enterprise: Colors reference CSS custom properties (--color-*) so
+ *   ThemeContext's <html data-theme> toggle recolors this section without
+ *   any JS involvement.
+ */
+
+/* --- Skills --- */
 
 .skills-container h2 {
   font-size: 2rem;
@@ -25,7 +34,7 @@
   margin-bottom: 0.35rem;
 }
 
-/* One-line provenance for the group — evidence, not just a chip list */
+/* One-line provenance for the group -- evidence, not just a chip list */
 .skills-desc {
   font-size: 0.83rem;
   color: var(--color-card-text-muted);

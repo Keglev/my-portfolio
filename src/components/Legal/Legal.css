@@ -1,7 +1,16 @@
-/* ─── Legal Heading ──────────────────────────────── */
+/*
+ * File: Legal.css
+ * Module: components/Legal/Legal.css
+ * Summary: Styling for the Impressum and Datenschutz sections.
+ * Enterprise: Both sections reuse .project-container/.project-grid/
+ *   .project-card classes from Projects.css for visual consistency, so
+ *   this file only adds the two rules that layout doesn't already cover.
+ */
+
+/* --- Legal Heading --- */
 
 .legal-heading { text-align: center; }
 
-/* ─── Legal Content ──────────────────────────────── */
+/* --- Legal Content --- */
 
 .legal-content { max-width: 780px; line-height: 1.6; color: var(--color-text); }
