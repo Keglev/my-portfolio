@@ -27,12 +27,27 @@ describe('setupTestsNode', () => {
       }).not.toThrow();
     });
 
-    it('should have React available after setup (or gracefully handle missing React)', () => {
+    it('should set global.React to the real module (node runner) or leave it undefined (CRA runner)', () => {
       delete require.cache[require.resolve('../../../../config/jest/setupTestsNode')];
       require('../../../../config/jest/setupTestsNode');
-      // Loose check: React may or may not be available depending on environment
-      const reactType = typeof global.React;
-      expect(reactType === 'object' || reactType === 'undefined').toBe(true);
+
+      // config/jest/setupTestsNode.js executes in a different module realm
+      // than this test file under CRA's own Jest runner (test:cra /
+      // react-scripts test): the `global.React = require('react')`
+      // assignment genuinely runs inside that module (confirmed via
+      // temporary debug logging during investigation), but that module's
+      // `global` is not the same object as this file's `global`, so the
+      // assignment is invisible here. Under the plain node runner
+      // (test:node) both realms are the same object, and the assignment
+      // IS visible. Both outcomes below are therefore correct, not a
+      // vague "might be either type" hedge -- see BUCKET CB-P8-01 in the
+      // source file for the deferred follow-up on whether this polyfill
+      // is even necessary under CRA.
+      const reactModule = require('react');
+      const setUnderNodeRunner = global.React === reactModule;
+      const unsetUnderCraRunner = global.React === undefined;
+
+      expect(setUnderNodeRunner || unsetUnderCraRunner).toBe(true);
     });
   });
 
@@ -138,11 +153,27 @@ describe('setupTestsNode', () => {
       }).not.toThrow();
     });
 
-    it('should gracefully handle missing optional dependencies', () => {
-      expect(() => {
+    it('should complete the rest of setup when one optional dependency fails to load', () => {
+      // Forces the jest-dom try/catch specifically to fail, then verifies a
+      // LATER independent try/catch (the act-environment flag) still runs --
+      // this is what "gracefully handle missing dependencies" actually claims,
+      // not just that nothing throws when every dependency is present and
+      // fine. jest-dom (not node-fetch) is the right target here: Node's own
+      // native global.fetch already satisfies setupTestsNode.js's
+      // `typeof global.fetch === 'undefined'` guard, so require('node-fetch')
+      // never actually executes in this test environment -- mocking it to
+      // throw would silently test nothing. jest-dom's require has no such
+      // guard, so it reliably runs and can be forced to fail.
+      jest.isolateModules(() => {
+        jest.doMock('@testing-library/jest-dom', () => { throw new Error('jest-dom not found'); });
         delete require.cache[require.resolve('../../../../config/jest/setupTestsNode')];
-        require('../../../../config/jest/setupTestsNode');
-      }).not.toThrow();
+
+        expect(() => {
+          require('../../../../config/jest/setupTestsNode');
+        }).not.toThrow();
+
+        expect(global.IS_REACT_ACT_ENVIRONMENT).toBe(true);
+      });
     });
   });
 
