@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/Hero/Hero.js</title>
+    <title>JSDoc: Source: data/cvAssets.config.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/Hero/Hero.js</h1>
+    <h1 class="page-title">Source: data/cvAssets.config.js</h1>
 
     
 
@@ -27,53 +27,32 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @file Hero.js
- * @module components/Hero/Hero
- * @summary Hero section: the first thing a recruiter sees.
- * @enterprise A short eyebrow line (stack + location), a value-proposition
- * headline with an accented key phrase, a one-paragraph lead, and three
- * CTAs (projects, CV download, career strip). All copy is locale-driven;
- * the CV link's file comes from data/cvAssets.config, the same single
- * source of truth SidebarMenu uses.
+ * @file cvAssets.config.js
+ * @module data/cvAssets.config
+ * @summary Language -> CV PDF asset path mapping.
+ * @enterprise Single source of truth for the locale-conditional CV
+ * download, per the i18n standing decision: the mapping lives in one
+ * place, not scattered ternaries. Previously duplicated independently in
+ * Hero.js and SidebarMenu.js, which had drifted to two different matching
+ * rules (exact 'de' equality vs. a 'de' prefix check) -- a real
+ * inconsistency for regional codes like 'de-DE'. getCvFile() standardizes
+ * on the prefix check so both consumers resolve regional German variants
+ * to the German PDF.
  */
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { getCvFile } from '../../data/cvAssets.config';
-import './Hero.css';
 
-/**
- * @returns {JSX.Element}
- */
-const Hero = () => {
-  const { t, i18n } = useTranslation();
-  const cvFile = getCvFile(i18n.language);
-
-  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-
-  return (
-    &lt;section className="hero" aria-label="Introduction">
-      &lt;p className="hero-eyebrow">{t('hero.eyebrow')}&lt;/p>
-      &lt;h1 className="hero-headline">
-        {t('hero.headlinePre')}{' '}
-        &lt;span className="hero-highlight">{t('hero.headlineHighlight')}&lt;/span>
-      &lt;/h1>
-      &lt;p className="hero-lead">{t('hero.lead')}&lt;/p>
-      &lt;div className="hero-cta">
-        &lt;button type="button" className="hero-btn ghost" onClick={() => scrollTo('Projects')}>
-          {t('hero.ctaProjects')}
-        &lt;/button>
-        &lt;a className="hero-btn ghost" href={cvFile} download target="_blank" rel="noopener noreferrer">
-          {t('hero.ctaCv')}
-        &lt;/a>
-        &lt;button type="button" className="hero-btn ghost" onClick={() => scrollTo('Career')}>
-          {t('hero.ctaExperience')}
-        &lt;/button>
-      &lt;/div>
-    &lt;/section>
-  );
+const CV_ASSETS = {
+  de: '/Carlos_Keglevich_Lebenslauf_DE.pdf',
+  en: '/Carlos_Keglevich_CV_EN.pdf',
 };
 
-export default Hero;
+/**
+ * @param {string} language - i18next language code (e.g. 'de', 'de-DE', 'en')
+ * @returns {string} Public path to the matching CV PDF
+ */
+export const getCvFile = (language) =>
+  (language || '').toLowerCase().startsWith('de') ? CV_ASSETS.de : CV_ASSETS.en;
+
+export default CV_ASSETS;
 </code></pre>
         </article>
     </section>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: components/Hero/Hero.js</title>
+    <title>JSDoc: Module: components/Sidebar/SidebarMenu</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,66 +17,287 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: components/Hero/Hero.js</h1>
+    <h1 class="page-title">Module: components/Sidebar/SidebarMenu</h1>
 
     
 
 
 
+
+<section>
+
+<header>
     
-    <section>
-        <article>
-            <pre class="prettyprint source linenums"><code>/**
- * @file Hero.js
- * @module components/Hero/Hero
- * @summary Hero section: the first thing a recruiter sees.
- * @enterprise A short eyebrow line (stack + location), a value-proposition
- * headline with an accented key phrase, a one-paragraph lead, and three
- * CTAs (projects, CV download, career strip). All copy is locale-driven;
- * the CV link's file comes from data/cvAssets.config, the same single
- * source of truth SidebarMenu uses.
- */
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { getCvFile } from '../../data/cvAssets.config';
-import './Hero.css';
+        
+            
+        
+    
+</header>
 
-/**
- * @returns {JSX.Element}
- */
-const Hero = () => {
-  const { t, i18n } = useTranslation();
-  const cvFile = getCvFile(i18n.language);
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description">SidebarMenu.js</div>
+        
 
-  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+        
+            
 
-  return (
-    &lt;section className="hero" aria-label="Introduction">
-      &lt;p className="hero-eyebrow">{t('hero.eyebrow')}&lt;/p>
-      &lt;h1 className="hero-headline">
-        {t('hero.headlinePre')}{' '}
-        &lt;span className="hero-highlight">{t('hero.headlineHighlight')}&lt;/span>
-      &lt;/h1>
-      &lt;p className="hero-lead">{t('hero.lead')}&lt;/p>
-      &lt;div className="hero-cta">
-        &lt;button type="button" className="hero-btn ghost" onClick={() => scrollTo('Projects')}>
-          {t('hero.ctaProjects')}
-        &lt;/button>
-        &lt;a className="hero-btn ghost" href={cvFile} download target="_blank" rel="noopener noreferrer">
-          {t('hero.ctaCv')}
-        &lt;/a>
-        &lt;button type="button" className="hero-btn ghost" onClick={() => scrollTo('Career')}>
-          {t('hero.ctaExperience')}
-        &lt;/button>
-      &lt;/div>
-    &lt;/section>
-  );
-};
 
-export default Hero;
-</code></pre>
-        </article>
-    </section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_Sidebar_SidebarMenu.js.html">components/Sidebar/SidebarMenu.js</a>, <a href="components_Sidebar_SidebarMenu.js.html#line1">line 1</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="~SidebarMenu"><span class="type-signature">(inner) </span>SidebarMenu<span class="signature">(activeSection)</span><span class="type-signature"> &rarr; {JSX.Element}</span></h4>
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>activeSection</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Id of the section currently in view</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="components_Sidebar_SidebarMenu.js.html">components/Sidebar/SidebarMenu.js</a>, <a href="components_Sidebar_SidebarMenu.js.html#line33">line 33</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">JSX.Element</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
 
 
 
