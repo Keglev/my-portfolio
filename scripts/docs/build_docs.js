@@ -1,22 +1,18 @@
 #!/usr/bin/env node
 /**
- * build_docs.js — converts docs/**\/*.md to docs/**\/*.html
- *
- * Recursively walks docs/, skipping jsdoc/ and coverage/:
- *   - Parses markdown with marked
- *   - Wraps ```mermaid fences in .mermaid-wrapper divs for client-side rendering
- *   - Builds a sidebar TOC from h2/h3 headings
- *   - Assembles the doc-page template from header.html + page.html + footer.html
- *   - Injects TITLE, TOC, CONTENT into the assembled template
- *   - Adjusts relative hrefs (CSS, hub link) for each subdirectory depth
- *   - Writes <name>.html next to each source .md file
- *   - docs/index.md is output as docs-index.html (hub.html owns index.html)
- *
- * Additionally assembles header.html + hub.html + footer.html → docs/index.html
- * as the visual landing page.
- *
- * Concatenates styles/{base,layout,components,typography,utilities}.css
- * into a single docs/templates/styles.css for all generated pages.
+ * @file build_docs.js
+ * @module scripts/docs/build_docs
+ * @summary Converts docs/**\/*.md to docs/**\/*.html and assembles the
+ * docs/index.html hub landing page.
+ * @enterprise Thin orchestrator: reads the template parts, wires them into
+ * lib/renderPages.js's processDir walk, then assembles the CSS bundle and
+ * hub page itself (both single-shot, not recursive, so they stayed here
+ * rather than moving to a lib module). The actual markdown-to-HTML
+ * machinery -- marked bootstrap/config, HTML post-processing, TOC
+ * building, and the recursive directory walk -- lives in scripts/docs/lib/
+ * (markedConfig, htmlPostprocess, tocBuilder, renderPages), split out
+ * because each was a genuinely separate concern with its own change
+ * reasons, not merely to reduce this file's line count.
  *
  * Usage (from repo root):
  *   node scripts/docs/build_docs.js
@@ -24,43 +20,9 @@
  * Dependencies (install once at repo root):
  *   npm install --save-dev marked
  */
-
 const fs   = require('fs');
 const path = require('path');
-
-// ---------------------------------------------------------------------------
-// Bootstrap marked
-// ---------------------------------------------------------------------------
-
-let markedModule;
-try {
-  markedModule = require('marked');
-} catch {
-  console.error(
-    '[build_docs] marked is not installed.\n' +
-    'Run: npm install --save-dev marked'
-  );
-  process.exit(1);
-}
-
-// Support marked v4–v14 (named export or module-level function)
-const markedFn =
-  typeof markedModule.marked === 'function'  ? markedModule.marked :
-  typeof markedModule        === 'function'  ? markedModule        :
-  typeof markedModule.parse  === 'function'  ? markedModule.parse  : null;
-
-if (!markedFn) {
-  console.error('[build_docs] Could not resolve a parse function from marked.');
-  process.exit(1);
-}
-
-const RendererCtor =
-  markedModule.Renderer ||
-  (markedModule.marked && markedModule.marked.Renderer);
-
-// ---------------------------------------------------------------------------
-// Paths
-// ---------------------------------------------------------------------------
+const { processDir } = require('./lib/renderPages');
 
 const REPO_ROOT   = path.resolve(__dirname, '..', '..');
 const DOCS_DIR    = path.join(REPO_ROOT, 'docs');
@@ -76,169 +38,6 @@ const HUB_TMPL    = path.join(TMPL_DIR, 'hub.html');
 const CSS_PARTS   = ['base.css', 'layout.css', 'components.css', 'typography.css', 'utilities.css']
                       .map(f => path.join(TMPL_DIR, f));
 const STYLES_OUT  = path.join(DOCS_DIR, 'templates', 'styles.css');
-
-// Subdirectories inside docs/ that contain generated output — never walk them
-const SKIP_DIRS = new Set(['jsdoc', 'coverage']);
-
-// ---------------------------------------------------------------------------
-// Configure marked: inject id attributes into headings
-// ---------------------------------------------------------------------------
-
-function slugify(text) {
-  return text
-    .toLowerCase()
-    .replace(/<[^>]+>/g, '')
-    .replace(/[^\w\s-]/g, '')
-    .trim()
-    .replace(/\s+/g, '-');
-}
-
-if (RendererCtor) {
-  const renderer = new RendererCtor();
-
-  // marked v5+ passes a token object; older versions pass (text, depth, ...)
-  renderer.heading = function (tokenOrText, maybeDepth) {
-    const text  = typeof tokenOrText === 'object' ? tokenOrText.text  : tokenOrText;
-    const depth = typeof tokenOrText === 'object' ? tokenOrText.depth : maybeDepth;
-    const id    = slugify(text.replace(/<[^>]+>/g, ''));
-    return `<h${depth} id="${id}">${text}</h${depth}>\n`;
-  };
-
-  const setOptions = markedFn.setOptions || (markedModule.marked && markedModule.marked.setOptions);
-  if (setOptions) setOptions.call(markedFn, { renderer });
-}
-
-// ---------------------------------------------------------------------------
-// HTML post-processors
-// ---------------------------------------------------------------------------
-
-/**
- * Convert <pre><code class="language-mermaid">…</code></pre>
- * into <div class="mermaid-wrapper"><pre class="mermaid">…</pre></div>
- * so that mermaid.js picks them up for client-side rendering.
- */
-function wrapMermaid(html) {
-  return html.replace(
-    /<pre><code class="language-mermaid">([\s\S]*?)<\/code><\/pre>/g,
-    (_, code) =>
-      `<div class="mermaid-wrapper"><pre class="mermaid">${code}</pre></div>`
-  );
-}
-
-/**
- * Rewrite href="some-file.md" → href="some-file.html" (with optional #anchor)
- * so internal cross-links work after .md → .html conversion.
- */
-function rewriteLinks(html) {
-  return html.replace(
-    /href="([^"#]+)\.md(#[^"]*)?">/g,
-    (_, file, hash) => `href="${file}.html${hash || ''}">`
-  );
-}
-
-// ---------------------------------------------------------------------------
-// TOC builder
-// ---------------------------------------------------------------------------
-
-/**
- * Scan rendered HTML for h2/h3 tags with ids, return a <ul> nav list.
- * Returns empty string when fewer than 2 headings are found.
- */
-function buildToc(html) {
-  const re    = /<h([23])\s[^>]*id="([^"]+)"[^>]*>([\s\S]*?)<\/h\1>/gi;
-  const items = [];
-  let m;
-
-  while ((m = re.exec(html)) !== null) {
-    items.push({ level: parseInt(m[1], 10), id: m[2], text: m[3].replace(/<[^>]+>/g, '') });
-  }
-
-  if (items.length < 2) return '';
-
-  const lines = ['<ul class="doc-toc__list">'];
-  items.forEach(({ level, id, text }) => {
-    lines.push(`  <li${level === 3 ? ' class="toc-h3"' : ''}><a href="#${id}">${text}</a></li>`);
-  });
-  lines.push('</ul>');
-  return lines.join('\n');
-}
-
-// ---------------------------------------------------------------------------
-// Core conversion
-// ---------------------------------------------------------------------------
-
-function convertMd(mdPath, template) {
-  const src  = fs.readFileSync(mdPath, 'utf8');
-  const h1   = src.match(/^#\s+(.+)$/m);
-  const title = h1 ? h1[1].trim() : path.basename(mdPath, '.md');
-
-  let html = markedFn(src);
-  html = wrapMermaid(html);
-  html = rewriteLinks(html);
-
-  // Title suffix is added here rather than in header.html so the hub can set a different title
-  return template
-    .replace('{{TITLE}}',   title + ' — my-portfolio docs')
-    .replace('{{TOC}}',     buildToc(html))
-    .replace('{{CONTENT}}', html);
-}
-
-// ---------------------------------------------------------------------------
-// Template adjuster — fixes relative hrefs for subdirectory pages
-// ---------------------------------------------------------------------------
-
-/**
- * For pages one or more levels below docs/, rewrite the two relative hrefs
- * in header.html so the stylesheet and the hub back-link resolve correctly.
- * Depth 0 = docs/ root; depth 1 = docs/architecture/, etc.
- */
-function adjustTemplate(template, depth) {
-  if (depth === 0) return template;
-  const prefix = '../'.repeat(depth);
-  return template
-    .replace('href="templates/styles.css"', `href="${prefix}templates/styles.css"`)
-    .replace('href="index.html"',           `href="${prefix}index.html"`);
-}
-
-// ---------------------------------------------------------------------------
-// Recursive directory walker
-// ---------------------------------------------------------------------------
-
-function processDir(dir, depth, template) {
-  const adjusted = adjustTemplate(template, depth);
-  let entries;
-  try {
-    entries = fs.readdirSync(dir, { withFileTypes: true });
-  } catch (err) {
-    console.error(`[build_docs] Cannot read ${dir}: ${err.message}`);
-    return;
-  }
-
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      if (!SKIP_DIRS.has(entry.name)) processDir(fullPath, depth + 1, template);
-    } else if (entry.name.endsWith('.md')) {
-      // docs/index.md must not overwrite index.html — hub.html owns that slot
-      const baseName = (depth === 0 && entry.name === 'index.md')
-        ? 'docs-index'
-        : path.basename(entry.name, '.md');
-      const out = path.join(dir, baseName + '.html');
-      try {
-        fs.writeFileSync(out, convertMd(fullPath, adjusted), 'utf8');
-        const relIn  = path.relative(DOCS_DIR, fullPath);
-        const relOut = path.relative(DOCS_DIR, out);
-        console.log(`[build_docs]  ${relIn} → ${relOut}`);
-      } catch (err) {
-        console.error(`[build_docs]  FAIL ${path.relative(DOCS_DIR, fullPath)}: ${err.message}`);
-      }
-    }
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Entry point
-// ---------------------------------------------------------------------------
 
 function run() {
   // Verify all template parts exist before starting
@@ -256,7 +55,7 @@ function run() {
 
   // Assemble the full doc-page template from its three parts
   const pageTemplate = headerTmpl + '\n' + pageBodyTmpl + '\n' + footerTmpl;
-  processDir(DOCS_DIR, 0, pageTemplate);
+  processDir(DOCS_DIR, 0, pageTemplate, DOCS_DIR);
 
   // Concatenate split CSS source files into a single output stylesheet
   const stylesDir = path.dirname(STYLES_OUT);
