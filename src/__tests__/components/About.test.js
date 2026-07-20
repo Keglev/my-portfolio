@@ -1,7 +1,14 @@
-/*
- * Tests for About.js and CareerStrip.js
- * Covers: four storytelling blocks, career/education strip lists,
- * profile image with public-path src and bundled-asset fallback on error.
+/**
+ * @file About.test.js
+ * @module src/__tests__/components/About
+ * @testing components/About/About.js, components/About/CareerStrip.js
+ * @description Contract tests for the About section: the four
+ * storytelling blocks, the career/education strip lists, and the profile
+ * image's public-path src with bundled-asset fallback on load error.
+ *
+ * Out of scope: CareerStrip's own i18n list-resource guard against a
+ * missing/malformed translation resource (not exercised here; this mock
+ * always returns well-formed arrays).
  */
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -32,9 +39,10 @@ jest.mock('react-i18next', () => ({
   }),
 }));
 
-describe('About component', () => {
-  it('renders the heading and all four storytelling blocks', () => {
+describe('About', () => {
+  it('should render the heading and all four storytelling blocks when About mounts', () => {
     render(<About />);
+
     expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('About me');
     ['one', 'two', 'three', 'four'].forEach((n) => {
       expect(screen.getByText(`Block ${n} title`)).toBeInTheDocument();
@@ -42,8 +50,9 @@ describe('About component', () => {
     });
   });
 
-  it('renders the career strip with both columns and their entries', () => {
+  it('should render the career strip with both career and education entries when About mounts', () => {
     render(<About />);
+
     expect(screen.getByText('Career at a glance')).toBeInTheDocument();
     expect(screen.getByText('Education & certification')).toBeInTheDocument();
     expect(screen.getByText('Career line A')).toBeInTheDocument();
@@ -51,11 +60,14 @@ describe('About component', () => {
     expect(screen.getByText('Education line A')).toBeInTheDocument();
   });
 
-  it('prefers /profile.jpg and falls back to the bundled asset once on error', () => {
+  it('should fall back to the bundled asset once when the profile image fails to load', () => {
     render(<About />);
     const img = screen.getByAltText('Carlos Keglevich portrait');
+
     expect(img).toHaveAttribute('src', '/profile.jpg');
+
     fireEvent.error(img);
+
     expect(img.getAttribute('src')).not.toBe('/profile.jpg');
     expect(img.getAttribute('data-fallback')).toBe('1');
   });

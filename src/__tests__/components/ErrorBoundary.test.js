@@ -1,6 +1,10 @@
-/*
- * Tests for ErrorBoundary.js
- * Covers: normal child rendering, render error catching, and fallback UI with error message.
+/**
+ * @file ErrorBoundary.test.js
+ * @module src/__tests__/components/ErrorBoundary
+ * @testing components/ErrorBoundary/ErrorBoundary.js
+ * @description Contract tests for the error boundary: normal child
+ * rendering passes through unchanged, and a render error is caught and
+ * replaced with the fallback UI (error message + logged console.error).
  */
 import React from 'react';
 import { render, screen } from '@testing-library/react';
@@ -20,7 +24,7 @@ describe('ErrorBoundary', () => {
 
   afterEach(() => consoleErrorSpy.mockRestore());
 
-  it('renders children when nothing throws', () => {
+  it('should render children when nothing throws', () => {
     render(
       <ErrorBoundary>
         <div>safe child</div>
@@ -30,7 +34,7 @@ describe('ErrorBoundary', () => {
     expect(screen.getByText('safe child')).toBeInTheDocument();
   });
 
-  it('renders a fallback when a child throws', () => {
+  it('should render a fallback when a child throws', () => {
     render(
       <ErrorBoundary>
         <Bomb />
