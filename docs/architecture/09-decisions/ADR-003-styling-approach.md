@@ -27,9 +27,11 @@ styling requirements:
    would produce fragile, scattered rules.
 
 2. **Section components** (About, Education, Projects, Experience, RepoDocs,
-   Legal) — simpler layouts with fewer interactive states and no dynamic
-   style props. The overhead of CSS-in-JS for these would add build cost
-   without meaningful benefit.
+   Legal, at the time of this decision — the section set has since changed;
+   see [Building Blocks](../05-building-blocks.md) for the current list) —
+   simpler layouts with fewer interactive states and no dynamic style props.
+   The overhead of CSS-in-JS for these would add build cost without
+   meaningful benefit.
 
 CSS Modules were evaluated but ruled out: the project uses Create React App
 with a Babel/Webpack configuration that already supports CSS Modules, but
