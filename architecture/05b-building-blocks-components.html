@@ -86,10 +86,9 @@
   <li class="toc-h3"><a href="#sidebarmenu-props">SidebarMenu props</a></li>
   <li><a href="#section-components">Section Components</a></li>
   <li><a href="#sub-components">Sub-components</a></li>
+  <li class="toc-h3"><a href="#careerstrip">CareerStrip</a></li>
   <li class="toc-h3"><a href="#projectcard">ProjectCard</a></li>
   <li class="toc-h3"><a href="#projectsummary">ProjectSummary</a></li>
-  <li class="toc-h3"><a href="#repodoclinks">RepoDocLinks</a></li>
-  <li><a href="#custom-hooks">Custom Hooks</a></li>
   <li><a href="#references">References</a></li>
 </ul>
     </aside>
@@ -99,18 +98,17 @@
            scripts/docs/lib/renderPages.js) -->
       <h1 id="component-catalog">Component Catalog</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>This catalog documents every React component in <code>src/components/</code>, its purpose, the props it accepts, and how it is used in the app. Section components that accept no external props are grouped in a table; components with non-trivial prop contracts each get their own table.</p>
+<p>This catalog documents every React component in <code>src/components/</code>, its purpose, the props it accepts, and how it is used in the app. Components that accept no external props are grouped in a table; components with a non-trivial prop contract each get their own table.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#root-components">Root Components</a></li>
 <li><a href="#sidebar-components">Sidebar Components</a></li>
 <li><a href="#section-components">Section Components</a></li>
 <li><a href="#sub-components">Sub-components</a></li>
-<li><a href="#custom-hooks">Custom Hooks</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="root-components">Root Components</h2>
-<p>These two components form the outermost shell of the application. They are mounted in <code>src/index.js</code>.</p>
+<p>These components form the outermost shell of the application, mounted in <code>src/index.js</code>.</p>
 <table>
 <thead>
 <tr>
@@ -122,12 +120,12 @@
 <tbody><tr>
 <td><code>App</code></td>
 <td>src/App.js</td>
-<td>Composes <code>Sidebar</code> with the <code>main-content</code> scroll container; imports <code>GlobalStyles</code> and <code>SpeedInsights</code></td>
+<td>Wraps the tree in <code>ThemeProvider</code>; composes <code>Sidebar</code> with the <code>main-content</code> scroll container holding the six section components; imports <code>GlobalStyles</code> and <code>SpeedInsights</code></td>
 </tr>
 <tr>
 <td><code>ErrorBoundary</code></td>
-<td>src/components/ErrorBoundary.js</td>
-<td>Class component wrapping the entire tree; renders a fallback message on any uncaught render error</td>
+<td>src/components/ErrorBoundary/ErrorBoundary.js</td>
+<td>Class component wrapping <code>App</code> (one level inside <code>React.StrictMode</code>, per <code>src/index.js</code>); renders a hardcoded (non-i18n) fallback message on any uncaught render error, deliberately not routed through <code>t()</code> in case the crash is i18n-related itself</td>
 </tr>
 </tbody></table>
 <h3 id="errorboundary-props">ErrorBoundary props</h3>
@@ -148,7 +146,7 @@
 </tr>
 </tbody></table>
 <h2 id="sidebar-components">Sidebar Components</h2>
-<p>The sidebar group is composed inside <code>Sidebar</code> and stays fixed to the left of the viewport on desktop. On mobile it collapses into a static top block.</p>
+<p><code>Sidebar</code> is fixed to the left of the viewport on desktop and collapses into a static top block on mobile (see <a href="08b-concepts-i18n-theming.html#responsive-design">08b&#39;s responsive design table</a>).</p>
 <table>
 <thead>
 <tr>
@@ -160,17 +158,12 @@
 <tbody><tr>
 <td><code>Sidebar</code></td>
 <td>src/components/Sidebar/Sidebar.js</td>
-<td>Fixed navigation column; owns <code>activeSection</code> scroll-tracking state and passes it down to <code>SidebarMenu</code></td>
+<td>Fixed navigation column; owns <code>activeSection</code> scroll-tracking state, renders the name/title block and footer directly, and passes <code>activeSection</code> down to <code>SidebarMenu</code></td>
 </tr>
 <tr>
 <td><code>SidebarMenu</code></td>
 <td>src/components/Sidebar/SidebarMenu.js</td>
-<td>Navigation links, language toggle buttons, and the locale-aware CV download link</td>
-</tr>
-<tr>
-<td><code>SidebarSocial</code></td>
-<td>src/components/Sidebar/SidebarSocial.js</td>
-<td>Row of icon links to GitHub, LinkedIn, Xing, and email</td>
+<td>Navigation links, the DE/EN language switch, the theme toggle button, and the locale-aware CV download link</td>
 </tr>
 </tbody></table>
 <h3 id="sidebarmenu-props">SidebarMenu props</h3>
@@ -190,10 +183,9 @@
 <td>ID of the section currently in view (e.g. <code>&#39;About&#39;</code>, <code>&#39;Projects&#39;</code>); controls which nav link receives the active highlight</td>
 </tr>
 </tbody></table>
-<p><code>Sidebar</code> derives <code>activeSection</code> from scroll position via a <code>window.scroll</code> listener, then passes it to <code>SidebarMenu</code>. See <a href="06-runtime.html">architecture/data-flow.md</a> for the full state flow.</p>
-<p><code>SidebarSocial</code> accepts no props. All social URLs are hardcoded inside the component.</p>
+<p><code>Sidebar</code> derives <code>activeSection</code> from scroll position via a <code>window.scroll</code> listener, then passes it to <code>SidebarMenu</code>. See <a href="06-runtime.html">06-runtime.md</a> for the full state flow.</p>
 <h2 id="section-components">Section Components</h2>
-<p>All six section components accept no external props. They source their content via <code>useTranslation()</code> or internal custom hooks. Each is rendered inside a <code>div.section</code> wrapper in <code>App.js</code>, with an <code>id</code> that acts as a scroll target.</p>
+<p>All six section components accept no external props; they source their content via <code>useTranslation()</code> and, where applicable, a static config module. Each is rendered inside a <code>div.section</code> wrapper in <code>App.js</code>, with an <code>id</code> that acts as a scroll target.</p>
 <table>
 <thead>
 <tr>
@@ -204,34 +196,34 @@
 </tr>
 </thead>
 <tbody><tr>
+<td><code>Hero</code></td>
+<td><code>Hero</code></td>
+<td><code>hero</code></td>
+<td>i18n locale JSON</td>
+</tr>
+<tr>
 <td><code>About</code></td>
 <td><code>About</code></td>
 <td><code>aboutSection</code></td>
-<td>i18n locale JSON</td>
+<td>i18n locale JSON; renders <code>CareerStrip</code> as its final child</td>
 </tr>
 <tr>
-<td><code>Education</code></td>
-<td><code>Education</code></td>
-<td><code>educationSection</code></td>
-<td>i18n locale JSON</td>
+<td><code>Skills</code></td>
+<td><code>SkillsSection</code></td>
+<td><code>skills</code>, <code>skillsSection</code></td>
+<td><code>data/skills.config</code> (group structure) + i18n locale JSON (labels)</td>
 </tr>
 <tr>
 <td><code>Projects</code></td>
 <td><code>Projects</code></td>
-<td><code>projects</code></td>
-<td><code>public/projects.json</code> via <code>useProjects</code> hook</td>
+<td><code>projects</code>, <code>portfolioMeta</code></td>
+<td><code>data/projects.config</code> (static, no fetch)</td>
 </tr>
 <tr>
-<td><code>RepoDocs</code></td>
-<td><code>RepoDocs</code></td>
-<td><code>repoDocs</code></td>
-<td><code>public/projects.json</code> via <code>useRepoDocs</code> hook</td>
-</tr>
-<tr>
-<td><code>Experience</code></td>
-<td><code>Experience</code></td>
-<td><code>experienceSection</code></td>
-<td>i18n locale JSON</td>
+<td><code>Contact</code></td>
+<td><code>ContactSection</code></td>
+<td><code>contactSection</code></td>
+<td>Web3Forms API (<code>REACT_APP_WEB3FORMS_KEY</code> env var)</td>
 </tr>
 <tr>
 <td><code>Legal</code></td>
@@ -242,8 +234,10 @@
 </tbody></table>
 <h2 id="sub-components">Sub-components</h2>
 <p>Sub-components are rendered by parent section components and receive data as props.</p>
+<h3 id="careerstrip">CareerStrip</h3>
+<p>Rendered by <code>About</code> as its final child, not standalone. Renders a two-column strip (career stations, education) from <code>aboutSection.career</code> and <code>aboutSection.educationItems</code> i18n list resources. Its wrapper <code>id=&quot;Career&quot;</code> is the scroll target of <code>Hero</code>&#39;s &quot;Experience&quot; CTA. Accepts no props.</p>
 <h3 id="projectcard">ProjectCard</h3>
-<p>Rendered by <code>Projects</code>. Displays a single project tile with image, summary, technology tags, and action links. Implements a three-step image fallback chain: local static asset → GitHub <code>main</code> branch → GitHub <code>master</code> branch → SVG placeholder.</p>
+<p>Rendered by <code>Projects</code>, once per entry in <code>data/projects.config</code>. Displays a theme- and language-aware preview image, title, summary (via <code>ProjectSummary</code>), technology tags, and up to five links in a locked order (live app, docs hub, repo, optional second repo, API reference). Falls back to an inline SVG placeholder (<code>projectsUtils.generatePlaceholderSVGDataUrl</code>) on image load failure.</p>
 <table>
 <thead>
 <tr>
@@ -257,13 +251,7 @@
 <td><code>project</code></td>
 <td>object</td>
 <td>yes</td>
-<td>Project data object from <code>projects.json</code></td>
-</tr>
-<tr>
-<td><code>image</code></td>
-<td>string</td>
-<td>yes</td>
-<td>Primary image URL resolved by the parent via <code>getPrimaryImage()</code></td>
+<td>Curated project entry from <code>data/projects.config</code></td>
 </tr>
 <tr>
 <td><code>index</code></td>
@@ -274,18 +262,18 @@
 <tr>
 <td><code>loadedImages</code></td>
 <td>object</td>
-<td>yes</td>
+<td>no (default <code>{}</code>)</td>
 <td>Map of <code>index → boolean</code> tracking which images have finished loading</td>
 </tr>
 <tr>
 <td><code>setLoadedImages</code></td>
 <td>function</td>
-<td>yes</td>
+<td>no (default no-op)</td>
 <td>State setter lifted from <code>Projects</code>; called when an image loads or all fallbacks are exhausted</td>
 </tr>
 </tbody></table>
 <h3 id="projectsummary">ProjectSummary</h3>
-<p>Rendered inside <code>ProjectCard</code>. Selects the best available description in priority order: German <code>summary_de</code> from <code>projects.json</code> → README About section → generic <code>summary</code> field. Renders a skeleton placeholder while all sources are empty.</p>
+<p>Rendered inside <code>ProjectCard</code>. Selects <code>project.summaryDe</code> or <code>project.summaryEn</code> by strict equality on the <code>language</code> prop — both fields are always present in the config, so there is no missing-translation fallback path to document.</p>
 <table>
 <thead>
 <tr>
@@ -299,68 +287,21 @@
 <td><code>project</code></td>
 <td>object</td>
 <td>yes</td>
-<td>Project data object from <code>projects.json</code></td>
+<td>Curated project entry from <code>data/projects.config</code></td>
 </tr>
 <tr>
 <td><code>language</code></td>
 <td>string</td>
 <td>yes</td>
-<td>Active i18n locale code (<code>&#39;en&#39;</code> or <code>&#39;de&#39;</code>)</td>
-</tr>
-<tr>
-<td><code>t</code></td>
-<td>function</td>
-<td>yes</td>
-<td>i18next <code>t()</code> function forwarded from <code>ProjectCard</code></td>
-</tr>
-</tbody></table>
-<h3 id="repodoclinks">RepoDocLinks</h3>
-<p>Rendered inside <code>RepoDocs</code>. Outputs documentation links for one repository by checking fields in priority order: <code>placeholder</code> → <code>apiDocumentation</code> → <code>architectureOverview</code> → <code>productionUrl</code> → <code>testing.coverage[]</code> → generic <code>docsLink</code> fallback.</p>
-<table>
-<thead>
-<tr>
-<th>Prop</th>
-<th>Type</th>
-<th>Required</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>project</code></td>
-<td>object</td>
-<td>yes</td>
-<td>Enriched project object from <code>useRepoDocs</code>; expected to contain a <code>repoDocs</code> sub-object</td>
-</tr>
-</tbody></table>
-<h2 id="custom-hooks">Custom Hooks</h2>
-<table>
-<thead>
-<tr>
-<th>Hook</th>
-<th>File</th>
-<th>Returns</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>useProjects</code></td>
-<td>src/components/Projects/useProjects.js</td>
-<td><code>{ projects, loadedImages, setLoadedImages }</code></td>
-<td>Fetches <code>public/projects.json</code> on mount; owns the loading and error lifecycle</td>
-</tr>
-<tr>
-<td><code>useRepoDocs</code></td>
-<td>src/components/RepoDocs/useRepoDocs.js</td>
-<td><code>Project[]</code></td>
-<td>Derives the subset of projects that have at least one documentation link</td>
+<td>Active i18n locale code (<code>&#39;en&#39;</code> or <code>&#39;de&#39;</code>), passed through as-is from <code>ProjectCard</code>&#39;s <code>i18n.language</code></td>
 </tr>
 </tbody></table>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://react.dev/learn/your-first-component">React component documentation</a></li>
 <li><a href="https://testing-library.com/docs/react-testing-library/intro/">React Testing Library</a></li>
-<li><a href="05-building-blocks.html">architecture/component-tree.md</a> — visual component hierarchy diagram</li>
-<li><a href="06-runtime.html">architecture/data-flow.md</a> — how props and state flow between components</li>
+<li><a href="05-building-blocks.html">05-building-blocks.md</a> — visual component hierarchy diagram</li>
+<li><a href="06-runtime.html">06-runtime.md</a> — how props and state flow between components</li>
 </ul>
 
     </article>

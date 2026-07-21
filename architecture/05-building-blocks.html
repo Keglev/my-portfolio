@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
-  <title>React Component Tree — my-portfolio docs</title>
+  <title>Building Blocks — my-portfolio docs</title>
 
   <!-- Set the theme before paint to avoid a flash. Dark is the fallback
        default, mirroring src/context/ThemeContext.js's own no-storage
@@ -81,10 +81,10 @@
       <ul class="doc-toc__list">
   <li><a href="#table-of-contents">Table of Contents</a></li>
   <li><a href="#component-hierarchy-diagram">Component Hierarchy Diagram</a></li>
+  <li><a href="#entry-point">Entry Point</a></li>
   <li><a href="#sidebar-group">Sidebar Group</a></li>
   <li><a href="#section-components">Section Components</a></li>
   <li><a href="#projects-group">Projects Group</a></li>
-  <li><a href="#repodocs-group">RepoDocs Group</a></li>
   <li><a href="#references">References</a></li>
 </ul>
     </aside>
@@ -92,59 +92,63 @@
     <article class="article">
       <!-- Replaced at build time by renderPages.convertMd() (see
            scripts/docs/lib/renderPages.js) -->
-      <h1 id="react-component-tree">React Component Tree</h1>
+      <h1 id="building-blocks">Building Blocks</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>This document maps the React component hierarchy from the root <code>App</code> component down to the major UI components. Understanding this tree helps when tracing a rendering issue or deciding where to introduce new state.</p>
+<p>This document maps the React component hierarchy from the root <code>App</code> component down to the major UI components. Understanding this tree helps when tracing a rendering issue or deciding where to introduce new state. For per-component prop tables, see <a href="05b-building-blocks-components.html">05b: Component Catalog</a>.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#component-hierarchy-diagram">Component Hierarchy Diagram</a></li>
+<li><a href="#entry-point">Entry Point</a></li>
 <li><a href="#sidebar-group">Sidebar Group</a></li>
 <li><a href="#section-components">Section Components</a></li>
 <li><a href="#projects-group">Projects Group</a></li>
-<li><a href="#repodocs-group">RepoDocs Group</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="component-hierarchy-diagram">Component Hierarchy Diagram</h2>
-<p>The diagram shows all significant rendering components. Infrastructure utilities (<code>SpeedInsights</code>, <code>GlobalStyles</code>) are omitted to keep the focus on UI structure.</p>
+<p>The diagram shows every component <code>App</code> renders. Infrastructure utilities (<code>SpeedInsights</code>, <code>GlobalStyles</code>, <code>ThemeProvider</code>) are omitted from the diagram to keep the focus on UI structure — see <a href="#entry-point">Entry Point</a> below for where they sit.</p>
 <div class="mermaid-wrapper"><pre class="mermaid">graph TD
     App[&quot;App&quot;]
     Sidebar[&quot;Sidebar&quot;]
     MainContent[&quot;main-content (div#scroll-container)&quot;]
-    NameTitle[&quot;NameTitle&quot;]
     SidebarMenu[&quot;SidebarMenu&quot;]
-    SidebarSocial[&quot;SidebarSocial&quot;]
-    FooterMessage[&quot;FooterMessage&quot;]
+    Hero[&quot;Hero&quot;]
     About[&quot;About&quot;]
-    Education[&quot;Education&quot;]
+    CareerStrip[&quot;CareerStrip&quot;]
+    Skills[&quot;Skills&quot;]
     Projects[&quot;Projects&quot;]
-    RepoDocs[&quot;RepoDocs&quot;]
-    Experience[&quot;Experience&quot;]
+    ProjectCard[&quot;ProjectCard (×N)&quot;]
+    ProjectSummary[&quot;ProjectSummary&quot;]
+    Contact[&quot;Contact&quot;]
     Legal[&quot;Legal&quot;]
 
     App --&gt; Sidebar
     App --&gt; MainContent
-    Sidebar --&gt; NameTitle
     Sidebar --&gt; SidebarMenu
-    Sidebar --&gt; SidebarSocial
-    Sidebar --&gt; FooterMessage
+    MainContent --&gt; Hero
     MainContent --&gt; About
-    MainContent --&gt; Education
+    About --&gt; CareerStrip
+    MainContent --&gt; Skills
     MainContent --&gt; Projects
-    MainContent --&gt; RepoDocs
-    MainContent --&gt; Experience
+    Projects --&gt; ProjectCard
+    ProjectCard --&gt; ProjectSummary
+    MainContent --&gt; Contact
     MainContent --&gt; Legal
 
     class App l1
     class Sidebar,MainContent l2
-    class NameTitle,SidebarMenu,SidebarSocial,FooterMessage,About,Education,Projects,RepoDocs,Experience,Legal l3
+    class SidebarMenu,Hero,About,Skills,Projects,Contact,Legal l3
+    class CareerStrip,ProjectCard,ProjectSummary l4
 
     classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
     classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
     classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 </pre></div>
+<h2 id="entry-point">Entry Point</h2>
+<p><code>src/index.js</code> mounts the tree as <code>&lt;React.StrictMode&gt;&lt;ErrorBoundary&gt;&lt;App /&gt;&lt;/ErrorBoundary&gt;&lt;/React.StrictMode&gt;</code> — <code>StrictMode</code> is the outermost wrapper, <code>ErrorBoundary</code> sits inside it, one level above <code>App</code>. <code>App</code> itself wraps its own render in <code>ThemeProvider</code> (see <a href="08b-concepts-i18n-theming.html#theme-system">Theme System</a>), so every descendant can read the active theme via <code>useTheme()</code>.</p>
 <h2 id="sidebar-group">Sidebar Group</h2>
-<p>The <code>Sidebar</code> component is fixed to the left of the viewport for the entire user session. It owns all navigation, identity, and utility controls.</p>
-<p><code>Sidebar</code> maintains an <code>activeSection</code> state derived from scroll position. It listens to <code>window.scroll</code> and iterates through sections bottom-to-top, so the deepest section the user has scrolled past is always the active one.</p>
+<p>The <code>Sidebar</code> component is fixed to the left of the viewport for the entire user session. It owns navigation, identity, and utility controls, and tracks an <code>activeSection</code> state derived from scroll position — it listens to <code>window.scroll</code> and iterates through sections bottom-to-top, so the deepest section the user has scrolled past is always the active one.</p>
+<p><code>Sidebar</code> renders its own name/title block and footer directly (via styled-components from <code>SidebarStyles.js</code>, see <a href="08b-concepts-i18n-theming.html#styled-components-layer">08b&#39;s styled-components layer</a>) and delegates the interactive controls to one sub-component:</p>
 <table>
 <thead>
 <tr>
@@ -153,24 +157,12 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>NameTitle</code></td>
-<td>Styled block displaying the owner&#39;s name and job title from the <code>translation</code> i18n namespace</td>
-</tr>
-<tr>
 <td><code>SidebarMenu</code></td>
-<td>Navigation links for each content section; receives <code>activeSection</code> as a prop and highlights the matching link; uses <code>react-scroll</code> for smooth scrolling</td>
-</tr>
-<tr>
-<td><code>SidebarSocial</code></td>
-<td>Icon links to GitHub, LinkedIn, and email; each carries an <code>aria-label</code> for screen reader support</td>
-</tr>
-<tr>
-<td><code>FooterMessage</code></td>
-<td>Tagline and two <code>LegalButton</code> elements that scroll to the Impressum and Privacy Policy sections</td>
+<td>Navigation links for each content section (receives <code>activeSection</code> as a prop, uses <code>react-scroll</code> for smooth scrolling), the DE/EN language switch, the theme toggle button, and the CV download link</td>
 </tr>
 </tbody></table>
 <h2 id="section-components">Section Components</h2>
-<p>The main content area renders six section components in source order. Each is wrapped in a <code>div.section</code> with an <code>id</code> matching the <code>react-scroll</code> target used by <code>SidebarMenu</code>.</p>
+<p>The main content area renders six section components in source order, each wrapped in a <code>div.section</code> with an <code>id</code> matching the <code>react-scroll</code> target used by <code>SidebarMenu</code>.</p>
 <table>
 <thead>
 <tr>
@@ -179,24 +171,28 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>About</code></td>
-<td>Introductory bio and tech-stack summary</td>
+<td><code>Hero</code></td>
+<td>First-viewport introduction: eyebrow line, headline, lead paragraph, and three CTAs (jump to Projects, download CV, jump to the career strip)</td>
 </tr>
 <tr>
-<td><code>Education</code></td>
-<td>Formal degrees, certifications, and ongoing training entries</td>
+<td><code>About</code></td>
+<td>Profile photo and four fixed-order storytelling blocks; renders <code>CareerStrip</code> as its final child</td>
+</tr>
+<tr>
+<td><code>CareerStrip</code></td>
+<td>Condensed two-column career/education strip — replaces what were previously full standalone Education and Experience sections</td>
+</tr>
+<tr>
+<td><code>Skills</code></td>
+<td>Single-column stack of skill groups sourced from <code>data/skills.config</code>; deliberately not a grid, so a recruiter can scan it without horizontal eye movement</td>
 </tr>
 <tr>
 <td><code>Projects</code></td>
-<td>Dynamically rendered project grid sourced from <code>public/projects.json</code></td>
+<td>Project grid sourced from the static <code>data/projects.config</code> (no runtime or build-time fetch)</td>
 </tr>
 <tr>
-<td><code>RepoDocs</code></td>
-<td>Links to repository documentation extracted from project READMEs at build time</td>
-</tr>
-<tr>
-<td><code>Experience</code></td>
-<td>Job history entries rendered from the <code>experienceSection</code> i18n keys</td>
+<td><code>Contact</code></td>
+<td>Web3Forms-backed contact form (DSGVO consent checkbox, honeypot spam field) plus a row of direct social/email links</td>
 </tr>
 <tr>
 <td><code>Legal</code></td>
@@ -204,25 +200,18 @@
 </tr>
 </tbody></table>
 <h2 id="projects-group">Projects Group</h2>
-<p><code>Projects</code> fetches <code>public/projects.json</code> on mount and delegates rendering to two sub-components. The fetch lifecycle (loading, error, data states) is encapsulated in the <code>useProjects</code> custom hook, keeping the component itself free of async logic.</p>
+<p><code>Projects</code> reads <code>data/projects.config</code> directly — there is no fetch, loading state, or custom data hook. It renders one <code>ProjectCard</code> per entry and, below the grid, a small &quot;portfolio meta&quot; strip linking to this repository&#39;s own source, docs, and coverage report.</p>
 <ul>
-<li><code>ProjectCard</code> — renders a single project tile with name, description, technology tags, and action links.</li>
-<li><code>ProjectSummary</code> — compact summary row used in an alternate list view.</li>
-<li><code>useProjects</code> — custom hook owning the fetch lifecycle.</li>
-<li><code>projectsUtils</code> — pure utility functions for filtering and sorting project data.</li>
-</ul>
-<h2 id="repodocs-group">RepoDocs Group</h2>
-<p><code>RepoDocs</code> renders documentation links that were extracted from each project&#39;s README during the build-time fetch step.</p>
-<ul>
-<li><code>RepoDocLinks</code> — renders the list of doc links for a single repository entry.</li>
-<li><code>useRepoDocs</code> — custom hook that derives the doc link list from the <code>projects.json</code> data.</li>
+<li><code>ProjectCard</code> — renders a single project tile: theme- and language-aware preview image (via <code>useTheme()</code>), title, summary, technology tags, and up to five links in a locked order.</li>
+<li><code>ProjectSummary</code> — renders the German or English summary field (<code>summaryDe</code>/<code>summaryEn</code>), both always present in the config.</li>
+<li><code>projectsUtils</code> — exports <code>generatePlaceholderSVGDataUrl</code>, the inline-SVG fallback shown when a project&#39;s preview image fails to load.</li>
 </ul>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://react.dev/learn/passing-props-to-a-component">React component composition</a></li>
 <li><a href="https://github.com/fisshy/react-scroll">react-scroll documentation</a></li>
-<li><a href="06-runtime.html">data-flow.md</a> — props and state flow between these components</li>
-<li><a href="08b-concepts-i18n-theming.html">i18n-flow.md</a> — how translated strings reach each component</li>
+<li><a href="06-runtime.html">06-runtime.md</a> — props and state flow between these components</li>
+<li><a href="08b-concepts-i18n-theming.html">08b: i18n &amp; Theming</a> — how translated strings and the active theme reach each component</li>
 </ul>
 
     </article>
