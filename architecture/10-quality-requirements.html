@@ -78,7 +78,17 @@
       <!-- Replaced at build time by tocBuilder.buildToc() (see
            scripts/docs/lib/tocBuilder.js); empty string when the page
            has fewer than two headings -->
-      
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#quality-tree">Quality Tree</a></li>
+  <li><a href="#quality-scenarios">Quality Scenarios</a></li>
+  <li class="toc-h3"><a href="#performance">Performance</a></li>
+  <li class="toc-h3"><a href="#reliability">Reliability</a></li>
+  <li class="toc-h3"><a href="#internationalisation">Internationalisation</a></li>
+  <li class="toc-h3"><a href="#accessibility">Accessibility</a></li>
+  <li class="toc-h3"><a href="#maintainability">Maintainability</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
     </aside>
 
     <article class="article">
@@ -86,8 +96,72 @@
            scripts/docs/lib/renderPages.js) -->
       <h1 id="quality-requirements">Quality Requirements</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>Quality tree and concrete quality scenarios: performance (static JSON served from Vercel CDN, no runtime API calls), accessibility (semantic HTML, keyboard-navigable sidebar), internationalisation (full EN/DE coverage via i18next), reliability (<code>ErrorBoundary</code>, CI gating on test/lint failure), and maintainability (generated docs and coverage published on every deploy).</p>
-<p><em>Full chapter content pending — will be promoted from the &quot;Non-Functional Requirements&quot; table in <a href="01-introduction-and-goals.html">01-introduction-and-goals.md</a>, expanded into concrete quality scenarios and cross-referenced with <a href="08c-concepts-testing.html">08c-concepts-testing.md</a>.</em></p>
+<p>The quality tree and concrete scenarios behind this architecture&#39;s decisions. Where <a href="04-solution-strategy.html">Solution Strategy</a> says <em>what</em> was chosen, this chapter says <em>what quality it was chosen for</em> and how to check it holds.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#quality-tree">Quality Tree</a></li>
+<li><a href="#quality-scenarios">Quality Scenarios</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="quality-tree">Quality Tree</h2>
+<table>
+<thead>
+<tr>
+<th>Quality goal</th>
+<th>Sub-aspects</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Performance</td>
+<td>No runtime API dependency; CDN-served static assets; Core Web Vitals monitored</td>
+</tr>
+<tr>
+<td>Reliability</td>
+<td>Render-error containment; CI gates every deploy on tests and lint</td>
+</tr>
+<tr>
+<td>Internationalisation</td>
+<td>Full EN/DE coverage; no hardcoded UI text</td>
+</tr>
+<tr>
+<td>Accessibility</td>
+<td>Semantic HTML; keyboard navigation; labeled icon-only controls</td>
+</tr>
+<tr>
+<td>Maintainability</td>
+<td>Decision history preserved (ADRs); generated docs stay current with the code</td>
+</tr>
+</tbody></table>
+<h2 id="quality-scenarios">Quality Scenarios</h2>
+<p>Each scenario follows a stimulus → response format: something happens, and the architecture responds in a specific, checkable way.</p>
+<h3 id="performance">Performance</h3>
+<ul>
+<li><strong>Scenario</strong>: A visitor loads the live site. <strong>Response</strong>: Project data is read from static JSON bundled at build time — no GitHub API call happens in the browser, so the page has no external data dependency to wait on. Vercel Speed Insights records Core Web Vitals for every real visit, with no cookie consent required. See <a href="09-decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a>.</li>
+</ul>
+<h3 id="reliability">Reliability</h3>
+<ul>
+<li><strong>Scenario</strong>: A component throws during render. <strong>Response</strong>: <code>ErrorBoundary</code>, wrapping the entire React tree, catches it and shows a fallback UI instead of a blank page.</li>
+<li><strong>Scenario</strong>: A pull request has a failing test or lint error. <strong>Response</strong>: CI blocks the merge — no deploy can reach <code>main</code> with a known-broken build. See <a href="07-deployment.html">Deployment</a>.</li>
+</ul>
+<h3 id="internationalisation">Internationalisation</h3>
+<ul>
+<li><strong>Scenario</strong>: A visitor switches language. <strong>Response</strong>: Every visible string re-renders in the selected locale — there are no hardcoded UI strings outside i18next&#39;s locale JSON files, so no partial-translation state is reachable. See <a href="08b-concepts-i18n-theming.html">i18n &amp; Theming</a>.</li>
+</ul>
+<h3 id="accessibility">Accessibility</h3>
+<ul>
+<li><strong>Scenario</strong>: A keyboard-only visitor navigates the site. <strong>Response</strong>: All sections are reachable via the sidebar without a mouse, and icon-only buttons (theme toggle, social links) carry <code>aria-label</code>s so a screen reader announces their purpose.</li>
+</ul>
+<h3 id="maintainability">Maintainability</h3>
+<ul>
+<li><strong>Scenario</strong>: A future maintainer (possibly the current one, months later) needs to know why a technical choice was made. <strong>Response</strong>: The choice has an ADR under <a href="09-decisions/index.html">chapter 09</a> recording its context and consequences, not just its outcome.</li>
+<li><strong>Scenario</strong>: A change lands on <code>main</code>. <strong>Response</strong>: Generated API docs and, where in scope, the coverage report are republished to GitHub Pages automatically — the deployed docs never drift far from the code they describe. Coverage percentages are visible in the published report, but no minimum threshold is currently enforced in CI — see <a href="08c-concepts-testing.html">Testing</a>.</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="01-introduction-and-goals.html">01-introduction-and-goals.md</a> — where these quality goals were first identified</li>
+<li><a href="08c-concepts-testing.html">Testing</a> — how reliability and maintainability scenarios are actually checked</li>
+<li><a href="11-risks-technical-debt.html">Risks and Technical Debt</a> — known risks and deferred work tracked against this architecture</li>
+</ul>
 
     </article>
 
