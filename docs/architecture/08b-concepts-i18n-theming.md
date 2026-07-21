@@ -14,6 +14,7 @@ Language switching (i18next/react-i18next) and the light/dark theme system are t
 - [Adding a Translation Key](#adding-a-translation-key)
 - [Adding a New Language](#adding-a-new-language)
 - [Special Cases](#special-cases)
+- [Theme System](#theme-system)
 - [Style Layers](#style-layers)
 - [Design Tokens](#design-tokens)
 - [styled-components Layer](#styled-components-layer)
@@ -118,6 +119,49 @@ Legal-section content (Impressum/Datenschutz) is authored as raw HTML strings in
 
 Project records in `src/data/projects.config.js` carry both `summaryEn` and `summaryDe` fields, hand-curated alongside the rest of the project entry. `ProjectSummary` selects the field matching the active locale.
 
+## Theme System
+
+The app has its own independent light/dark theme, separate from (and unrelated to) this documentation site's own theme toggle from [chapter 07's build tooling](08d-concepts-build-tooling.md) — the two are different codebases with different storage keys.
+
+`src/context/ThemeContext.js` is the single source of truth. `ThemeProvider` holds `theme` in `useState`, initialized by `getInitialTheme()`: it reads `localStorage` key `portfolio-theme`, and falls back to `'dark'` — not the OS `prefers-color-scheme` setting — if nothing is stored or storage throws (SSR, tests, private browsing). Dark is treated as the site's default identity, a deliberate product choice rather than an oversight.
+
+A `useEffect` keyed on `theme` mirrors the value onto `<html data-theme="...">` and persists it back to `localStorage`, catching storage errors silently. Because this runs in an effect rather than a pre-paint inline script, there is a brief flash of the default (dark) theme on first load before a stored `light` preference applies — unlike this documentation site's own boot script (see [Build Tooling](08d-concepts-build-tooling.md)), which sets the attribute before first paint specifically to avoid that flash. This is a known asymmetry between the two theme systems, not a bug in either.
+
+`useTheme()` reads the context and works without a `ThemeProvider` ancestor (defaulting to `{ theme: 'dark', toggleTheme: () => {} }`), which keeps isolated component tests simple.
+
+### Where Theme Is Consumed
+
+| Component | Usage |
+|-----------|-------|
+| `SidebarMenu` | Renders the ☀/☾ toggle button (`onClick={toggleTheme}`), with `aria-label` and `title` both reflecting the *next* state the click will produce |
+| `ProjectCard` | Selects which theme-specific screenshot variant to display for a project, via `project.images[theme]` |
+
+### CSS Integration
+
+`src/index.css` defines every design token twice: once under `:root` (the dark values, used whenever `data-theme` is absent or `"dark"`) and once under `[data-theme='light']` (light overrides, same token names). Because every component references the token *names*, not raw values, no component-level code needs to know which theme is active — the browser resolves the right value from whichever block matches the current `data-theme` attribute. See [Design Tokens](#design-tokens) below for the dark-mode values; the light-mode overrides are:
+
+| Token | Light value |
+|-------|-------------|
+| `--color-bg` | `#dce7f5` |
+| `--color-bg-card` | `#10233f` |
+| `--color-bg-card-hover` | `#17335f` |
+| `--color-bg-tag` | `#e4edf7` |
+| `--color-bg-subtle` | `#eef4fb` |
+| `--color-accent` | `#0b66c3` |
+| `--color-accent-contrast` | `#eaf3fd` |
+| `--color-text` | `#0f2440` |
+| `--color-text-muted` | `#51648a` |
+| `--color-border` | `#d6e2f0` |
+| `--color-card-text` | `#e6eefc` |
+| `--color-card-text-muted` | `#b8c6e2` |
+| `--color-card-accent` | `#7fc0ff` (unchanged) |
+| `--color-card-border` | `#2a4a7a` (unchanged) |
+| `--color-card-tag-bg` | `#1b3a63` |
+| `--shadow-accent` | `rgba(11,102,195,0.25)` |
+| `--shadow-accent-hover` | `rgba(11,102,195,0.35)` |
+
+Card-scoped colors (`--color-card-text`, `--color-card-text-muted`, `--color-card-accent`, `--color-card-border`, `--color-card-tag-bg`) intentionally invert in light mode — cards stay dark on a light page — so component code rendering *inside* a card must reference the `--color-card-*` tokens, never the page-level `--color-text`/`--color-bg` tokens, or it will produce dark-on-dark text the moment light mode is active.
+
 ## Style Layers
 
 Three files provide the foundation on which all component styles build.
@@ -142,8 +186,15 @@ All colour, spacing, shadow, and transition values are defined in `src/index.css
 | `--color-bg-tag` | `#2b3a59` | Technology tag pill backgrounds |
 | `--color-bg-subtle` | `#0f2238` | Image placeholder background |
 | `--color-accent` | `#6cb6ff` | Headings, links, borders, icon highlights |
+| `--color-accent-contrast` | `#062a4a` | Text/icon color placed on top of an accent-colored background |
 | `--color-text` | `#ccd6f6` | Primary body text |
 | `--color-text-muted` | `#8892b0` | Secondary text (job title, captions) |
+| `--color-border` | `#1d3557` | Hairline borders |
+| `--color-card-text` | `#e2e9fb` | Text inside cards — cards invert relative to the page, so this is intentionally not the same as `--color-text` |
+| `--color-card-text-muted` | `#a7b3d6` | Secondary text inside cards |
+| `--color-card-accent` | `#7fc0ff` | Accent color inside cards |
+| `--color-card-border` | `#2a4a7a` | Card borders |
+| `--color-card-tag-bg` | `#22406e` | Technology tag pill background inside cards |
 | `--shadow-accent` | `rgba(108,182,255,0.45)` | Card hover drop shadow |
 | `--shadow-accent-hover` | `rgba(108,182,255,0.6)` | Image hover drop shadow |
 | `--radius-card` | `8px` | Card and image border radius |
