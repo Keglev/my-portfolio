@@ -36,10 +36,10 @@ if (toggle) {
 })();
 
 // Language switch: point EN/DE at the current page's translated twin when one
-// exists. Only the landing and the ch01 overview page are translated today,
-// so any other page routes DE to the German landing rather than a missing
-// -de file. Done at runtime to avoid wiring a per-page twin URL through the
-// build.
+// exists. Only the landing and ch01 (01-introduction-and-goals) are
+// translated today, so any other page routes DE to the German landing
+// rather than a missing -de file. Done at runtime to avoid wiring a
+// per-page twin URL through the build.
 (function () {
   var links = document.querySelectorAll(".lang-switch a");
   if (links.length < 2) return;
@@ -70,12 +70,12 @@ if (toggle) {
   } else if (path === base + "/index-de.html") {
     enableBoth();
     en.href = base + "/"; de.href = base + "/index-de.html"; current(de);
-  } else if (file === "overview.html") {
+  } else if (file === "01-introduction-and-goals.html") {
     enableBoth();
-    en.href = path; de.href = dir + "overview.de.html"; current(en);
-  } else if (file === "overview.de.html") {
+    en.href = path; de.href = dir + "01-introduction-and-goals.de.html"; current(en);
+  } else if (file === "01-introduction-and-goals.de.html") {
     enableBoth();
-    en.href = dir + "overview.html"; de.href = path; current(de);
+    en.href = dir + "01-introduction-and-goals.html"; de.href = path; current(de);
   } else {
     // English-only page: there is no German twin, so EN stays active and DE
     // falls back to the German landing rather than a 404 -- it is left
