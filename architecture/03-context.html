@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
-  <title>Deployment Data Flow — my-portfolio docs</title>
+  <title>Context and Scope — my-portfolio docs</title>
 
   <!-- Set the theme before paint to avoid a flash. Dark is the fallback
        default, mirroring src/context/ThemeContext.js's own no-storage
@@ -80,9 +80,10 @@
            has fewer than two headings -->
       <ul class="doc-toc__list">
   <li><a href="#table-of-contents">Table of Contents</a></li>
-  <li><a href="#configuration-inputs">Configuration Inputs</a></li>
-  <li><a href="#documentation-and-coverage-flow">Documentation and Coverage Flow</a></li>
-  <li><a href="#artifact-summary">Artifact Summary</a></li>
+  <li><a href="#business-context">Business Context</a></li>
+  <li><a href="#technical-context-configuration-inputs">Technical Context: Configuration Inputs</a></li>
+  <li><a href="#technical-context-documentation-and-coverage-flow">Technical Context: Documentation and Coverage Flow</a></li>
+  <li><a href="#technical-context-artifact-summary">Technical Context: Artifact Summary</a></li>
   <li><a href="#references">References</a></li>
 </ul>
     </aside>
@@ -90,17 +91,44 @@
     <article class="article">
       <!-- Replaced at build time by renderPages.convertMd() (see
            scripts/docs/lib/renderPages.js) -->
-      <h1 id="deployment-data-flow">Deployment Data Flow</h1>
+      <h1 id="context-and-scope">Context and Scope</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>This document shows how data moves through the deployment system — from external APIs and repository secrets through build-time scripts to the final deployment targets on Vercel and GitHub Pages. For configuration details (environment variables, step-by-step commands), see <a href="07b-deployment-configuration.html">DEPLOY.md</a>. For the CI/CD workflow trigger chain, see <a href="07-deployment.html">architecture/ci-cd-pipeline.md</a>.</p>
+<p>The system boundary: who and what interacts with the portfolio, and through which technical channels. For configuration details (environment variables, step-by-step commands), see <a href="07b-deployment-configuration.html">DEPLOY.md</a>. For the CI/CD workflow trigger chain, see <a href="07-deployment.html">Deployment</a>.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
-<li><a href="#configuration-inputs">Configuration Inputs</a></li>
-<li><a href="#documentation-and-coverage-flow">Documentation and Coverage Flow</a></li>
-<li><a href="#artifact-summary">Artifact Summary</a></li>
+<li><a href="#business-context">Business Context</a></li>
+<li><a href="#technical-context-configuration-inputs">Technical Context: Configuration Inputs</a></li>
+<li><a href="#technical-context-documentation-and-coverage-flow">Technical Context: Documentation and Coverage Flow</a></li>
+<li><a href="#technical-context-artifact-summary">Technical Context: Artifact Summary</a></li>
 <li><a href="#references">References</a></li>
 </ul>
-<h2 id="configuration-inputs">Configuration Inputs</h2>
+<h2 id="business-context">Business Context</h2>
+<table>
+<thead>
+<tr>
+<th>Actor</th>
+<th>Interaction</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Site visitor</td>
+<td>Browses the live portfolio at <code>carloskeglevich.vercel.app</code> — no account, no write access, read-only</td>
+</tr>
+<tr>
+<td>Recruiter / employer</td>
+<td>The portfolio&#39;s primary intended audience; drives the German-default-locale decision (see <a href="02-constraints.html">Constraints</a>)</td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td>Hosts the source repository, runs CI/CD via GitHub Actions, and serves generated docs/coverage from the <code>gh-pages</code> branch</td>
+</tr>
+<tr>
+<td>Vercel</td>
+<td>Hosts the live production build, served from its global edge CDN</td>
+</tr>
+</tbody></table>
+<p>There is no runtime API dependency and no user-generated content — every external interaction is either a visitor&#39;s browser reading a static page, or the CI/CD pipeline itself reading its own configuration. That absence of a live backend is itself the most consequential fact in this system&#39;s context.</p>
+<h2 id="technical-context-configuration-inputs">Technical Context: Configuration Inputs</h2>
 <p>Before the build pipeline can deploy, one category of external input must be available as environment variables in the GitHub Actions runner.</p>
 <table>
 <thead>
@@ -125,7 +153,7 @@
 </tr>
 </tbody></table>
 <p>The Projects section is static, hand-curated content in <code>src/data/projects.config.js</code> — there is no GitHub API or translation API call at build time, so no corresponding secrets are needed.</p>
-<h2 id="documentation-and-coverage-flow">Documentation and Coverage Flow</h2>
+<h2 id="technical-context-documentation-and-coverage-flow">Technical Context: Documentation and Coverage Flow</h2>
 <p>The diagram below shows how documentation sources and the test coverage report flow into GitHub Pages independently of the Vercel deployment.</p>
 <div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
     CIJob[&quot;CI workflow\n(jest --coverage)&quot;]
@@ -152,7 +180,7 @@
     classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
 </pre></div>
 <p>The right side of this diagram is split across two workflows. <code>api-docs.yml</code> handles the coverage and JSDoc branches — it is dispatched by <code>ci.yml</code> in parallel with <code>deploy.yml</code> (not after it), and only when the changed files could affect the API surface or test coverage. <code>architecture-docs.yml</code> handles the Markdown-to-HTML branch — it triggers directly on pushes to <code>docs/**</code> or <code>scripts/docs/**</code>, independently of the deploy chain, which lets small documentation edits publish without running the full pipeline.</p>
-<h2 id="artifact-summary">Artifact Summary</h2>
+<h2 id="technical-context-artifact-summary">Technical Context: Artifact Summary</h2>
 <p>The table below lists every intermediate and final artifact produced by the deployment system, where it originates, and where it lands.</p>
 <table>
 <thead>
@@ -194,8 +222,8 @@
 <td>Published to <code>gh-pages</code> branch (staged copy excluding <code>jsdoc/</code> and <code>coverage/</code>)</td>
 </tr>
 <tr>
-<td><code>docs/templates/styles.css</code></td>
-<td><code>scripts/docs/build_docs.js</code> (copied from <code>scripts/docs/templates/</code>)</td>
+<td><code>docs/_theme/css/styles.css</code></td>
+<td><code>scripts/docs/build_docs.js</code> (concatenated from <code>docs/_theme/css/*.css</code>)</td>
 <td>architecture-docs.yml</td>
 <td>Published to <code>gh-pages</code> branch alongside <code>docs/*.html</code></td>
 </tr>
@@ -204,6 +232,7 @@
 <ul>
 <li><a href="07b-deployment-configuration.html">DEPLOY.md</a> — environment variables, manual deployment commands, and security notes</li>
 <li><a href="07-deployment.html">architecture/ci-cd-pipeline.md</a> — workflow trigger chain and step details</li>
+<li><a href="02-constraints.html">Constraints</a> — the no-backend, static-hosting-only constraints this context reflects</li>
 </ul>
 
     </article>
