@@ -1,6 +1,6 @@
 # Backlog
 
-[← Hub](https://keglev.github.io/my-portfolio/index.html) · [← Docs index](docs-index.html)
+[← Architecture index](index.md)
 
 Master list of deferred work tracked via `// BUCKET: <text> (ID)` markers in
 source. Open items keep their marker at the site; only closed IDs are

@@ -97,7 +97,7 @@ back while its own run still holds the group, `api-docs.yml`'s queued run
 was cancelling `deploy.yml`'s queued run on every push. The fix gives each
 of `deploy.yml` and `api-docs.yml` its own concurrency group
 (`deploy-pipeline`, `api-docs-pipeline`); `ci.yml` keeps `portfolio-pipeline`
-for itself. See [ci-cd-pipeline.md](../ci-cd-pipeline.md#concurrency-strategy)
+for itself. See [ci-cd-pipeline.md](../07-deployment.md#concurrency-strategy)
 for the current four-group topology; the `Decision` and `Consequences`
 sections above describe the original three-workflow shape, including its
 single shared concurrency group, as it was when accepted — not the
@@ -106,7 +106,7 @@ corrected model in effect today.
 ## References
 
 - [GitHub Actions documentation](https://docs.github.com/en/actions)
-- [ci-cd-pipeline.md](../ci-cd-pipeline.md) — pipeline diagram and per-step breakdown
+- [ci-cd-pipeline.md](../07-deployment.md) — pipeline diagram and per-step breakdown
 - `.github/workflows/ci.yml`
 - `.github/workflows/build-and-fetch.yml` (now `deploy.yml`)
 - `.github/workflows/docs-refresh.yml` (now split into `api-docs.yml` and `architecture-docs.yml`)

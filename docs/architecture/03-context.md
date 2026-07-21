@@ -1,8 +1,8 @@
 # Deployment Data Flow
 
-[← Documentation root](../index.md)
+[← Architecture index](index.md)
 
-This document shows how data moves through the deployment system — from external APIs and repository secrets through build-time scripts to the final deployment targets on Vercel and GitHub Pages. For configuration details (environment variables, step-by-step commands), see [DEPLOY.md](../DEPLOY.md). For the CI/CD workflow trigger chain, see [architecture/ci-cd-pipeline.md](../architecture/ci-cd-pipeline.md).
+This document shows how data moves through the deployment system — from external APIs and repository secrets through build-time scripts to the final deployment targets on Vercel and GitHub Pages. For configuration details (environment variables, step-by-step commands), see [DEPLOY.md](07b-deployment-configuration.md). For the CI/CD workflow trigger chain, see [architecture/ci-cd-pipeline.md](07-deployment.md).
 
 ## Table of Contents
 
@@ -69,5 +69,5 @@ The table below lists every intermediate and final artifact produced by the depl
 
 ## References
 
-- [DEPLOY.md](../DEPLOY.md) — environment variables, manual deployment commands, and security notes
-- [architecture/ci-cd-pipeline.md](../architecture/ci-cd-pipeline.md) — workflow trigger chain and step details
+- [DEPLOY.md](07b-deployment-configuration.md) — environment variables, manual deployment commands, and security notes
+- [architecture/ci-cd-pipeline.md](07-deployment.md) — workflow trigger chain and step details

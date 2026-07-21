@@ -1,6 +1,6 @@
 # Deployment
 
-[← Hub](https://keglev.github.io/my-portfolio/index.html) · [← Docs index](docs-index.html)
+[← Architecture index](index.md)
 
 This project deploys the React app to Vercel (live site). The Projects section is static, hand-curated content in `src/data/projects.config.js` — there is no data-fetch step before the build. The generated API docs are published separately to GitHub Pages via the `gh-pages` branch.
 
@@ -24,7 +24,7 @@ This project deploys the React app to Vercel (live site). The Projects section i
 
 ## Environment variables
 
-The build itself needs no secrets — the Vercel token/org/project IDs used to deploy the prebuilt artifact are configured as GitHub Actions secrets (see [architecture/ci-cd-pipeline.md](architecture/ci-cd-pipeline.md)), not as Vercel build-time environment variables.
+The build itself needs no secrets — the Vercel token/org/project IDs used to deploy the prebuilt artifact are configured as GitHub Actions secrets (see [architecture/ci-cd-pipeline.md](07-deployment.md)), not as Vercel build-time environment variables.
 
 ## Deploying to Vercel
 

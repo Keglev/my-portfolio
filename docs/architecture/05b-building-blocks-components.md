@@ -1,6 +1,6 @@
 # Component Catalog
 
-[← Frontend index](index.md)
+[← Architecture index](index.md)
 
 This catalog documents every React component in `src/components/`, its purpose, the props it accepts, and how it is used in the app. Section components that accept no external props are grouped in a table; components with non-trivial prop contracts each get their own table.
 
@@ -44,7 +44,7 @@ The sidebar group is composed inside `Sidebar` and stays fixed to the left of th
 |------|------|----------|-------------|
 | `activeSection` | string | yes | ID of the section currently in view (e.g. `'About'`, `'Projects'`); controls which nav link receives the active highlight |
 
-`Sidebar` derives `activeSection` from scroll position via a `window.scroll` listener, then passes it to `SidebarMenu`. See [architecture/data-flow.md](../architecture/data-flow.md) for the full state flow.
+`Sidebar` derives `activeSection` from scroll position via a `window.scroll` listener, then passes it to `SidebarMenu`. See [architecture/data-flow.md](06-runtime.md) for the full state flow.
 
 `SidebarSocial` accepts no props. All social URLs are hardcoded inside the component.
 
@@ -106,5 +106,5 @@ Rendered inside `RepoDocs`. Outputs documentation links for one repository by ch
 
 - [React component documentation](https://react.dev/learn/your-first-component)
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
-- [architecture/component-tree.md](../architecture/component-tree.md) — visual component hierarchy diagram
-- [architecture/data-flow.md](../architecture/data-flow.md) — how props and state flow between components
+- [architecture/component-tree.md](05-building-blocks.md) — visual component hierarchy diagram
+- [architecture/data-flow.md](06-runtime.md) — how props and state flow between components

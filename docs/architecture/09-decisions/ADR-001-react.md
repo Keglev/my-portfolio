@@ -47,5 +47,5 @@ react-scripts 5). All UI is composed from function components using hooks.
 - [React documentation](https://react.dev)
 - [Create React App documentation](https://create-react-app.dev)
 - [react-scripts changelog](https://github.com/facebook/create-react-app/blob/main/CHANGELOG.md)
-- [component-tree.md](../component-tree.md) — component hierarchy built on this decision
-- [data-flow.md](../data-flow.md) — state management approach within the React tree
+- [component-tree.md](../05-building-blocks.md) — component hierarchy built on this decision
+- [data-flow.md](../06-runtime.md) — state management approach within the React tree

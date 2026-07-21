@@ -2,7 +2,7 @@
 
 [← Templates index](index.md)
 
-One component, one document. Copy this file to `docs/frontend/`, rename it to the component name in kebab-case (e.g. `project-card.md`), and fill in each section. Check [frontend/components.md](../frontend/components.md) first — the component may already be catalogued there.
+One component, one document. Copy this file to `docs/architecture/`, rename it to the component name in kebab-case (e.g. `project-card.md`), and fill in each section. Check [architecture/05b-building-blocks-components.md](../architecture/05b-building-blocks-components.md) first — the component may already be catalogued there.
 
 ## Table of Contents
 
@@ -52,5 +52,5 @@ Edge cases, known limitations, and intentional design choices that are not obvio
 
 ## References
 
-- [frontend/components.md](../frontend/components.md) — full component catalog
-- [architecture/component-tree.md](../architecture/component-tree.md) — hierarchy diagram
+- [architecture/05b-building-blocks-components.md](../architecture/05b-building-blocks-components.md) — full component catalog
+- [architecture/05-building-blocks.md](../architecture/05-building-blocks.md) — hierarchy diagram
