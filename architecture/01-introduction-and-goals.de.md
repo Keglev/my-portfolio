@@ -1,32 +1,31 @@
-# Portfolio-Architektur – Übersicht
+# Einführung und Ziele
 
 [← Architekturindex](index.md)
 
-Dieses persönliche Portfolio ist eine Single-Page-Anwendung, erstellt mit React (Create React App). Es präsentiert berufliche Informationen — Erfahrung, Ausbildung, Projekte und rechtliche Hinweise — auf Englisch und Deutsch. Die Projektdaten werden zur Build-Zeit durch Abruf gepinnter GitHub-Repositories über die GitHub GraphQL API vorausgeneriert und als statisches JSON gespeichert, sodass keine Laufzeit-API-Abhängigkeit besteht. Die gebaute App wird auf Vercel bereitgestellt; generierte Dokumentation und Test-Coverage-Berichte werden separat auf GitHub Pages veröffentlicht.
+Dieses persönliche Portfolio ist eine Single-Page-Anwendung, erstellt mit React (Create React App). Es präsentiert eine Hero-Einführung, einen About-Bereich mit einer kompakten Karriere-/Ausbildungsübersicht, eine Skills-Übersicht, eine Projektpräsentation, ein Kontaktformular und rechtliche Hinweise — auf Englisch und Deutsch. Die Projektdaten sind als statischer, handkuratierter Code in `src/data/projects.config.js` hinterlegt und direkt im JavaScript-Build gebündelt; es gibt keinen GitHub-API-Aufruf, weder zur Build-Zeit noch zur Laufzeit. Die gebaute App wird auf Vercel bereitgestellt; generierte Dokumentation und Test-Coverage-Berichte werden separat auf GitHub Pages veröffentlicht.
 
 ## Inhaltsverzeichnis
 
 - [Tech-Stack](#tech-stack)
 - [Komponentendiagramm](#komponentendiagramm)
-- [Wichtige Designentscheidungen](#wichtige-designentscheidungen)
-- [Nichtfunktionale Anforderungen](#nichtfunktionale-anforderungen)
 - [Referenzen](#referenzen)
 
 ## Tech-Stack
 
-Die folgende Tabelle ordnet jede Architekturebene der gewählten Technologie und dem Grund für die Wahl zu.
+Die folgende Tabelle ordnet jede Architekturebene der gewählten Technologie und dem Grund für die Wahl zu. Die Begründung hinter jeder Wahl steht in [Lösungsstrategie](04-solution-strategy.md); die Rahmenbedingungen, innerhalb derer diese Entscheidungen getroffen wurden, stehen in [Randbedingungen](02-constraints.md).
 
 | Ebene | Technologie | Begründung |
 |-------|-------------|-----------|
 | UI-Framework | React 18 (Create React App) | Ausgereiftes Ökosystem; CRA bietet Zero-Config-Build-Tooling |
 | Styling | styled-components 6 | Komponentenlokale Styles, keine Class-Name-Kollisionen |
-| Routing / Scroll | react-router-dom 6, react-scroll | Hash-basierte Navigation mit sanftem Scrollen; kein Server erforderlich |
+| Scroll-Navigation | react-scroll | Sanftes Scrollen zu Seitenabschnitten; kein Server oder Router erforderlich |
 | Internationalisierung | i18next 25 + react-i18next 14 | Industriestandard-i18n, React-Hooks-API, JSON-Namespace-Unterstützung |
-| HTTP-Client | axios 1 | Konsistente API für GitHub-API-Aufrufe in allen Umgebungen |
+| Kontaktformular | Web3Forms (natives `fetch`) | Static-Site-freundliches Formular-Backend — kein eigener Server nötig |
+| Icons | react-icons 5 | Social-/Kontakt-Icon-Set (GitHub, LinkedIn, Xing, E-Mail) |
 | Analytics | Vercel Speed Insights | Zero-Config Core Web Vitals-Monitoring; ohne Cookies |
 | Testing | Jest + React Testing Library | Komponentenbasierte Unit-Tests, am Nutzerverhalten ausgerichtet |
 | Linting | ESLint (react-app-Konfiguration) | Fehler vor CI abfangen; keine zusätzliche Konfiguration nötig |
-| CI/CD | GitHub Actions (3 Workflows) | Kostenlos für öffentliche Repos, native GitHub-Integration |
+| CI/CD | GitHub Actions (4 Workflows) | Kostenlos für öffentliche Repos, native GitHub-Integration |
 | App-Hosting | Vercel | Automatisches HTTPS, Edge-CDN, Prebuilt-Artifact-Deployment |
 | Docs-Hosting | GitHub Pages (gh-pages-Branch) | Kostenloses statisches Hosting, zusammen mit dem Repository |
 
@@ -61,25 +60,7 @@ graph TD
     classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 ```
 
-## Wichtige Designentscheidungen
-
-Jede Entscheidung unten verweist auf das Dokument, in dem sie ausführlich erläutert wird.
-
-- **Statische, handkuratierte Projektdaten** — Projekttexte, Tech-Tags und Bilder liegen in `src/data/projects.config.js` und werden zur Build-Zeit gebündelt, sodass keine GitHub-API-Abhängigkeit im Live-Betrieb besteht. Siehe [ADR-006](09-decisions/ADR-006-build-time-github-data-fetch.md) für die Gründe, warum eine frühere Build-Time-Fetch-Pipeline zugunsten dieses Ansatzes abgeschafft wurde.
-- **Vercel Prebuilt Artifact** — Die App wird in GitHub Actions gebaut und als `.vercel/output`-Artifact deployed, was vollständige Kontrolle über die Build-Umgebung gibt. Siehe [DEPLOY.md](07b-deployment-configuration.md).
-- **Zwei Test-Runner** — Node-only-Skripte verwenden eine separate Jest-Konfiguration vom CRA-Runner, um Babel/CSS-Transform-Konflikte zu vermeiden. Siehe [TESTS.md](08c-concepts-testing.md).
-- **Standard-Locale Deutsch** — `lng: 'de'` in i18next, da das Portfolio auf einen deutschsprachigen Jobmarkt ausgerichtet ist. Siehe [i18n-flow.md](08b-concepts-i18n-theming.md).
-- **Keine Client-seitige State-Bibliothek** — Komponentenlokales `useState` ist ausreichend; es gibt keinen gemeinsamen veränderbaren Zustand zwischen unverbundenen Komponenten. Siehe [data-flow.md](06-runtime.md).
-
-## Nichtfunktionale Anforderungen
-
-| Anforderung | Ansatz |
-|-------------|--------|
-| Performance | Statisches JSON vom Vercel CDN; keine Laufzeit-API-Aufrufe; Speed Insights überwacht Core Web Vitals |
-| Barrierefreiheit | Semantische HTML-Section-Anker; `aria-label` auf Icon-only-Buttons; tastaturnavigierbare Sidebar |
-| Internationalisierung | Vollständige EN/DE-Unterstützung via i18next; Standard-Locale Deutsch; alle sichtbaren Strings in Locale-JSON-Dateien |
-| Zuverlässigkeit | `ErrorBoundary` umschließt den gesamten React-Baum; CI blockiert Deployment bei Test- oder Lint-Fehlern |
-| Wartbarkeit | Generierte Docs und Coverage werden bei jedem erfolgreichen Deployment auf GitHub Pages veröffentlicht |
+Zentrale Designentscheidungen (statische Projektdaten, Prebuilt-Artifact-Deployment, zwei Test-Runner usw.) stehen in [Lösungsstrategie](04-solution-strategy.md), nicht hier — dieses Kapitel konzentriert sich auf *was* das System ist; Kapitel 04 behandelt *warum* es so gebaut ist, wie es ist. Nichtfunktionale Anforderungen haben ebenfalls ein eigenes Kapitel: siehe [Qualitätsanforderungen](10-quality-requirements.md).
 
 ## Referenzen
 

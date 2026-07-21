@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
-  <title>Portfolio Architecture Overview — my-portfolio docs</title>
+  <title>Introduction and Goals — my-portfolio docs</title>
 
   <!-- Set the theme before paint to avoid a flash. Dark is the fallback
        default, mirroring src/context/ThemeContext.js's own no-storage
@@ -82,8 +82,6 @@
   <li><a href="#table-of-contents">Table of Contents</a></li>
   <li><a href="#tech-stack">Tech Stack</a></li>
   <li><a href="#component-diagram">Component Diagram</a></li>
-  <li><a href="#key-design-decisions">Key Design Decisions</a></li>
-  <li><a href="#non-functional-requirements">Non-Functional Requirements</a></li>
   <li><a href="#references">References</a></li>
 </ul>
     </aside>
@@ -91,19 +89,17 @@
     <article class="article">
       <!-- Replaced at build time by renderPages.convertMd() (see
            scripts/docs/lib/renderPages.js) -->
-      <h1 id="portfolio-architecture-overview">Portfolio Architecture Overview</h1>
+      <h1 id="introduction-and-goals">Introduction and Goals</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>This personal portfolio is a single-page React application built with Create React App. It presents professional information — experience, education, projects, and legal notices — in both English and German. Project data is pre-generated at build time by fetching pinned GitHub repositories via the GitHub GraphQL API and stored as static JSON, eliminating any runtime API dependency. The built app is deployed to Vercel; generated documentation and test coverage reports are published separately to GitHub Pages.</p>
+<p>This personal portfolio is a single-page React application built with Create React App. It presents a hero introduction, an about section with a condensed career/education strip, a skills overview, a project showcase, a contact form, and legal notices — in both English and German. Project data is hand-curated as static code in <code>src/data/projects.config.js</code>, bundled directly into the JavaScript build; there is no GitHub API call, at build time or at runtime. The built app is deployed to Vercel; generated documentation and test coverage reports are published separately to GitHub Pages.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#tech-stack">Tech Stack</a></li>
 <li><a href="#component-diagram">Component Diagram</a></li>
-<li><a href="#key-design-decisions">Key Design Decisions</a></li>
-<li><a href="#non-functional-requirements">Non-Functional Requirements</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="tech-stack">Tech Stack</h2>
-<p>The table below maps each architectural layer to the chosen technology and the reason for that choice.</p>
+<p>The table below maps each architectural layer to the chosen technology and the reason for that choice. For the reasoning behind each choice, see <a href="04-solution-strategy.html">Solution Strategy</a>; for the constraints these choices work within, see <a href="02-constraints.html">Constraints</a>.</p>
 <table>
 <thead>
 <tr>
@@ -123,9 +119,9 @@
 <td>Co-located styles, no class-name collisions</td>
 </tr>
 <tr>
-<td>Routing / scroll</td>
-<td>react-router-dom 6, react-scroll</td>
-<td>Hash-based navigation with smooth scroll; no server required</td>
+<td>Scroll navigation</td>
+<td>react-scroll</td>
+<td>Smooth-scroll to in-page sections; no server or router required</td>
 </tr>
 <tr>
 <td>Internationalisation</td>
@@ -133,9 +129,14 @@
 <td>Industry-standard i18n, React hooks API, JSON namespace support</td>
 </tr>
 <tr>
-<td>HTTP client</td>
-<td>axios 1</td>
-<td>Consistent API across environments for GitHub API calls</td>
+<td>Contact form</td>
+<td>Web3Forms (native <code>fetch</code>)</td>
+<td>Static-site-friendly form backend — no server of our own needed</td>
+</tr>
+<tr>
+<td>Icons</td>
+<td>react-icons 5</td>
+<td>Social/contact icon set (GitHub, LinkedIn, Xing, email)</td>
 </tr>
 <tr>
 <td>Analytics</td>
@@ -154,7 +155,7 @@
 </tr>
 <tr>
 <td>CI/CD</td>
-<td>GitHub Actions (3 workflows)</td>
+<td>GitHub Actions (4 workflows)</td>
 <td>Free for public repos, native GitHub integration</td>
 </tr>
 <tr>
@@ -195,44 +196,7 @@
     classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
     classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 </pre></div>
-<h2 id="key-design-decisions">Key Design Decisions</h2>
-<p>Each decision below links to the document where it is discussed in detail.</p>
-<ul>
-<li><strong>Static, hand-curated project data</strong> — project copy, tech tags, and images live in <code>src/data/projects.config.js</code> and are bundled at build time, removing any GitHub API dependency from the live site. See <a href="09-decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a> for why an earlier build-time fetch pipeline was retired in favor of this.</li>
-<li><strong>Vercel prebuilt artifact</strong> — the app is built in GitHub Actions and deployed as a <code>.vercel/output</code> artifact, giving full control over the build environment. See <a href="07b-deployment-configuration.html">DEPLOY.md</a>.</li>
-<li><strong>Two test runners</strong> — Node-only scripts use a separate Jest config from the CRA runner to avoid Babel/CSS transform conflicts. See <a href="08c-concepts-testing.html">TESTS.md</a>.</li>
-<li><strong>Default locale German</strong> — <code>lng: &#39;de&#39;</code> in i18next because the portfolio targets a German-speaking job market. See <a href="08b-concepts-i18n-theming.html">i18n-flow.md</a>.</li>
-<li><strong>No client-side state library</strong> — component-local <code>useState</code> is sufficient; no shared mutable state exists across unrelated components. See <a href="06-runtime.html">data-flow.md</a>.</li>
-</ul>
-<h2 id="non-functional-requirements">Non-Functional Requirements</h2>
-<table>
-<thead>
-<tr>
-<th>Requirement</th>
-<th>Approach</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Performance</td>
-<td>Static JSON served from Vercel CDN; no runtime API calls; Speed Insights monitors Core Web Vitals</td>
-</tr>
-<tr>
-<td>Accessibility</td>
-<td>Semantic HTML section anchors; <code>aria-label</code> on icon-only buttons; keyboard-navigable sidebar</td>
-</tr>
-<tr>
-<td>Internationalisation</td>
-<td>Full EN/DE support via i18next; default locale German; all visible strings in locale JSON files</td>
-</tr>
-<tr>
-<td>Reliability</td>
-<td><code>ErrorBoundary</code> wraps the entire React tree; CI blocks deployment on any test or lint failure</td>
-</tr>
-<tr>
-<td>Maintainability</td>
-<td>Generated docs and coverage published to GitHub Pages on every successful deployment</td>
-</tr>
-</tbody></table>
+<p>Key design decisions (static project data, prebuilt-artifact deployment, two test runners, and so on) live in <a href="04-solution-strategy.html">Solution Strategy</a>, not here — this chapter stays focused on <em>what</em> the system is; chapter 04 covers <em>why</em> it&#39;s built the way it is. Non-functional requirements have their own chapter too: see <a href="10-quality-requirements.html">Quality Requirements</a>.</p>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://react.dev">React documentation</a></li>
