@@ -1,0 +1,329 @@
+<!--
+  File: header.html
+  Summary: Shared page shell (DOCTYPE, head, body open, site header)
+    assembled into every generated docs page by build_docs.js via
+    scripts/docs/lib/renderPages.js.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
+  <title>React Component Tree — my-portfolio docs</title>
+
+  <!-- Set the theme before paint to avoid a flash. Dark is the fallback
+       default, mirroring src/context/ThemeContext.js's own no-storage
+       fallback -- see docs/_theme/js/docs.js for the storage key. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("portfolio-docs-theme");
+        document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in scripts/docs/lib/renderPages.js) -->
+  <link rel="stylesheet" href="../_theme/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- --- Site header: breadcrumb + language switch + theme toggle + external nav --- -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <!-- href adjusted at build time for subdirectory pages -->
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+      <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
+      <span class="lang-switch">
+        <a href="index.html" aria-current="true">EN</a>
+        <a href="index-de.html">DE</a>
+      </span>
+      <button class="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle light or dark theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+<!--
+  File: page.html
+  Summary: Doc-page body partial (TOC sidebar + article + client-side
+    Mermaid/TOC-highlight/nav-active scripts), assembled between
+    header.html and footer.html by build_docs.js.
+-->
+
+  <!-- --- Doc layout: sticky TOC sidebar + article --- -->
+  <div class="doc-layout" id="main">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <!-- Replaced at build time by tocBuilder.buildToc() (see
+           scripts/docs/lib/tocBuilder.js); empty string when the page
+           has fewer than two headings -->
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#component-hierarchy-diagram">Component Hierarchy Diagram</a></li>
+  <li><a href="#sidebar-group">Sidebar Group</a></li>
+  <li><a href="#section-components">Section Components</a></li>
+  <li><a href="#projects-group">Projects Group</a></li>
+  <li><a href="#repodocs-group">RepoDocs Group</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <!-- Replaced at build time by renderPages.convertMd() (see
+           scripts/docs/lib/renderPages.js) -->
+      <h1 id="react-component-tree">React Component Tree</h1>
+<p><a href="index.html">← Architecture index</a></p>
+<p>This document maps the React component hierarchy from the root <code>App</code> component down to the major UI components. Understanding this tree helps when tracing a rendering issue or deciding where to introduce new state.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#component-hierarchy-diagram">Component Hierarchy Diagram</a></li>
+<li><a href="#sidebar-group">Sidebar Group</a></li>
+<li><a href="#section-components">Section Components</a></li>
+<li><a href="#projects-group">Projects Group</a></li>
+<li><a href="#repodocs-group">RepoDocs Group</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="component-hierarchy-diagram">Component Hierarchy Diagram</h2>
+<p>The diagram shows all significant rendering components. Infrastructure utilities (<code>SpeedInsights</code>, <code>GlobalStyles</code>) are omitted to keep the focus on UI structure.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">graph TD
+    App[&quot;App&quot;]
+    Sidebar[&quot;Sidebar&quot;]
+    MainContent[&quot;main-content (div#scroll-container)&quot;]
+    NameTitle[&quot;NameTitle&quot;]
+    SidebarMenu[&quot;SidebarMenu&quot;]
+    SidebarSocial[&quot;SidebarSocial&quot;]
+    FooterMessage[&quot;FooterMessage&quot;]
+    About[&quot;About&quot;]
+    Education[&quot;Education&quot;]
+    Projects[&quot;Projects&quot;]
+    RepoDocs[&quot;RepoDocs&quot;]
+    Experience[&quot;Experience&quot;]
+    Legal[&quot;Legal&quot;]
+
+    App --&gt; Sidebar
+    App --&gt; MainContent
+    Sidebar --&gt; NameTitle
+    Sidebar --&gt; SidebarMenu
+    Sidebar --&gt; SidebarSocial
+    Sidebar --&gt; FooterMessage
+    MainContent --&gt; About
+    MainContent --&gt; Education
+    MainContent --&gt; Projects
+    MainContent --&gt; RepoDocs
+    MainContent --&gt; Experience
+    MainContent --&gt; Legal
+
+    class App l1
+    class Sidebar,MainContent l2
+    class NameTitle,SidebarMenu,SidebarSocial,FooterMessage,About,Education,Projects,RepoDocs,Experience,Legal l3
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+</pre></div>
+<h2 id="sidebar-group">Sidebar Group</h2>
+<p>The <code>Sidebar</code> component is fixed to the left of the viewport for the entire user session. It owns all navigation, identity, and utility controls.</p>
+<p><code>Sidebar</code> maintains an <code>activeSection</code> state derived from scroll position. It listens to <code>window.scroll</code> and iterates through sections bottom-to-top, so the deepest section the user has scrolled past is always the active one.</p>
+<table>
+<thead>
+<tr>
+<th>Sub-component</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>NameTitle</code></td>
+<td>Styled block displaying the owner&#39;s name and job title from the <code>translation</code> i18n namespace</td>
+</tr>
+<tr>
+<td><code>SidebarMenu</code></td>
+<td>Navigation links for each content section; receives <code>activeSection</code> as a prop and highlights the matching link; uses <code>react-scroll</code> for smooth scrolling</td>
+</tr>
+<tr>
+<td><code>SidebarSocial</code></td>
+<td>Icon links to GitHub, LinkedIn, and email; each carries an <code>aria-label</code> for screen reader support</td>
+</tr>
+<tr>
+<td><code>FooterMessage</code></td>
+<td>Tagline and two <code>LegalButton</code> elements that scroll to the Impressum and Privacy Policy sections</td>
+</tr>
+</tbody></table>
+<h2 id="section-components">Section Components</h2>
+<p>The main content area renders six section components in source order. Each is wrapped in a <code>div.section</code> with an <code>id</code> matching the <code>react-scroll</code> target used by <code>SidebarMenu</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>About</code></td>
+<td>Introductory bio and tech-stack summary</td>
+</tr>
+<tr>
+<td><code>Education</code></td>
+<td>Formal degrees, certifications, and ongoing training entries</td>
+</tr>
+<tr>
+<td><code>Projects</code></td>
+<td>Dynamically rendered project grid sourced from <code>public/projects.json</code></td>
+</tr>
+<tr>
+<td><code>RepoDocs</code></td>
+<td>Links to repository documentation extracted from project READMEs at build time</td>
+</tr>
+<tr>
+<td><code>Experience</code></td>
+<td>Job history entries rendered from the <code>experienceSection</code> i18n keys</td>
+</tr>
+<tr>
+<td><code>Legal</code></td>
+<td>Impressum and Datenschutz (privacy policy) content rendered from i18n HTML strings</td>
+</tr>
+</tbody></table>
+<h2 id="projects-group">Projects Group</h2>
+<p><code>Projects</code> fetches <code>public/projects.json</code> on mount and delegates rendering to two sub-components. The fetch lifecycle (loading, error, data states) is encapsulated in the <code>useProjects</code> custom hook, keeping the component itself free of async logic.</p>
+<ul>
+<li><code>ProjectCard</code> — renders a single project tile with name, description, technology tags, and action links.</li>
+<li><code>ProjectSummary</code> — compact summary row used in an alternate list view.</li>
+<li><code>useProjects</code> — custom hook owning the fetch lifecycle.</li>
+<li><code>projectsUtils</code> — pure utility functions for filtering and sorting project data.</li>
+</ul>
+<h2 id="repodocs-group">RepoDocs Group</h2>
+<p><code>RepoDocs</code> renders documentation links that were extracted from each project&#39;s README during the build-time fetch step.</p>
+<ul>
+<li><code>RepoDocLinks</code> — renders the list of doc links for a single repository entry.</li>
+<li><code>useRepoDocs</code> — custom hook that derives the doc link list from the <code>projects.json</code> data.</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://react.dev/learn/passing-props-to-a-component">React component composition</a></li>
+<li><a href="https://github.com/fisshy/react-scroll">react-scroll documentation</a></li>
+<li><a href="06-runtime.html">data-flow.md</a> — props and state flow between these components</li>
+<li><a href="i18n-flow.html">i18n-flow.md</a> — how translated strings reach each component</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped.
+       Deliberately keeps an explicit dark themeVariables init (not the
+       reference theme's CSS-variable-driven mermaid.css) so diagrams stay
+       legible regardless of the light/dark toggle -- see ROBOT PROMPT P9's
+       B3 instruction to keep explicit themeVariables init. -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active section heading as the user scrolls -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        /* rootMargin pushes the activation zone toward the top quarter of the viewport */
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active in the site header -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+<!--
+  File: footer.html
+  Summary: Shared site footer + closing body/html tags, assembled at the
+    end of every generated docs page by build_docs.js.
+-->
+
+  <!-- --- Site footer --- -->
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Theme toggle, active-link marking, and the EN/DE language switch (see docs/_theme/js/docs.js). Path adjusted at build time like the stylesheet link above. -->
+  <script src="../_theme/js/docs.js"></script>
+
+</body>
+</html>

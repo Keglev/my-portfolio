@@ -1,0 +1,310 @@
+<!--
+  File: header.html
+  Summary: Shared page shell (DOCTYPE, head, body open, site header)
+    assembled into every generated docs page by build_docs.js via
+    scripts/docs/lib/renderPages.js.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
+  <title>Deployment Data Flow — my-portfolio docs</title>
+
+  <!-- Set the theme before paint to avoid a flash. Dark is the fallback
+       default, mirroring src/context/ThemeContext.js's own no-storage
+       fallback -- see docs/_theme/js/docs.js for the storage key. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("portfolio-docs-theme");
+        document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in scripts/docs/lib/renderPages.js) -->
+  <link rel="stylesheet" href="../_theme/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- --- Site header: breadcrumb + language switch + theme toggle + external nav --- -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <!-- href adjusted at build time for subdirectory pages -->
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+      <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
+      <span class="lang-switch">
+        <a href="index.html" aria-current="true">EN</a>
+        <a href="index-de.html">DE</a>
+      </span>
+      <button class="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle light or dark theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+<!--
+  File: page.html
+  Summary: Doc-page body partial (TOC sidebar + article + client-side
+    Mermaid/TOC-highlight/nav-active scripts), assembled between
+    header.html and footer.html by build_docs.js.
+-->
+
+  <!-- --- Doc layout: sticky TOC sidebar + article --- -->
+  <div class="doc-layout" id="main">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <!-- Replaced at build time by tocBuilder.buildToc() (see
+           scripts/docs/lib/tocBuilder.js); empty string when the page
+           has fewer than two headings -->
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#configuration-inputs">Configuration Inputs</a></li>
+  <li><a href="#documentation-and-coverage-flow">Documentation and Coverage Flow</a></li>
+  <li><a href="#artifact-summary">Artifact Summary</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <!-- Replaced at build time by renderPages.convertMd() (see
+           scripts/docs/lib/renderPages.js) -->
+      <h1 id="deployment-data-flow">Deployment Data Flow</h1>
+<p><a href="index.html">← Architecture index</a></p>
+<p>This document shows how data moves through the deployment system — from external APIs and repository secrets through build-time scripts to the final deployment targets on Vercel and GitHub Pages. For configuration details (environment variables, step-by-step commands), see <a href="07b-deployment-configuration.html">DEPLOY.md</a>. For the CI/CD workflow trigger chain, see <a href="07-deployment.html">architecture/ci-cd-pipeline.md</a>.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#configuration-inputs">Configuration Inputs</a></li>
+<li><a href="#documentation-and-coverage-flow">Documentation and Coverage Flow</a></li>
+<li><a href="#artifact-summary">Artifact Summary</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="configuration-inputs">Configuration Inputs</h2>
+<p>Before the build pipeline can deploy, one category of external input must be available as environment variables in the GitHub Actions runner.</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Provided by</th>
+<th>Consumed by</th>
+<th>Required</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>VERCEL_TOKEN</code>, <code>VERCEL_ORG_ID</code>, <code>VERCEL_PROJECT_ID</code></td>
+<td>GitHub repository secrets</td>
+<td>Vercel CLI deploy step</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>GITHUB_TOKEN</code></td>
+<td>Automatically injected by Actions</td>
+<td><code>gh</code> CLI calls in <code>ci.yml</code>, <code>api-docs.yml</code>, <code>architecture-docs.yml</code></td>
+<td>Yes (automatic)</td>
+</tr>
+</tbody></table>
+<p>The Projects section is static, hand-curated content in <code>src/data/projects.config.js</code> — there is no GitHub API or translation API call at build time, so no corresponding secrets are needed.</p>
+<h2 id="documentation-and-coverage-flow">Documentation and Coverage Flow</h2>
+<p>The diagram below shows how documentation sources and the test coverage report flow into GitHub Pages independently of the Vercel deployment.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
+    CIJob[&quot;CI workflow\n(jest --coverage)&quot;]
+    CoverageArtifact[&quot;GitHub Actions artifact\ncoverage-report (7-day retention)&quot;]
+    MarkdownDocs[&quot;docs/*.md\n(authored documentation)&quot;]
+    BuildDocs[&quot;scripts/docs/build_docs.js\n(Markdown → HTML via templates)&quot;]
+    SrcCode[&quot;src/\n(JSDoc comments in source)&quot;]
+    JSDocOutput[&quot;docs/jsdoc/\n(generated API reference)&quot;]
+    GHPages[&quot;GitHub Pages\nkeglev.github.io/my-portfolio&quot;]
+
+    CIJob --&gt;|&quot;actions/upload-artifact&quot;| CoverageArtifact
+    CoverageArtifact --&gt;|&quot;gh run download in api-docs.yml&quot;| GHPages
+    MarkdownDocs --&gt;|&quot;converted to HTML&quot;| BuildDocs
+    BuildDocs --&gt;|&quot;docs/*.html&quot;| GHPages
+    SrcCode --&gt;|&quot;npm run docs:jsdoc&quot;| JSDocOutput
+    JSDocOutput --&gt;|&quot;published with docs/&quot;| GHPages
+
+    class CIJob,MarkdownDocs,SrcCode l1
+    class CoverageArtifact,BuildDocs,JSDocOutput l2
+    class GHPages l3
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+</pre></div>
+<p>The right side of this diagram is split across two workflows. <code>api-docs.yml</code> handles the coverage and JSDoc branches — it is dispatched by <code>ci.yml</code> in parallel with <code>deploy.yml</code> (not after it), and only when the changed files could affect the API surface or test coverage. <code>architecture-docs.yml</code> handles the Markdown-to-HTML branch — it triggers directly on pushes to <code>docs/**</code> or <code>scripts/docs/**</code>, independently of the deploy chain, which lets small documentation edits publish without running the full pipeline.</p>
+<h2 id="artifact-summary">Artifact Summary</h2>
+<p>The table below lists every intermediate and final artifact produced by the deployment system, where it originates, and where it lands.</p>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Produced by</th>
+<th>Stage</th>
+<th>Destination</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>build/</code></td>
+<td><code>npm run build</code> (CRA)</td>
+<td>Build-time</td>
+<td>Merged into <code>.vercel/output/static/</code></td>
+</tr>
+<tr>
+<td><code>.vercel/output/static/</code></td>
+<td><code>scripts/prepareVercelOutput.sh</code></td>
+<td>Pre-deploy</td>
+<td>Deployed to Vercel CDN</td>
+</tr>
+<tr>
+<td><code>coverage/</code></td>
+<td>Jest (<code>--coverage</code> flag in CI)</td>
+<td>CI</td>
+<td>Uploaded as <code>coverage-report</code> artifact; later downloaded into <code>docs/coverage/</code> by api-docs.yml</td>
+</tr>
+<tr>
+<td><code>docs/jsdoc/</code></td>
+<td><code>npm run docs:jsdoc</code> (JSDoc)</td>
+<td>api-docs.yml</td>
+<td>Published to <code>gh-pages</code> under <code>destination_dir: jsdoc</code></td>
+</tr>
+<tr>
+<td><code>docs/*.html</code></td>
+<td><code>scripts/docs/build_docs.js</code></td>
+<td>architecture-docs.yml</td>
+<td>Published to <code>gh-pages</code> branch (staged copy excluding <code>jsdoc/</code> and <code>coverage/</code>)</td>
+</tr>
+<tr>
+<td><code>docs/templates/styles.css</code></td>
+<td><code>scripts/docs/build_docs.js</code> (copied from <code>scripts/docs/templates/</code>)</td>
+<td>architecture-docs.yml</td>
+<td>Published to <code>gh-pages</code> branch alongside <code>docs/*.html</code></td>
+</tr>
+</tbody></table>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="07b-deployment-configuration.html">DEPLOY.md</a> — environment variables, manual deployment commands, and security notes</li>
+<li><a href="07-deployment.html">architecture/ci-cd-pipeline.md</a> — workflow trigger chain and step details</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped.
+       Deliberately keeps an explicit dark themeVariables init (not the
+       reference theme's CSS-variable-driven mermaid.css) so diagrams stay
+       legible regardless of the light/dark toggle -- see ROBOT PROMPT P9's
+       B3 instruction to keep explicit themeVariables init. -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active section heading as the user scrolls -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        /* rootMargin pushes the activation zone toward the top quarter of the viewport */
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active in the site header -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+<!--
+  File: footer.html
+  Summary: Shared site footer + closing body/html tags, assembled at the
+    end of every generated docs page by build_docs.js.
+-->
+
+  <!-- --- Site footer --- -->
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Theme toggle, active-link marking, and the EN/DE language switch (see docs/_theme/js/docs.js). Path adjusted at build time like the stylesheet link above. -->
+  <script src="../_theme/js/docs.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,295 @@
+<!--
+  File: header.html
+  Summary: Shared page shell (DOCTYPE, head, body open, site header)
+    assembled into every generated docs page by build_docs.js via
+    scripts/docs/lib/renderPages.js.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
+  <title>Page Structure and Navigation — my-portfolio docs</title>
+
+  <!-- Set the theme before paint to avoid a flash. Dark is the fallback
+       default, mirroring src/context/ThemeContext.js's own no-storage
+       fallback -- see docs/_theme/js/docs.js for the storage key. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("portfolio-docs-theme");
+        document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in scripts/docs/lib/renderPages.js) -->
+  <link rel="stylesheet" href="../_theme/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- --- Site header: breadcrumb + language switch + theme toggle + external nav --- -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <!-- href adjusted at build time for subdirectory pages -->
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+      <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
+      <span class="lang-switch">
+        <a href="index.html" aria-current="true">EN</a>
+        <a href="index-de.html">DE</a>
+      </span>
+      <button class="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle light or dark theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+<!--
+  File: page.html
+  Summary: Doc-page body partial (TOC sidebar + article + client-side
+    Mermaid/TOC-highlight/nav-active scripts), assembled between
+    header.html and footer.html by build_docs.js.
+-->
+
+  <!-- --- Doc layout: sticky TOC sidebar + article --- -->
+  <div class="doc-layout" id="main">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <!-- Replaced at build time by tocBuilder.buildToc() (see
+           scripts/docs/lib/tocBuilder.js); empty string when the page
+           has fewer than two headings -->
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#navigation-model">Navigation Model</a></li>
+  <li><a href="#section-registry">Section Registry</a></li>
+  <li><a href="#scroll-navigation-sequence">Scroll Navigation Sequence</a></li>
+  <li><a href="#active-section-tracking">Active Section Tracking</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <!-- Replaced at build time by renderPages.convertMd() (see
+           scripts/docs/lib/renderPages.js) -->
+      <h1 id="page-structure-and-navigation">Page Structure and Navigation</h1>
+<p><a href="index.html">← Architecture index</a></p>
+<p>The portfolio is a single-page application with no URL-based routing. All content lives in one scrollable document; navigation is driven by scroll position. Clicking a sidebar link smooth-scrolls the content area to the target section. No page transitions occur, no browser history entries are pushed, and no <code>react-router-dom</code> routes are configured.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#navigation-model">Navigation Model</a></li>
+<li><a href="#section-registry">Section Registry</a></li>
+<li><a href="#scroll-navigation-sequence">Scroll Navigation Sequence</a></li>
+<li><a href="#active-section-tracking">Active Section Tracking</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="navigation-model">Navigation Model</h2>
+<p><code>SidebarMenu</code> uses react-scroll&#39;s <code>&lt;Link&gt;</code> component — not <code>react-router-dom</code>&#39;s <code>&lt;Link&gt;</code> — to scroll to a named DOM <code>id</code> inside <code>div#scroll-container</code>. The <code>containerId=&quot;scroll-container&quot;</code> prop scopes the animation to the <code>main-content</code> div rather than <code>window</code>, which avoids conflicts on mobile where the sidebar and content stack vertically.</p>
+<p><code>react-router-dom</code> is listed in <code>package.json</code> but is not used in the current source. It was not removed to avoid a potentially breaking change to the CRA build configuration.</p>
+<h2 id="section-registry">Section Registry</h2>
+<p><code>SidebarMenu</code> defines its navigation items in the <code>NAV_ITEMS</code> constant. Each entry maps a DOM <code>id</code> to the i18n key used as the link label. The <code>Legal</code> section is intentionally absent from <code>NAV_ITEMS</code> — its two sub-sections are accessed via scroll buttons in the sidebar footer, not via the main navigation.</p>
+<table>
+<thead>
+<tr>
+<th>Section ID</th>
+<th>i18n key</th>
+<th>App.js wrapper</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>About</code></td>
+<td><code>about</code></td>
+<td><code>div.section#About</code></td>
+<td>First visible section; active by default on load</td>
+</tr>
+<tr>
+<td><code>Education</code></td>
+<td><code>education</code></td>
+<td><code>div.section#Education</code></td>
+<td>Static content from i18n locale</td>
+</tr>
+<tr>
+<td><code>Projects</code></td>
+<td><code>projects</code></td>
+<td><code>div.section#Projects</code></td>
+<td>Data-driven from <code>projects.json</code></td>
+</tr>
+<tr>
+<td><code>RepoDocs</code></td>
+<td><code>repoDocs</code></td>
+<td><code>div.section#RepoDocs</code></td>
+<td>Data-driven from <code>projects.json</code></td>
+</tr>
+<tr>
+<td><code>Experience</code></td>
+<td><code>experience.jobExperiences</code></td>
+<td><code>div.section#Experience</code></td>
+<td>Static content from i18n locale</td>
+</tr>
+<tr>
+<td><code>Impressum</code></td>
+<td>—</td>
+<td>inside <code>div.section#Legal</code></td>
+<td>Scroll target for <code>LegalButton</code>; not in the main nav</td>
+</tr>
+<tr>
+<td><code>Datenschutz</code></td>
+<td>—</td>
+<td>inside <code>div.section#Legal</code></td>
+<td>Scroll target for <code>LegalButton</code>; not in the main nav</td>
+</tr>
+</tbody></table>
+<h2 id="scroll-navigation-sequence">Scroll Navigation Sequence</h2>
+<p>The diagram below traces a navigation click from the sidebar through to the highlighted active link.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">sequenceDiagram
+    participant User
+    participant SidebarMenu
+    participant ReactScroll as react-scroll Link
+    participant ScrollContainer as div#scroll-container
+    participant Sidebar
+
+    User-&gt;&gt;SidebarMenu: clicks nav link (e.g. &quot;Projects&quot;)
+    SidebarMenu-&gt;&gt;ReactScroll: smooth=true, to=&quot;Projects&quot;, containerId=&quot;scroll-container&quot;
+    ReactScroll-&gt;&gt;ScrollContainer: animates scrollTop to div#Projects.offsetTop − 70px offset
+    ScrollContainer--&gt;&gt;Sidebar: window scroll event fires
+    Sidebar-&gt;&gt;Sidebar: recalculates activeSection from scroll position
+    Sidebar--&gt;&gt;SidebarMenu: updated activeSection prop (&quot;Projects&quot;)
+    SidebarMenu--&gt;&gt;User: &quot;Projects&quot; nav link highlighted
+</pre></div>
+<p>The <code>offset={70}</code> prop on each <code>StyledLink</code> compensates for the mobile top bar height, ensuring the section heading is not obscured after scrolling.</p>
+<h2 id="active-section-tracking">Active Section Tracking</h2>
+<p><code>Sidebar</code> recalculates the active section on every scroll event by iterating the <code>SECTIONS</code> constant bottom-to-top:</p>
+<pre><code class="language-js">const SECTIONS = [&#39;Legal&#39;, &#39;RepoDocs&#39;, &#39;Experience&#39;, &#39;Projects&#39;, &#39;Education&#39;];
+</code></pre>
+<p>It compares <code>window.scrollY + window.innerHeight / 2</code> (the viewport midpoint) against each section&#39;s <code>offsetTop</code>. The first match wins, ensuring the deepest section the user has scrolled past is always highlighted. If no section matches, the fallback is <code>&#39;About&#39;</code>.</p>
+<p>Iterating bottom-to-top is the key invariant: without it, a user who has scrolled past Projects and into Experience would see Projects highlighted instead of Experience, because Projects appears earlier in a top-to-bottom pass.</p>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://github.com/fisshy/react-scroll">react-scroll documentation</a></li>
+<li><a href="05b-building-blocks-components.html">components.md</a> — props for <code>Sidebar</code> and <code>SidebarMenu</code></li>
+<li><a href="06-runtime.html">architecture/data-flow.md</a> — activeSection state ownership</li>
+<li><a href="05-building-blocks.html">architecture/component-tree.md</a> — where sidebar components sit in the hierarchy</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped.
+       Deliberately keeps an explicit dark themeVariables init (not the
+       reference theme's CSS-variable-driven mermaid.css) so diagrams stay
+       legible regardless of the light/dark toggle -- see ROBOT PROMPT P9's
+       B3 instruction to keep explicit themeVariables init. -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active section heading as the user scrolls -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        /* rootMargin pushes the activation zone toward the top quarter of the viewport */
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active in the site header -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+<!--
+  File: footer.html
+  Summary: Shared site footer + closing body/html tags, assembled at the
+    end of every generated docs page by build_docs.js.
+-->
+
+  <!-- --- Site footer --- -->
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Theme toggle, active-link marking, and the EN/DE language switch (see docs/_theme/js/docs.js). Path adjusted at build time like the stylesheet link above. -->
+  <script src="../_theme/js/docs.js"></script>
+
+</body>
+</html>

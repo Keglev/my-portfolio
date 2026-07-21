@@ -1,0 +1,346 @@
+<!--
+  File: header.html
+  Summary: Shared page shell (DOCTYPE, head, body open, site header)
+    assembled into every generated docs page by build_docs.js via
+    scripts/docs/lib/renderPages.js.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
+  <title>Portfolio Architecture Overview — my-portfolio docs</title>
+
+  <!-- Set the theme before paint to avoid a flash. Dark is the fallback
+       default, mirroring src/context/ThemeContext.js's own no-storage
+       fallback -- see docs/_theme/js/docs.js for the storage key. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("portfolio-docs-theme");
+        document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in scripts/docs/lib/renderPages.js) -->
+  <link rel="stylesheet" href="../_theme/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- --- Site header: breadcrumb + language switch + theme toggle + external nav --- -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <!-- href adjusted at build time for subdirectory pages -->
+      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+      <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
+      <span class="lang-switch">
+        <a href="index.html" aria-current="true">EN</a>
+        <a href="index-de.html">DE</a>
+      </span>
+      <button class="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle light or dark theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+<!--
+  File: page.html
+  Summary: Doc-page body partial (TOC sidebar + article + client-side
+    Mermaid/TOC-highlight/nav-active scripts), assembled between
+    header.html and footer.html by build_docs.js.
+-->
+
+  <!-- --- Doc layout: sticky TOC sidebar + article --- -->
+  <div class="doc-layout" id="main">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <!-- Replaced at build time by tocBuilder.buildToc() (see
+           scripts/docs/lib/tocBuilder.js); empty string when the page
+           has fewer than two headings -->
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#tech-stack">Tech Stack</a></li>
+  <li><a href="#component-diagram">Component Diagram</a></li>
+  <li><a href="#key-design-decisions">Key Design Decisions</a></li>
+  <li><a href="#non-functional-requirements">Non-Functional Requirements</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <!-- Replaced at build time by renderPages.convertMd() (see
+           scripts/docs/lib/renderPages.js) -->
+      <h1 id="portfolio-architecture-overview">Portfolio Architecture Overview</h1>
+<p><a href="index.html">← Architecture index</a></p>
+<p>This personal portfolio is a single-page React application built with Create React App. It presents professional information — experience, education, projects, and legal notices — in both English and German. Project data is pre-generated at build time by fetching pinned GitHub repositories via the GitHub GraphQL API and stored as static JSON, eliminating any runtime API dependency. The built app is deployed to Vercel; generated documentation and test coverage reports are published separately to GitHub Pages.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#tech-stack">Tech Stack</a></li>
+<li><a href="#component-diagram">Component Diagram</a></li>
+<li><a href="#key-design-decisions">Key Design Decisions</a></li>
+<li><a href="#non-functional-requirements">Non-Functional Requirements</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="tech-stack">Tech Stack</h2>
+<p>The table below maps each architectural layer to the chosen technology and the reason for that choice.</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Technology</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UI framework</td>
+<td>React 18 (Create React App)</td>
+<td>Mature ecosystem; CRA provides zero-config build tooling</td>
+</tr>
+<tr>
+<td>Styling</td>
+<td>styled-components 6</td>
+<td>Co-located styles, no class-name collisions</td>
+</tr>
+<tr>
+<td>Routing / scroll</td>
+<td>react-router-dom 6, react-scroll</td>
+<td>Hash-based navigation with smooth scroll; no server required</td>
+</tr>
+<tr>
+<td>Internationalisation</td>
+<td>i18next 25 + react-i18next 14</td>
+<td>Industry-standard i18n, React hooks API, JSON namespace support</td>
+</tr>
+<tr>
+<td>HTTP client</td>
+<td>axios 1</td>
+<td>Consistent API across environments for GitHub API calls</td>
+</tr>
+<tr>
+<td>Analytics</td>
+<td>Vercel Speed Insights</td>
+<td>Zero-config Core Web Vitals tracking; no cookies</td>
+</tr>
+<tr>
+<td>Testing</td>
+<td>Jest + React Testing Library</td>
+<td>Component-level unit tests aligned with user behaviour</td>
+</tr>
+<tr>
+<td>Linting</td>
+<td>ESLint (react-app config)</td>
+<td>Catches issues before CI runs without extra configuration</td>
+</tr>
+<tr>
+<td>CI/CD</td>
+<td>GitHub Actions (3 workflows)</td>
+<td>Free for public repos, native GitHub integration</td>
+</tr>
+<tr>
+<td>App hosting</td>
+<td>Vercel</td>
+<td>Automatic HTTPS, edge CDN, prebuilt artifact deployment</td>
+</tr>
+<tr>
+<td>Docs hosting</td>
+<td>GitHub Pages (gh-pages branch)</td>
+<td>Free static hosting co-located with the repository</td>
+</tr>
+</tbody></table>
+<h2 id="component-diagram">Component Diagram</h2>
+<p>The diagram below shows the runtime flow from a browser request through the deployed infrastructure.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">graph TD
+    Browser[&quot;Browser&quot;]
+    Vercel[&quot;Vercel CDN&quot;]
+    ReactApp[&quot;React App\n(CRA bundle)&quot;]
+    i18next[&quot;i18next\n(language state)&quot;]
+    ProjectsConfig[&quot;projects.config.js\n(bundled into CRA build)&quot;]
+    GHPages[&quot;GitHub Pages\n(docs + coverage)&quot;]
+
+    Browser --&gt;|&quot;page request&quot;| Vercel
+    Browser --&gt;|&quot;docs request&quot;| GHPages
+    Vercel --&gt;|&quot;serves bundle + assets&quot;| ReactApp
+    ReactApp --&gt;|&quot;language key lookup&quot;| i18next
+    i18next --&gt;|&quot;translated strings&quot;| ReactApp
+    ProjectsConfig --&gt;|&quot;import&quot;| ReactApp
+
+    class Browser l1
+    class Vercel,GHPages l2
+    class ReactApp l3
+    class i18next,ProjectsConfig l4
+
+    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
+    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
+    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
+</pre></div>
+<h2 id="key-design-decisions">Key Design Decisions</h2>
+<p>Each decision below links to the document where it is discussed in detail.</p>
+<ul>
+<li><strong>Static, hand-curated project data</strong> — project copy, tech tags, and images live in <code>src/data/projects.config.js</code> and are bundled at build time, removing any GitHub API dependency from the live site. See <a href="09-decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a> for why an earlier build-time fetch pipeline was retired in favor of this.</li>
+<li><strong>Vercel prebuilt artifact</strong> — the app is built in GitHub Actions and deployed as a <code>.vercel/output</code> artifact, giving full control over the build environment. See <a href="07b-deployment-configuration.html">DEPLOY.md</a>.</li>
+<li><strong>Two test runners</strong> — Node-only scripts use a separate Jest config from the CRA runner to avoid Babel/CSS transform conflicts. See <a href="08c-concepts-testing.html">TESTS.md</a>.</li>
+<li><strong>Default locale German</strong> — <code>lng: &#39;de&#39;</code> in i18next because the portfolio targets a German-speaking job market. See <a href="i18n-flow.html">i18n-flow.md</a>.</li>
+<li><strong>No client-side state library</strong> — component-local <code>useState</code> is sufficient; no shared mutable state exists across unrelated components. See <a href="06-runtime.html">data-flow.md</a>.</li>
+</ul>
+<h2 id="non-functional-requirements">Non-Functional Requirements</h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Approach</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Performance</td>
+<td>Static JSON served from Vercel CDN; no runtime API calls; Speed Insights monitors Core Web Vitals</td>
+</tr>
+<tr>
+<td>Accessibility</td>
+<td>Semantic HTML section anchors; <code>aria-label</code> on icon-only buttons; keyboard-navigable sidebar</td>
+</tr>
+<tr>
+<td>Internationalisation</td>
+<td>Full EN/DE support via i18next; default locale German; all visible strings in locale JSON files</td>
+</tr>
+<tr>
+<td>Reliability</td>
+<td><code>ErrorBoundary</code> wraps the entire React tree; CI blocks deployment on any test or lint failure</td>
+</tr>
+<tr>
+<td>Maintainability</td>
+<td>Generated docs and coverage published to GitHub Pages on every successful deployment</td>
+</tr>
+</tbody></table>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://react.dev">React documentation</a></li>
+<li><a href="https://www.i18next.com">i18next documentation</a></li>
+<li><a href="https://vercel.com/docs">Vercel documentation</a></li>
+<li><a href="https://create-react-app.dev">Create React App documentation</a></li>
+<li><a href="https://docs.github.com/en/actions">GitHub Actions documentation</a></li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped.
+       Deliberately keeps an explicit dark themeVariables init (not the
+       reference theme's CSS-variable-driven mermaid.css) so diagrams stay
+       legible regardless of the light/dark toggle -- see ROBOT PROMPT P9's
+       B3 instruction to keep explicit themeVariables init. -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active section heading as the user scrolls -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        /* rootMargin pushes the activation zone toward the top quarter of the viewport */
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active in the site header -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+<!--
+  File: footer.html
+  Summary: Shared site footer + closing body/html tags, assembled at the
+    end of every generated docs page by build_docs.js.
+-->
+
+  <!-- --- Site footer --- -->
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Theme toggle, active-link marking, and the EN/DE language switch (see docs/_theme/js/docs.js). Path adjusted at build time like the stylesheet link above. -->
+  <script src="../_theme/js/docs.js"></script>
+
+</body>
+</html>

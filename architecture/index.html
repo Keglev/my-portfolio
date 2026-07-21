@@ -79,7 +79,7 @@
            scripts/docs/lib/tocBuilder.js); empty string when the page
            has fewer than two headings -->
       <ul class="doc-toc__list">
-  <li><a href="#documents">Documents</a></li>
+  <li><a href="#chapters">Chapters</a></li>
   <li><a href="#references">References</a></li>
 </ul>
     </aside>
@@ -89,43 +89,75 @@
            scripts/docs/lib/renderPages.js) -->
       <h1 id="architecture-index">Architecture Index</h1>
 <p><a href="../index.html">← Documentation root</a></p>
-<p>This index covers the architecture documentation for the personal portfolio application. Each document focuses on one architectural concern. Together they describe the tech stack, component structure, internationalisation flow, CI/CD pipeline, and runtime data flow.</p>
-<p>For a quick orientation, start with <a href="overview.html">overview.md</a>; for the German-language version, see <a href="overview.de.html">overview.de.md</a>. The remaining documents go deeper into specific areas.</p>
-<h2 id="documents">Documents</h2>
+<p>arc42 architecture documentation for the personal portfolio application, chapters 01 through 12. This index is a thin table of contents only — each chapter lives in its own numbered file. Chapters without a natural arc42 fit for a project this size (as noted per-row below) still exist as real short pages rather than being silently dropped.</p>
+<h2 id="chapters">Chapters</h2>
 <table>
 <thead>
 <tr>
-<th>Document</th>
+<th>#</th>
+<th>Chapter</th>
 <th>Description</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><a href="overview.html">overview.md</a></td>
+<td>01</td>
+<td><a href="01-introduction-and-goals.html">Introduction and Goals</a> (<a href="01-introduction-and-goals.de.html">DE</a>)</td>
 <td>What the app is, tech stack table, high-level component diagram, key design decisions, and non-functional requirements</td>
 </tr>
 <tr>
-<td><a href="overview.de.html">overview.de.md</a></td>
-<td>German-language version of the architecture overview</td>
+<td>02</td>
+<td><a href="02-constraints.html">Constraints</a></td>
+<td>Organizational and technical constraints that shaped the architecture</td>
 </tr>
 <tr>
-<td><a href="component-tree.html">component-tree.md</a></td>
-<td>React component hierarchy diagram and per-group responsibility notes</td>
+<td>03</td>
+<td><a href="03-context.html">Context and Scope</a></td>
+<td>External systems, actors, and data flow across the system boundary</td>
 </tr>
 <tr>
-<td><a href="i18n-flow.html">i18n-flow.md</a></td>
-<td>Language-switch sequence diagram, namespace and key table, and i18next configuration</td>
+<td>04</td>
+<td><a href="04-solution-strategy.html">Solution Strategy</a></td>
+<td>The small set of decisions that shaped everything else</td>
 </tr>
 <tr>
-<td><a href="ci-cd-pipeline.html">ci-cd-pipeline.md</a></td>
-<td>CI/CD pipeline diagram, per-workflow file breakdown, and concurrency strategy</td>
+<td>05</td>
+<td><a href="05-building-blocks.html">Building Blocks</a> (<a href="05b-building-blocks-components.html">Components</a>)</td>
+<td>React component hierarchy and per-component prop catalog</td>
 </tr>
 <tr>
-<td><a href="data-flow.html">data-flow.md</a></td>
-<td>Runtime data flow diagram and state management approach (no Redux — explained here)</td>
+<td>06</td>
+<td><a href="06-runtime.html">Runtime View</a> (<a href="06b-runtime-routing.html">Routing</a>)</td>
+<td>Build-time and runtime data flow, state management, and navigation model</td>
 </tr>
 <tr>
-<td><a href="decisions/index.html">decisions/</a></td>
+<td>07</td>
+<td><a href="07-deployment.html">Deployment</a> (<a href="07b-deployment-configuration.html">Configuration</a>)</td>
+<td>CI/CD pipeline, Vercel deployment, and environment configuration</td>
+</tr>
+<tr>
+<td>08</td>
+<td><a href="08-concepts.html">Crosscutting Concepts</a> (<a href="08b-concepts-i18n-theming.html">i18n &amp; Theming</a>, <a href="08c-concepts-testing.html">Testing</a>, <a href="08d-concepts-build-tooling.html">Build Tooling</a>)</td>
+<td>Concerns that cut across multiple building blocks</td>
+</tr>
+<tr>
+<td>09</td>
+<td><a href="09-decisions/index.html">Architecture Decisions</a></td>
 <td>Architecture Decision Records — the <em>why</em> behind each significant technical choice</td>
+</tr>
+<tr>
+<td>10</td>
+<td><a href="10-quality-requirements.html">Quality Requirements</a></td>
+<td>Quality tree and concrete quality scenarios</td>
+</tr>
+<tr>
+<td>11</td>
+<td><a href="11-risks-technical-debt.html">Risks and Technical Debt</a></td>
+<td>Known risks and the deferred-work backlog</td>
+</tr>
+<tr>
+<td>12</td>
+<td><a href="12-glossary.html">Glossary</a></td>
+<td>Terms and abbreviations used throughout these docs</td>
 </tr>
 </tbody></table>
 <h2 id="references">References</h2>

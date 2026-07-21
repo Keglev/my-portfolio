@@ -1,0 +1,270 @@
+<!--
+  File: header.html
+  Summary: Shared page shell (DOCTYPE, head, body open, site header)
+    assembled into every generated docs page by build_docs.js via
+    scripts/docs/lib/renderPages.js.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
+  <title>ADR-005: Vercel as the Hosting Platform — my-portfolio docs</title>
+
+  <!-- Set the theme before paint to avoid a flash. Dark is the fallback
+       default, mirroring src/context/ThemeContext.js's own no-storage
+       fallback -- see docs/_theme/js/docs.js for the storage key. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("portfolio-docs-theme");
+        document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in scripts/docs/lib/renderPages.js) -->
+  <link rel="stylesheet" href="../../_theme/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- --- Site header: breadcrumb + language switch + theme toggle + external nav --- -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <!-- href adjusted at build time for subdirectory pages -->
+      <a class="site-header__title" href="../../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+      <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
+      <span class="lang-switch">
+        <a href="index.html" aria-current="true">EN</a>
+        <a href="index-de.html">DE</a>
+      </span>
+      <button class="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle light or dark theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+<!--
+  File: page.html
+  Summary: Doc-page body partial (TOC sidebar + article + client-side
+    Mermaid/TOC-highlight/nav-active scripts), assembled between
+    header.html and footer.html by build_docs.js.
+-->
+
+  <!-- --- Doc layout: sticky TOC sidebar + article --- -->
+  <div class="doc-layout" id="main">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <!-- Replaced at build time by tocBuilder.buildToc() (see
+           scripts/docs/lib/tocBuilder.js); empty string when the page
+           has fewer than two headings -->
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#status">Status</a></li>
+  <li><a href="#context">Context</a></li>
+  <li><a href="#decision">Decision</a></li>
+  <li><a href="#consequences">Consequences</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <!-- Replaced at build time by renderPages.convertMd() (see
+           scripts/docs/lib/renderPages.js) -->
+      <h1 id="adr-005-vercel-as-the-hosting-platform">ADR-005: Vercel as the Hosting Platform</h1>
+<p><a href="index.html">← Decisions index</a></p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#status">Status</a></li>
+<li><a href="#context">Context</a></li>
+<li><a href="#decision">Decision</a></li>
+<li><a href="#consequences">Consequences</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="status">Status</h2>
+<p>Accepted. Note: <code>build-and-fetch.yml</code>, named below, was renamed <code>deploy.yml</code>
+in the workflow rework described in <a href="ADR-004-three-workflow-cicd.html#update-2026-07-17">ADR-004&#39;s Update</a>;
+the prebuilt-artifact deployment mechanism itself is unchanged.</p>
+<h2 id="context">Context</h2>
+<p>The portfolio is a React SPA built with Create React App. It requires HTTPS,
+fast global CDN delivery, and a reliable deployment target for a low-traffic
+personal project. Self-hosting was not considered due to cost and ongoing
+maintenance overhead.</p>
+<p>Two deployment strategies were evaluated:</p>
+<ol>
+<li><p><strong>Standard Vercel GitHub integration</strong> — Vercel pulls the source code and
+runs its own build. This would duplicate the CRA build that already runs in
+GitHub Actions and gives up the tight control over the build environment
+that running the build in CI provides.</p>
+</li>
+<li><p><strong>Prebuilt artifact deployment</strong> — GitHub Actions builds the app and
+assembles a Vercel Build Output API v3 artifact, then deploys the
+pre-assembled output with <code>vercel --prebuilt</code>. Vercel receives a finished
+artifact with no rebuild step.</p>
+</li>
+</ol>
+<p>Option 2 was chosen because it keeps the full build pipeline — including the
+GitHub GraphQL fetch and DeepL translation — inside GitHub Actions where the
+secrets are already managed.</p>
+<h2 id="decision">Decision</h2>
+<p>Deploy the React app to Vercel using <strong>prebuilt artifact deployment</strong> (Vercel
+Build Output API v3). The <code>build-and-fetch.yml</code> workflow assembles the artifact
+in <code>.vercel/output/static/</code> via <code>scripts/prepareVercelOutput.sh</code> and deploys it
+with <code>vercel --prod --prebuilt</code>. Vercel performs no build step; it serves the
+static output directly from its edge CDN.</p>
+<p>Production deploys trigger only from the <code>main</code> branch via the
+<code>build-and-fetch.yml</code> workflow (after <code>ci.yml</code> passes). Vercel environment
+variables (<code>VERCEL_TOKEN</code>, <code>VERCEL_ORG_ID</code>, <code>VERCEL_PROJECT_ID</code>) are stored as
+GitHub Actions secrets.</p>
+<p>A <code>vercel.json</code> in the project root sets <code>github.productionBranch</code> to <code>&quot;main&quot;</code>
+and <code>buildCommand</code> to <code>&quot;react-scripts build&quot;</code>. The <code>productionBranch</code> setting
+prevents the <code>gh-pages</code> branch (which receives the documentation site) from
+being treated as a Vercel production source. The <code>buildCommand</code> value is defined
+for completeness but is never exercised — the <code>--prebuilt</code> flag means Vercel
+receives a finished static artifact and skips any build step of its own.</p>
+<h2 id="consequences">Consequences</h2>
+<ul>
+<li>Zero redundant builds: the artifact built and smoke-tested in CI is
+exactly what is served in production</li>
+<li>Deploy secrets (<code>VERCEL_TOKEN</code>, <code>VERCEL_ORG_ID</code>, <code>VERCEL_PROJECT_ID</code>) never leave GitHub Actions</li>
+<li>Vercel&#39;s global edge CDN serves the SPA with automatic HTTPS and HTTP/2</li>
+<li>The <code>.vercel/output/config.json</code> routes all unmatched paths to <code>index.html</code>
+so client-side React Router navigation works without server configuration</li>
+<li>No preview deployments per branch (the standard GitHub integration would
+provide these automatically; the prebuilt approach requires explicit
+workflow steps to create them)</li>
+<li>Vendor dependency on the Vercel Build Output API v3 format; a major version
+change would require updating <code>prepareVercelOutput.sh</code></li>
+<li>The free tier is sufficient for a portfolio with low traffic</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://vercel.com/docs/build-output-api/v3">Vercel Build Output API v3 documentation</a></li>
+<li><a href="https://vercel.com/docs/cli">Vercel CLI documentation</a></li>
+<li><a href="../07b-deployment-configuration.html">DEPLOY.md</a> — environment variables and deployment details</li>
+<li><a href="../07-deployment.html">ci-cd-pipeline.md</a> — where the deploy step sits in the pipeline</li>
+<li><code>scripts/prepareVercelOutput.sh</code> — assembles the prebuilt artifact</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped.
+       Deliberately keeps an explicit dark themeVariables init (not the
+       reference theme's CSS-variable-driven mermaid.css) so diagrams stay
+       legible regardless of the light/dark toggle -- see ROBOT PROMPT P9's
+       B3 instruction to keep explicit themeVariables init. -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active section heading as the user scrolls -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        /* rootMargin pushes the activation zone toward the top quarter of the viewport */
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active in the site header -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+<!--
+  File: footer.html
+  Summary: Shared site footer + closing body/html tags, assembled at the
+    end of every generated docs page by build_docs.js.
+-->
+
+  <!-- --- Site footer --- -->
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Theme toggle, active-link marking, and the EN/DE language switch (see docs/_theme/js/docs.js). Path adjusted at build time like the stylesheet link above. -->
+  <script src="../../_theme/js/docs.js"></script>
+
+</body>
+</html>

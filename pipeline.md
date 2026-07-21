@@ -2,7 +2,7 @@
 
 [← Hub](https://keglev.github.io/my-portfolio/index.html) · [← Docs index](docs-index.html)
 
-Short summary of the four-workflow CI/CD topology after the P4/P5 rework (2026-07-17). For full detail see [architecture/ci-cd-pipeline.md](architecture/ci-cd-pipeline.md).
+Short summary of the four-workflow CI/CD topology after the P4/P5 rework (2026-07-17). For full detail see [architecture/ci-cd-pipeline.md](architecture/07-deployment.md).
 
 ## Workflows and concurrency groups
 
@@ -31,6 +31,6 @@ Two bugs were found and fixed during this verification, both now on `main`:
 
 ## References
 
-- [architecture/ci-cd-pipeline.md](architecture/ci-cd-pipeline.md) — full pipeline diagram, per-workflow step breakdown, concurrency strategy
-- [architecture/decisions/ADR-004-three-workflow-cicd.md](architecture/decisions/ADR-004-three-workflow-cicd.md) — original three-workflow decision and its 2026-07-17 updates
-- [deploy/data-flow.md](deploy/data-flow.md) — data flow into Vercel and GitHub Pages
+- [architecture/ci-cd-pipeline.md](architecture/07-deployment.md) — full pipeline diagram, per-workflow step breakdown, concurrency strategy
+- [architecture/decisions/ADR-004-three-workflow-cicd.md](architecture/09-decisions/ADR-004-three-workflow-cicd.md) — original three-workflow decision and its 2026-07-17 updates
+- [deploy/data-flow.md](architecture/03-context.md) — data flow into Vercel and GitHub Pages
