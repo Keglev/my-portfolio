@@ -88,6 +88,7 @@
   <li class="toc-h3"><a href="#api-docsyml">api-docs.yml</a></li>
   <li class="toc-h3"><a href="#architecture-docsyml">architecture-docs.yml</a></li>
   <li><a href="#concurrency-strategy">Concurrency Strategy</a></li>
+  <li><a href="#live-verification-2026-07-17">Live Verification (2026-07-17)</a></li>
   <li><a href="#references">References</a></li>
 </ul>
     </aside>
@@ -105,6 +106,7 @@
 <li><a href="#workflow-files">Workflow Files</a></li>
 <li><a href="#step-details">Step Details</a></li>
 <li><a href="#concurrency-strategy">Concurrency Strategy</a></li>
+<li><a href="#live-verification-2026-07-17">Live Verification</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="pipeline-diagram">Pipeline Diagram</h2>
@@ -271,6 +273,47 @@
 <p><code>ci.yml</code>&#39;s <code>start-deploy-stage</code> job dispatches <code>deploy.yml</code> and <code>api-docs.yml</code> back to back, while <code>ci.yml</code>&#39;s own run is still holding <code>portfolio-pipeline</code>. GitHub Actions only protects an <strong>already in-progress</strong> run from cancellation when <code>cancel-in-progress: false</code> — a run that is still <strong>queued</strong> is not protected, and is silently cancelled if a second run joins the same group&#39;s queue before the first one starts. An earlier version of this pipeline put <code>deploy.yml</code> and <code>api-docs.yml</code> in the shared <code>portfolio-pipeline</code> group; in practice this meant <code>api-docs.yml</code>&#39;s queued run cancelled <code>deploy.yml</code>&#39;s queued run on every push, so builds silently never reached Vercel. Giving each workflow its own group (<code>deploy-pipeline</code>, <code>api-docs-pipeline</code>) removes the race and lets them run in parallel, at the cost of <code>ci.yml</code> runs no longer queuing behind <code>deploy.yml</code>/<code>api-docs.yml</code> runs — accepted deliberately, since <code>ci.yml</code> never touches Vercel or <code>gh-pages</code> and each of the other two workflows still self-serializes within its own group.</p>
 <p>Docs-only pushes — changes to <code>docs/**</code> or <code>scripts/docs/**</code> — trigger <code>architecture-docs.yml</code> directly using the separate <code>docs-only</code> concurrency group, so small documentation edits don&#39;t queue behind any of the portfolio-pipeline/deploy-pipeline/api-docs-pipeline lineage.</p>
 <p><code>api-docs.yml</code> and <code>architecture-docs.yml</code> publish to the same <code>gh-pages</code> branch from independent trigger paths and could in principle run concurrently. Both declare a job-level <code>gh-pages-deploy</code> concurrency group (matched by name across workflows), which serializes just their publish jobs without changing either workflow&#39;s top-level trigger concurrency.</p>
+<h2 id="live-verification-2026-07-17">Live Verification (2026-07-17)</h2>
+<p>The four-workflow topology above was verified live against production, not just read from the workflow files.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Scenario</th>
+<th>Expected</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>src-only push</td>
+<td><code>lint-and-test</code> → <code>deploy.yml</code> + <code>api-docs.yml</code> in parallel; <code>architecture-docs.yml</code> skipped</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>test-only push</td>
+<td><code>deploy.yml</code> + coverage publish; JSDoc rebuild skipped; <code>architecture-docs.yml</code> skipped</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>docs/**</code>-only push</td>
+<td>Only <code>architecture-docs.yml</code> runs; <code>ci.yml</code> doesn&#39;t trigger</td>
+<td>Pass</td>
+</tr>
+<tr>
+<td>4</td>
+<td>gh-pages content</td>
+<td><code>/jsdoc/</code>, <code>/coverage/</code>, architecture pages, and root all reachable</td>
+<td>Pass</td>
+</tr>
+</tbody></table>
+<p>Two bugs were found and fixed during this verification, both now on <code>main</code>:</p>
+<ul>
+<li>Shared <code>portfolio-pipeline</code> concurrency group across <code>ci.yml</code>, <code>deploy.yml</code>, and <code>api-docs.yml</code> caused <code>deploy.yml</code>&#39;s queued run to be silently cancelled by <code>api-docs.yml</code>&#39;s queued run on every push — no Vercel deploy actually went out until this was fixed (see <a href="#concurrency-strategy">Concurrency Strategy</a> above for the root cause).</li>
+<li>An edit that expanded <code>deploy.yml</code>&#39;s concurrency-group header comment accidentally deleted its <code>name:</code> and <code>on:</code> keys, leaving the workflow with no trigger.</li>
+</ul>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://docs.github.com/en/actions">GitHub Actions documentation</a></li>
