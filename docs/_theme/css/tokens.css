@@ -1,0 +1,71 @@
+/*
+ * File: tokens.css
+ * Module: docs/_theme/css/tokens.css
+ * Summary: Single source of truth for color, spacing, and theme values.
+ * Enterprise: First of seven files concatenated by build_docs.js into
+ *   docs/_theme/css/styles.css -- cascade order matters, tokens must stay
+ *   first so every later file can reference these custom properties.
+ *
+ *   Theme contract: docs.js's inline boot script (in header.html) sets
+ *   data-theme="light|dark" on <html> before first paint, so the cascade
+ *   never needs a prefers-color-scheme query and the page never flashes.
+ *   Dark is the site's default identity (mirrors src/context/ThemeContext.js)
+ *   -- :root below IS the dark palette; :root[data-theme="light"] overrides
+ *   it. With JS disabled the attribute is absent and the page still renders
+ *   in dark, matching the live app's own no-storage fallback.
+ */
+
+:root {
+  /* --- Dark theme (default) --- */
+  --bg:            #0F1117;
+  --surface:       #1A1D2E;
+  --surface-2:     #141622;
+  --border:        #2D3047;
+  --border-strong: #3D4166;
+
+  --text:    #E2E8F0;
+  --muted:   #94A3B8;
+  --heading: #F8FAFC;
+
+  --accent: #3B82F6;
+  --link:   #60A5FA;
+
+  --code-bg:     #141622;
+  --code-border: rgba(59, 130, 246, 0.35);
+
+  /* --- Layout --- */
+  --radius:       8px;
+  --radius-sm:    4px;
+  --maxw:         1200px;
+  --content-maxw: 820px;
+  --toc-w:        220px;
+  --topbar-h:     56px;
+
+  --shadow-sm: 0 1px 0 rgba(0, 0, 0, 0.4);
+  --shadow:    0 4px 12px rgba(0, 0, 0, 0.5);
+
+  /* --- Typography stacks --- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-mono: 'JetBrains Mono', "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+:root[data-theme="light"] {
+  --bg:            #F8FAFC;
+  --surface:       #FFFFFF;
+  --surface-2:     #F1F5F9;
+  --border:        rgba(15, 23, 42, 0.12);
+  --border-strong: rgba(15, 23, 42, 0.28);
+
+  --text:    #1E293B;
+  --muted:   #64748B;
+  --heading: #0F172A;
+
+  --accent: #2563EB;
+  --link:   #1D4ED8;
+
+  --code-bg:     #F1F5F9;
+  --code-border: rgba(37, 99, 235, 0.18);
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow:    0 1px 3px rgba(15, 23, 42, 0.08);
+}
