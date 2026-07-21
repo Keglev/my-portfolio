@@ -12,6 +12,7 @@ The portfolio uses four GitHub Actions workflows. `ci.yml` runs first (lint, tes
 - [Workflow Files](#workflow-files)
 - [Step Details](#step-details)
 - [Concurrency Strategy](#concurrency-strategy)
+- [Live Verification](#live-verification-2026-07-17)
 - [References](#references)
 
 ## Pipeline Diagram
@@ -138,6 +139,22 @@ Four separate concurrency groups are in play, deliberately **not** one shared gr
 Docs-only pushes — changes to `docs/**` or `scripts/docs/**` — trigger `architecture-docs.yml` directly using the separate `docs-only` concurrency group, so small documentation edits don't queue behind any of the portfolio-pipeline/deploy-pipeline/api-docs-pipeline lineage.
 
 `api-docs.yml` and `architecture-docs.yml` publish to the same `gh-pages` branch from independent trigger paths and could in principle run concurrently. Both declare a job-level `gh-pages-deploy` concurrency group (matched by name across workflows), which serializes just their publish jobs without changing either workflow's top-level trigger concurrency.
+
+## Live Verification (2026-07-17)
+
+The four-workflow topology above was verified live against production, not just read from the workflow files.
+
+| # | Scenario | Expected | Result |
+|---|----------|----------|--------|
+| 1 | src-only push | `lint-and-test` → `deploy.yml` + `api-docs.yml` in parallel; `architecture-docs.yml` skipped | Pass |
+| 2 | test-only push | `deploy.yml` + coverage publish; JSDoc rebuild skipped; `architecture-docs.yml` skipped | Pass |
+| 3 | `docs/**`-only push | Only `architecture-docs.yml` runs; `ci.yml` doesn't trigger | Pass |
+| 4 | gh-pages content | `/jsdoc/`, `/coverage/`, architecture pages, and root all reachable | Pass |
+
+Two bugs were found and fixed during this verification, both now on `main`:
+
+- Shared `portfolio-pipeline` concurrency group across `ci.yml`, `deploy.yml`, and `api-docs.yml` caused `deploy.yml`'s queued run to be silently cancelled by `api-docs.yml`'s queued run on every push — no Vercel deploy actually went out until this was fixed (see [Concurrency Strategy](#concurrency-strategy) above for the root cause).
+- An edit that expanded `deploy.yml`'s concurrency-group header comment accidentally deleted its `name:` and `on:` keys, leaving the workflow with no trigger.
 
 ## References
 
