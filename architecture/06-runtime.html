@@ -115,6 +115,8 @@
     ScrollEvent[&quot;window scroll event&quot;]
     ActiveSectionState[&quot;activeSection state\n(useState in Sidebar)&quot;]
     SidebarMenu[&quot;SidebarMenu\n(activeSection prop)&quot;]
+    ThemeStorage[&quot;localStorage\n(portfolio-theme)&quot;]
+    ThemeContext[&quot;ThemeContext\n(useState in ThemeProvider)&quot;]
 
     ProjectsConfig --&gt;|&quot;import&quot;| ProjectsState
     ProjectsState --&gt;|&quot;project prop&quot;| ProjectCard
@@ -123,9 +125,12 @@
     i18next --&gt;|&quot;t() calls&quot;| AllComponents
     ScrollEvent --&gt;|&quot;setActiveSection&quot;| ActiveSectionState
     ActiveSectionState --&gt;|&quot;activeSection prop&quot;| SidebarMenu
+    ThemeStorage --&gt;|&quot;read on mount&quot;| ThemeContext
+    ThemeContext --&gt;|&quot;useTheme()&quot;| ProjectCard
+    ThemeContext --&gt;|&quot;useTheme()&quot;| SidebarMenu
 
-    class ProjectsConfig,LocaleFiles,ScrollEvent l1
-    class i18next,ActiveSectionState l2
+    class ProjectsConfig,LocaleFiles,ScrollEvent,ThemeStorage l1
+    class i18next,ActiveSectionState,ThemeContext l2
     class ProjectsState,AllComponents,SidebarMenu l3
     class ProjectCard,ProjectSummary l4
 
@@ -158,6 +163,11 @@
 <td>Current language</td>
 <td>i18next module instance</td>
 <td><code>react-i18next</code> context (not component state)</td>
+</tr>
+<tr>
+<td>Active theme (light/dark)</td>
+<td><code>ThemeContext</code> (React context, persisted to <code>localStorage</code>)</td>
+<td>Context to every descendant via <code>useTheme()</code> — see <a href="08b-concepts-i18n-theming.html#theme-system">Theme System</a></td>
 </tr>
 <tr>
 <td>Legal / nav scroll targets</td>

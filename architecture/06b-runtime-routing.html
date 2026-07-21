@@ -103,10 +103,10 @@
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="navigation-model">Navigation Model</h2>
-<p><code>SidebarMenu</code> uses react-scroll&#39;s <code>&lt;Link&gt;</code> component — not <code>react-router-dom</code>&#39;s <code>&lt;Link&gt;</code> — to scroll to a named DOM <code>id</code> inside <code>div#scroll-container</code>. The <code>containerId=&quot;scroll-container&quot;</code> prop scopes the animation to the <code>main-content</code> div rather than <code>window</code>, which avoids conflicts on mobile where the sidebar and content stack vertically.</p>
-<p><code>react-router-dom</code> is listed in <code>package.json</code> but is not used in the current source. It was not removed to avoid a potentially breaking change to the CRA build configuration.</p>
+<p><code>SidebarMenu</code> uses react-scroll&#39;s <code>&lt;Link&gt;</code> component to scroll to a named DOM <code>id</code> inside <code>div#scroll-container</code>. The <code>containerId=&quot;scroll-container&quot;</code> prop scopes the animation to the <code>main-content</code> div rather than <code>window</code>, which avoids conflicts on mobile where the sidebar and content stack vertically.</p>
+<p><code>react-router-dom</code> is not a dependency of this project — <code>package.json</code> lists only <code>react-scroll</code> for navigation. There is no routing library to not-use; scroll-based navigation was the only mechanism ever wired in for the current design.</p>
 <h2 id="section-registry">Section Registry</h2>
-<p><code>SidebarMenu</code> defines its navigation items in the <code>NAV_ITEMS</code> constant. Each entry maps a DOM <code>id</code> to the i18n key used as the link label. The <code>Legal</code> section is intentionally absent from <code>NAV_ITEMS</code> — its two sub-sections are accessed via scroll buttons in the sidebar footer, not via the main navigation.</p>
+<p><code>SidebarMenu</code> defines its navigation items in the <code>NAV_ITEMS</code> constant. Each entry maps a DOM <code>id</code> to the i18n key used as the link label. <code>Hero</code> and <code>Legal</code> are both intentionally absent from <code>NAV_ITEMS</code>: <code>Hero</code> is the page&#39;s default scroll position (nothing points back to it from the nav), and <code>Legal</code>&#39;s two sub-sections are reached via scroll buttons in the sidebar footer instead.</p>
 <table>
 <thead>
 <tr>
@@ -120,43 +120,43 @@
 <td><code>About</code></td>
 <td><code>about</code></td>
 <td><code>div.section#About</code></td>
-<td>First visible section; active by default on load</td>
+<td>In <code>NAV_ITEMS</code>; fallback active section when scroll position matches nothing in <code>SECTIONS</code> (see below)</td>
 </tr>
 <tr>
-<td><code>Education</code></td>
-<td><code>education</code></td>
-<td><code>div.section#Education</code></td>
-<td>Static content from i18n locale</td>
+<td><code>Skills</code></td>
+<td><code>skills</code></td>
+<td><code>div.section#Skills</code></td>
+<td>In <code>NAV_ITEMS</code></td>
 </tr>
 <tr>
 <td><code>Projects</code></td>
 <td><code>projects</code></td>
 <td><code>div.section#Projects</code></td>
-<td>Data-driven from <code>projects.json</code></td>
+<td>In <code>NAV_ITEMS</code>; data-driven from <code>data/projects.config</code></td>
 </tr>
 <tr>
-<td><code>RepoDocs</code></td>
-<td><code>repoDocs</code></td>
-<td><code>div.section#RepoDocs</code></td>
-<td>Data-driven from <code>projects.json</code></td>
+<td><code>Contact</code></td>
+<td><code>contact</code></td>
+<td><code>div.section#Contact</code></td>
+<td>In <code>NAV_ITEMS</code></td>
 </tr>
 <tr>
-<td><code>Experience</code></td>
-<td><code>experience.jobExperiences</code></td>
-<td><code>div.section#Experience</code></td>
-<td>Static content from i18n locale</td>
+<td><code>Hero</code></td>
+<td>—</td>
+<td><code>div.section#Hero</code></td>
+<td>Not in <code>NAV_ITEMS</code> or <code>SECTIONS</code> — the page&#39;s top, not a nav destination</td>
 </tr>
 <tr>
 <td><code>Impressum</code></td>
 <td>—</td>
 <td>inside <code>div.section#Legal</code></td>
-<td>Scroll target for <code>LegalButton</code>; not in the main nav</td>
+<td>Scroll target for a <code>LegalButton</code> in the sidebar footer; not in <code>NAV_ITEMS</code></td>
 </tr>
 <tr>
 <td><code>Datenschutz</code></td>
 <td>—</td>
 <td>inside <code>div.section#Legal</code></td>
-<td>Scroll target for <code>LegalButton</code>; not in the main nav</td>
+<td>Scroll target for a <code>LegalButton</code> in the sidebar footer; not in <code>NAV_ITEMS</code></td>
 </tr>
 </tbody></table>
 <h2 id="scroll-navigation-sequence">Scroll Navigation Sequence</h2>
@@ -170,25 +170,25 @@
 
     User-&gt;&gt;SidebarMenu: clicks nav link (e.g. &quot;Projects&quot;)
     SidebarMenu-&gt;&gt;ReactScroll: smooth=true, to=&quot;Projects&quot;, containerId=&quot;scroll-container&quot;
-    ReactScroll-&gt;&gt;ScrollContainer: animates scrollTop to div#Projects.offsetTop − 70px offset
+    ReactScroll-&gt;&gt;ScrollContainer: animates scrollTop to (div#Projects.offsetTop − 10px)
     ScrollContainer--&gt;&gt;Sidebar: window scroll event fires
     Sidebar-&gt;&gt;Sidebar: recalculates activeSection from scroll position
     Sidebar--&gt;&gt;SidebarMenu: updated activeSection prop (&quot;Projects&quot;)
     SidebarMenu--&gt;&gt;User: &quot;Projects&quot; nav link highlighted
 </pre></div>
-<p>The <code>offset={70}</code> prop on each <code>StyledLink</code> compensates for the mobile top bar height, ensuring the section heading is not obscured after scrolling.</p>
+<p>The <code>offset={-10}</code> prop on each <code>StyledLink</code> stops the scroll slightly <em>before</em> the section heading, not after it — there is no fixed top bar to compensate for on this layout (sidebar is fixed only on desktop; on mobile it&#39;s a static block, not an overlay), so the offset&#39;s purpose is purely to avoid landing exactly flush with the heading&#39;s top edge.</p>
 <h2 id="active-section-tracking">Active Section Tracking</h2>
 <p><code>Sidebar</code> recalculates the active section on every scroll event by iterating the <code>SECTIONS</code> constant bottom-to-top:</p>
-<pre><code class="language-js">const SECTIONS = [&#39;Legal&#39;, &#39;RepoDocs&#39;, &#39;Experience&#39;, &#39;Projects&#39;, &#39;Education&#39;];
+<pre><code class="language-js">const SECTIONS = [&#39;Legal&#39;, &#39;Contact&#39;, &#39;Projects&#39;, &#39;Skills&#39;];
 </code></pre>
-<p>It compares <code>window.scrollY + window.innerHeight / 2</code> (the viewport midpoint) against each section&#39;s <code>offsetTop</code>. The first match wins, ensuring the deepest section the user has scrolled past is always highlighted. If no section matches, the fallback is <code>&#39;About&#39;</code>.</p>
-<p>Iterating bottom-to-top is the key invariant: without it, a user who has scrolled past Projects and into Experience would see Projects highlighted instead of Experience, because Projects appears earlier in a top-to-bottom pass.</p>
+<p>It compares <code>window.scrollY + window.innerHeight / 2</code> (the viewport midpoint) against each section&#39;s <code>offsetTop</code>. The first match wins, ensuring the deepest section the user has scrolled past is always highlighted. If no section matches (the user is above <code>Skills</code>, i.e. still in <code>Hero</code> or <code>About</code>), the fallback is <code>&#39;About&#39;</code>.</p>
+<p>Iterating bottom-to-top is the key invariant: without it, a user who has scrolled past <code>Projects</code> and into <code>Contact</code> would see <code>Projects</code> highlighted instead of <code>Contact</code>, because <code>Projects</code> appears earlier in a top-to-bottom pass.</p>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://github.com/fisshy/react-scroll">react-scroll documentation</a></li>
-<li><a href="05b-building-blocks-components.html">components.md</a> — props for <code>Sidebar</code> and <code>SidebarMenu</code></li>
-<li><a href="06-runtime.html">architecture/data-flow.md</a> — activeSection state ownership</li>
-<li><a href="05-building-blocks.html">architecture/component-tree.md</a> — where sidebar components sit in the hierarchy</li>
+<li><a href="05b-building-blocks-components.html">05b-building-blocks-components.md</a> — props for <code>Sidebar</code> and <code>SidebarMenu</code></li>
+<li><a href="06-runtime.html">06-runtime.md</a> — activeSection state ownership</li>
+<li><a href="05-building-blocks.html">05-building-blocks.md</a> — where sidebar components sit in the hierarchy</li>
 </ul>
 
     </article>
