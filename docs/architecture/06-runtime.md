@@ -69,4 +69,4 @@ Language selection is the one exception to pure component state: i18next maintai
 - [React useState documentation](https://react.dev/reference/react/useState)
 - [i18next changeLanguage API](https://www.i18next.com/overview/api#changelanguage)
 - [component-tree.md](05-building-blocks.md) — where each stateful component sits in the hierarchy
-- [i18n-flow.md](i18n-flow.md) — language-switch sequence in detail
+- [i18n-flow.md](08b-concepts-i18n-theming.md) — language-switch sequence in detail

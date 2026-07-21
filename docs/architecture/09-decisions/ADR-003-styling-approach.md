@@ -73,6 +73,6 @@ Use a **two-layer approach**:
 
 - [styled-components documentation](https://styled-components.com/docs)
 - [MDN CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
-- [frontend/styling.md](../../frontend/styling.md) — design token table and per-file breakdown
+- [frontend/styling.md](../08b-concepts-i18n-theming.md) — design token table and per-file breakdown
 - `src/components/Sidebar/SidebarStyles.js` — all styled-component definitions
 - `src/index.css` — CSS custom properties (design tokens)
