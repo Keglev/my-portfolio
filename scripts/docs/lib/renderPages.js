@@ -17,8 +17,9 @@ const { markedFn } = require('./markedConfig');
 const { wrapMermaid, rewriteLinks } = require('./htmlPostprocess');
 const { buildToc } = require('./tocBuilder');
 
-// Subdirectories inside docs/ that contain generated output -- never walk them
-const SKIP_DIRS = new Set(['jsdoc', 'coverage']);
+// Subdirectories inside docs/ that contain generated output or theme assets
+// -- never walk them for markdown
+const SKIP_DIRS = new Set(['jsdoc', 'coverage', '_theme']);
 
 /**
  * @param {string} mdPath - Absolute path to the source .md file
@@ -55,8 +56,9 @@ function adjustTemplate(template, depth) {
   if (depth === 0) return template;
   const prefix = '../'.repeat(depth);
   return template
-    .replace('href="templates/styles.css"', `href="${prefix}templates/styles.css"`)
-    .replace('href="index.html"',           `href="${prefix}index.html"`);
+    .replace('href="_theme/css/styles.css"', `href="${prefix}_theme/css/styles.css"`)
+    .replace('src="_theme/js/docs.js"',      `src="${prefix}_theme/js/docs.js"`)
+    .replace('href="index.html"',            `href="${prefix}index.html"`);
 }
 
 /**
@@ -84,7 +86,7 @@ function processDir(dir, depth, template, docsDir) {
     if (entry.isDirectory()) {
       if (!SKIP_DIRS.has(entry.name)) processDir(fullPath, depth + 1, template, docsDir);
     } else if (entry.name.endsWith('.md')) {
-      // docs/index.md must not overwrite index.html — hub.html owns that slot
+      // docs/index.md must not overwrite index.html — the assembled landing page owns that slot
       const baseName = (depth === 0 && entry.name === 'index.md')
         ? 'docs-index'
         : path.basename(entry.name, '.md');

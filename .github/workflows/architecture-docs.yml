@@ -23,7 +23,8 @@
 # destination_dir, which scopes cleanup to that one subdirectory. This
 # workflow's output is NOT confined to one subdirectory -- it spans
 # docs/index.html, docs/architecture/, docs/deploy/, docs/frontend/,
-# docs/templates/, docs/DEPLOY.md, docs/TESTS.md, etc. at gh-pages root --
+# docs/_theme/, docs/templates/, docs/DEPLOY.md, docs/TESTS.md, etc. at
+# gh-pages root --
 # so destination_dir cannot express "everything except jsdoc/ and
 # coverage/" in one publish step. We use keep_files: true instead, and
 # publish a STAGED copy of docs/ with jsdoc/ and coverage/ excluded
@@ -80,14 +81,15 @@ jobs:
       # npm run docs:build is the single source of truth for this two-step
       # pipeline (also runnable locally): build_docs.js assembles
       # header.html + page.html + footer.html into the doc-page template,
-      # converts docs/*.md → docs/*.html (skipping docs/jsdoc/ and
-      # docs/coverage/), concatenates the split CSS source files into a
-      # single docs/templates/styles.css, and assembles header.html +
-      # hub.html + footer.html → docs/index.html. build_mermaid.js then
+      # converts docs/*.md → docs/*.html (skipping docs/jsdoc/, docs/coverage/,
+      # and docs/_theme/), concatenates the split CSS source files under
+      # docs/_theme/css/ into a single docs/_theme/css/styles.css, and
+      # assembles header.html + landing-en.html/landing-de.html + footer.html
+      # → docs/index.html and docs/index-de.html. build_mermaid.js then
       # looks for mmdc (@mermaid-js/mermaid-cli) on PATH and in
       # node_modules/.bin; when not found it exits cleanly and diagrams in
       # the generated HTML pages fall back to client-side rendering via the
-      # Mermaid CDN script already included in scripts/docs/templates/page.html.
+      # Mermaid CDN script already included in docs/_theme/templates/page.html.
       # To enable server-side pre-rendering in CI: npm install --save-dev
       # @mermaid-js/mermaid-cli.
       #
