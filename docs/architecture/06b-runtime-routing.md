@@ -14,23 +14,23 @@ The portfolio is a single-page application with no URL-based routing. All conten
 
 ## Navigation Model
 
-`SidebarMenu` uses react-scroll's `<Link>` component — not `react-router-dom`'s `<Link>` — to scroll to a named DOM `id` inside `div#scroll-container`. The `containerId="scroll-container"` prop scopes the animation to the `main-content` div rather than `window`, which avoids conflicts on mobile where the sidebar and content stack vertically.
+`SidebarMenu` uses react-scroll's `<Link>` component to scroll to a named DOM `id` inside `div#scroll-container`. The `containerId="scroll-container"` prop scopes the animation to the `main-content` div rather than `window`, which avoids conflicts on mobile where the sidebar and content stack vertically.
 
-`react-router-dom` is listed in `package.json` but is not used in the current source. It was not removed to avoid a potentially breaking change to the CRA build configuration.
+`react-router-dom` is not a dependency of this project — `package.json` lists only `react-scroll` for navigation. There is no routing library to not-use; scroll-based navigation was the only mechanism ever wired in for the current design.
 
 ## Section Registry
 
-`SidebarMenu` defines its navigation items in the `NAV_ITEMS` constant. Each entry maps a DOM `id` to the i18n key used as the link label. The `Legal` section is intentionally absent from `NAV_ITEMS` — its two sub-sections are accessed via scroll buttons in the sidebar footer, not via the main navigation.
+`SidebarMenu` defines its navigation items in the `NAV_ITEMS` constant. Each entry maps a DOM `id` to the i18n key used as the link label. `Hero` and `Legal` are both intentionally absent from `NAV_ITEMS`: `Hero` is the page's default scroll position (nothing points back to it from the nav), and `Legal`'s two sub-sections are reached via scroll buttons in the sidebar footer instead.
 
 | Section ID | i18n key | App.js wrapper | Notes |
 |-----------|---------|----------------|-------|
-| `About` | `about` | `div.section#About` | First visible section; active by default on load |
-| `Education` | `education` | `div.section#Education` | Static content from i18n locale |
-| `Projects` | `projects` | `div.section#Projects` | Data-driven from `projects.json` |
-| `RepoDocs` | `repoDocs` | `div.section#RepoDocs` | Data-driven from `projects.json` |
-| `Experience` | `experience.jobExperiences` | `div.section#Experience` | Static content from i18n locale |
-| `Impressum` | — | inside `div.section#Legal` | Scroll target for `LegalButton`; not in the main nav |
-| `Datenschutz` | — | inside `div.section#Legal` | Scroll target for `LegalButton`; not in the main nav |
+| `About` | `about` | `div.section#About` | In `NAV_ITEMS`; fallback active section when scroll position matches nothing in `SECTIONS` (see below) |
+| `Skills` | `skills` | `div.section#Skills` | In `NAV_ITEMS` |
+| `Projects` | `projects` | `div.section#Projects` | In `NAV_ITEMS`; data-driven from `data/projects.config` |
+| `Contact` | `contact` | `div.section#Contact` | In `NAV_ITEMS` |
+| `Hero` | — | `div.section#Hero` | Not in `NAV_ITEMS` or `SECTIONS` — the page's top, not a nav destination |
+| `Impressum` | — | inside `div.section#Legal` | Scroll target for a `LegalButton` in the sidebar footer; not in `NAV_ITEMS` |
+| `Datenschutz` | — | inside `div.section#Legal` | Scroll target for a `LegalButton` in the sidebar footer; not in `NAV_ITEMS` |
 
 ## Scroll Navigation Sequence
 
@@ -46,30 +46,30 @@ sequenceDiagram
 
     User->>SidebarMenu: clicks nav link (e.g. "Projects")
     SidebarMenu->>ReactScroll: smooth=true, to="Projects", containerId="scroll-container"
-    ReactScroll->>ScrollContainer: animates scrollTop to div#Projects.offsetTop − 70px offset
+    ReactScroll->>ScrollContainer: animates scrollTop to (div#Projects.offsetTop − 10px)
     ScrollContainer-->>Sidebar: window scroll event fires
     Sidebar->>Sidebar: recalculates activeSection from scroll position
     Sidebar-->>SidebarMenu: updated activeSection prop ("Projects")
     SidebarMenu-->>User: "Projects" nav link highlighted
 ```
 
-The `offset={70}` prop on each `StyledLink` compensates for the mobile top bar height, ensuring the section heading is not obscured after scrolling.
+The `offset={-10}` prop on each `StyledLink` stops the scroll slightly *before* the section heading, not after it — there is no fixed top bar to compensate for on this layout (sidebar is fixed only on desktop; on mobile it's a static block, not an overlay), so the offset's purpose is purely to avoid landing exactly flush with the heading's top edge.
 
 ## Active Section Tracking
 
 `Sidebar` recalculates the active section on every scroll event by iterating the `SECTIONS` constant bottom-to-top:
 
 ```js
-const SECTIONS = ['Legal', 'RepoDocs', 'Experience', 'Projects', 'Education'];
+const SECTIONS = ['Legal', 'Contact', 'Projects', 'Skills'];
 ```
 
-It compares `window.scrollY + window.innerHeight / 2` (the viewport midpoint) against each section's `offsetTop`. The first match wins, ensuring the deepest section the user has scrolled past is always highlighted. If no section matches, the fallback is `'About'`.
+It compares `window.scrollY + window.innerHeight / 2` (the viewport midpoint) against each section's `offsetTop`. The first match wins, ensuring the deepest section the user has scrolled past is always highlighted. If no section matches (the user is above `Skills`, i.e. still in `Hero` or `About`), the fallback is `'About'`.
 
-Iterating bottom-to-top is the key invariant: without it, a user who has scrolled past Projects and into Experience would see Projects highlighted instead of Experience, because Projects appears earlier in a top-to-bottom pass.
+Iterating bottom-to-top is the key invariant: without it, a user who has scrolled past `Projects` and into `Contact` would see `Projects` highlighted instead of `Contact`, because `Projects` appears earlier in a top-to-bottom pass.
 
 ## References
 
 - [react-scroll documentation](https://github.com/fisshy/react-scroll)
-- [components.md](05b-building-blocks-components.md) — props for `Sidebar` and `SidebarMenu`
-- [architecture/data-flow.md](06-runtime.md) — activeSection state ownership
-- [architecture/component-tree.md](05-building-blocks.md) — where sidebar components sit in the hierarchy
+- [05b-building-blocks-components.md](05b-building-blocks-components.md) — props for `Sidebar` and `SidebarMenu`
+- [06-runtime.md](06-runtime.md) — activeSection state ownership
+- [05-building-blocks.md](05-building-blocks.md) — where sidebar components sit in the hierarchy

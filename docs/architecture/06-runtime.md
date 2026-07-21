@@ -31,6 +31,8 @@ flowchart TD
     ScrollEvent["window scroll event"]
     ActiveSectionState["activeSection state\n(useState in Sidebar)"]
     SidebarMenu["SidebarMenu\n(activeSection prop)"]
+    ThemeStorage["localStorage\n(portfolio-theme)"]
+    ThemeContext["ThemeContext\n(useState in ThemeProvider)"]
 
     ProjectsConfig -->|"import"| ProjectsState
     ProjectsState -->|"project prop"| ProjectCard
@@ -39,9 +41,12 @@ flowchart TD
     i18next -->|"t() calls"| AllComponents
     ScrollEvent -->|"setActiveSection"| ActiveSectionState
     ActiveSectionState -->|"activeSection prop"| SidebarMenu
+    ThemeStorage -->|"read on mount"| ThemeContext
+    ThemeContext -->|"useTheme()"| ProjectCard
+    ThemeContext -->|"useTheme()"| SidebarMenu
 
-    class ProjectsConfig,LocaleFiles,ScrollEvent l1
-    class i18next,ActiveSectionState l2
+    class ProjectsConfig,LocaleFiles,ScrollEvent,ThemeStorage l1
+    class i18next,ActiveSectionState,ThemeContext l2
     class ProjectsState,AllComponents,SidebarMenu l3
     class ProjectCard,ProjectSummary l4
 
@@ -60,6 +65,7 @@ The app uses no global state management library such as Redux, Zustand, or MobX.
 | Project list (static import) | `projects.config.js` → `Projects` | Props to `ProjectCard`, `ProjectSummary` |
 | Active nav section | `Sidebar` | Prop to `SidebarMenu` |
 | Current language | i18next module instance | `react-i18next` context (not component state) |
+| Active theme (light/dark) | `ThemeContext` (React context, persisted to `localStorage`) | Context to every descendant via `useTheme()` — see [Theme System](08b-concepts-i18n-theming.md#theme-system) |
 | Legal / nav scroll targets | No state — DOM `getElementById` calls | — |
 
 Language selection is the one exception to pure component state: i18next maintains the current locale in its own module-level instance. All components subscribe to locale changes via the `useTranslation()` hook, which internally consumes the React context provided automatically by `initReactI18next`.
