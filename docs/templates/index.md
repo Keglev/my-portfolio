@@ -15,5 +15,5 @@ This directory contains reusable blank templates for the portfolio project. Copy
 ## References
 
 - [Documentation root index](../index.md)
-- [frontend/components.md](../frontend/components.md) — existing component catalog; check before creating a new component doc
-- [TESTS.md](../TESTS.md) — project-wide test strategy; read before creating a new test plan
+- [architecture/05b-building-blocks-components.md](../architecture/05b-building-blocks-components.md) — existing component catalog; check before creating a new component doc
+- [TESTS.md](../architecture/08c-concepts-testing.md) — project-wide test strategy; read before creating a new test plan

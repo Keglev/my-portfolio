@@ -1,6 +1,6 @@
 # Styling Approach
 
-[← Frontend index](index.md)
+[← Architecture index](../architecture/index.md)
 
 The portfolio uses two complementary styling layers: CSS custom properties (design tokens) defined in `src/index.css`, and component-level styles written either as plain `.css` files or as `styled-components` templates. The two approaches coexist intentionally — sidebar components use `styled-components` for encapsulation, while section components use plain CSS for simplicity.
 
@@ -104,4 +104,4 @@ The single layout breakpoint is `max-width: 768px`. Below it the following chang
 - [styled-components documentation](https://styled-components.com/docs)
 - [MDN CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties)
 - [CSS clamp() function](https://developer.mozilla.org/en-US/docs/Web/CSS/clamp)
-- [architecture/component-tree.md](../architecture/component-tree.md) — which components own which style files
+- [architecture/component-tree.md](../architecture/05-building-blocks.md) — which components own which style files

@@ -78,6 +78,6 @@ receives a finished static artifact and skips any build step of its own.
 
 - [Vercel Build Output API v3 documentation](https://vercel.com/docs/build-output-api/v3)
 - [Vercel CLI documentation](https://vercel.com/docs/cli)
-- [DEPLOY.md](../../DEPLOY.md) — environment variables and deployment details
-- [ci-cd-pipeline.md](../ci-cd-pipeline.md) — where the deploy step sits in the pipeline
+- [DEPLOY.md](../07b-deployment-configuration.md) — environment variables and deployment details
+- [ci-cd-pipeline.md](../07-deployment.md) — where the deploy step sits in the pipeline
 - `scripts/prepareVercelOutput.sh` — assembles the prebuilt artifact

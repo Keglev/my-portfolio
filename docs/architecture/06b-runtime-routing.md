@@ -1,6 +1,6 @@
 # Page Structure and Navigation
 
-[← Frontend index](index.md)
+[← Architecture index](index.md)
 
 The portfolio is a single-page application with no URL-based routing. All content lives in one scrollable document; navigation is driven by scroll position. Clicking a sidebar link smooth-scrolls the content area to the target section. No page transitions occur, no browser history entries are pushed, and no `react-router-dom` routes are configured.
 
@@ -70,6 +70,6 @@ Iterating bottom-to-top is the key invariant: without it, a user who has scrolle
 ## References
 
 - [react-scroll documentation](https://github.com/fisshy/react-scroll)
-- [components.md](components.md) — props for `Sidebar` and `SidebarMenu`
-- [architecture/data-flow.md](../architecture/data-flow.md) — activeSection state ownership
-- [architecture/component-tree.md](../architecture/component-tree.md) — where sidebar components sit in the hierarchy
+- [components.md](05b-building-blocks-components.md) — props for `Sidebar` and `SidebarMenu`
+- [architecture/data-flow.md](06-runtime.md) — activeSection state ownership
+- [architecture/component-tree.md](05-building-blocks.md) — where sidebar components sit in the hierarchy

@@ -2,7 +2,7 @@
 
 [← Templates index](index.md)
 
-One test plan per module or feature. Copy this file, name it after the module being tested (e.g. `test-plan-useProjects.md`), and complete each section before writing the tests. See [TESTS.md](../TESTS.md) for the project-wide testing strategy and runner configuration.
+One test plan per module or feature. Copy this file, name it after the module being tested (e.g. `test-plan-useProjects.md`), and complete each section before writing the tests. See [TESTS.md](../architecture/08c-concepts-testing.md) for the project-wide testing strategy and runner configuration.
 
 ## Table of Contents
 
@@ -51,5 +51,5 @@ Replace steps 2–3 with the specific runner and flags for the module under test
 
 ## References
 
-- [TESTS.md](../TESTS.md) — project-wide testing strategy, runner configuration, and coverage thresholds
-- [architecture/ci-cd-pipeline.md](../architecture/ci-cd-pipeline.md) — how coverage artifacts are collected and published in CI
+- [TESTS.md](../architecture/08c-concepts-testing.md) — project-wide testing strategy, runner configuration, and coverage thresholds
+- [architecture/07-deployment.md](../architecture/07-deployment.md) — how coverage artifacts are collected and published in CI

@@ -65,11 +65,11 @@ graph TD
 
 Jede Entscheidung unten verweist auf das Dokument, in dem sie ausführlich erläutert wird.
 
-- **Statische, handkuratierte Projektdaten** — Projekttexte, Tech-Tags und Bilder liegen in `src/data/projects.config.js` und werden zur Build-Zeit gebündelt, sodass keine GitHub-API-Abhängigkeit im Live-Betrieb besteht. Siehe [ADR-006](decisions/ADR-006-build-time-github-data-fetch.md) für die Gründe, warum eine frühere Build-Time-Fetch-Pipeline zugunsten dieses Ansatzes abgeschafft wurde.
-- **Vercel Prebuilt Artifact** — Die App wird in GitHub Actions gebaut und als `.vercel/output`-Artifact deployed, was vollständige Kontrolle über die Build-Umgebung gibt. Siehe [DEPLOY.md](../DEPLOY.md).
-- **Zwei Test-Runner** — Node-only-Skripte verwenden eine separate Jest-Konfiguration vom CRA-Runner, um Babel/CSS-Transform-Konflikte zu vermeiden. Siehe [TESTS.md](../TESTS.md).
+- **Statische, handkuratierte Projektdaten** — Projekttexte, Tech-Tags und Bilder liegen in `src/data/projects.config.js` und werden zur Build-Zeit gebündelt, sodass keine GitHub-API-Abhängigkeit im Live-Betrieb besteht. Siehe [ADR-006](09-decisions/ADR-006-build-time-github-data-fetch.md) für die Gründe, warum eine frühere Build-Time-Fetch-Pipeline zugunsten dieses Ansatzes abgeschafft wurde.
+- **Vercel Prebuilt Artifact** — Die App wird in GitHub Actions gebaut und als `.vercel/output`-Artifact deployed, was vollständige Kontrolle über die Build-Umgebung gibt. Siehe [DEPLOY.md](07b-deployment-configuration.md).
+- **Zwei Test-Runner** — Node-only-Skripte verwenden eine separate Jest-Konfiguration vom CRA-Runner, um Babel/CSS-Transform-Konflikte zu vermeiden. Siehe [TESTS.md](08c-concepts-testing.md).
 - **Standard-Locale Deutsch** — `lng: 'de'` in i18next, da das Portfolio auf einen deutschsprachigen Jobmarkt ausgerichtet ist. Siehe [i18n-flow.md](i18n-flow.md).
-- **Keine Client-seitige State-Bibliothek** — Komponentenlokales `useState` ist ausreichend; es gibt keinen gemeinsamen veränderbaren Zustand zwischen unverbundenen Komponenten. Siehe [data-flow.md](data-flow.md).
+- **Keine Client-seitige State-Bibliothek** — Komponentenlokales `useState` ist ausreichend; es gibt keinen gemeinsamen veränderbaren Zustand zwischen unverbundenen Komponenten. Siehe [data-flow.md](06-runtime.md).
 
 ## Nichtfunktionale Anforderungen
 

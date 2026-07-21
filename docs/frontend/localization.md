@@ -1,6 +1,6 @@
 # Localization Guide
 
-[← Frontend index](index.md)
+[← Architecture index](../architecture/index.md)
 
 The portfolio supports English and German via i18next and react-i18next. This guide covers the key structure, how translations are resolved at runtime, and the steps to add a new key or a new language. For the runtime sequence of a language switch, see [architecture/i18n-flow.md](../architecture/i18n-flow.md).
 

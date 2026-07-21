@@ -1,6 +1,6 @@
 # Tests
 
-[← Hub](https://keglev.github.io/my-portfolio/index.html) · [← Docs index](docs-index.html)
+[← Architecture index](index.md)
 
 This project uses two separate Jest runners to handle the mixed runtime requirements of Node build scripts and React frontend components.
 

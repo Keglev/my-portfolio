@@ -144,5 +144,5 @@ Docs-only pushes — changes to `docs/**` or `scripts/docs/**` — trigger `arch
 - [GitHub Actions documentation](https://docs.github.com/en/actions)
 - [Vercel CLI documentation](https://vercel.com/docs/cli)
 - [peaceiris/actions-gh-pages](https://github.com/peaceiris/actions-gh-pages)
-- [DEPLOY.md](../DEPLOY.md) — Vercel environment variables and deployment details
-- [TESTS.md](../TESTS.md) — test runner configuration and coverage thresholds
+- [DEPLOY.md](07b-deployment-configuration.md) — Vercel environment variables and deployment details
+- [TESTS.md](08c-concepts-testing.md) — test runner configuration and coverage thresholds

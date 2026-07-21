@@ -81,7 +81,7 @@ the output is complete and schema-valid before the React build proceeds.
 
 - [GitHub GraphQL API documentation](https://docs.github.com/en/graphql)
 - [DeepL API documentation](https://www.deepl.com/docs-api)
-- [data-flow.md](../data-flow.md) — how project data flows into the React component tree today
+- [data-flow.md](../06-runtime.md) — how project data flows into the React component tree today
 - `scripts/fetchProjects.js` — entry point for the build-time fetch
 - `scripts/lib/graphql/pinnedGraphql.js` — GraphQL query definition
 - `scripts/lib/translation/translate.js` — DeepL integration and cache logic

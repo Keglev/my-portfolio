@@ -66,4 +66,4 @@ The i18next instance is configured in `src/i18n.js` and imported by `src/index.j
 - [i18next documentation](https://www.i18next.com)
 - [react-i18next documentation](https://react.i18next.com)
 - [i18next configuration options](https://www.i18next.com/overview/configuration-options)
-- [component-tree.md](component-tree.md) — where the language buttons live in the component hierarchy
+- [component-tree.md](05-building-blocks.md) — where the language buttons live in the component hierarchy

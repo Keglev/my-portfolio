@@ -1,6 +1,6 @@
 # Scripts Overview
 
-[← Scripts index](index.md)
+[← Architecture index](../architecture/index.md)
 
 The `scripts/` directory holds standalone build and quality-check tooling. There is no data-fetch pipeline: the Projects section renders from the static, hand-curated `src/data/projects.config.js`. The `scripts/docs/` subdirectory holds the documentation build tooling used by the `docs-refresh` workflow.
 
@@ -31,5 +31,5 @@ Scripts in `scripts/docs/` are called by the `docs-refresh` GitHub Actions workf
 
 ## References
 
-- [deploy/data-flow.md](../deploy/data-flow.md) — how script outputs flow to Vercel and GitHub Pages
-- [architecture/ci-cd-pipeline.md](../architecture/ci-cd-pipeline.md) — which workflow step calls which script
+- [architecture/03-context.md](../architecture/03-context.md) — how script outputs flow to Vercel and GitHub Pages
+- [architecture/ci-cd-pipeline.md](../architecture/07-deployment.md) — which workflow step calls which script
