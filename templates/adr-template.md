@@ -2,7 +2,7 @@
 
 [← Templates index](index.md)
 
-Every significant technical choice gets one ADR. Copy this file to `docs/adr-NNN.md` where `NNN` is the next sequential number, replace every placeholder in brackets, and update the status as the decision evolves.
+Every significant technical choice gets one ADR. Copy this file to `docs/architecture/09-decisions/ADR-NNN-short-title.md` where `NNN` is the next sequential number and `short-title` is a kebab-case slug (see the existing files in that directory for the naming pattern), replace every placeholder in brackets, add a row to [the ADR index](../architecture/09-decisions/index.md), and update the status as the decision evolves.
 
 ## Table of Contents
 

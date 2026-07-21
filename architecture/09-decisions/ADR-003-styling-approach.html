@@ -115,9 +115,11 @@ component (e.g. <code>activeSection</code>). CSS class toggling for all these st
 would produce fragile, scattered rules.</p>
 </li>
 <li><p><strong>Section components</strong> (About, Education, Projects, Experience, RepoDocs,
-Legal) — simpler layouts with fewer interactive states and no dynamic
-style props. The overhead of CSS-in-JS for these would add build cost
-without meaningful benefit.</p>
+Legal, at the time of this decision — the section set has since changed;
+see <a href="../05-building-blocks.html">Building Blocks</a> for the current list) —
+simpler layouts with fewer interactive states and no dynamic style props.
+The overhead of CSS-in-JS for these would add build cost without
+meaningful benefit.</p>
 </li>
 </ol>
 <p>CSS Modules were evaluated but ruled out: the project uses Create React App
