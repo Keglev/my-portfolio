@@ -77,6 +77,6 @@ displaying the English original.
 - [i18next documentation](https://www.i18next.com)
 - [react-i18next documentation](https://react.i18next.com)
 - [DeepL API documentation](https://www.deepl.com/docs-api)
-- [i18n-flow.md](../i18n-flow.md) — sequence diagram of the language-switch flow
+- [i18n-flow.md](../08b-concepts-i18n-theming.md) — sequence diagram of the language-switch flow
 - [ADR-006](ADR-006-build-time-github-data-fetch.md) — retirement of the DeepL-based fetch pipeline
 - `src/i18n.js` — i18next configuration

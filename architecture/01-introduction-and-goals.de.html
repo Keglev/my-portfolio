@@ -201,7 +201,7 @@
 <li><strong>Statische, handkuratierte Projektdaten</strong> — Projekttexte, Tech-Tags und Bilder liegen in <code>src/data/projects.config.js</code> und werden zur Build-Zeit gebündelt, sodass keine GitHub-API-Abhängigkeit im Live-Betrieb besteht. Siehe <a href="09-decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a> für die Gründe, warum eine frühere Build-Time-Fetch-Pipeline zugunsten dieses Ansatzes abgeschafft wurde.</li>
 <li><strong>Vercel Prebuilt Artifact</strong> — Die App wird in GitHub Actions gebaut und als <code>.vercel/output</code>-Artifact deployed, was vollständige Kontrolle über die Build-Umgebung gibt. Siehe <a href="07b-deployment-configuration.html">DEPLOY.md</a>.</li>
 <li><strong>Zwei Test-Runner</strong> — Node-only-Skripte verwenden eine separate Jest-Konfiguration vom CRA-Runner, um Babel/CSS-Transform-Konflikte zu vermeiden. Siehe <a href="08c-concepts-testing.html">TESTS.md</a>.</li>
-<li><strong>Standard-Locale Deutsch</strong> — <code>lng: &#39;de&#39;</code> in i18next, da das Portfolio auf einen deutschsprachigen Jobmarkt ausgerichtet ist. Siehe <a href="i18n-flow.html">i18n-flow.md</a>.</li>
+<li><strong>Standard-Locale Deutsch</strong> — <code>lng: &#39;de&#39;</code> in i18next, da das Portfolio auf einen deutschsprachigen Jobmarkt ausgerichtet ist. Siehe <a href="08b-concepts-i18n-theming.html">i18n-flow.md</a>.</li>
 <li><strong>Keine Client-seitige State-Bibliothek</strong> — Komponentenlokales <code>useState</code> ist ausreichend; es gibt keinen gemeinsamen veränderbaren Zustand zwischen unverbundenen Komponenten. Siehe <a href="06-runtime.html">data-flow.md</a>.</li>
 </ul>
 <h2 id="nichtfunktionale-anforderungen">Nichtfunktionale Anforderungen</h2>

@@ -78,7 +78,29 @@
       <!-- Replaced at build time by tocBuilder.buildToc() (see
            scripts/docs/lib/tocBuilder.js); empty string when the page
            has fewer than two headings -->
-      
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#language-switch-sequence">Language Switch Sequence</a></li>
+  <li><a href="#namespaces-and-keys">Namespaces and Keys</a></li>
+  <li><a href="#key-structure">Key Structure</a></li>
+  <li><a href="#translation-resolution">Translation Resolution</a></li>
+  <li><a href="#configuration-details">Configuration Details</a></li>
+  <li><a href="#adding-a-translation-key">Adding a Translation Key</a></li>
+  <li><a href="#adding-a-new-language">Adding a New Language</a></li>
+  <li><a href="#special-cases">Special Cases</a></li>
+  <li class="toc-h3"><a href="#html-content-in-legal-keys">HTML content in legal keys</a></li>
+  <li class="toc-h3"><a href="#german-project-summaries">German project summaries</a></li>
+  <li><a href="#theme-system">Theme System</a></li>
+  <li class="toc-h3"><a href="#where-theme-is-consumed">Where Theme Is Consumed</a></li>
+  <li class="toc-h3"><a href="#css-integration">CSS Integration</a></li>
+  <li><a href="#style-layers">Style Layers</a></li>
+  <li><a href="#design-tokens">Design Tokens</a></li>
+  <li><a href="#styled-components-layer">styled-components Layer</a></li>
+  <li><a href="#css-files-per-component">CSS Files Per Component</a></li>
+  <li><a href="#responsive-design">Responsive Design</a></li>
+  <li><a href="#conventions">Conventions</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
     </aside>
 
     <article class="article">
@@ -87,7 +109,489 @@
       <h1 id="crosscutting-concepts-i18n-amp-theming">Crosscutting Concepts: i18n &amp; Theming</h1>
 <p><a href="index.html">← Architecture index</a></p>
 <p>Language switching (i18next/react-i18next) and the light/dark theme system are two crosscutting concepts that touch nearly every component, which is why they&#39;re documented together rather than under Building Blocks.</p>
-<p><em>Full chapter content pending — will merge <a href="i18n-flow.html">i18n-flow.md</a>, <a href="../frontend/localization.html">frontend/localization.md</a>, and <a href="../frontend/styling.html">frontend/styling.md</a> into one page.</em></p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#language-switch-sequence">Language Switch Sequence</a></li>
+<li><a href="#namespaces-and-keys">Namespaces and Keys</a></li>
+<li><a href="#key-structure">Key Structure</a></li>
+<li><a href="#translation-resolution">Translation Resolution</a></li>
+<li><a href="#configuration-details">Configuration Details</a></li>
+<li><a href="#adding-a-translation-key">Adding a Translation Key</a></li>
+<li><a href="#adding-a-new-language">Adding a New Language</a></li>
+<li><a href="#special-cases">Special Cases</a></li>
+<li><a href="#theme-system">Theme System</a></li>
+<li><a href="#style-layers">Style Layers</a></li>
+<li><a href="#design-tokens">Design Tokens</a></li>
+<li><a href="#styled-components-layer">styled-components Layer</a></li>
+<li><a href="#css-files-per-component">CSS Files Per Component</a></li>
+<li><a href="#responsive-design">Responsive Design</a></li>
+<li><a href="#conventions">Conventions</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="language-switch-sequence">Language Switch Sequence</h2>
+<p>The sequence below traces what happens from the moment the user clicks a language button to the point where the updated UI renders.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">sequenceDiagram
+    participant User
+    participant LanguageButtons as LanguageButtons (Sidebar)
+    participant i18next
+    participant LocaleJSON as Locale JSON (en / de)
+    participant Components as Translated Components
+
+    User-&gt;&gt;LanguageButtons: clicks EN or DE button
+    LanguageButtons-&gt;&gt;i18next: i18n.changeLanguage(&#39;en&#39; | &#39;de&#39;)
+    i18next-&gt;&gt;LocaleJSON: resolves translation namespace
+    LocaleJSON--&gt;&gt;i18next: returns key/value map
+    i18next--&gt;&gt;Components: triggers re-render via react-i18next context
+    Components--&gt;&gt;User: updated UI in selected language
+</pre></div>
+<p>Because both locale files are imported directly at i18next init and bundled at build time, there is no network request on language switch. The transition is synchronous.</p>
+<h2 id="namespaces-and-keys">Namespaces and Keys</h2>
+<p>The app uses a single i18next namespace — <code>translation</code>, the default — containing all translatable strings.</p>
+<h2 id="key-structure">Key Structure</h2>
+<p>All keys live in a single <code>translation</code> namespace — i18next&#39;s default — so no namespace prefix is needed when calling <code>t()</code>. Access nested keys in components with dot notation: <code>t(&#39;aboutSection.heading&#39;)</code>.</p>
+<h2 id="translation-resolution">Translation Resolution</h2>
+<p>When a component calls <code>t(&#39;key&#39;)</code>, i18next resolves the value in this order.</p>
+<div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
+    Call[&quot;t(&#39;key&#39;) called in component&quot;]
+    CheckCurrent[&quot;Look up key in current locale\n(default: de)&quot;]
+    Found1{&quot;Key found?&quot;}
+    ReturnValue[&quot;Return translated string&quot;]
+    CheckFallback[&quot;Look up key in fallback locale\n(en)&quot;]
+    Found2{&quot;Key found?&quot;}
+    ReturnFallback[&quot;Return English fallback string&quot;]
+    ReturnKey[&quot;Return key name as-is\n(visible in UI — indicates a missing key)&quot;]
+
+    Call --&gt; CheckCurrent
+    CheckCurrent --&gt; Found1
+    Found1 --&gt;|&quot;yes&quot;| ReturnValue
+    Found1 --&gt;|&quot;no&quot;| CheckFallback
+    CheckFallback --&gt; Found2
+    Found2 --&gt;|&quot;yes&quot;| ReturnFallback
+    Found2 --&gt;|&quot;no&quot;| ReturnKey
+</pre></div>
+<h2 id="configuration-details">Configuration Details</h2>
+<p>The i18next instance is configured in <code>src/i18n/index.js</code> and imported by <code>src/App.js</code> (<code>import &quot;./i18n&quot;;</code>, with an inline comment noting it must be imported before any translated component renders) rather than by the app&#39;s entry point — this keeps the import next to the component tree it gates instead of buried in bootstrapping code. All components access translations via the <code>useTranslation()</code> hook: <code>const { t } = useTranslation()</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>lng</code></td>
+<td><code>&#39;de&#39;</code></td>
+<td>Portfolio targets a German-speaking job market; German is the default experience</td>
+</tr>
+<tr>
+<td><code>fallbackLng</code></td>
+<td><code>&#39;en&#39;</code></td>
+<td>Falls back to English if a key is missing from the German locale file</td>
+</tr>
+<tr>
+<td><code>interpolation.escapeValue</code></td>
+<td><code>false</code></td>
+<td>React already escapes interpolated values; disabling prevents double-escaping</td>
+</tr>
+<tr>
+<td><code>compatibilityJSON</code></td>
+<td><code>&#39;v3&#39;</code></td>
+<td>Matches the plural-key format used in the locale JSON files</td>
+</tr>
+<tr>
+<td>Namespace</td>
+<td><code>translation</code> (default)</td>
+<td>A single namespace is sufficient; splitting would add configuration overhead without benefit</td>
+</tr>
+</tbody></table>
+<h2 id="adding-a-translation-key">Adding a Translation Key</h2>
+<p>Follow these steps in order to add a new translatable string.</p>
+<ol>
+<li>Add the key to <code>src/i18n/locales/en.json</code> with the English value.</li>
+<li>Add the same key — with identical nesting — to <code>src/i18n/locales/de.json</code> with the German value.</li>
+<li>Access the key in the component: <code>const { t } = useTranslation(); t(&#39;your.new.key&#39;)</code>.</li>
+<li>Run <code>npm start</code> and switch between EN and DE to verify both values render correctly.</li>
+</ol>
+<p>If the German translation is not yet available, add the key to <code>de.json</code> with an empty string <code>&quot;&quot;</code>. i18next will display the English fallback until the German value is supplied.</p>
+<h2 id="adding-a-new-language">Adding a New Language</h2>
+<p>Follow these steps in order to introduce a third locale.</p>
+<ol>
+<li>Create <code>src/i18n/locales/&lt;code&gt;.json</code> (e.g. <code>fr.json</code>) with the same top-level key structure as <code>en.json</code>.</li>
+<li>Import the file and register it in <code>src/i18n/index.js</code>&#39;s <code>resources</code> map.</li>
+<li>Add a toggle button for the new language to the sidebar&#39;s language switch group in <code>SidebarMenu.js</code>.</li>
+<li>Add the new language&#39;s button label to every existing locale file.</li>
+</ol>
+<h2 id="special-cases">Special Cases</h2>
+<h3 id="html-content-in-legal-keys">HTML content in legal keys</h3>
+<p>Legal-section content (Impressum/Datenschutz) is authored as raw HTML strings in the locale files and rendered with <code>dangerouslySetInnerHTML</code>. This is safe only because the strings are authored by the developer in the locale files, not derived from user input. Do not use this pattern for any user-provided content.</p>
+<h3 id="german-project-summaries">German project summaries</h3>
+<p>Project records in <code>src/data/projects.config.js</code> carry both <code>summaryEn</code> and <code>summaryDe</code> fields, hand-curated alongside the rest of the project entry. <code>ProjectSummary</code> selects the field matching the active locale.</p>
+<h2 id="theme-system">Theme System</h2>
+<p>The app has its own independent light/dark theme, separate from (and unrelated to) this documentation site&#39;s own theme toggle from <a href="08d-concepts-build-tooling.html">chapter 07&#39;s build tooling</a> — the two are different codebases with different storage keys.</p>
+<p><code>src/context/ThemeContext.js</code> is the single source of truth. <code>ThemeProvider</code> holds <code>theme</code> in <code>useState</code>, initialized by <code>getInitialTheme()</code>: it reads <code>localStorage</code> key <code>portfolio-theme</code>, and falls back to <code>&#39;dark&#39;</code> — not the OS <code>prefers-color-scheme</code> setting — if nothing is stored or storage throws (SSR, tests, private browsing). Dark is treated as the site&#39;s default identity, a deliberate product choice rather than an oversight.</p>
+<p>A <code>useEffect</code> keyed on <code>theme</code> mirrors the value onto <code>&lt;html data-theme=&quot;...&quot;&gt;</code> and persists it back to <code>localStorage</code>, catching storage errors silently. Because this runs in an effect rather than a pre-paint inline script, there is a brief flash of the default (dark) theme on first load before a stored <code>light</code> preference applies — unlike this documentation site&#39;s own boot script (see <a href="08d-concepts-build-tooling.html">Build Tooling</a>), which sets the attribute before first paint specifically to avoid that flash. This is a known asymmetry between the two theme systems, not a bug in either.</p>
+<p><code>useTheme()</code> reads the context and works without a <code>ThemeProvider</code> ancestor (defaulting to <code>{ theme: &#39;dark&#39;, toggleTheme: () =&gt; {} }</code>), which keeps isolated component tests simple.</p>
+<h3 id="where-theme-is-consumed">Where Theme Is Consumed</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SidebarMenu</code></td>
+<td>Renders the ☀/☾ toggle button (<code>onClick={toggleTheme}</code>), with <code>aria-label</code> and <code>title</code> both reflecting the <em>next</em> state the click will produce</td>
+</tr>
+<tr>
+<td><code>ProjectCard</code></td>
+<td>Selects which theme-specific screenshot variant to display for a project, via <code>project.images[theme]</code></td>
+</tr>
+</tbody></table>
+<h3 id="css-integration">CSS Integration</h3>
+<p><code>src/index.css</code> defines every design token twice: once under <code>:root</code> (the dark values, used whenever <code>data-theme</code> is absent or <code>&quot;dark&quot;</code>) and once under <code>[data-theme=&#39;light&#39;]</code> (light overrides, same token names). Because every component references the token <em>names</em>, not raw values, no component-level code needs to know which theme is active — the browser resolves the right value from whichever block matches the current <code>data-theme</code> attribute. See <a href="#design-tokens">Design Tokens</a> below for the dark-mode values; the light-mode overrides are:</p>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Light value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--color-bg</code></td>
+<td><code>#dce7f5</code></td>
+</tr>
+<tr>
+<td><code>--color-bg-card</code></td>
+<td><code>#10233f</code></td>
+</tr>
+<tr>
+<td><code>--color-bg-card-hover</code></td>
+<td><code>#17335f</code></td>
+</tr>
+<tr>
+<td><code>--color-bg-tag</code></td>
+<td><code>#e4edf7</code></td>
+</tr>
+<tr>
+<td><code>--color-bg-subtle</code></td>
+<td><code>#eef4fb</code></td>
+</tr>
+<tr>
+<td><code>--color-accent</code></td>
+<td><code>#0b66c3</code></td>
+</tr>
+<tr>
+<td><code>--color-accent-contrast</code></td>
+<td><code>#eaf3fd</code></td>
+</tr>
+<tr>
+<td><code>--color-text</code></td>
+<td><code>#0f2440</code></td>
+</tr>
+<tr>
+<td><code>--color-text-muted</code></td>
+<td><code>#51648a</code></td>
+</tr>
+<tr>
+<td><code>--color-border</code></td>
+<td><code>#d6e2f0</code></td>
+</tr>
+<tr>
+<td><code>--color-card-text</code></td>
+<td><code>#e6eefc</code></td>
+</tr>
+<tr>
+<td><code>--color-card-text-muted</code></td>
+<td><code>#b8c6e2</code></td>
+</tr>
+<tr>
+<td><code>--color-card-accent</code></td>
+<td><code>#7fc0ff</code> (unchanged)</td>
+</tr>
+<tr>
+<td><code>--color-card-border</code></td>
+<td><code>#2a4a7a</code> (unchanged)</td>
+</tr>
+<tr>
+<td><code>--color-card-tag-bg</code></td>
+<td><code>#1b3a63</code></td>
+</tr>
+<tr>
+<td><code>--shadow-accent</code></td>
+<td><code>rgba(11,102,195,0.25)</code></td>
+</tr>
+<tr>
+<td><code>--shadow-accent-hover</code></td>
+<td><code>rgba(11,102,195,0.35)</code></td>
+</tr>
+</tbody></table>
+<p>Card-scoped colors (<code>--color-card-text</code>, <code>--color-card-text-muted</code>, <code>--color-card-accent</code>, <code>--color-card-border</code>, <code>--color-card-tag-bg</code>) intentionally invert in light mode — cards stay dark on a light page — so component code rendering <em>inside</em> a card must reference the <code>--color-card-*</code> tokens, never the page-level <code>--color-text</code>/<code>--color-bg</code> tokens, or it will produce dark-on-dark text the moment light mode is active.</p>
+<h2 id="style-layers">Style Layers</h2>
+<p>Three files provide the foundation on which all component styles build.</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>src/index.css</code></td>
+<td>CSS custom properties (design tokens) and the CRA default base reset</td>
+</tr>
+<tr>
+<td><code>src/styles/GlobalStyles.js</code></td>
+<td>styled-components global reset: universal box-sizing, Montserrat font, dark background, base line-height</td>
+</tr>
+<tr>
+<td><code>src/App.css</code></td>
+<td>Two-column layout shell (<code>.container</code>, <code>.main-content</code>, <code>.section</code>)</td>
+</tr>
+</tbody></table>
+<p><code>GlobalStyles</code> is injected by the root <code>App</code> component via <code>&lt;GlobalStyles /&gt;</code> and is always present. <code>index.css</code> is imported by <code>src/index.js</code> and makes the CSS custom properties available to every downstream stylesheet.</p>
+<h2 id="design-tokens">Design Tokens</h2>
+<p>All colour, spacing, shadow, and transition values are defined in <code>src/index.css</code> under <code>:root</code>. Referencing tokens instead of raw values means a colour or spacing change propagates across the entire UI from one edit.</p>
+<table>
+<thead>
+<tr>
+<th>Token</th>
+<th>Value</th>
+<th>Usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--color-bg</code></td>
+<td><code>#0a192f</code></td>
+<td>Page and section backgrounds</td>
+</tr>
+<tr>
+<td><code>--color-bg-card</code></td>
+<td><code>#17335f</code></td>
+<td>Project and legal card backgrounds</td>
+</tr>
+<tr>
+<td><code>--color-bg-card-hover</code></td>
+<td><code>#234a80</code></td>
+<td>Card hover state</td>
+</tr>
+<tr>
+<td><code>--color-bg-tag</code></td>
+<td><code>#2b3a59</code></td>
+<td>Technology tag pill backgrounds</td>
+</tr>
+<tr>
+<td><code>--color-bg-subtle</code></td>
+<td><code>#0f2238</code></td>
+<td>Image placeholder background</td>
+</tr>
+<tr>
+<td><code>--color-accent</code></td>
+<td><code>#6cb6ff</code></td>
+<td>Headings, links, borders, icon highlights</td>
+</tr>
+<tr>
+<td><code>--color-accent-contrast</code></td>
+<td><code>#062a4a</code></td>
+<td>Text/icon color placed on top of an accent-colored background</td>
+</tr>
+<tr>
+<td><code>--color-text</code></td>
+<td><code>#ccd6f6</code></td>
+<td>Primary body text</td>
+</tr>
+<tr>
+<td><code>--color-text-muted</code></td>
+<td><code>#8892b0</code></td>
+<td>Secondary text (job title, captions)</td>
+</tr>
+<tr>
+<td><code>--color-border</code></td>
+<td><code>#1d3557</code></td>
+<td>Hairline borders</td>
+</tr>
+<tr>
+<td><code>--color-card-text</code></td>
+<td><code>#e2e9fb</code></td>
+<td>Text inside cards — cards invert relative to the page, so this is intentionally not the same as <code>--color-text</code></td>
+</tr>
+<tr>
+<td><code>--color-card-text-muted</code></td>
+<td><code>#a7b3d6</code></td>
+<td>Secondary text inside cards</td>
+</tr>
+<tr>
+<td><code>--color-card-accent</code></td>
+<td><code>#7fc0ff</code></td>
+<td>Accent color inside cards</td>
+</tr>
+<tr>
+<td><code>--color-card-border</code></td>
+<td><code>#2a4a7a</code></td>
+<td>Card borders</td>
+</tr>
+<tr>
+<td><code>--color-card-tag-bg</code></td>
+<td><code>#22406e</code></td>
+<td>Technology tag pill background inside cards</td>
+</tr>
+<tr>
+<td><code>--shadow-accent</code></td>
+<td><code>rgba(108,182,255,0.45)</code></td>
+<td>Card hover drop shadow</td>
+</tr>
+<tr>
+<td><code>--shadow-accent-hover</code></td>
+<td><code>rgba(108,182,255,0.6)</code></td>
+<td>Image hover drop shadow</td>
+</tr>
+<tr>
+<td><code>--radius-card</code></td>
+<td><code>8px</code></td>
+<td>Card and image border radius</td>
+</tr>
+<tr>
+<td><code>--transition-card</code></td>
+<td><code>background-color 0.3s ease, box-shadow 0.3s ease</code></td>
+<td>Shared card hover transition</td>
+</tr>
+<tr>
+<td><code>--padding-section</code></td>
+<td><code>5rem 2rem</code></td>
+<td>Uniform section padding</td>
+</tr>
+<tr>
+<td><code>--padding-card</code></td>
+<td><code>1.5rem</code></td>
+<td>Uniform card internal padding</td>
+</tr>
+</tbody></table>
+<h2 id="styled-components-layer">styled-components Layer</h2>
+<p><code>src/components/Sidebar/SidebarStyles.js</code> defines all sidebar styled components. <code>styled-components</code> was chosen here because the sidebar has complex responsive behaviour (fixed-to-static collapse at 768px), multiple interactive states (hover transforms, active link slides), and tightly coupled dynamic logic that benefits from co-location with the component file.</p>
+<table>
+<thead>
+<tr>
+<th>Exported component</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SidebarContainer</code></td>
+<td>Fixed full-height column on desktop; collapses to a static top block on mobile</td>
+</tr>
+<tr>
+<td><code>NameTitle</code></td>
+<td>Name and job title block; uses <code>clamp()</code> to keep the name on one line within the fixed sidebar width</td>
+</tr>
+<tr>
+<td><code>StyledLink</code></td>
+<td><code>react-scroll</code> Link; slides right 10px and switches to accent colour on hover/active</td>
+</tr>
+<tr>
+<td><code>Menu</code></td>
+<td>Vertical nav link column; hidden via <code>display: none</code> on mobile</td>
+</tr>
+<tr>
+<td><code>SocialLinksWrapper</code></td>
+<td>Centering wrapper for the social icon row</td>
+</tr>
+<tr>
+<td><code>SocialLinks</code></td>
+<td>Social icon row with scale-and-colour hover effect</td>
+</tr>
+<tr>
+<td><code>FooterMessage</code></td>
+<td>Footer text and legal navigation button area</td>
+</tr>
+<tr>
+<td><code>LanguageWrapper</code></td>
+<td>Language toggle button group with ghost-button styling and lift-on-hover transition</td>
+</tr>
+<tr>
+<td><code>LegalButton</code></td>
+<td>Invisible-border <code>&lt;button&gt;</code> used for the Impressum and Datenschutz footer links</td>
+</tr>
+<tr>
+<td><code>CVDownloadWrapper</code></td>
+<td>Centering wrapper for the CV download link</td>
+</tr>
+<tr>
+<td><code>CVDownloadLink</code></td>
+<td>Anchor styled identically to the language buttons so both actions feel like peers</td>
+</tr>
+</tbody></table>
+<h2 id="css-files-per-component">CSS Files Per Component</h2>
+<p>Section components each have their own <code>.css</code> file co-located in the component directory. All CSS files reference the design tokens from <code>src/index.css</code>.</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>src/App.css</code></td>
+<td>Two-column flex layout shell, section scroll margins</td>
+</tr>
+<tr>
+<td><code>src/components/About/About.css</code></td>
+<td>Profile/bio flex layout, tech-stack grid, profile image hover and hue-rotate effect</td>
+</tr>
+</tbody></table>
+<h2 id="responsive-design">Responsive Design</h2>
+<p>The single layout breakpoint is <code>max-width: 768px</code>. Below it the following changes take effect.</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Desktop</th>
+<th>Mobile</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>div.container</code></td>
+<td><code>flex-direction: row</code></td>
+<td><code>flex-direction: column</code></td>
+</tr>
+<tr>
+<td><code>SidebarContainer</code></td>
+<td><code>position: fixed</code>, <code>width: 350px</code>, <code>height: 100vh</code></td>
+<td><code>position: relative</code>, <code>width: 100%</code>, <code>height: auto</code></td>
+</tr>
+<tr>
+<td><code>Menu</code> (nav links)</td>
+<td>visible</td>
+<td><code>display: none</code></td>
+</tr>
+<tr>
+<td><code>.main-content</code></td>
+<td><code>margin-left: 350px</code></td>
+<td><code>margin-left: 0</code></td>
+</tr>
+<tr>
+<td><code>.section</code> padding</td>
+<td><code>2rem 0</code> with <code>--padding-section</code> inside</td>
+<td>reduced</td>
+</tr>
+</tbody></table>
+<h2 id="conventions">Conventions</h2>
+<ul>
+<li>Prefer design tokens over raw hex or pixel values. If a new colour or spacing value is needed, add it to <code>:root</code> in <code>src/index.css</code> first.</li>
+<li>Use <code>styled-components</code> for components with multiple visual states or dynamic props tightly coupled to component logic. Use plain CSS files for simpler section components.</li>
+<li>Group CSS rules by concern with banner comments: <code>/* ─── Layout ─── */</code>, <code>/* ─── Responsive ─── */</code>, <code>/* ─── Skeleton Loader ─── */</code>.</li>
+<li>Write class names in kebab-case: <code>.project-card</code>, <code>.project-content</code>, <code>.tech-box</code>.</li>
+<li>Transition durations follow <code>--transition-card</code> (300ms ease) unless a component requires a distinct rhythm — for example, the sidebar hover uses a shorter 150ms ease.</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://www.i18next.com">i18next documentation</a></li>
+<li><a href="https://react.i18next.com">react-i18next documentation</a></li>
+<li><a href="https://www.i18next.com/overview/configuration-options">i18next configuration options</a></li>
+<li><a href="https://styled-components.com/docs">styled-components documentation</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties">MDN CSS custom properties</a></li>
+<li><a href="05-building-blocks.html">architecture/05-building-blocks.md</a> — which components own which style files</li>
+</ul>
 
     </article>
 

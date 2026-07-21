@@ -201,7 +201,7 @@
 <li><strong>Static, hand-curated project data</strong> — project copy, tech tags, and images live in <code>src/data/projects.config.js</code> and are bundled at build time, removing any GitHub API dependency from the live site. See <a href="09-decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a> for why an earlier build-time fetch pipeline was retired in favor of this.</li>
 <li><strong>Vercel prebuilt artifact</strong> — the app is built in GitHub Actions and deployed as a <code>.vercel/output</code> artifact, giving full control over the build environment. See <a href="07b-deployment-configuration.html">DEPLOY.md</a>.</li>
 <li><strong>Two test runners</strong> — Node-only scripts use a separate Jest config from the CRA runner to avoid Babel/CSS transform conflicts. See <a href="08c-concepts-testing.html">TESTS.md</a>.</li>
-<li><strong>Default locale German</strong> — <code>lng: &#39;de&#39;</code> in i18next because the portfolio targets a German-speaking job market. See <a href="i18n-flow.html">i18n-flow.md</a>.</li>
+<li><strong>Default locale German</strong> — <code>lng: &#39;de&#39;</code> in i18next because the portfolio targets a German-speaking job market. See <a href="08b-concepts-i18n-theming.html">i18n-flow.md</a>.</li>
 <li><strong>No client-side state library</strong> — component-local <code>useState</code> is sufficient; no shared mutable state exists across unrelated components. See <a href="06-runtime.html">data-flow.md</a>.</li>
 </ul>
 <h2 id="non-functional-requirements">Non-Functional Requirements</h2>
