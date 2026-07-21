@@ -1,6 +1,6 @@
 # Documentation Index
 
-A personal portfolio built with React (Create React App), styled-components, i18next, and React Router — deployed on Vercel (live site) and GitHub Pages (generated API docs).
+A personal portfolio built with React (Create React App), styled-components, i18next, and react-scroll — deployed on Vercel (live site) and GitHub Pages (generated API docs).
 
 | Section | Description | Link |
 |---------|-------------|------|
