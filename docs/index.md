@@ -11,7 +11,7 @@ A personal portfolio built with React (Create React App), styled-components, i18
 | Tests | Test strategy, runners, coverage thresholds, and how to run locally | [TESTS.md](architecture/08c-concepts-testing.md) |
 | Architecture | arc42 architecture documentation (chapters 01-12) | [architecture/index.md](architecture/index.md) |
 | Pipeline topology | CI/CD workflow map, concurrency groups, and live verification results | [pipeline.md](pipeline.md) |
-| Frontend | Styling and localization guides | [frontend/styling.md](frontend/styling.md) |
+| Frontend | Styling and localization guides | [architecture/08b-concepts-i18n-theming.md](architecture/08b-concepts-i18n-theming.md) |
 | Scripts | Build and quality-check tooling reference | [architecture/08d-concepts-build-tooling.md](architecture/08d-concepts-build-tooling.md) |
 | Templates | Blank templates for ADRs, component docs, and test plans | [templates/index.md](templates/index.md) |
 

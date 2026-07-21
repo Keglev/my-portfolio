@@ -102,4 +102,4 @@ The main content area renders six section components in source order. Each is wr
 - [React component composition](https://react.dev/learn/passing-props-to-a-component)
 - [react-scroll documentation](https://github.com/fisshy/react-scroll)
 - [data-flow.md](06-runtime.md) — props and state flow between these components
-- [i18n-flow.md](i18n-flow.md) — how translated strings reach each component
+- [i18n-flow.md](08b-concepts-i18n-theming.md) — how translated strings reach each component
