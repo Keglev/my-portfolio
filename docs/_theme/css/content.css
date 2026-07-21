@@ -1,22 +1,20 @@
 /*
- * File: typography.css
- * Module: scripts/docs/templates/typography.css
- * Summary: Styling for rendered markdown content inside .article -- prose,
- *   headings, tables, inline code, code blocks, block quotes.
- * Enterprise: Fourth of five files concatenated into
- *   docs/templates/styles.css (see base.css's header); relies on base.css's
- *   custom properties already being in scope.
+ * File: content.css
+ * Module: docs/_theme/css/content.css
+ * Summary: Typography for rendered markdown content inside .article --
+ *   prose, headings, tables, inline code, code blocks, block quotes.
+ *   Scoped to .article so it never reaches the surrounding chrome.
+ * Enterprise: Fifth of seven files concatenated into
+ *   docs/_theme/css/styles.css (see tokens.css's header); .article is kept
+ *   (not renamed to the reference's .doc-body) because scripts/docs/lib and
+ *   page.html's TOC-highlight script already select on it.
  */
-
-/* --- Typography: article (rendered markdown content) --- */
-
-/* min-width: 0 prevents the article from overflowing its grid track */
-.article { min-width: 0; }
 
 .article h1 {
   font-size: 1.75rem;
   font-weight: 700;
   letter-spacing: -.02em;
+  color: var(--heading);
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--border);
   margin-bottom: 1.25rem;
@@ -25,6 +23,7 @@
 .article h2 {
   font-size: 1.25rem;
   font-weight: 600;
+  color: var(--heading);
   margin-top: 2.25rem;
   margin-bottom: 0.875rem;
   padding-bottom: 0.35rem;
@@ -34,6 +33,7 @@
 .article h3 {
   font-size: 1rem;
   font-weight: 600;
+  color: var(--heading);
   margin-top: 1.75rem;
   margin-bottom: 0.5rem;
 }
@@ -43,8 +43,8 @@
 
 .article p { margin-bottom: 1rem; }
 
-.article a { color: var(--accent); text-decoration: none; }
-.article a:hover { color: var(--accent-hover); text-decoration: underline; }
+.article a { color: var(--link); text-decoration: none; }
+.article a:hover { color: var(--accent); text-decoration: underline; }
 
 .article strong { font-weight: 600; }
 .article em { font-style: italic; }
@@ -69,11 +69,12 @@
   overflow-x: auto;
 }
 .article th {
-  background: var(--bg-soft);
+  background: var(--surface-2);
+  color: var(--heading);
   font-weight: 600;
   text-align: left;
   padding: 0.5rem 0.875rem;
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-strong);
   white-space: nowrap;
 }
 .article td {
@@ -81,23 +82,23 @@
   border: 1px solid var(--border);
   vertical-align: top;
 }
-.article tr:nth-child(even) td { background: var(--bg-soft); }
+.article tr:nth-child(even) td { background: var(--surface-2); }
 
 /* --- Inline code --- */
 .article code {
   font-family: var(--font-mono);
   font-size: 0.85em;
   background: var(--code-bg);
-  border: 1px solid var(--border);
-  border-radius: 3px;
+  border: 1px solid var(--code-border);
+  border-radius: var(--radius-sm);
   padding: 0.1em 0.4em;
-  color: var(--accent-hover);
+  color: var(--link);
 }
 
 /* --- Code blocks --- */
 .article pre {
   background: var(--code-bg);
-  border: 1px solid var(--border);
+  border: 1px solid var(--code-border);
   border-radius: var(--radius);
   padding: 1rem 1.25rem;
   overflow-x: auto;
@@ -116,12 +117,12 @@
 
 /* --- Block quotes --- */
 .article blockquote {
-  border-left: 4px solid var(--border);
+  border-left: 4px solid var(--accent);
   padding: 0.5rem 1.25rem;
-  color: var(--text-muted);
+  color: var(--muted);
   margin: 0 0 1rem;
-  background: var(--bg-soft);
-  border-radius: 0 var(--radius) var(--radius) 0;
+  background: var(--surface-2);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 /* Intentional override: removes paragraph bottom margin inside blockquotes */
 .article blockquote p { margin-bottom: 0; }

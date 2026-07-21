@@ -1,34 +1,34 @@
 /*
  * File: components.css
- * Module: scripts/docs/templates/components.css
- * Summary: Reusable UI pieces shared across docs pages: site header, hub
- *   card, TOC sidebar, mermaid diagram wrapper, and site footer.
- * Enterprise: Third of five files concatenated into
- *   docs/templates/styles.css (see base.css's header); relies on base.css's
- *   custom properties already being in scope.
+ * Module: docs/_theme/css/components.css
+ * Summary: Reusable chrome shared across doc pages: site header (with the
+ *   language switch and theme toggle), TOC sidebar, mermaid diagram
+ *   wrapper, and site footer. The landing page's card grid lives in
+ *   landing.css instead.
+ * Enterprise: Fourth of seven files concatenated into
+ *   docs/_theme/css/styles.css (see tokens.css's header); relies on
+ *   tokens.css's custom properties already being in scope.
  */
-
-/* --- Components: header, card, TOC sidebar, mermaid, footer --- */
 
 /* --- Site header --- */
 .site-header {
   position: sticky;
   top: 0;
-  /* z-index scale: modal=300, overlay=200, navbar=100, default=1 */
+  /* z-index scale: modal=300, skip-link=200, header=100, default=1 */
   z-index: 100;
-  background: var(--bg-soft);
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
-  padding: 0 1.5rem;
   box-shadow: var(--shadow-sm);
 }
 
 .site-header__inner {
-  max-width: 1200px;
+  max-width: var(--maxw);
   margin: 0 auto;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  height: 56px;
+  height: var(--topbar-h);
+  padding: 0 1.5rem;
 }
 
 .site-header__title {
@@ -38,7 +38,7 @@
   text-decoration: none;
   white-space: nowrap;
 }
-.site-header__title:hover { color: var(--accent-hover); }
+.site-header__title:hover { color: var(--link); }
 
 .site-header__sep {
   color: var(--border);
@@ -48,15 +48,16 @@
 
 .site-header__section {
   font-size: 0.9375rem;
-  color: var(--text-muted);
+  color: var(--muted);
   white-space: nowrap;
 }
 
-/* Pushes nav links to the far right of the header bar */
+/* Pushes nav links and the theme/lang tools to the far right of the header bar */
 .site-header__spacer { flex: 1; }
 
 .site-header__nav {
   display: flex;
+  align-items: center;
   gap: 0.25rem;
   list-style: none;
 }
@@ -64,69 +65,63 @@
 .site-header__nav a {
   display: inline-block;
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--muted);
   text-decoration: none;
   padding: 0.3rem 0.6rem;
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   transition: background .12s, color .12s;
 }
 .site-header__nav a:hover {
   color: var(--text);
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--surface-2);
 }
 .site-header__nav a.active {
   color: var(--accent);
-  background: var(--accent-bg);
+  background: var(--code-bg);
 }
 
-/* --- Card --- */
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  padding: 1.125rem 1.25rem;
-  background: var(--bg-soft);
+/* --- Language switch --- */
+.lang-switch { display: inline-flex; gap: 0.15rem; }
+.lang-switch a {
+  font-size: 0.8rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+}
+.lang-switch a[aria-current="true"] {
+  background: var(--surface-2);
+  color: var(--heading);
+}
+/* Disabled language (no translation for this page): greyed and inert, with a
+   not-allowed cursor on hover. Removing href already blocks navigation. */
+.lang-switch a[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.lang-switch a[aria-disabled="true"]:hover {
+  background: none;
+  color: var(--muted);
+}
+
+/* --- Theme toggle --- */
+.theme-toggle {
+  display: inline-flex;
+  padding: 0.35rem;
+  background: none;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  text-decoration: none;
-  color: var(--text);
-  transition: border-color .15s ease, box-shadow .15s ease, transform .1s ease;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  cursor: pointer;
 }
-.card:hover {
-  border-color: var(--accent-border);
-  /* Combined focus ring (3px) + drop-shadow for a layered depth effect */
-  box-shadow: 0 0 0 3px var(--accent-bg), var(--shadow-md);
-  transform: translateY(-1px);
-}
-/* Snap back to resting position on press */
-.card:active { transform: translateY(0); }
-
-.card__icon {
-  font-size: 1.375rem;
-  line-height: 1;
-  margin-bottom: 0.125rem;
-}
-
-.card__title {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.card__desc {
-  font-size: 0.8125rem;
-  color: var(--text-muted);
-  line-height: 1.45;
-}
+.theme-toggle:hover { color: var(--text); border-color: var(--border-strong); }
 
 /* --- TOC sidebar --- */
 .doc-toc {
   position: sticky;
-  /* 56px header height + 16px breathing room */
-  top: 72px;
+  top: calc(var(--topbar-h) + 16px);
   align-self: start;
   /* Cap sidebar height to the viewport so it scrolls independently */
-  max-height: calc(100vh - 80px);
+  max-height: calc(100vh - var(--topbar-h) - 24px);
   overflow-y: auto;
   padding-bottom: 2rem;
 }
@@ -136,7 +131,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: .06em;
-  color: var(--text-muted);
+  color: var(--muted);
   margin-bottom: 0.75rem;
 }
 
@@ -159,7 +154,7 @@
 .doc-toc__list a {
   display: block;
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: var(--muted);
   text-decoration: none;
   padding: 0.2rem 0 0.2rem 0.875rem;
   line-height: 1.4;
@@ -176,7 +171,7 @@
 
 /* --- Mermaid diagram wrapper --- */
 .mermaid-wrapper {
-  background: var(--bg-soft);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 1.75rem 1.5rem;
@@ -202,7 +197,7 @@
   display: block;
 }
 
-/* Thicker edges and arrowheads for legibility on the dark background */
+/* Thicker edges and arrowheads for legibility */
 .mermaid-wrapper svg .edgePath path,
 .mermaid-wrapper svg .flowchart-link {
   stroke-width: 2px !important;
@@ -223,7 +218,7 @@
   border-top: 1px solid var(--border);
   margin-top: 2rem;
   padding: 1.25rem 1.5rem;
-  color: var(--text-muted);
+  color: var(--muted);
   font-size: 0.8125rem;
   display: flex;
   justify-content: space-between;
@@ -231,7 +226,15 @@
   gap: 8px;
 }
 .site-footer a {
-  color: var(--text-muted);
+  color: var(--muted);
   text-decoration: none;
 }
-.site-footer a:hover { color: var(--accent-hover); }
+.site-footer a:hover { color: var(--link); }
+
+/* --- Narrow viewport (<= 620px) --- */
+@media (max-width: 620px) {
+  /* Hide nav links to save horizontal space; content is still reachable via the landing */
+  .site-header__nav { display: none; }
+  /* Stack footer items vertically when horizontal space is insufficient */
+  .site-footer { flex-direction: column; }
+}

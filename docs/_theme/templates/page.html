@@ -6,7 +6,7 @@
 -->
 
   <!-- --- Doc layout: sticky TOC sidebar + article --- -->
-  <div class="doc-layout">
+  <div class="doc-layout" id="main">
 
     <aside class="doc-toc" aria-label="On this page">
       <p class="doc-toc__label">On this page</p>
@@ -24,7 +24,11 @@
 
   </div>
 
-  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped -->
+  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped.
+       Deliberately keeps an explicit dark themeVariables init (not the
+       reference theme's CSS-variable-driven mermaid.css) so diagrams stay
+       legible regardless of the light/dark toggle -- see ROBOT PROMPT P9's
+       B3 instruction to keep explicit themeVariables init. -->
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
     mermaid.initialize({

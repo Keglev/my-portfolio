@@ -1,15 +1,26 @@
 <!--
-  File: hub.html
-  Summary: docs/index.html landing page body (hero title + card grid),
-    assembled between header.html and footer.html by build_docs.js.
+  File: landing-en.html
+  Summary: docs/index.html landing page body (hero + stack badges + card
+    grid), assembled between header.html and footer.html by build_docs.js.
+    German twin: landing-de.html. Card links target today's still-existing
+    doc pages -- they are repointed at the arc42 chapter set in the P9-B5
+    branch once that restructure lands.
 -->
 
-  <!-- --- Hub: landing page (hero title + card grid) --- -->
-  <main class="hub">
+  <!-- --- Landing: hero + card grid --- -->
+  <main class="hub" id="main">
 
     <div class="hub__hero">
-      <h1>my-portfolio</h1>
-      <p>Personal portfolio built with React — documentation hub</p>
+      <h1>my-portfolio — Documentation</h1>
+      <p>A personal portfolio built with React, styled-components, i18next, and React Router — deployed on Vercel with generated docs and coverage published to GitHub Pages.</p>
+      <div class="stack">
+        <span>React · CRA</span>
+        <span>styled-components</span>
+        <span>i18next</span>
+        <span>React Router</span>
+        <span>Vercel</span>
+        <span>GitHub Actions</span>
+      </div>
     </div>
 
     <!-- --- Generated references --- -->
@@ -86,7 +97,7 @@
       <a class="card" href="architecture/decisions/index.html">
         <span class="card__icon">📝</span>
         <span class="card__title">ADR Documentation</span>
-        <span class="card__desc">Architecture Decision Record - documents significant technical choices</span>
+        <span class="card__desc">Architecture Decision Record — documents significant technical choices</span>
       </a>
 
     </div>
