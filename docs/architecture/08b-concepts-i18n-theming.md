@@ -78,7 +78,7 @@ flowchart TD
 
 ## Configuration Details
 
-All components access translations via the `useTranslation()` hook: `const { t } = useTranslation()`.
+The i18next instance is configured in `src/i18n/index.js` and imported by `src/App.js` (`import "./i18n";`, with an inline comment noting it must be imported before any translated component renders) rather than by the app's entry point — this keeps the import next to the component tree it gates instead of buried in bootstrapping code. All components access translations via the `useTranslation()` hook: `const { t } = useTranslation()`.
 
 | Setting | Value | Reason |
 |---------|-------|--------|
@@ -92,20 +92,20 @@ All components access translations via the `useTranslation()` hook: `const { t }
 
 Follow these steps in order to add a new translatable string.
 
-1. Add the key to the English locale file with the English value.
-2. Add the same key — with identical nesting — to the German locale file with the German value.
+1. Add the key to `src/i18n/locales/en.json` with the English value.
+2. Add the same key — with identical nesting — to `src/i18n/locales/de.json` with the German value.
 3. Access the key in the component: `const { t } = useTranslation(); t('your.new.key')`.
 4. Run `npm start` and switch between EN and DE to verify both values render correctly.
 
-If the German translation is not yet available, add the key with an empty string `""`. i18next will display the English fallback until the German value is supplied.
+If the German translation is not yet available, add the key to `de.json` with an empty string `""`. i18next will display the English fallback until the German value is supplied.
 
 ## Adding a New Language
 
 Follow these steps in order to introduce a third locale.
 
-1. Create a new locale JSON file with the same top-level key structure as the English file.
-2. Import the file and register it in the i18next init call's `resources` map.
-3. Add a toggle button for the new language to the sidebar's language switch group.
+1. Create `src/i18n/locales/<code>.json` (e.g. `fr.json`) with the same top-level key structure as `en.json`.
+2. Import the file and register it in `src/i18n/index.js`'s `resources` map.
+3. Add a toggle button for the new language to the sidebar's language switch group in `SidebarMenu.js`.
 4. Add the new language's button label to every existing locale file.
 
 ## Special Cases
