@@ -3,7 +3,7 @@ This is a Portfolio Website. It showcases my skills and projects. You can use it
 
 # 💼 Description
 
-Welcome to my personal portfolio website, showcasing my skills, projects, and experiences as a software engineer. This responsive web application is designed to provide visitors with an insight into my work, technical expertise, and professional journey. Project data — including descriptions parsed from each repository's README — is fetched from GitHub via the GraphQL API at build time and stored as static JSON, so no live API calls are made at runtime. The site is fully bilingual (English and German) powered by i18next.
+Welcome to my personal portfolio website, showcasing my skills, projects, and experiences as a software engineer. This responsive web application is designed to provide visitors with an insight into my work, technical expertise, and professional journey. Project data is hand-curated as static code in `src/data/projects.config.js`, bundled directly into the build — there is no GitHub API call, at build time or at runtime. The site is fully bilingual (English and German) powered by i18next, and supports a light/dark theme toggle.
 
 ## Table of Contents
 
@@ -22,27 +22,25 @@ Welcome to my personal portfolio website, showcasing my skills, projects, and ex
 
 <img src="./docs/assets/readme/project-image.png" alt="Screenshot 1" width="600" height="300"/>
 
-# Image from the projects section: Displays the project cards fetched from GitHub.
+# Image from the projects section: Displays the curated project cards.
 
 <img src="./docs/assets/readme/project-image2.png" alt="Screenshot 2" width="600" height="300"/>
 
 ## Features
 
-✨ **Interactive Portfolio**: Explore featured projects, experience, and skills through a clean and interactive layout.
+✨ **Interactive Portfolio**: Explore a hero introduction, projects, and skills through a clean and interactive layout.
 
 🖥️ **Responsive Design**: Optimized for various screen sizes including mobile, tablet, and desktop.
 
-🙋 **About Section**: Provides a brief introduction, background, and expertise as a software engineer."
+🌗 **Light/Dark Theme**: Toggle between light and dark themes, persisted across visits.
 
-🎓 **Education Section**: Academic background and qualifications.
+🙋 **About Section**: A brief introduction and background, plus a condensed career/education strip.
 
-📂 **Projects Showcase**: A detailed presentation of my projects with descriptions and links to the GitHub repositories.
+🧠 **Skills Section**: A single-column overview of skill groups, grouped for fast scanning.
 
-📂 **Repo Docs**: A link to my main project's documentation, like API, Architecture, and deployment techniques
+📂 **Projects Showcase**: A detailed presentation of my projects with descriptions, technology tags, and links to the live app, docs, and GitHub repositories.
 
-👨‍💼 **Experience Section**: Display of my professional experience, highlighting key achievements and roles.
-
-📫 **Social Links**: Icon links to GitHub, LinkedIn, Xing, and email in the sidebar for easy communication.
+📬 **Contact Form**: A Web3Forms-backed contact form with DSGVO consent, plus direct social links (GitHub, LinkedIn, Xing, email).
 
 📄 **Resume Download**: Locale-aware CV download — English or German version served based on the active language.
 
@@ -56,11 +54,11 @@ Welcome to my personal portfolio website, showcasing my skills, projects, and ex
 
 ### 📚 Documentation Status 
 
-- ✅ **Architecture documentation**: component structure, data flow, CI/CD pipeline, and 6 ADRs — covering every major technical decision
+- ✅ **arc42 architecture documentation**: 12 chapters — introduction & goals, constraints, context, solution strategy, building blocks, runtime view, deployment, crosscutting concepts, 6 ADRs, quality requirements, risks & technical debt, and a glossary
 
-- ✅ **Testing documentation**: two-runner Jest strategy, coverage thresholds, and CI commands (TESTS.md)
+- ✅ **Testing documentation**: two-runner Jest strategy, coverage thresholds, and CI commands (chapter 08c)
 
-- ✅ **Deployment documentation**: Vercel configuration, environment variables, and build pipeline (DEPLOY.md)
+- ✅ **Deployment documentation**: Vercel configuration, environment variables, and build pipeline (chapter 07)
 
 ## Testing & Code Quality
 
@@ -79,12 +77,9 @@ Still under construction; a more detailed test guide will follow in a separate d
 
 ## API Integration
 
-This app integrates with:
+The app itself makes no third-party API calls at build time or runtime — project data is hand-curated static code, and the only outbound request is the Contact form's submission to Web3Forms.
 
-GitHub API: To display the App images from pinned repositories.
-For more information, check out the GitHub API Documentation.
-
-The generated API and developer documentation is published on GitHub Pages:
+Generated API reference (JSDoc, from source comments) is published on GitHub Pages:
 
 https://keglev.github.io/my-portfolio/jsdoc/index.html
 
@@ -113,13 +108,13 @@ To run this app locally, follow these steps:
    
   cd my-portfolio
 
-3. Install the dependencies:
+4. Install the dependencies:
 
    npm install
 
-4. Get API keys from GitHub API and create a .env file in the project root:
-   
-   REACT_APP_GITHUB_API_TOKEN=your-GitHub-API-key
+5. (Optional, for the Contact form) Create a `.env` file in the project root with a Web3Forms access key:
+
+   REACT_APP_WEB3FORMS_KEY=your-web3forms-access-key
 
 6. Start the development server:
 
@@ -127,11 +122,7 @@ To run this app locally, follow these steps:
 
 ## Usage
 
-This App is to showcase my portfolio. 
-It fetches pinned repositories from GitHub and displays project images and descriptions
-View Details: I already put some special characters in this read.me file, so it makes it easier for Java Script to treat this file and only get the important information to 
-show on the website
-I also added some designs to show my front-end skills in my portfolio.
+This app showcases my portfolio: projects, skills, and contact details, rendered from static, hand-curated data (no external fetch), styled with a custom design system that includes a light/dark theme.
 
 ## Available Scripts
 
@@ -168,12 +159,13 @@ If you aren't satisfied with the build tool and configuration choices, you can `
 
 ## Technologies
 
-- *React.js: Frontend framework for building user interfaces.
-- *GrapQL: To fetch important information from the GitHub API.
-- *Styled Components: CSS-in-JS library for styling components.
-- *JavaScript (ES6+): Core language used throughout the app.
-- GitHub Integration: Used for project images and other data fetching.
-- HTML5 & CSS3: Standard web technologies for structuring and styling the app.
+- **React 18** (Create React App): Frontend framework for building user interfaces.
+- **styled-components**: CSS-in-JS library for the sidebar's interactive components.
+- **i18next / react-i18next**: Internationalisation, English and German.
+- **react-scroll**: Smooth-scroll navigation between in-page sections.
+- **Web3Forms**: Static-site-friendly contact form backend (native `fetch`, no server of our own).
+- **JavaScript (ES6+)**: Core language used throughout the app.
+- **HTML5 & CSS3**: Standard web technologies for structuring and styling the app.
 
 ## Contributing
 
@@ -182,5 +174,4 @@ Contributions are welcome! Here's how you can contribute:
 1. Fork the repository.
 2. Create a new branch (git checkout -b feature/YourFeatureName).
 3. Commit your changes (git commit -m 'Add some feature').
-4. Commit your changes (git commit -m 'Add some feature').
-5. Open a pull request.
+4. Push the branch and open a pull request.
