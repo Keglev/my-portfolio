@@ -78,7 +78,13 @@
       <!-- Replaced at build time by tocBuilder.buildToc() (see
            scripts/docs/lib/tocBuilder.js); empty string when the page
            has fewer than two headings -->
-      
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#technology-decisions">Technology Decisions</a></li>
+  <li><a href="#top-level-decomposition">Top-Level Decomposition</a></li>
+  <li><a href="#achieving-quality-goals">Achieving Quality Goals</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
     </aside>
 
     <article class="article">
@@ -86,8 +92,39 @@
            scripts/docs/lib/renderPages.js) -->
       <h1 id="solution-strategy">Solution Strategy</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>The handful of decisions that shaped everything else: static, hand-curated project data instead of a runtime GitHub API dependency; a Vercel prebuilt-artifact deploy for full build-environment control; two separate Jest runners to avoid Babel/CSS transform conflicts; German as the default locale; and no client-side state library, since component-local <code>useState</code> is sufficient.</p>
-<p><em>Full chapter content pending — will be promoted from the &quot;Key Design Decisions&quot; section of <a href="01-introduction-and-goals.html">01-introduction-and-goals.md</a>, each point linked to its full <a href="09-decisions/index.html">ADR</a>.</em></p>
+<p>The handful of decisions that shaped everything else, distinct from the <a href="02-constraints.html">Constraints</a> they respond to. Each links to the full <a href="09-decisions/index.html">ADR</a> or chapter where it&#39;s discussed in detail.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#technology-decisions">Technology Decisions</a></li>
+<li><a href="#top-level-decomposition">Top-Level Decomposition</a></li>
+<li><a href="#achieving-quality-goals">Achieving Quality Goals</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="technology-decisions">Technology Decisions</h2>
+<ul>
+<li><strong>React with Create React App, not ejected</strong> — mature ecosystem, zero-config build tooling. See <a href="09-decisions/ADR-001-react.html">ADR-001</a>.</li>
+<li><strong>styled-components over plain CSS modules</strong> — co-located styles, no class-name collisions. See <a href="09-decisions/ADR-003-styling-approach.html">ADR-003</a>.</li>
+<li><strong>i18next for internationalisation, default locale German</strong> — industry-standard React i18n, and the portfolio targets a German-speaking job market. See <a href="09-decisions/ADR-002-i18next-internationalization.html">ADR-002</a>.</li>
+<li><strong>Vercel prebuilt artifact deployment</strong> — the app is built once in GitHub Actions and deployed as a finished <code>.vercel/output</code> artifact, keeping full control over the build environment instead of letting Vercel rebuild from source. See <a href="09-decisions/ADR-005-vercel-hosting.html">ADR-005</a>.</li>
+</ul>
+<h2 id="top-level-decomposition">Top-Level Decomposition</h2>
+<ul>
+<li><strong>Static, hand-curated project data</strong> — project copy, tech tags, and images live in <code>src/data/projects.config.js</code> and are bundled at build time, removing any GitHub API dependency from the live site. An earlier build-time fetch pipeline was retired in favor of this. See <a href="09-decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a>.</li>
+<li><strong>No client-side state library</strong> — component-local <code>useState</code> is sufficient; no shared mutable state exists across unrelated components. See <a href="06-runtime.html">Runtime View</a>.</li>
+<li><strong>Single-page, scroll-based navigation</strong> — no <code>react-router-dom</code> routes; one document, sidebar links smooth-scroll to sections. See <a href="06b-runtime-routing.html">Runtime View: Routing</a>.</li>
+</ul>
+<h2 id="achieving-quality-goals">Achieving Quality Goals</h2>
+<ul>
+<li><strong>Reliability</strong>: two separate Jest runners — Node-only scripts use a config independent of the CRA runner, avoiding Babel/CSS transform conflicts that would otherwise make one or the other unreliable. See <a href="08c-concepts-testing.html">Testing</a>.</li>
+<li><strong>Maintainability</strong>: an ADR for every significant technical choice, and generated docs/coverage published to GitHub Pages on every successful deployment, so the <em>why</em> behind a decision and the current <em>state</em> of the code are both one click away.</li>
+<li><strong>Internationalisation</strong>: full EN/DE coverage enforced by keeping every visible string in i18next locale JSON — no hardcoded UI text. See <a href="08b-concepts-i18n-theming.html">i18n &amp; Theming</a>.</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="01-introduction-and-goals.html">01-introduction-and-goals.md</a> — tech stack table and component diagram</li>
+<li><a href="09-decisions/index.html">Architecture Decisions</a> — full ADR index</li>
+<li><a href="10-quality-requirements.html">Quality Requirements</a> — the quality goals these strategies serve</li>
+</ul>
 
     </article>
 
