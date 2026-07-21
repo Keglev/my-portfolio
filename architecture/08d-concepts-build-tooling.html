@@ -78,7 +78,12 @@
       <!-- Replaced at build time by tocBuilder.buildToc() (see
            scripts/docs/lib/tocBuilder.js); empty string when the page
            has fewer than two headings -->
-      
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#root-level-scripts">Root-Level Scripts</a></li>
+  <li><a href="#documentation-generation-scripts">Documentation Generation Scripts</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
     </aside>
 
     <article class="article">
@@ -86,8 +91,66 @@
            scripts/docs/lib/renderPages.js) -->
       <h1 id="crosscutting-concepts-build-tooling">Crosscutting Concepts: Build Tooling</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>The <code>scripts/</code> directory holds standalone build and quality-check tooling, including the <code>scripts/docs/</code> documentation-site build pipeline used to produce this very page. There is no data-fetch pipeline — the Projects section renders from the static, hand-curated <code>src/data/projects.config.js</code>.</p>
-<p><em>Full chapter content pending — will merge <a href="../scripts/overview.html">scripts/overview.md</a> into this page.</em></p>
+<p>The <code>scripts/</code> directory holds standalone build and quality-check tooling. There is no data-fetch pipeline: the Projects section renders from the static, hand-curated <code>src/data/projects.config.js</code>. The <code>scripts/docs/</code> subdirectory holds the documentation-site build tooling used to produce this very page.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#root-level-scripts">Root-Level Scripts</a></li>
+<li><a href="#documentation-generation-scripts">Documentation Generation Scripts</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="root-level-scripts">Root-Level Scripts</h2>
+<p>These scripts are executed directly by <code>npm run</code> commands or GitHub Actions workflow steps.</p>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Purpose</th>
+<th>Key inputs</th>
+<th>Key outputs</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>audit-check.js</code></td>
+<td>Runs <code>npm audit --json</code>; fails the process if any high or critical vulnerabilities are found</td>
+<td>npm audit JSON output</td>
+<td>Exit code 0 (pass) / 1 (vulns found) / 2 (audit failed)</td>
+</tr>
+<tr>
+<td><code>run-eslint-dev.js</code></td>
+<td>Runs ESLint with <code>NODE_ENV=development</code> so CRA&#39;s React-specific rules activate; fails on any warning</td>
+<td><code>src/</code> directory</td>
+<td>ESLint report via stylish formatter</td>
+</tr>
+<tr>
+<td><code>prepareVercelOutput.sh</code></td>
+<td>Assembles the Vercel Output API v3 artifact: resets <code>.vercel/output/</code>, copies <code>build/</code>, writes <code>config.json</code></td>
+<td><code>build/</code></td>
+<td><code>.vercel/output/static/</code></td>
+</tr>
+</tbody></table>
+<h2 id="documentation-generation-scripts">Documentation Generation Scripts</h2>
+<p>Scripts in <code>scripts/docs/</code> are called by the <code>architecture-docs.yml</code> GitHub Actions workflow to transform Markdown documentation into the deployable HTML site under <code>docs/_theme/</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>scripts/docs/build_docs.js</code></td>
+<td>Reads the page-shell templates from <code>docs/_theme/templates/</code>; converts every <code>docs/*.md</code> to <code>docs/*.html</code>, skipping <code>docs/jsdoc/</code>, <code>docs/coverage/</code>, and <code>docs/_theme/</code>; generates a sidebar TOC from h2/h3 headings; wraps Mermaid code blocks in <code>.mermaid-wrapper</code> divs; concatenates the split CSS sources under <code>docs/_theme/css/</code> into <code>docs/_theme/css/styles.css</code>; assembles the bilingual landing (<code>landing-en.html</code>/<code>landing-de.html</code>) into <code>docs/index.html</code> and <code>docs/index-de.html</code></td>
+</tr>
+<tr>
+<td><code>scripts/docs/build_mermaid.js</code></td>
+<td>Scans the generated HTML files (excluding <code>jsdoc/</code>, <code>coverage/</code>, <code>_theme/</code>) for Mermaid wrapper blocks and pre-renders them to inline SVG using <code>@mermaid-js/mermaid-cli</code> (<code>mmdc</code>); exits cleanly when <code>mmdc</code> is not installed so that client-side CDN rendering acts as the fallback</td>
+</tr>
+</tbody></table>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="03-context.html">Context and Scope</a> — how script outputs flow to Vercel and GitHub Pages</li>
+<li><a href="07-deployment.html">Deployment</a> — which workflow step calls which script</li>
+</ul>
 
     </article>
 
