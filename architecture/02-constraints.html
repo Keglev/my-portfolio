@@ -78,7 +78,13 @@
       <!-- Replaced at build time by tocBuilder.buildToc() (see
            scripts/docs/lib/tocBuilder.js); empty string when the page
            has fewer than two headings -->
-      
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#organizational-constraints">Organizational Constraints</a></li>
+  <li><a href="#technical-constraints">Technical Constraints</a></li>
+  <li><a href="#conventions">Conventions</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
     </aside>
 
     <article class="article">
@@ -86,8 +92,83 @@
            scripts/docs/lib/renderPages.js) -->
       <h1 id="constraints">Constraints</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>Organizational and technical constraints that shaped the architecture: single-maintainer project, static-hosting-only budget (Vercel + GitHub Pages, no backend), Create React App as the build tool, and German as the default locale for a German-speaking job market.</p>
-<p><em>Full chapter content pending — will be assembled from constraint statements already present in <a href="01-introduction-and-goals.html">01-introduction-and-goals.md</a> and <a href="09-decisions/ADR-005-vercel-hosting.html">ADR-005</a>.</em></p>
+<p>Organizational and technical constraints that shaped the architecture, distinct from the <em>chosen</em> solutions covered in <a href="04-solution-strategy.html">Solution Strategy</a> — these are the boundaries the solutions had to work within.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#organizational-constraints">Organizational Constraints</a></li>
+<li><a href="#technical-constraints">Technical Constraints</a></li>
+<li><a href="#conventions">Conventions</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="organizational-constraints">Organizational Constraints</h2>
+<table>
+<thead>
+<tr>
+<th>Constraint</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Single maintainer</td>
+<td>No code review gate beyond CI; documentation and ADRs substitute for the shared context a team would otherwise have</td>
+</tr>
+<tr>
+<td>Personal portfolio, low traffic</td>
+<td>Free-tier hosting (Vercel, GitHub Pages) is sufficient; no capacity planning or paid infrastructure needed</td>
+</tr>
+<tr>
+<td>Target audience: German-speaking job market</td>
+<td>Drove the default-locale decision (see <a href="#conventions">Conventions</a> below)</td>
+</tr>
+</tbody></table>
+<h2 id="technical-constraints">Technical Constraints</h2>
+<table>
+<thead>
+<tr>
+<th>Constraint</th>
+<th>Impact</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>No backend or database</td>
+<td>Project data must be static and bundled at build time — see <a href="09-decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a> for why an earlier runtime-fetch approach was retired in favor of this</td>
+</tr>
+<tr>
+<td>Create React App, not ejected</td>
+<td>Build configuration (Babel, Webpack) is fixed to CRA&#39;s defaults; anything requiring a custom build step needs a workaround rather than a config edit — see <a href="09-decisions/ADR-001-react.html">ADR-001</a></td>
+</tr>
+<tr>
+<td>Static hosting only (Vercel + GitHub Pages)</td>
+<td>No server-side rendering or API routes; deployment is a <strong>prebuilt artifact</strong> (Vercel Build Output API v3), not the standard Vercel build-from-source integration — see <a href="09-decisions/ADR-005-vercel-hosting.html">ADR-005</a></td>
+</tr>
+<tr>
+<td>Two incompatible Jest environments</td>
+<td>Node-only scripts (e.g. the docs build) and CRA component tests need separate Jest configs to avoid Babel/CSS transform conflicts — see <a href="08c-concepts-testing.html">Testing</a></td>
+</tr>
+</tbody></table>
+<h2 id="conventions">Conventions</h2>
+<table>
+<thead>
+<tr>
+<th>Convention</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Default locale <code>de</code> (German)</td>
+<td>The portfolio targets a German-speaking job market — see <a href="08b-concepts-i18n-theming.html">i18n &amp; Theming</a></td>
+</tr>
+<tr>
+<td>ADRs for every significant technical choice</td>
+<td>Single-maintainer projects lose decision context fastest; a short &quot;why&quot; document outlives its author&#39;s memory of the tradeoff</td>
+</tr>
+</tbody></table>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="01-introduction-and-goals.html">01-introduction-and-goals.md</a> — tech stack and high-level architecture</li>
+<li><a href="09-decisions/ADR-005-vercel-hosting.html">ADR-005</a> — prebuilt-artifact deployment rationale</li>
+<li><a href="09-decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a> — static, build-time project data rationale</li>
+</ul>
 
     </article>
 
