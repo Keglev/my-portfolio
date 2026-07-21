@@ -1,0 +1,32 @@
+/*
+ * File: layout.css
+ * Module: docs/_theme/css/layout.css
+ * Summary: Doc-page structure: the sticky TOC sidebar + article two-column
+ *   grid. The landing page's own shell lives in landing.css instead.
+ * Enterprise: Third of seven files concatenated into
+ *   docs/_theme/css/styles.css (see tokens.css's header); relies on
+ *   tokens.css's custom properties already being in scope.
+ */
+
+.doc-layout {
+  display: grid;
+  /* toc-w fixed sidebar; minmax(0,1fr) prevents the article from overflowing its track */
+  grid-template-columns: var(--toc-w) minmax(0, 1fr);
+  gap: 3rem;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* min-width: 0 prevents the article from overflowing its grid track; max-width caps prose measure */
+.doc-layout > .article { min-width: 0; max-width: var(--content-maxw); }
+
+/* Collapse to single column on narrow viewports; hide the TOC sidebar */
+@media (max-width: 760px) {
+  .doc-layout {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 1.5rem 1rem 3rem;
+  }
+  .doc-toc { display: none; }
+}

@@ -1,0 +1,48 @@
+/*
+ * File: base.css
+ * Module: docs/_theme/css/base.css
+ * Summary: Reset, and html/body/link/focus defaults for the generated docs
+ *   site.
+ * Enterprise: Second of seven files concatenated into
+ *   docs/_theme/css/styles.css (see tokens.css's header); relies on
+ *   tokens.css's custom properties already being in scope.
+ */
+
+/* Intentional override: resets all browser default box-sizing, margin, and padding */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Keyboard focus is kept visually distinct from the hover underline so pointer
+   and keyboard users get separate affordances. */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Off-screen until focused: lets keyboard users skip the header and jump
+   straight to the article. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 0.6rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  z-index: 200;
+}
+.skip-link:focus { left: 1rem; top: 1rem; }

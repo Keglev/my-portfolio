@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
-  <title>my-portfolio — Documentation</title>
+  <title>my-portfolio — Dokumentation</title>
 
   <!-- Set the theme before paint to avoid a flash. Dark is the fallback
        default, mirroring src/context/ThemeContext.js's own no-storage
@@ -64,20 +64,19 @@
   </header>
 
 <!--
-  File: landing-en.html
-  Summary: docs/index.html landing page body (hero + stack badges + card
-    grid), assembled between header.html and footer.html by build_docs.js.
-    German twin: landing-de.html. Card links target today's still-existing
-    doc pages -- they are repointed at the arc42 chapter set in the P9-B5
-    branch once that restructure lands.
+  File: landing-de.html
+  Summary: docs/index-de.html landing page body — German twin of
+    landing-en.html, assembled between header.html and footer.html by
+    build_docs.js. Ships in the same commit as its English twin (locked
+    i18n rule: both languages ship together).
 -->
 
-  <!-- --- Landing: hero + card grid --- -->
+  <!-- --- Startseite: Hero + Kartenraster --- -->
   <main class="hub" id="main">
 
     <div class="hub__hero">
-      <h1>my-portfolio — Documentation</h1>
-      <p>A personal portfolio built with React, styled-components, i18next, and React Router — deployed on Vercel with generated docs and coverage published to GitHub Pages.</p>
+      <h1>my-portfolio — Dokumentation</h1>
+      <p>Ein persönliches Portfolio, gebaut mit React, styled-components, i18next und React Router — bereitgestellt auf Vercel; generierte Dokumentation und Testabdeckung werden auf GitHub Pages veröffentlicht.</p>
       <div class="stack">
         <span>React · CRA</span>
         <span>styled-components</span>
@@ -88,51 +87,51 @@
       </div>
     </div>
 
-    <!-- --- Generated references --- -->
-    <p class="hub__section-label">Generated references</p>
+    <!-- --- Generierte Referenzen --- -->
+    <p class="hub__section-label">Generierte Referenzen</p>
     <div class="hub__grid">
 
       <a class="card" href="jsdoc/index.html">
         <span class="card__icon">📄</span>
-        <span class="card__title">API Docs</span>
-        <span class="card__desc">Auto-generated JSDoc reference for components, hooks, and build scripts</span>
+        <span class="card__title">API-Dokumentation</span>
+        <span class="card__desc">Automatisch generierte JSDoc-Referenz für Komponenten, Hooks und Build-Skripte</span>
       </a>
 
-      <!-- Coverage report lives under the GitHub Pages domain, not a relative path -->
+      <!-- Coverage-Bericht liegt unter der GitHub-Pages-Domain, kein relativer Pfad -->
       <a class="card" href="https://keglev.github.io/my-portfolio/coverage/index.html">
         <span class="card__icon">🧪</span>
-        <span class="card__title">Test Coverage</span>
-        <span class="card__desc">Istanbul / Jest HTML coverage report — statements, branches, functions, lines</span>
+        <span class="card__title">Testabdeckung</span>
+        <span class="card__desc">Istanbul/Jest-HTML-Bericht — Anweisungen, Zweige, Funktionen, Zeilen</span>
       </a>
 
     </div>
 
-    <!-- --- Developer guides --- -->
-    <p class="hub__section-label">Developer guides</p>
+    <!-- --- Entwickler-Leitfäden --- -->
+    <p class="hub__section-label">Entwickler-Leitfäden</p>
     <div class="hub__grid">
 
       <a class="card" href="DEPLOY.html">
         <span class="card__icon">🚀</span>
         <span class="card__title">Deployment</span>
-        <span class="card__desc">Vercel setup, environment variables, build process, and local preview</span>
+        <span class="card__desc">Vercel-Einrichtung, Umgebungsvariablen, Build-Prozess und lokale Vorschau</span>
       </a>
 
       <a class="card" href="TESTS.html">
         <span class="card__icon">✅</span>
         <span class="card__title">Tests</span>
-        <span class="card__desc">Two-runner Jest strategy, coverage thresholds, and how to run locally or in CI</span>
+        <span class="card__desc">Zwei-Runner-Jest-Strategie, Abdeckungsschwellen und lokale/CI-Ausführung</span>
       </a>
 
     </div>
 
-    <!-- --- Architecture & design --- -->
-    <p class="hub__section-label">Architecture &amp; design</p>
+    <!-- --- Architektur & Design --- -->
+    <p class="hub__section-label">Architektur &amp; Design</p>
     <div class="hub__grid">
 
       <a class="card" href="architecture/">
         <span class="card__icon">🏗️</span>
-        <span class="card__title">Architecture</span>
-        <span class="card__desc">Component structure, data flow diagrams, and key design decisions</span>
+        <span class="card__title">Architektur</span>
+        <span class="card__desc">Komponentenstruktur, Datenfluss-Diagramme und zentrale Designentscheidungen</span>
       </a>
 
       <a class="card" href="architecture/overview.de.html">
@@ -144,25 +143,25 @@
       <a class="card" href="frontend/">
         <span class="card__icon">🎨</span>
         <span class="card__title">Frontend</span>
-        <span class="card__desc">Component reference, styled-components patterns, and i18n guide</span>
+        <span class="card__desc">Komponentenreferenz, styled-components-Muster und i18n-Leitfaden</span>
       </a>
 
       <a class="card" href="docs-index.html">
         <span class="card__icon">📋</span>
-        <span class="card__title">Docs Index</span>
-        <span class="card__desc">Full table of contents for all documentation sections with descriptions and links</span>
+        <span class="card__title">Dokumentationsindex</span>
+        <span class="card__desc">Vollständiges Inhaltsverzeichnis aller Dokumentationsbereiche mit Beschreibungen und Links</span>
       </a>
 
       <a class="card" href="scripts/index.html">
         <span class="card__icon">⚙️</span>
-        <span class="card__title">Scripts</span>
-        <span class="card__desc">Build and quality-check tooling reference</span>
+        <span class="card__title">Skripte</span>
+        <span class="card__desc">Referenz für Build- und Qualitätsprüfungs-Tooling</span>
       </a>
 
       <a class="card" href="architecture/decisions/index.html">
         <span class="card__icon">📝</span>
-        <span class="card__title">ADR Documentation</span>
-        <span class="card__desc">Architecture Decision Record — documents significant technical choices</span>
+        <span class="card__title">ADR-Dokumentation</span>
+        <span class="card__desc">Architecture Decision Record — dokumentiert wesentliche technische Entscheidungen</span>
       </a>
 
     </div>
