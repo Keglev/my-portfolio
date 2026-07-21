@@ -2,7 +2,7 @@
 
 [← Architecture index](index.md)
 
-This catalog documents every React component in `src/components/`, its purpose, the props it accepts, and how it is used in the app. Section components that accept no external props are grouped in a table; components with non-trivial prop contracts each get their own table.
+This catalog documents every React component in `src/components/`, its purpose, the props it accepts, and how it is used in the app. Components that accept no external props are grouped in a table; components with a non-trivial prop contract each get their own table.
 
 ## Table of Contents
 
@@ -10,17 +10,16 @@ This catalog documents every React component in `src/components/`, its purpose, 
 - [Sidebar Components](#sidebar-components)
 - [Section Components](#section-components)
 - [Sub-components](#sub-components)
-- [Custom Hooks](#custom-hooks)
 - [References](#references)
 
 ## Root Components
 
-These two components form the outermost shell of the application. They are mounted in `src/index.js`.
+These components form the outermost shell of the application, mounted in `src/index.js`.
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| `App` | src/App.js | Composes `Sidebar` with the `main-content` scroll container; imports `GlobalStyles` and `SpeedInsights` |
-| `ErrorBoundary` | src/components/ErrorBoundary.js | Class component wrapping the entire tree; renders a fallback message on any uncaught render error |
+| `App` | src/App.js | Wraps the tree in `ThemeProvider`; composes `Sidebar` with the `main-content` scroll container holding the six section components; imports `GlobalStyles` and `SpeedInsights` |
+| `ErrorBoundary` | src/components/ErrorBoundary/ErrorBoundary.js | Class component wrapping `App` (one level inside `React.StrictMode`, per `src/index.js`); renders a hardcoded (non-i18n) fallback message on any uncaught render error, deliberately not routed through `t()` in case the crash is i18n-related itself |
 
 ### ErrorBoundary props
 
@@ -30,13 +29,12 @@ These two components form the outermost shell of the application. They are mount
 
 ## Sidebar Components
 
-The sidebar group is composed inside `Sidebar` and stays fixed to the left of the viewport on desktop. On mobile it collapses into a static top block.
+`Sidebar` is fixed to the left of the viewport on desktop and collapses into a static top block on mobile (see [08b's responsive design table](08b-concepts-i18n-theming.md#responsive-design)).
 
 | Component | File | Purpose |
 |-----------|------|---------|
-| `Sidebar` | src/components/Sidebar/Sidebar.js | Fixed navigation column; owns `activeSection` scroll-tracking state and passes it down to `SidebarMenu` |
-| `SidebarMenu` | src/components/Sidebar/SidebarMenu.js | Navigation links, language toggle buttons, and the locale-aware CV download link |
-| `SidebarSocial` | src/components/Sidebar/SidebarSocial.js | Row of icon links to GitHub, LinkedIn, Xing, and email |
+| `Sidebar` | src/components/Sidebar/Sidebar.js | Fixed navigation column; owns `activeSection` scroll-tracking state, renders the name/title block and footer directly, and passes `activeSection` down to `SidebarMenu` |
+| `SidebarMenu` | src/components/Sidebar/SidebarMenu.js | Navigation links, the DE/EN language switch, the theme toggle button, and the locale-aware CV download link |
 
 ### SidebarMenu props
 
@@ -44,67 +42,52 @@ The sidebar group is composed inside `Sidebar` and stays fixed to the left of th
 |------|------|----------|-------------|
 | `activeSection` | string | yes | ID of the section currently in view (e.g. `'About'`, `'Projects'`); controls which nav link receives the active highlight |
 
-`Sidebar` derives `activeSection` from scroll position via a `window.scroll` listener, then passes it to `SidebarMenu`. See [architecture/data-flow.md](06-runtime.md) for the full state flow.
-
-`SidebarSocial` accepts no props. All social URLs are hardcoded inside the component.
+`Sidebar` derives `activeSection` from scroll position via a `window.scroll` listener, then passes it to `SidebarMenu`. See [06-runtime.md](06-runtime.md) for the full state flow.
 
 ## Section Components
 
-All six section components accept no external props. They source their content via `useTranslation()` or internal custom hooks. Each is rendered inside a `div.section` wrapper in `App.js`, with an `id` that acts as a scroll target.
+All six section components accept no external props; they source their content via `useTranslation()` and, where applicable, a static config module. Each is rendered inside a `div.section` wrapper in `App.js`, with an `id` that acts as a scroll target.
 
 | Component | Section ID | i18n key group | Data source |
 |-----------|-----------|---------------|-------------|
-| `About` | `About` | `aboutSection` | i18n locale JSON |
-| `Education` | `Education` | `educationSection` | i18n locale JSON |
-| `Projects` | `Projects` | `projects` | `public/projects.json` via `useProjects` hook |
-| `RepoDocs` | `RepoDocs` | `repoDocs` | `public/projects.json` via `useRepoDocs` hook |
-| `Experience` | `Experience` | `experienceSection` | i18n locale JSON |
+| `Hero` | `Hero` | `hero` | i18n locale JSON |
+| `About` | `About` | `aboutSection` | i18n locale JSON; renders `CareerStrip` as its final child |
+| `Skills` | `SkillsSection` | `skills`, `skillsSection` | `data/skills.config` (group structure) + i18n locale JSON (labels) |
+| `Projects` | `Projects` | `projects`, `portfolioMeta` | `data/projects.config` (static, no fetch) |
+| `Contact` | `ContactSection` | `contactSection` | Web3Forms API (`REACT_APP_WEB3FORMS_KEY` env var) |
 | `Legal` | `Impressum`, `Datenschutz` | `legal` | i18n locale JSON (HTML strings via `dangerouslySetInnerHTML`) |
 
 ## Sub-components
 
 Sub-components are rendered by parent section components and receive data as props.
 
+### CareerStrip
+
+Rendered by `About` as its final child, not standalone. Renders a two-column strip (career stations, education) from `aboutSection.career` and `aboutSection.educationItems` i18n list resources. Its wrapper `id="Career"` is the scroll target of `Hero`'s "Experience" CTA. Accepts no props.
+
 ### ProjectCard
 
-Rendered by `Projects`. Displays a single project tile with image, summary, technology tags, and action links. Implements a three-step image fallback chain: local static asset → GitHub `main` branch → GitHub `master` branch → SVG placeholder.
+Rendered by `Projects`, once per entry in `data/projects.config`. Displays a theme- and language-aware preview image, title, summary (via `ProjectSummary`), technology tags, and up to five links in a locked order (live app, docs hub, repo, optional second repo, API reference). Falls back to an inline SVG placeholder (`projectsUtils.generatePlaceholderSVGDataUrl`) on image load failure.
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `project` | object | yes | Project data object from `projects.json` |
-| `image` | string | yes | Primary image URL resolved by the parent via `getPrimaryImage()` |
+| `project` | object | yes | Curated project entry from `data/projects.config` |
 | `index` | number | yes | Position in the projects array; used as the key into `loadedImages` |
-| `loadedImages` | object | yes | Map of `index → boolean` tracking which images have finished loading |
-| `setLoadedImages` | function | yes | State setter lifted from `Projects`; called when an image loads or all fallbacks are exhausted |
+| `loadedImages` | object | no (default `{}`) | Map of `index → boolean` tracking which images have finished loading |
+| `setLoadedImages` | function | no (default no-op) | State setter lifted from `Projects`; called when an image loads or all fallbacks are exhausted |
 
 ### ProjectSummary
 
-Rendered inside `ProjectCard`. Selects the best available description in priority order: German `summary_de` from `projects.json` → README About section → generic `summary` field. Renders a skeleton placeholder while all sources are empty.
+Rendered inside `ProjectCard`. Selects `project.summaryDe` or `project.summaryEn` by strict equality on the `language` prop — both fields are always present in the config, so there is no missing-translation fallback path to document.
 
 | Prop | Type | Required | Description |
 |------|------|----------|-------------|
-| `project` | object | yes | Project data object from `projects.json` |
-| `language` | string | yes | Active i18n locale code (`'en'` or `'de'`) |
-| `t` | function | yes | i18next `t()` function forwarded from `ProjectCard` |
-
-### RepoDocLinks
-
-Rendered inside `RepoDocs`. Outputs documentation links for one repository by checking fields in priority order: `placeholder` → `apiDocumentation` → `architectureOverview` → `productionUrl` → `testing.coverage[]` → generic `docsLink` fallback.
-
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `project` | object | yes | Enriched project object from `useRepoDocs`; expected to contain a `repoDocs` sub-object |
-
-## Custom Hooks
-
-| Hook | File | Returns | Description |
-|------|------|---------|-------------|
-| `useProjects` | src/components/Projects/useProjects.js | `{ projects, loadedImages, setLoadedImages }` | Fetches `public/projects.json` on mount; owns the loading and error lifecycle |
-| `useRepoDocs` | src/components/RepoDocs/useRepoDocs.js | `Project[]` | Derives the subset of projects that have at least one documentation link |
+| `project` | object | yes | Curated project entry from `data/projects.config` |
+| `language` | string | yes | Active i18n locale code (`'en'` or `'de'`), passed through as-is from `ProjectCard`'s `i18n.language` |
 
 ## References
 
 - [React component documentation](https://react.dev/learn/your-first-component)
 - [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
-- [architecture/component-tree.md](05-building-blocks.md) — visual component hierarchy diagram
-- [architecture/data-flow.md](06-runtime.md) — how props and state flow between components
+- [05-building-blocks.md](05-building-blocks.md) — visual component hierarchy diagram
+- [06-runtime.md](06-runtime.md) — how props and state flow between components

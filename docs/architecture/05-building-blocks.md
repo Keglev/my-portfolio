@@ -1,105 +1,101 @@
-# React Component Tree
+# Building Blocks
 
 [← Architecture index](index.md)
 
-This document maps the React component hierarchy from the root `App` component down to the major UI components. Understanding this tree helps when tracing a rendering issue or deciding where to introduce new state.
+This document maps the React component hierarchy from the root `App` component down to the major UI components. Understanding this tree helps when tracing a rendering issue or deciding where to introduce new state. For per-component prop tables, see [05b: Component Catalog](05b-building-blocks-components.md).
 
 ## Table of Contents
 
 - [Component Hierarchy Diagram](#component-hierarchy-diagram)
+- [Entry Point](#entry-point)
 - [Sidebar Group](#sidebar-group)
 - [Section Components](#section-components)
 - [Projects Group](#projects-group)
-- [RepoDocs Group](#repodocs-group)
 - [References](#references)
 
 ## Component Hierarchy Diagram
 
-The diagram shows all significant rendering components. Infrastructure utilities (`SpeedInsights`, `GlobalStyles`) are omitted to keep the focus on UI structure.
+The diagram shows every component `App` renders. Infrastructure utilities (`SpeedInsights`, `GlobalStyles`, `ThemeProvider`) are omitted from the diagram to keep the focus on UI structure — see [Entry Point](#entry-point) below for where they sit.
 
 ```mermaid
 graph TD
     App["App"]
     Sidebar["Sidebar"]
     MainContent["main-content (div#scroll-container)"]
-    NameTitle["NameTitle"]
     SidebarMenu["SidebarMenu"]
-    SidebarSocial["SidebarSocial"]
-    FooterMessage["FooterMessage"]
+    Hero["Hero"]
     About["About"]
-    Education["Education"]
+    CareerStrip["CareerStrip"]
+    Skills["Skills"]
     Projects["Projects"]
-    RepoDocs["RepoDocs"]
-    Experience["Experience"]
+    ProjectCard["ProjectCard (×N)"]
+    ProjectSummary["ProjectSummary"]
+    Contact["Contact"]
     Legal["Legal"]
 
     App --> Sidebar
     App --> MainContent
-    Sidebar --> NameTitle
     Sidebar --> SidebarMenu
-    Sidebar --> SidebarSocial
-    Sidebar --> FooterMessage
+    MainContent --> Hero
     MainContent --> About
-    MainContent --> Education
+    About --> CareerStrip
+    MainContent --> Skills
     MainContent --> Projects
-    MainContent --> RepoDocs
-    MainContent --> Experience
+    Projects --> ProjectCard
+    ProjectCard --> ProjectSummary
+    MainContent --> Contact
     MainContent --> Legal
 
     class App l1
     class Sidebar,MainContent l2
-    class NameTitle,SidebarMenu,SidebarSocial,FooterMessage,About,Education,Projects,RepoDocs,Experience,Legal l3
+    class SidebarMenu,Hero,About,Skills,Projects,Contact,Legal l3
+    class CareerStrip,ProjectCard,ProjectSummary l4
 
     classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
     classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
     classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
+    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 ```
+
+## Entry Point
+
+`src/index.js` mounts the tree as `<React.StrictMode><ErrorBoundary><App /></ErrorBoundary></React.StrictMode>` — `StrictMode` is the outermost wrapper, `ErrorBoundary` sits inside it, one level above `App`. `App` itself wraps its own render in `ThemeProvider` (see [Theme System](08b-concepts-i18n-theming.md#theme-system)), so every descendant can read the active theme via `useTheme()`.
 
 ## Sidebar Group
 
-The `Sidebar` component is fixed to the left of the viewport for the entire user session. It owns all navigation, identity, and utility controls.
+The `Sidebar` component is fixed to the left of the viewport for the entire user session. It owns navigation, identity, and utility controls, and tracks an `activeSection` state derived from scroll position — it listens to `window.scroll` and iterates through sections bottom-to-top, so the deepest section the user has scrolled past is always the active one.
 
-`Sidebar` maintains an `activeSection` state derived from scroll position. It listens to `window.scroll` and iterates through sections bottom-to-top, so the deepest section the user has scrolled past is always the active one.
+`Sidebar` renders its own name/title block and footer directly (via styled-components from `SidebarStyles.js`, see [08b's styled-components layer](08b-concepts-i18n-theming.md#styled-components-layer)) and delegates the interactive controls to one sub-component:
 
 | Sub-component | Responsibility |
 |--------------|---------------|
-| `NameTitle` | Styled block displaying the owner's name and job title from the `translation` i18n namespace |
-| `SidebarMenu` | Navigation links for each content section; receives `activeSection` as a prop and highlights the matching link; uses `react-scroll` for smooth scrolling |
-| `SidebarSocial` | Icon links to GitHub, LinkedIn, and email; each carries an `aria-label` for screen reader support |
-| `FooterMessage` | Tagline and two `LegalButton` elements that scroll to the Impressum and Privacy Policy sections |
+| `SidebarMenu` | Navigation links for each content section (receives `activeSection` as a prop, uses `react-scroll` for smooth scrolling), the DE/EN language switch, the theme toggle button, and the CV download link |
 
 ## Section Components
 
-The main content area renders six section components in source order. Each is wrapped in a `div.section` with an `id` matching the `react-scroll` target used by `SidebarMenu`.
+The main content area renders six section components in source order, each wrapped in a `div.section` with an `id` matching the `react-scroll` target used by `SidebarMenu`.
 
 | Section | Responsibility |
 |---------|---------------|
-| `About` | Introductory bio and tech-stack summary |
-| `Education` | Formal degrees, certifications, and ongoing training entries |
-| `Projects` | Dynamically rendered project grid sourced from `public/projects.json` |
-| `RepoDocs` | Links to repository documentation extracted from project READMEs at build time |
-| `Experience` | Job history entries rendered from the `experienceSection` i18n keys |
+| `Hero` | First-viewport introduction: eyebrow line, headline, lead paragraph, and three CTAs (jump to Projects, download CV, jump to the career strip) |
+| `About` | Profile photo and four fixed-order storytelling blocks; renders `CareerStrip` as its final child |
+| `CareerStrip` | Condensed two-column career/education strip — replaces what were previously full standalone Education and Experience sections |
+| `Skills` | Single-column stack of skill groups sourced from `data/skills.config`; deliberately not a grid, so a recruiter can scan it without horizontal eye movement |
+| `Projects` | Project grid sourced from the static `data/projects.config` (no runtime or build-time fetch) |
+| `Contact` | Web3Forms-backed contact form (DSGVO consent checkbox, honeypot spam field) plus a row of direct social/email links |
 | `Legal` | Impressum and Datenschutz (privacy policy) content rendered from i18n HTML strings |
 
 ## Projects Group
 
-`Projects` fetches `public/projects.json` on mount and delegates rendering to two sub-components. The fetch lifecycle (loading, error, data states) is encapsulated in the `useProjects` custom hook, keeping the component itself free of async logic.
+`Projects` reads `data/projects.config` directly — there is no fetch, loading state, or custom data hook. It renders one `ProjectCard` per entry and, below the grid, a small "portfolio meta" strip linking to this repository's own source, docs, and coverage report.
 
-- `ProjectCard` — renders a single project tile with name, description, technology tags, and action links.
-- `ProjectSummary` — compact summary row used in an alternate list view.
-- `useProjects` — custom hook owning the fetch lifecycle.
-- `projectsUtils` — pure utility functions for filtering and sorting project data.
-
-## RepoDocs Group
-
-`RepoDocs` renders documentation links that were extracted from each project's README during the build-time fetch step.
-
-- `RepoDocLinks` — renders the list of doc links for a single repository entry.
-- `useRepoDocs` — custom hook that derives the doc link list from the `projects.json` data.
+- `ProjectCard` — renders a single project tile: theme- and language-aware preview image (via `useTheme()`), title, summary, technology tags, and up to five links in a locked order.
+- `ProjectSummary` — renders the German or English summary field (`summaryDe`/`summaryEn`), both always present in the config.
+- `projectsUtils` — exports `generatePlaceholderSVGDataUrl`, the inline-SVG fallback shown when a project's preview image fails to load.
 
 ## References
 
 - [React component composition](https://react.dev/learn/passing-props-to-a-component)
 - [react-scroll documentation](https://github.com/fisshy/react-scroll)
-- [data-flow.md](06-runtime.md) — props and state flow between these components
-- [i18n-flow.md](08b-concepts-i18n-theming.md) — how translated strings reach each component
+- [06-runtime.md](06-runtime.md) — props and state flow between these components
+- [08b: i18n & Theming](08b-concepts-i18n-theming.md) — how translated strings and the active theme reach each component
