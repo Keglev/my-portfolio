@@ -56,19 +56,37 @@ function slugify(text) {
     .replace(/\s+/g, '-');
 }
 
+/**
+ * Renders a heading with a slugified id.
+ *
+ * marked has changed this renderer's signature across major versions. Through
+ * v9 -- the range this project pins -- it is called as heading(text, depth);
+ * from v12 it passes a single token object instead. Verified empirically
+ * against marked 9.1.6, which uses the two-argument form.
+ *
+ * Both shapes are handled deliberately. Without the token branch, a future
+ * marked bump would stringify the token object into every heading id and
+ * anchor, breaking in-page navigation site-wide. Both are unit tested
+ * directly, so neither is dead code sitting on an untested path.
+ *
+ * @param {string|{text: string, depth: number}} tokenOrText
+ * @param {number} [maybeDepth] - Heading level, when called in the v9 form
+ * @returns {string}
+ */
+function renderHeading(tokenOrText, maybeDepth) {
+  const isToken = tokenOrText !== null && typeof tokenOrText === 'object';
+  const text  = isToken ? tokenOrText.text  : tokenOrText;
+  const depth = isToken ? tokenOrText.depth : maybeDepth;
+  const id    = slugify(String(text).replace(/<[^>]+>/g, ''));
+  return `<h${depth} id="${id}">${text}</h${depth}>\n`;
+}
+
 if (RendererCtor) {
   const renderer = new RendererCtor();
-
-  // marked v5+ passes a token object; older versions pass (text, depth, ...)
-  renderer.heading = function (tokenOrText, maybeDepth) {
-    const text  = typeof tokenOrText === 'object' ? tokenOrText.text  : tokenOrText;
-    const depth = typeof tokenOrText === 'object' ? tokenOrText.depth : maybeDepth;
-    const id    = slugify(text.replace(/<[^>]+>/g, ''));
-    return `<h${depth} id="${id}">${text}</h${depth}>\n`;
-  };
+  renderer.heading = renderHeading;
 
   const setOptions = markedFn.setOptions || (markedModule.marked && markedModule.marked.setOptions);
   if (setOptions) setOptions.call(markedFn, { renderer });
 }
 
-module.exports = { markedFn };
+module.exports = { markedFn, renderHeading, slugify };

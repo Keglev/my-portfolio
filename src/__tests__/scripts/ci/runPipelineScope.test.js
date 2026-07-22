@@ -20,7 +20,12 @@
  *   signal, and the caller (runPipelineScope's CLI) maps null to all
  *   scope flags true rather than all false.
  */
-import { resolveChangedFiles, resolveScopeForRange } from '../../../../scripts/ci/runPipelineScope.js';
+import fs from 'node:fs';
+import {
+  resolveChangedFiles,
+  resolveScopeForRange,
+  runCli,
+} from '../../../../scripts/ci/runPipelineScope.js';
 
 describe('runPipelineScope', () => {
   describe('resolveChangedFiles', () => {
@@ -104,6 +109,75 @@ describe('runPipelineScope', () => {
       const scope = resolveScopeForRange('abc123', 'def456', exec);
 
       expect(scope).toEqual({ apiDocs: true, coverage: true, archDocs: true, deploy: true });
+    });
+  });
+
+  describe('runCli', () => {
+    // Every case below drives the fail-safe path by leaving the `before`
+    // argument off argv. That short-circuits resolveChangedFiles before it
+    // shells out, so these tests never invoke real git and stay deterministic
+    // regardless of the checkout's history.
+    //
+    // fs is spied rather than vi.mock'd because the module resolves it
+    // through a CommonJS require, which vi.mock does not intercept.
+    let appendFileSync;
+    let originalArgv;
+
+    beforeEach(() => {
+      originalArgv = process.argv;
+      appendFileSync = vi.spyOn(fs, 'appendFileSync').mockImplementation(() => {});
+      vi.spyOn(console, 'log').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      process.argv = originalArgv;
+      vi.restoreAllMocks();
+      vi.unstubAllEnvs();
+    });
+
+    it('should write every flag true to $GITHUB_OUTPUT when no before SHA is supplied', () => {
+      // The fail-safe contract, end to end: an unresolvable range must run
+      // the whole downstream pipeline rather than silently skip it.
+      process.argv = ['node', 'runPipelineScope.js'];
+      vi.stubEnv('GITHUB_OUTPUT', '/tmp/gh-output');
+
+      runCli();
+
+      const [target, written] = appendFileSync.mock.calls[0];
+      expect(target).toBe('/tmp/gh-output');
+      expect(written).toContain('apiDocs=true');
+      expect(written).toContain('coverage=true');
+      expect(written).toContain('archDocs=true');
+      expect(written).toContain('deploy=true');
+    });
+
+    it('should treat the all-zero before SHA as unresolvable and flag everything true', () => {
+      // github.event.before is all zeros on a brand-new branch.
+      process.argv = ['node', 'runPipelineScope.js', '0'.repeat(40), 'def456'];
+      vi.stubEnv('GITHUB_OUTPUT', '/tmp/gh-output');
+
+      runCli();
+
+      expect(appendFileSync.mock.calls[0][1]).toContain('deploy=true');
+    });
+
+    it('should terminate the appended block with a newline so a later append cannot join onto it', () => {
+      process.argv = ['node', 'runPipelineScope.js'];
+      vi.stubEnv('GITHUB_OUTPUT', '/tmp/gh-output');
+
+      runCli();
+
+      expect(appendFileSync.mock.calls[0][1].endsWith('\n')).toBe(true);
+    });
+
+    it('should print the flags to stdout when $GITHUB_OUTPUT is not set', () => {
+      process.argv = ['node', 'runPipelineScope.js'];
+      vi.stubEnv('GITHUB_OUTPUT', '');
+
+      runCli();
+
+      expect(appendFileSync).not.toHaveBeenCalled();
+      expect(console.log).toHaveBeenCalledWith('deploy=true');
     });
   });
 });

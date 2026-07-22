@@ -125,13 +125,25 @@ export default [
     },
     rules: {
       // react-app's jest half also bundled eslint-plugin-testing-library.
-      // Kept: the suite is entirely React Testing Library, and existing
-      // `eslint-disable testing-library/*` directives in the tests are only
-      // meaningful while the plugin is loaded.
+      // Kept: the component suite is entirely React Testing Library, and
+      // existing `eslint-disable testing-library/*` directives in the tests
+      // are only meaningful while the plugin is loaded.
       ...testingLibrary.configs['flat/react'].rules,
 
       // Fast Refresh has no meaning in a test file.
       'react-refresh/only-export-components': 'off',
+    },
+  },
+
+  {
+    // Tests for scripts/ exercise Node modules and never touch React Testing
+    // Library. The plugin's heuristics key on call-site NAMES, so any local
+    // helper starting with "render" (renderHeading, renderPages) is mistaken
+    // for RTL's render() and its result is required to be named `view` or
+    // `utils` -- nonsense for a function returning an HTML string.
+    files: ['src/__tests__/scripts/**/*.{js,jsx}'],
+    rules: {
+      'testing-library/render-result-naming-convention': 'off',
     },
   },
 ];
