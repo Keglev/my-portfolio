@@ -144,6 +144,7 @@ export default defineConfig({
         // Instead every path is covered by exactly one glob group below, and
         // the groups partition the measured tree. A file matching no group is
         // ungated -- so a new top-level directory needs an entry adding here.
+        // BUCKET: partition-completeness meta-test for coverage globs (CB-P10-01)
         //
         // The `!(name)` extglobs are what keep the partition disjoint: a file
         // matching two groups is checked against BOTH, so an exception must be
