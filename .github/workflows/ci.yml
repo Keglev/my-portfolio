@@ -29,7 +29,6 @@ on:
       - 'src/**'
       - 'scripts/**'
       - 'config/**'
-      - 'jest.node.config.js'
       - 'package.json'
       # Build inputs: a change to either can alter the deployed bundle, so
       # neither may skip the pipeline. index.html moved to the repo root with
@@ -62,12 +61,12 @@ jobs:
       - name: Run tests with coverage
         env:
           CI: true
-        # `npm test` is the single source of truth for this jest invocation
-        # (config, --runInBand, --testPathPattern); --coverage is forwarded on
-        # top of it for CI's coverage-artifact upload. Renamed from
-        # test:node when react-scripts was removed: with the CRA runner gone
-        # there is only one test command left, so the qualifier was noise.
-        run: npm test -- --coverage
+        # test:coverage is the single source of truth for the instrumented
+        # run (vitest run --coverage). All configuration -- environment,
+        # setup file, coverage provider, include/exclude, reporters -- lives
+        # in vite.config.js's `test` block, so this step carries no flags of
+        # its own and cannot drift from a local run.
+        run: npm run test:coverage
 
       # Upload coverage so api-docs.yml can consume it without re-running tests.
       - name: Upload coverage artifact

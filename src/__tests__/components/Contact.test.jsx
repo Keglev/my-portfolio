@@ -15,7 +15,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Contact from '../../components/Contact/Contact';
 
-jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k) => k }) }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k) => k }) }));
 
 const fill = () => {
   fireEvent.change(screen.getByLabelText('contactSection.name'), { target: { value: 'Max' } });
@@ -25,7 +25,7 @@ const fill = () => {
 
 describe('Contact', () => {
   beforeEach(() => {
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
   });
 
   afterEach(() => {

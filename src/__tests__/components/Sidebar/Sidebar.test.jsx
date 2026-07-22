@@ -14,12 +14,11 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Sidebar from '../../../components/Sidebar/Sidebar';
 
-jest.mock('react-i18next', () => ({ useTranslation: jest.fn() }));
-const { useTranslation } = require('react-i18next');
+vi.mock('react-i18next', () => ({ useTranslation: vi.fn() }));
+import { useTranslation } from 'react-i18next';
 
 // Sidebar passes only activeSection to SidebarMenu -- no changeLanguage prop
-jest.mock('../../../components/Sidebar/SidebarMenu', () => ({
-  __esModule: true,
+vi.mock('../../../components/Sidebar/SidebarMenu', () => ({
   default: ({ activeSection }) => (
     <div data-testid="sidebar-menu">
       <span data-testid="active-section">{activeSection}</span>
@@ -55,11 +54,11 @@ describe('Sidebar', () => {
         return offset ? Number(offset) : 0;
       },
     });
-    HTMLElement.prototype.scrollIntoView = jest.fn();
+    HTMLElement.prototype.scrollIntoView = vi.fn();
   }
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     useTranslation.mockReturnValue({ t: (k) => k });
     originalInnerHeight = window.innerHeight;
     originalOffsetTop = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'offsetTop');
@@ -76,8 +75,8 @@ describe('Sidebar', () => {
   });
 
   it('should track scroll position while mounted and remove the scroll listener when Sidebar unmounts', async () => {
-    const addEventListenerSpy = jest.spyOn(window, 'addEventListener');
-    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
+    const addEventListenerSpy = vi.spyOn(window, 'addEventListener');
+    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
 
     const { unmount } = renderWithSections();
 

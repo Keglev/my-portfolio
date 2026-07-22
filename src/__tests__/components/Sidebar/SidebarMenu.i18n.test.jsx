@@ -23,6 +23,11 @@ import { I18nextProvider } from 'react-i18next';
 import SidebarMenu from '../../../components/Sidebar/SidebarMenu';
 import i18n from '../../../i18n';
 
+// react-i18next stays REAL here (that is this file's whole point), but
+// react-scroll still has to go: its Link registers a scroll-spy handler on
+// mount that jsdom cannot satisfy. Resolves to __mocks__/react-scroll.jsx.
+vi.mock('react-scroll');
+
 describe('SidebarMenu (real i18n)', () => {
   it('should render the navigation links with their real translated labels when the language is English', () => {
     i18n.changeLanguage('en');

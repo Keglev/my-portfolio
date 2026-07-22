@@ -9,16 +9,15 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 
-jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k) => k }) }));
-jest.mock('../../data/skills.config', () => ({
-  __esModule: true,
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k) => k }) }));
+vi.mock('../../data/skills.config', () => ({
   default: [
     { id: 'a', titleKey: 'skillsSection.backend', items: ['Java', 'Spring Boot'] },
     { id: 'b', titleKey: 'skillsSection.frontend', items: ['React'] },
   ],
 }));
 
-const Skills = require('../../components/Skills/Skills').default;
+import Skills from '../../components/Skills/Skills';
 
 describe('Skills', () => {
   it('should render a card per group and every chip when Skills mounts', () => {

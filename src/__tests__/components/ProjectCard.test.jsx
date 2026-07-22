@@ -14,8 +14,8 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ProjectCard from '../../components/Projects/ProjectCard';
 
-jest.mock('react-i18next', () => ({ useTranslation: jest.fn() }));
-const { useTranslation } = require('react-i18next');
+vi.mock('react-i18next', () => ({ useTranslation: vi.fn() }));
+import { useTranslation } from 'react-i18next';
 
 const baseProject = {
   slug: 'demo',
@@ -34,7 +34,7 @@ const baseProject = {
 };
 
 describe('ProjectCard', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => vi.clearAllMocks());
 
   it('should render the title, English summary, and tech tags when the language is English', () => {
     useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'en' } });
@@ -132,7 +132,7 @@ describe('ProjectCard', () => {
 
   it('should fall back to an inline SVG placeholder once when the image errors, and not loop on a second error', () => {
     useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'en' } });
-    const setLoadedImages = jest.fn();
+    const setLoadedImages = vi.fn();
     render(<ProjectCard project={baseProject} index={2} setLoadedImages={setLoadedImages} />);
     const img = screen.getByAltText('Demo Project preview');
 

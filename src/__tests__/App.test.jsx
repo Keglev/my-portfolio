@@ -17,38 +17,36 @@ import React from 'react';
 import { render } from '@testing-library/react';
 
 // Prevent i18n side-effect initialization from interfering
-jest.mock('../i18n', () => ({ __esModule: true, default: {} }));
+vi.mock('../i18n', () => ({ __esModule: true, default: {} }));
 
 // Provide a simple translation function for all components that use useTranslation
 // Include i18n object so SidebarMenu's i18n.language check doesn't throw
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key, fallback) => fallback || key,
-    i18n: { language: 'de', changeLanguage: jest.fn() },
+    i18n: { language: 'de', changeLanguage: vi.fn() },
   }),
-  initReactI18next: { type: '3rdParty', init: jest.fn() },
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
-// Prevent react-scroll from being used (it needs a real DOM scroll container)
-// Use require('react') inside the factory -- jest.mock factories are hoisted before imports
-jest.mock('react-scroll', () => {
-  const R = require('react');
-  return {
-    Link: ({ children, to }) => R.createElement('a', { href: `#${to}` }, children),
-    Element: ({ children }) => R.createElement('div', null, children),
-    Events: { scrollEvent: { register: jest.fn(), remove: jest.fn() } },
-    animateScroll: {},
-    scrollSpy: { update: jest.fn() },
-  };
-});
+// Prevent react-scroll from being used (it needs a real DOM scroll container).
+// The factory returns JSX directly: vi.mock factories are hoisted above imports,
+// but their BODY runs lazily on first import of the mocked module, by which
+// point the automatic JSX runtime is available. No React import is needed.
+vi.mock('react-scroll', () => ({
+  Link: ({ children, to }) => <a href={`#${to}`}>{children}</a>,
+  Element: ({ children }) => <div>{children}</div>,
+  Events: { scrollEvent: { register: vi.fn(), remove: vi.fn() } },
+  animateScroll: {},
+  scrollSpy: { update: vi.fn() },
+}));
 
-// Stub Projects to a bare marker element -- Projects.js itself renders from static
+// Stub Projects to a bare marker element -- Projects.jsx itself renders from static
 // config (data/projects.config), not a fetch, but this test only cares that App
 // mounts a Projects section, not what Projects itself renders.
-jest.mock('../components/Projects/Projects', () => {
-  const React = require('react');
-  return { __esModule: true, default: () => React.createElement('section', { 'data-testid': 'projects' }) };
-});
+vi.mock('../components/Projects/Projects', () => ({
+  default: () => <section data-testid="projects" />,
+}));
 
 describe('App', () => {
   function setup() {

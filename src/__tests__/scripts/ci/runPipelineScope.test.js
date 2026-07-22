@@ -20,12 +20,12 @@
  *   signal, and the caller (runPipelineScope's CLI) maps null to all
  *   scope flags true rather than all false.
  */
-const { resolveChangedFiles } = require('../../../../scripts/ci/runPipelineScope');
+import { resolveChangedFiles, resolveScopeForRange } from '../../../../scripts/ci/runPipelineScope.js';
 
 describe('runPipelineScope', () => {
   describe('resolveChangedFiles', () => {
     it('should return the diffed file list when before is reachable', () => {
-      const exec = jest.fn()
+      const exec = vi.fn()
         .mockReturnValueOnce('') // git cat-file -e <before>
         .mockReturnValueOnce('src/App.js\nsrc/index.js\n'); // git diff --name-only
 
@@ -37,7 +37,7 @@ describe('runPipelineScope', () => {
     });
 
     it('should return null when before is the all-zero SHA', () => {
-      const exec = jest.fn();
+      const exec = vi.fn();
 
       const result = resolveChangedFiles('0'.repeat(40), 'def456', exec);
 
@@ -46,7 +46,7 @@ describe('runPipelineScope', () => {
     });
 
     it('should return null when before is missing or empty', () => {
-      const exec = jest.fn();
+      const exec = vi.fn();
 
       const result = resolveChangedFiles('', 'def456', exec);
 
@@ -55,7 +55,7 @@ describe('runPipelineScope', () => {
     });
 
     it('should return null when git cat-file cannot find before (force-push rewrote history)', () => {
-      const exec = jest.fn(() => {
+      const exec = vi.fn(() => {
         throw new Error('fatal: Not a valid object name abc123');
       });
 
@@ -65,7 +65,7 @@ describe('runPipelineScope', () => {
     });
 
     it('should return null when git diff itself fails after cat-file succeeds', () => {
-      const exec = jest.fn()
+      const exec = vi.fn()
         .mockReturnValueOnce('') // git cat-file -e <before> succeeds
         .mockImplementationOnce(() => { throw new Error('fatal: bad revision'); });
 
@@ -75,7 +75,7 @@ describe('runPipelineScope', () => {
     });
 
     it('should filter out blank lines when the diff output contains them', () => {
-      const exec = jest.fn()
+      const exec = vi.fn()
         .mockReturnValueOnce('')
         .mockReturnValueOnce('src/App.js\n\n\nsrc/index.js\n');
 
@@ -87,8 +87,7 @@ describe('runPipelineScope', () => {
 
   describe('resolveScopeForRange', () => {
     it('should resolve normal scope flags when the diff is available', () => {
-      const { resolveScopeForRange } = require('../../../../scripts/ci/runPipelineScope');
-      const exec = jest.fn()
+      const exec = vi.fn()
         .mockReturnValueOnce('')
         .mockReturnValueOnce('docs/index.md\n');
 
@@ -98,8 +97,7 @@ describe('runPipelineScope', () => {
     });
 
     it('should force every flag true when the diff is unavailable', () => {
-      const { resolveScopeForRange } = require('../../../../scripts/ci/runPipelineScope');
-      const exec = jest.fn(() => {
+      const exec = vi.fn(() => {
         throw new Error('fatal: bad revision');
       });
 

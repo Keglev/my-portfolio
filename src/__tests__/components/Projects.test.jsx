@@ -11,13 +11,13 @@
  * Data comes from the static config module, so there is no fetch to mock.
  */
 import React from 'react';
+import Projects from '../../components/Projects/Projects';
 import { render, screen } from '@testing-library/react';
 
-jest.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k, def) => def || k }) }));
+vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k, def) => def || k }) }));
 
 // Deterministic, minimal config so the test does not depend on real copy.
-jest.mock('../../data/projects.config', () => ({
-  __esModule: true,
+vi.mock('../../data/projects.config', () => ({
   default: [
     { slug: 'proj-a', displayName: 'Proj A' },
     { slug: 'proj-b', displayName: 'Proj B' },
@@ -25,8 +25,7 @@ jest.mock('../../data/projects.config', () => ({
 }));
 
 // Stub ProjectCard so we assert wiring, not the real card internals.
-jest.mock('../../components/Projects/ProjectCard', () => ({
-  __esModule: true,
+vi.mock('../../components/Projects/ProjectCard', () => ({
   default: ({ project, index }) => (
     <div data-testid="project-card" data-slug={project && project.slug} data-index={index} />
   ),
@@ -34,7 +33,7 @@ jest.mock('../../components/Projects/ProjectCard', () => ({
 
 describe('Projects', () => {
   it('should render one ProjectCard per curated config entry when Projects mounts', () => {
-    const Projects = require('../../components/Projects/Projects').default;
+
 
     render(<Projects />);
     const cards = screen.getAllByTestId('project-card');
@@ -46,7 +45,7 @@ describe('Projects', () => {
   });
 
   it('should render the portfolio-meta strip with links to source, docs, and coverage when Projects mounts', () => {
-    const Projects = require('../../components/Projects/Projects').default;
+
 
     render(<Projects />);
 

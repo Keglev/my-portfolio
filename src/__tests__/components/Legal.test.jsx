@@ -11,11 +11,11 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Legal from '../../components/Legal/Legal';
 
-jest.mock('react-i18next', () => ({ useTranslation: jest.fn() }));
-const { useTranslation } = require('react-i18next');
+vi.mock('react-i18next', () => ({ useTranslation: vi.fn() }));
+import { useTranslation } from 'react-i18next';
 
 describe('Legal', () => {
-  afterEach(() => jest.clearAllMocks());
+  afterEach(() => vi.clearAllMocks());
 
   it('should render the Impressum and Datenschutz headings with their injected HTML content when Legal mounts', () => {
     useTranslation.mockReturnValue({
