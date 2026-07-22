@@ -27,15 +27,10 @@ const { exec } = require('child_process');
  * stale waiver survives at most one run past its finding.
  */
 const ALLOWLIST = {
-  'linkify-it': {
-    // jsdoc -> markdown-it -> linkify-it. Quadratic-complexity DoS in the
-    // mailto: validator, reachable only by feeding it attacker-controlled
-    // markdown. The only markdown it ever sees is the JSDoc comments in this
-    // repository, at docs-build time, on a CI runner. No fix is available
-    // upstream. Ends when JSDoc drops markdown-it, or if the Code Reference
-    // is ever dropped -- ADR-008 chose to keep it, this waiver is the price.
-    reason: 'dev-only, jsdoc -> markdown-it; no fix available; parses only this repo\'s own comments',
-  },
+  // linkify-it used to sit here, waived as the price of keeping the generated
+  // code reference. Retiring that site removed the jsdoc devDependency, and
+  // the finding left with it -- the waiver was not renewed, it became
+  // unnecessary. One entry remains.
   'brace-expansion': {
     // eslint-plugin-jsx-a11y and eslint-plugin-testing-library, both via
     // minimatch. DoS via exponential expansion of a crafted glob. The globs

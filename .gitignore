@@ -37,11 +37,6 @@ yarn-error.log*
 /docs/templates/*.html
 /docs/_theme/css/styles.css
 /docs/coverage/
-# The Code Reference (npm run docs:jsdoc). Its 55 files were committed until
-# the rename in ADR-008, which let architecture-docs.yml drop the rsync
-# exclude that existed only to stop those stale snapshots from overwriting
-# the freshly generated gh-pages copy.
-/docs/jsdoc/
 
 # local generated artifacts
 eslint-output.txt
