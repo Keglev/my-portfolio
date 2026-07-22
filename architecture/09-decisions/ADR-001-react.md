@@ -12,7 +12,10 @@
 
 ## Status
 
-Accepted
+Accepted. Note: this ADR also selected Create React App as the build toolchain.
+That half is superseded by [ADR-007](ADR-007-vite-migration.md), which replaced
+CRA with Vite after the React team deprecated CRA in February 2025. The choice
+of React itself is unchanged.
 
 ## Context
 

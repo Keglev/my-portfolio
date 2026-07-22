@@ -1,0 +1,417 @@
+<!--
+  File: header.html
+  Summary: Shared page shell (DOCTYPE, head, body open, site header)
+    assembled into every generated docs page by build_docs.js via
+    scripts/docs/lib/renderPages.js.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
+  <title>ADR-007: Vite as the Build Tool (replacing Create React App) — my-portfolio docs</title>
+
+  <!-- Set the theme before paint to avoid a flash. Dark is the fallback
+       default, mirroring src/context/ThemeContext.js's own no-storage
+       fallback -- see docs/_theme/js/docs.js for the storage key. -->
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem("portfolio-docs-theme");
+        document.documentElement.setAttribute("data-theme", t === "light" ? "light" : "dark");
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in scripts/docs/lib/renderPages.js) -->
+  <link rel="stylesheet" href="../../_theme/css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- --- Site header: breadcrumb + language switch + theme toggle + external nav --- -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
+      <span class="site-header__sep">/</span>
+      <!-- href adjusted at build time for subdirectory pages -->
+      <a class="site-header__title" href="../../index.html">my-portfolio</a>
+      <span class="site-header__sep">/</span>
+      <span class="site-header__section">Docs</span>
+      <div class="site-header__spacer"></div>
+      <nav aria-label="Docs navigation">
+        <ul class="site-header__nav">
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+        </ul>
+      </nav>
+      <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
+      <span class="lang-switch">
+        <a href="index.html" aria-current="true">EN</a>
+        <a href="index-de.html">DE</a>
+      </span>
+      <button class="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle light or dark theme">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none" />
+        </svg>
+      </button>
+    </div>
+  </header>
+
+<!--
+  File: page.html
+  Summary: Doc-page body partial (TOC sidebar + article + client-side
+    Mermaid/TOC-highlight/nav-active scripts), assembled between
+    header.html and footer.html by build_docs.js.
+-->
+
+  <!-- --- Doc layout: sticky TOC sidebar + article --- -->
+  <div class="doc-layout" id="main">
+
+    <aside class="doc-toc" aria-label="On this page">
+      <p class="doc-toc__label">On this page</p>
+      <!-- Replaced at build time by tocBuilder.buildToc() (see
+           scripts/docs/lib/tocBuilder.js); empty string when the page
+           has fewer than two headings -->
+      <ul class="doc-toc__list">
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#status">Status</a></li>
+  <li><a href="#context">Context</a></li>
+  <li><a href="#decision">Decision</a></li>
+  <li><a href="#consequences">Consequences</a></li>
+  <li class="toc-h3"><a href="#npm-audit-before-and-after">npm audit, before and after</a></li>
+  <li class="toc-h3"><a href="#other-consequences">Other consequences</a></li>
+  <li><a href="#references">References</a></li>
+</ul>
+    </aside>
+
+    <article class="article">
+      <!-- Replaced at build time by renderPages.convertMd() (see
+           scripts/docs/lib/renderPages.js) -->
+      <h1 id="adr-007-vite-as-the-build-tool-replacing-create-react-app">ADR-007: Vite as the Build Tool (replacing Create React App)</h1>
+<p><a href="index.html">← Decisions index</a></p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#status">Status</a></li>
+<li><a href="#context">Context</a></li>
+<li><a href="#decision">Decision</a></li>
+<li><a href="#consequences">Consequences</a></li>
+<li><a href="#references">References</a></li>
+</ul>
+<h2 id="status">Status</h2>
+<p>Accepted (2026-07-22).</p>
+<p>Supersedes the build-tooling half of <a href="ADR-001-react.html">ADR-001</a>, which chose
+Create React App as the toolchain. The choice of React itself is unaffected and
+remains Accepted.</p>
+<p>Also corrects <a href="ADR-005-vercel-hosting.html">ADR-005</a>, which documented
+<code>vercel.json</code>&#39;s <code>buildCommand</code> as <code>&quot;react-scripts build&quot;</code>. It is now
+<code>&quot;vite build&quot;</code> with an explicit <code>outputDirectory: &quot;dist&quot;</code>. ADR-005&#39;s actual
+decision — prebuilt artifact deployment via the Vercel Build Output API — is
+unchanged, and that <code>buildCommand</code> remains unexercised because <code>--prebuilt</code>
+skips Vercel&#39;s build step entirely.</p>
+<h2 id="context">Context</h2>
+<p>The project was built with Create React App via <code>react-scripts@5.0.1</code>.</p>
+<p><strong>CRA is dead.</strong> The React team formally deprecated it in February 2025 and
+removed it from the official documentation as a recommended way to start a
+project. <code>react-scripts</code> has had no functional release since 5.0.1 (January
+2022). It is not a question of preference: nothing in that dependency tree is
+receiving security patches.</p>
+<p><strong>The transitive tree was the real cost.</strong> <code>react-scripts</code> pulled in a full
+webpack 5 stack, its own babel toolchain, <code>webpack-dev-server</code>, <code>@svgr/webpack</code>,
+<code>workbox</code>, and a pinned ESLint 8. Measured before the migration:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>npm ls --all</code> output</td>
+<td>3885 lines</td>
+</tr>
+<tr>
+<td><code>npm audit</code> findings</td>
+<td>28 (1 critical, 13 high, 4 moderate, 10 low)</td>
+</tr>
+<tr>
+<td>High/critical inside the react-scripts subtree</td>
+<td>10 of 14</td>
+</tr>
+</tbody></table>
+<p>The <code>package.json</code> <code>overrides</code> block had grown to six entries
+(<code>@pmmmwh/react-refresh-webpack-plugin</code>, <code>nth-check</code>, <code>postcss</code>, <code>svgo</code>,
+<code>resolve-url-loader</code>, <code>serialize-javascript</code>), every one of them a manual pin
+patching a vulnerability inside a CRA transitive that upstream would never fix.
+That block was a maintenance treadmill with no end state.</p>
+<p><strong>Secondary costs.</strong> <code>.npmrc</code> carried a global <code>legacy-peer-deps=true</code> solely
+because <code>react-scripts@5</code> conflicts with strict peer resolution — a blunt
+instrument that suppressed peer warnings repo-wide. ESLint was frozen at 8
+because <code>eslint-config-react-app</code> shipped inside <code>react-scripts</code> and pinned it.
+And CRA&#39;s bundled Jest runner was one of two runners in the repo, both executing
+the identical 24 test files — measured, not assumed, by comparing <code>--listTests</code>
+output from each. Consolidating them is follow-on work and is not decided here.</p>
+<p>Alternatives considered:</p>
+<ol>
+<li><strong>Stay on CRA.</strong> Rejected: the vulnerability count only grows, and each new
+finding requires another hand-written override.</li>
+<li><strong>Eject.</strong> Rejected: <code>react-scripts eject</code> makes the unmaintained webpack
+config <em>our</em> unmaintained webpack config. Strictly worse.</li>
+<li><strong>Next.js.</strong> Rejected: this is a static single-page portfolio with no
+routing, no server rendering, and no data fetching. Next.js would add a
+framework to remove a build tool.</li>
+<li><strong>Vite.</strong> Chosen — see below.</li>
+</ol>
+<h2 id="decision">Decision</h2>
+<p>Adopt <strong>Vite 8</strong> (<code>vite</code> + <code>@vitejs/plugin-react</code>) as the build tool, and
+remove <code>react-scripts</code> entirely.</p>
+<p>Concretely:</p>
+<ul>
+<li><strong>Entry point.</strong> <code>index.html</code> moves from <code>public/</code> to the repo root, with an
+explicit <code>&lt;script type=&quot;module&quot; src=&quot;/src/index.jsx&quot;&gt;</code>. Vite treats
+<code>index.html</code> as the entry module; it does not inject the script tag the way
+CRA&#39;s HtmlWebpackPlugin did. All <code>%PUBLIC_URL%</code> scaffolding is gone — it was
+verified to be comment text only, with zero real substitutions.</li>
+<li><strong><code>public/</code> becomes pure static passthrough.</strong> The CV PDFs, project
+screenshots, and profile images are referenced by root-absolute path from
+<code>src/</code>, which keeps working only because Vite copies <code>publicDir</code> verbatim
+without hashing.</li>
+<li><strong>Environment variables.</strong> <code>REACT_APP_WEB3FORMS_KEY</code> →
+<code>VITE_WEB3FORMS_KEY</code>, read as <code>import.meta.env.VITE_WEB3FORMS_KEY</code>. Vite
+only exposes <code>VITE_</code>-prefixed variables to client code.</li>
+<li><strong>JSX file extensions.</strong> The 15 source files containing real JSX are renamed
+<code>.js</code> → <code>.jsx</code>. Vite 8 (rolldown/oxc) refuses JSX inside <code>.js</code> and, unlike
+Vite 5, no longer offers an <code>esbuild: { loader: &#39;jsx&#39; }</code> escape hatch; oxc&#39;s
+<code>.js</code>-as-JSX loader applies to dependency pre-bundling only, not to source.
+The 8 plain-JS modules keep <code>.js</code>.</li>
+<li><strong>Build output.</strong> <code>build/</code> → <code>dist/</code>, reflected in <code>vercel.json</code>,
+<code>scripts/prepareVercelOutput.sh</code>, and <code>.gitignore</code>.</li>
+<li><strong>Browser targets.</strong> <code>.browserslistrc</code> is <strong>deleted</strong> and no
+<code>@vitejs/plugin-legacy</code> is added. Vite reads <code>build.target</code>, not
+browserslist, so the file was already inert. <code>build.target</code> is left at Vite&#39;s
+modern default: the audience for a developer portfolio runs current browsers,
+and shipping legacy transpilation plus polyfills to serve hypothetical
+IE-era traffic is cost without benefit.</li>
+<li><strong>ESLint 8 → 9, flat config</strong> (<code>eslint.config.mjs</code>). Forced by the removal of
+<code>eslint-config-react-app</code>; rule parity is documented per-block in the config
+file itself.</li>
+<li><strong><code>.npmrc</code> deleted.</strong> <code>legacy-peer-deps</code> is no longer needed; verified by a
+full clean <code>npm install</code> with no <code>.npmrc</code> present.</li>
+</ul>
+<h2 id="consequences">Consequences</h2>
+<h3 id="npm-audit-before-and-after">npm audit, before and after</h3>
+<table>
+<thead>
+<tr>
+<th>Severity</th>
+<th>Before</th>
+<th>After</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Critical</td>
+<td>1</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>High</td>
+<td>13</td>
+<td><strong>4</strong></td>
+</tr>
+<tr>
+<td>Moderate</td>
+<td>4</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>Low</td>
+<td>10</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>28</strong></td>
+<td><strong>4</strong></td>
+</tr>
+</tbody></table>
+<p><code>npm ls --all</code> output dropped from 3885 to 1890 lines — a 51% smaller
+dependency graph.</p>
+<p>The four remaining findings, all <code>high</code>, all dev-only (none ship to the
+browser):</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Path</th>
+<th>Disposition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>form-data</code></td>
+<td><code>jest-environment-jsdom</code> → <code>jsdom@20</code></td>
+<td>Expected to clear when the test runner migrates — a current jsdom carries the fix</td>
+</tr>
+<tr>
+<td><code>js-yaml</code></td>
+<td><code>babel-jest</code> → <code>babel-plugin-istanbul</code> → <code>@istanbuljs/load-nyc-config</code></td>
+<td>Expected to clear when the test runner migrates off babel-jest</td>
+</tr>
+<tr>
+<td><code>linkify-it</code></td>
+<td><code>jsdoc</code> → <code>markdown-it</code></td>
+<td>Permanent while JSDoc is kept; covered by the approved <code>audit-check.js</code> allowlist</td>
+</tr>
+<tr>
+<td><code>brace-expansion</code></td>
+<td><code>eslint-plugin-jsx-a11y</code>, <code>eslint-plugin-testing-library</code></td>
+<td><strong>Introduced by this migration&#39;s own ESLint 9 toolchain</strong></td>
+</tr>
+</tbody></table>
+<p>The <code>overrides</code> block is gone. Every entry pinned a package that no longer
+exists in the tree.</p>
+<h3 id="other-consequences">Other consequences</h3>
+<ul>
+<li><strong>Build time</strong> fell from tens of seconds to well under a second (639 ms for a
+102-module production build), because Vite 8 bundles with rolldown rather
+than webpack.</li>
+<li><strong>Sourcemaps are now published</strong> with the deployed bundle
+(<code>build.sourcemap: true</code>). This is a public portfolio whose source is already
+on GitHub; readable production stack traces are worth more than the bytes.</li>
+<li><strong>A new failure mode was introduced and guarded.</strong> If <code>VITE_WEB3FORMS_KEY</code> is
+unset, the build still <em>succeeds</em> and silently ships an empty access key,
+breaking the contact form in production with no CI signal. <code>deploy.yml</code> gained
+an explicit pre-build presence check (value never printed) because a green
+build that quietly breaks a feature is worse than a red one.</li>
+<li><strong>A temporary Jest bridge exists.</strong> Babel&#39;s CommonJS output cannot represent
+<code>import.meta</code>, so <code>config/jest/importMetaEnvBabelPlugin.js</code> rewrites
+<code>import.meta.env</code> → <code>process.env</code> for the Jest transform only. It is scoped to
+test configuration so the source stays in its final idiomatic form, and it is
+removed when the runner migrates to a toolchain that reads <code>import.meta.env</code>
+natively.</li>
+<li><strong>Contributor-facing changes:</strong> <code>npm start</code> still works (aliased to <code>vite</code>),
+<code>npm run dev</code> is the idiomatic name, and <code>npm run preview</code> serves a
+production build locally. <code>npm run eject</code> no longer exists and has no
+meaning.</li>
+<li><strong>Documentation debt created by this ADR.</strong> 44 references to Create React App
+or <code>react-scripts</code> remain across 20 files under <code>docs/</code> and <code>README.md</code>.
+They are now factually wrong and are corrected in a dedicated follow-up
+branch, not here.</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li><a href="https://react.dev/blog/2025/02/14/sunsetting-create-react-app">React: Sunsetting Create React App</a> — the February 2025 deprecation announcement</li>
+<li><a href="https://vite.dev/">Vite documentation</a></li>
+<li><a href="https://vite.dev/guide/migration.html">Vite: Migration from CRA</a></li>
+<li><a href="ADR-001-react.html">ADR-001</a> — chose React and, at the time, CRA</li>
+<li><a href="ADR-005-vercel-hosting.html">ADR-005</a> — prebuilt Vercel deployment, whose <code>buildCommand</code> this ADR corrects</li>
+<li><a href="../08d-concepts-build-tooling.html">Build tooling</a> — the tooling reference chapter</li>
+<li><code>vite.config.js</code>, <code>eslint.config.mjs</code> — both fully commented with the reasoning behind each option</li>
+</ul>
+
+    </article>
+
+  </div>
+
+  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped.
+       Deliberately keeps an explicit dark themeVariables init (not the
+       reference theme's CSS-variable-driven mermaid.css) so diagrams stay
+       legible regardless of the light/dark toggle -- see ROBOT PROMPT P9's
+       B3 instruction to keep explicit themeVariables init. -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'base',
+      themeVariables: {
+        fontFamily: 'Inter, sans-serif',
+        background: '#0F1117',
+        primaryColor: '#1e2d4f',
+        primaryTextColor: '#E2E8F0',
+        primaryBorderColor: '#3B82F6',
+        lineColor: '#60A5FA',
+        secondaryColor: '#2a3d62',
+        tertiaryColor: '#37507a',
+        edgeLabelBackground: '#141622',
+        clusterBkg: '#141622',
+        clusterBorder: '#3B82F6',
+        titleColor: '#E2E8F0',
+        noteBkgColor: '#1e2d4f',
+        noteTextColor: '#E2E8F0',
+        actorBkg: '#1e2d4f',
+        actorBorder: '#3B82F6',
+        actorTextColor: '#E2E8F0',
+        actorLineColor: '#60A5FA',
+        activationBkgColor: '#2a3d62',
+        activationBorderColor: '#3B82F6',
+        signalColor: '#60A5FA',
+        signalTextColor: '#E2E8F0',
+        labelBoxBkgColor: '#1e2d4f',
+        labelBoxBorderColor: '#3B82F6',
+        labelTextColor: '#E2E8F0',
+        loopTextColor: '#E2E8F0',
+        sequenceNumberColor: '#E2E8F0',
+      }
+    });
+  </script>
+
+  <!-- TOC: highlight the active section heading as the user scrolls -->
+  <script>
+    (function () {
+      const headings = Array.from(document.querySelectorAll('.article h2, .article h3'));
+      const items    = Array.from(document.querySelectorAll('.doc-toc__list li'));
+
+      if (!headings.length || !items.length) return;
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            items.forEach(li => li.classList.remove('active'));
+            const hit = document.querySelector(
+              '.doc-toc__list li a[href="#' + entry.target.id + '"]'
+            );
+            if (hit) hit.closest('li').classList.add('active');
+          });
+        },
+        /* rootMargin pushes the activation zone toward the top quarter of the viewport */
+        { rootMargin: '-10% 0% -80% 0%' }
+      );
+
+      headings.forEach(h => io.observe(h));
+    })();
+  </script>
+
+  <!-- Nav: mark the current page link as active in the site header -->
+  <script>
+    (function () {
+      const page = location.pathname.split('/').pop() || 'index.html';
+      const link = document.querySelector('.site-header__nav a[href="' + page + '"]');
+      if (link) link.classList.add('active');
+    })();
+  </script>
+
+<!--
+  File: footer.html
+  Summary: Shared site footer + closing body/html tags, assembled at the
+    end of every generated docs page by build_docs.js.
+-->
+
+  <!-- --- Site footer --- -->
+  <footer class="site-footer">
+    <span>© Carlos Keglevich. Content and code available under their respective licenses.</span>
+    <span>
+      <a href="mailto:carlos.keglevich@gmail.com">carlos.keglevich@gmail.com</a> ·
+      <a href="https://www.linkedin.com/in/carloskeglevich" target="_blank" rel="noopener">LinkedIn</a>
+    </span>
+  </footer>
+
+  <!-- Theme toggle, active-link marking, and the EN/DE language switch (see docs/_theme/js/docs.js). Path adjusted at build time like the stylesheet link above. -->
+  <script src="../../_theme/js/docs.js"></script>
+
+</body>
+</html>
