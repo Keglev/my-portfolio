@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/Contact/Contact.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/Contact/Contact.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file Contact.js
+ * @module components/Contact/Contact
+ * @summary Contact section with a Web3Forms-backed form and social links.
+ * @enterprise Web3Forms is static-site friendly (no own backend needed);
+ * the public access key comes from the VITE_WEB3FORMS_KEY environment
+ * variable, injected at build time by the deploy workflow. Includes a
+ * required DSGVO
+ * consent checkbox (submit stays disabled until checked) and a hidden
+ * honeypot field ("botcheck") that Web3Forms uses for spam filtering. The
+ * social links (GitHub/LinkedIn/Xing/email) are a direct-contact fallback
+ * for visitors who skip the form entirely.
+ */
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { FaGithub, FaLinkedin, FaEnvelope } from 'react-icons/fa';
+import { SiXing } from 'react-icons/si';
+import './Contact.css';
+
+/**
+ * @returns {JSX.Element}
+ */
+const Contact = () => {
+  const { t } = useTranslation();
+  const [status, setStatus] = useState('idle'); // idle | sending | success | error
+  const [consent, setConsent] = useState(false);
+
+  const accessKey = import.meta.env.VITE_WEB3FORMS_KEY || '';
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!consent || status === 'sending') return;
+    setStatus('sending');
+
+    // FormData instead of named-property access: form.name on a &lt;form> returns
+    // the form's own name attribute, not the input, so form.name.value crashes.
+    const form = e.target;
+    const fd = new FormData(form);
+    const senderName = fd.get('name') || '';
+    const payload = {
+      access_key: accessKey,
+      name: senderName,
+      email: fd.get('email') || '',
+      message: fd.get('message') || '',
+      botcheck: fd.get('botcheck') || '',
+      subject: 'Portfolio contact from ' + senderName,
+    };
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setStatus('success');
+        form.reset();
+        setConsent(false);
+      } else {
+        setStatus('error');
+      }
+    } catch (err) {
+      setStatus('error');
+    }
+  };
+
+  // Name/email/message are uncontrolled and reset natively via the button's own
+  // type="reset" default action; consent and the status message are React state,
+  // so they're cleared here. Wired to onClick (not the form's onReset) because
+  // handleSubmit also calls form.reset() imperatively on success, and that must
+  // not clear the just-set success status.
+  const handleClear = () => {
+    setConsent(false);
+    setStatus('idle');
+  };
+
+  return (
+    &lt;section className="contact-container" id="ContactSection" aria-label="Contact">
+      &lt;h2>{t('contactSection.heading')}&lt;/h2>
+      &lt;p className="contact-lead">{t('contactSection.lead')}&lt;/p>
+
+      &lt;form className="contact-form" onSubmit={handleSubmit} noValidate={false}>
+        {/* Honeypot: hidden from users, bots fill it and get filtered by Web3Forms */}
+        &lt;input type="checkbox" name="botcheck" tabIndex="-1" className="contact-botcheck" aria-hidden="true" />
+
+        &lt;div className="contact-row">
+          &lt;div className="contact-field">
+            &lt;label htmlFor="contact-name">{t('contactSection.name')}&lt;/label>
+            &lt;input id="contact-name" name="name" type="text" required autoComplete="name" />
+          &lt;/div>
+          &lt;div className="contact-field">
+            &lt;label htmlFor="contact-email">{t('contactSection.email')}&lt;/label>
+            &lt;input id="contact-email" name="email" type="email" required autoComplete="email" />
+          &lt;/div>
+        &lt;/div>
+
+        &lt;div className="contact-field">
+          &lt;label htmlFor="contact-message">{t('contactSection.message')}&lt;/label>
+          &lt;textarea id="contact-message" name="message" rows="5" required />
+        &lt;/div>
+
+        &lt;label className="contact-consent">
+          &lt;input
+            type="checkbox"
+            checked={consent}
+            onChange={(e) => setConsent(e.target.checked)}
+            aria-label={t('contactSection.consent')}
+          />
+          &lt;span>{t('contactSection.consent')}&lt;/span>
+        &lt;/label>
+
+        &lt;div className="contact-actions">
+          &lt;button type="reset" className="contact-clear" onClick={handleClear}>{t('contactSection.clear')}&lt;/button>
+          &lt;button type="submit" className="contact-submit" disabled={!consent || status === 'sending'}>
+            {status === 'sending' ? t('contactSection.sending') : t('contactSection.send')}
+          &lt;/button>
+        &lt;/div>
+
+        {status === 'success' &amp;&amp; (
+          &lt;p className="contact-status success" role="status">{t('contactSection.success')}&lt;/p>
+        )}
+        {status === 'error' &amp;&amp; (
+          &lt;p className="contact-status error" role="alert">{t('contactSection.error')}&lt;/p>
+        )}
+      &lt;/form>
+
+      {/* Direct channels for people who skip the form entirely */}
+      &lt;div className="contact-socials">
+        &lt;a href="https://github.com/keglev" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+          &lt;FaGithub />
+        &lt;/a>
+        &lt;a href="https://linkedin.com/in/carloskeglevich" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+          &lt;FaLinkedin />
+        &lt;/a>
+        &lt;a href="https://www.xing.com/profile/Carlos_Keglevich" target="_blank" rel="noopener noreferrer" aria-label="Xing">
+          &lt;SiXing />
+        &lt;/a>
+        &lt;a href="mailto:carlos.keglevich@gmail.com" aria-label="Email">
+          &lt;FaEnvelope />
+        &lt;/a>
+      &lt;/div>
+    &lt;/section>
+  );
+};
+
+export default Contact;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="data_cvAssets.module_config.html">data/cvAssets.config</a></li><li><a href="module-App.html">App</a></li><li><a href="module-components_About_About.html">components/About/About</a></li><li><a href="module-components_About_CareerStrip.html">components/About/CareerStrip</a></li><li><a href="module-components_Contact_Contact.html">components/Contact/Contact</a></li><li><a href="module-components_ErrorBoundary_ErrorBoundary.html">components/ErrorBoundary/ErrorBoundary</a></li><li><a href="module-components_Hero_Hero.html">components/Hero/Hero</a></li><li><a href="module-components_Legal_Legal.html">components/Legal/Legal</a></li><li><a href="module-components_Projects_ProjectCard.html">components/Projects/ProjectCard</a></li><li><a href="module-components_Projects_ProjectSummary.html">components/Projects/ProjectSummary</a></li><li><a href="module-components_Projects_Projects.html">components/Projects/Projects</a></li><li><a href="module-components_Projects_projectsUtils.html">components/Projects/projectsUtils</a></li><li><a href="module-components_Sidebar_Sidebar.html">components/Sidebar/Sidebar</a></li><li><a href="module-components_Sidebar_SidebarMenu.html">components/Sidebar/SidebarMenu</a></li><li><a href="module-components_Sidebar_SidebarStyles.html">components/Sidebar/SidebarStyles</a></li><li><a href="module-components_Skills_Skills.html">components/Skills/Skills</a></li><li><a href="module-context_ThemeContext.html">context/ThemeContext</a></li><li><a href="module-i18n_index.html">i18n/index</a></li><li><a href="module-src___tests___App.html">src/__tests__/App</a></li><li><a href="module-src___tests___components_About.html">src/__tests__/components/About</a></li><li><a href="module-src___tests___components_Contact.html">src/__tests__/components/Contact</a></li><li><a href="module-src___tests___components_ErrorBoundary.html">src/__tests__/components/ErrorBoundary</a></li><li><a href="module-src___tests___components_Hero.html">src/__tests__/components/Hero</a></li><li><a href="module-src___tests___components_Legal.html">src/__tests__/components/Legal</a></li><li><a href="module-src___tests___components_ProjectCard.html">src/__tests__/components/ProjectCard</a></li><li><a href="module-src___tests___components_Projects.html">src/__tests__/components/Projects</a></li><li><a href="module-src___tests___components_Sidebar_Sidebar.html">src/__tests__/components/Sidebar/Sidebar</a></li><li><a href="module-src___tests___components_Sidebar_SidebarMenu.html">src/__tests__/components/Sidebar/SidebarMenu</a></li><li><a href="module-src___tests___components_Skills.html">src/__tests__/components/Skills</a></li><li><a href="module-src___tests___components_projectsUtils.html">src/__tests__/components/projectsUtils</a></li><li><a href="module-src___tests___config_jest_reactDomTestUtils.html">src/__tests__/config/jest/reactDomTestUtils</a></li><li><a href="module-src___tests___context_ThemeContext.html">src/__tests__/context/ThemeContext</a></li><li><a href="module-src___tests___i18n.html">src/__tests__/i18n</a></li><li><a href="module-src___tests___index.html">src/__tests__/index</a></li><li><a href="module-src___tests___scripts_ci_detectPipelineScope.html">src/__tests__/scripts/ci/detectPipelineScope</a></li><li><a href="module-src___tests___scripts_ci_runPipelineScope.html">src/__tests__/scripts/ci/runPipelineScope</a></li><li><a href="module-src___tests___scripts_run-eslint-dev.html">src/__tests__/scripts/run-eslint-dev</a></li><li><a href="module-src_index.html">src/index</a></li><li><a href="module-styles_GlobalStyles.html">styles/GlobalStyles</a></li><li><a href="src___tests___components_Sidebar_SidebarMenu.module_i18n.html">src/__tests__/components/Sidebar/SidebarMenu.i18n</a></li></ul><h3>Global</h3><ul><li><a href="global.html#projects">projects</a></li><li><a href="global.html#skillGroups">skillGroups</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 22 2026 09:46:26 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

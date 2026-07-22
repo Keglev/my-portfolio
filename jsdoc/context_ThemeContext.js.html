@@ -26,22 +26,16 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>/**
- * @file ThemeContext.js
- * @module context/ThemeContext
- * @summary Provides light/dark theme state and a toggle to the component tree.
- * @enterprise Single source of truth for theme state, consumed by Sidebar
- * (toggle UI) and ProjectCard (theme-specific screenshot selection). Mirrors
- * state to the &lt;html data-theme> attribute so index.css's CSS variable
- * overrides apply without prop-drilling into every styled component.
- * Persists the choice in localStorage; getInitialTheme() falls back to dark
- * (the site's default identity) if storage throws, which keeps SSR,
- * private-mode, and test environments working without a special case.
- * useTheme() works without a provider so isolated component tests don't
- * need to wrap in ThemeProvider.
- */
-import React, { createContext, useContext, useEffect, useState } from 'react';
+            <pre class="prettyprint source linenums"><code>import React, { createContext, useContext, useEffect, useState } from 'react';
 
+/**
+ * Theme context for light/dark mode.
+ *
+ * The active theme is exposed to components (e.g. ProjectCard picks
+ * theme-specific screenshots) and mirrored to a `data-theme` attribute on
+ * &lt;html>, which drives the CSS variable overrides in index.css. The choice
+ * persists in localStorage; the default is dark, matching the site's identity.
+ */
 const ThemeContext = createContext({ theme: 'dark', toggleTheme: () => {} });
 
 const STORAGE_KEY = 'portfolio-theme';
@@ -50,7 +44,7 @@ const getInitialTheme = () => {
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (stored === 'light' || stored === 'dark') return stored;
-  } catch (e) { /* storage unavailable (SSR/tests/private mode) -- fall through */ }
+  } catch (e) { /* storage unavailable (SSR/tests/private mode) — fall through */ }
   return 'dark';
 };
 
@@ -98,13 +92,13 @@ export default ThemeContext;
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="data_cvAssets.module_config.html">data/cvAssets.config</a></li><li><a href="module-App.html">App</a></li><li><a href="module-components_About_About.html">components/About/About</a></li><li><a href="module-components_About_CareerStrip.html">components/About/CareerStrip</a></li><li><a href="module-components_Contact_Contact.html">components/Contact/Contact</a></li><li><a href="module-components_ErrorBoundary_ErrorBoundary.html">components/ErrorBoundary/ErrorBoundary</a></li><li><a href="module-components_Hero_Hero.html">components/Hero/Hero</a></li><li><a href="module-components_Legal_Legal.html">components/Legal/Legal</a></li><li><a href="module-components_Projects_ProjectCard.html">components/Projects/ProjectCard</a></li><li><a href="module-components_Projects_ProjectSummary.html">components/Projects/ProjectSummary</a></li><li><a href="module-components_Projects_Projects.html">components/Projects/Projects</a></li><li><a href="module-components_Projects_projectsUtils.html">components/Projects/projectsUtils</a></li><li><a href="module-components_Sidebar_Sidebar.html">components/Sidebar/Sidebar</a></li><li><a href="module-components_Sidebar_SidebarMenu.html">components/Sidebar/SidebarMenu</a></li><li><a href="module-components_Sidebar_SidebarStyles.html">components/Sidebar/SidebarStyles</a></li><li><a href="module-components_Skills_Skills.html">components/Skills/Skills</a></li><li><a href="module-context_ThemeContext.html">context/ThemeContext</a></li><li><a href="module-i18n_index.html">i18n/index</a></li><li><a href="module-src___tests___App.html">src/__tests__/App</a></li><li><a href="module-src___tests___components_About.html">src/__tests__/components/About</a></li><li><a href="module-src___tests___components_Contact.html">src/__tests__/components/Contact</a></li><li><a href="module-src___tests___components_ErrorBoundary.html">src/__tests__/components/ErrorBoundary</a></li><li><a href="module-src___tests___components_Hero.html">src/__tests__/components/Hero</a></li><li><a href="module-src___tests___components_Legal.html">src/__tests__/components/Legal</a></li><li><a href="module-src___tests___components_ProjectCard.html">src/__tests__/components/ProjectCard</a></li><li><a href="module-src___tests___components_Projects.html">src/__tests__/components/Projects</a></li><li><a href="module-src___tests___components_Sidebar_Sidebar.html">src/__tests__/components/Sidebar/Sidebar</a></li><li><a href="module-src___tests___components_Sidebar_SidebarMenu.html">src/__tests__/components/Sidebar/SidebarMenu</a></li><li><a href="module-src___tests___components_Skills.html">src/__tests__/components/Skills</a></li><li><a href="module-src___tests___components_projectsUtils.html">src/__tests__/components/projectsUtils</a></li><li><a href="module-src___tests___config_jest_reactDomTestUtils.html">src/__tests__/config/jest/reactDomTestUtils</a></li><li><a href="module-src___tests___context_ThemeContext.html">src/__tests__/context/ThemeContext</a></li><li><a href="module-src___tests___i18n.html">src/__tests__/i18n</a></li><li><a href="module-src___tests___index.html">src/__tests__/index</a></li><li><a href="module-src___tests___scripts_ci_detectPipelineScope.html">src/__tests__/scripts/ci/detectPipelineScope</a></li><li><a href="module-src___tests___scripts_ci_runPipelineScope.html">src/__tests__/scripts/ci/runPipelineScope</a></li><li><a href="module-src___tests___scripts_run-eslint-dev.html">src/__tests__/scripts/run-eslint-dev</a></li><li><a href="module-src_index.html">src/index</a></li><li><a href="module-src_setupTests.html">src/setupTests</a></li><li><a href="module-styles_GlobalStyles.html">styles/GlobalStyles</a></li><li><a href="src___tests___components_Sidebar_SidebarMenu.module_i18n.html">src/__tests__/components/Sidebar/SidebarMenu.i18n</a></li></ul><h3>Global</h3><ul><li><a href="global.html#projects">projects</a></li><li><a href="global.html#skillGroups">skillGroups</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#About">About</a></li><li><a href="global.html#App">App</a></li><li><a href="global.html#CVDownloadLink">CVDownloadLink</a></li><li><a href="global.html#CVDownloadWrapper">CVDownloadWrapper</a></li><li><a href="global.html#CareerStrip">CareerStrip</a></li><li><a href="global.html#Contact">Contact</a></li><li><a href="global.html#FooterMessage">FooterMessage</a></li><li><a href="global.html#GlobalStyles">GlobalStyles</a></li><li><a href="global.html#Hero">Hero</a></li><li><a href="global.html#LanguageWrapper">LanguageWrapper</a></li><li><a href="global.html#Legal">Legal</a></li><li><a href="global.html#LegalButton">LegalButton</a></li><li><a href="global.html#Menu">Menu</a></li><li><a href="global.html#NameTitle">NameTitle</a></li><li><a href="global.html#ProjectCard">ProjectCard</a></li><li><a href="global.html#ProjectSummary">ProjectSummary</a></li><li><a href="global.html#Projects">Projects</a></li><li><a href="global.html#Sidebar">Sidebar</a></li><li><a href="global.html#SidebarContainer">SidebarContainer</a></li><li><a href="global.html#SidebarMenu">SidebarMenu</a></li><li><a href="global.html#Skills">Skills</a></li><li><a href="global.html#StyledLink">StyledLink</a></li><li><a href="global.html#ThemeContext">ThemeContext</a></li><li><a href="global.html#ThemeProvider">ThemeProvider</a></li><li><a href="global.html#convertRawToBlob">convertRawToBlob</a></li><li><a href="global.html#fetchPinnedRepositories">fetchPinnedRepositories</a></li><li><a href="global.html#generatePlaceholderSVGDataUrl">generatePlaceholderSVGDataUrl</a></li><li><a href="global.html#getAboutSection">getAboutSection</a></li><li><a href="global.html#getActiveSection">getActiveSection</a></li><li><a href="global.html#getPrimaryImage">getPrimaryImage</a></li><li><a href="global.html#getProjectImageUrl">getProjectImageUrl</a></li><li><a href="global.html#getTechnologyWords">getTechnologyWords</a></li><li><a href="global.html#projects">projects</a></li><li><a href="global.html#skillGroups">skillGroups</a></li><li><a href="global.html#useTheme">useTheme</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Mon Jul 20 2026 17:09:16 GMT+0000 (Coordinated Universal Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Fri Jul 17 2026 15:52:09 GMT+0200 (Mitteleuropäische Sommerzeit)
 </footer>
 
 <script> prettyPrint(); </script>

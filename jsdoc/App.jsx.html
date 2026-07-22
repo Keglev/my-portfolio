@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: App.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: App.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file App.js
+ * @module App
+ * @summary Root application component; composes the fixed sidebar with the
+ * scrollable main content column.
+ * @enterprise Single-page portfolio: no router, no pages/ layer -- each
+ * section (Hero/About/Skills/Projects/Contact/Legal) renders exactly once,
+ * in the order the sidebar nav expects (SidebarMenu's NAV_ITEMS ids match
+ * these section ids for react-scroll). Wraps everything in ThemeProvider so
+ * every descendant can read the active theme. "./i18n" is imported for its
+ * side effect only (i18next init) and must run before any translated
+ * component renders.
+ */
+import React from 'react';
+import './App.css';
+import Projects from './components/Projects/Projects';
+import About from './components/About/About';
+import Sidebar from './components/Sidebar/Sidebar';
+import Hero from './components/Hero/Hero';
+import Skills from './components/Skills/Skills';
+import Contact from './components/Contact/Contact';
+import { ThemeProvider } from './context/ThemeContext';
+import Legal from './components/Legal/Legal';
+import { GlobalStyles } from './styles/GlobalStyles';
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import "./i18n"; // must be imported before any translated component renders
+
+/**
+ * @returns {JSX.Element}
+ */
+function App() {
+  return (
+    &lt;ThemeProvider>
+      &lt;SpeedInsights />
+      &lt;GlobalStyles />
+      &lt;div className="container">
+        &lt;Sidebar />
+        {/* id matches the containerId prop used by react-scroll in SidebarMenu */}
+        &lt;div className="main-content" id="scroll-container">
+          &lt;div className="section" id="Hero">&lt;Hero />&lt;/div>
+          &lt;div className="section" id="About">&lt;About />&lt;/div>
+          &lt;div className="section" id="Skills">&lt;Skills />&lt;/div>
+          &lt;div className="section" id="Projects">&lt;Projects />&lt;/div>
+          &lt;div className="section" id="Contact">&lt;Contact />&lt;/div>
+          &lt;div className="section" id="Legal">&lt;Legal />&lt;/div>
+        &lt;/div>
+      &lt;/div>
+    &lt;/ThemeProvider>
+  );
+}
+
+export default App;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="data_cvAssets.module_config.html">data/cvAssets.config</a></li><li><a href="module-App.html">App</a></li><li><a href="module-components_About_About.html">components/About/About</a></li><li><a href="module-components_About_CareerStrip.html">components/About/CareerStrip</a></li><li><a href="module-components_Contact_Contact.html">components/Contact/Contact</a></li><li><a href="module-components_ErrorBoundary_ErrorBoundary.html">components/ErrorBoundary/ErrorBoundary</a></li><li><a href="module-components_Hero_Hero.html">components/Hero/Hero</a></li><li><a href="module-components_Legal_Legal.html">components/Legal/Legal</a></li><li><a href="module-components_Projects_ProjectCard.html">components/Projects/ProjectCard</a></li><li><a href="module-components_Projects_ProjectSummary.html">components/Projects/ProjectSummary</a></li><li><a href="module-components_Projects_Projects.html">components/Projects/Projects</a></li><li><a href="module-components_Projects_projectsUtils.html">components/Projects/projectsUtils</a></li><li><a href="module-components_Sidebar_Sidebar.html">components/Sidebar/Sidebar</a></li><li><a href="module-components_Sidebar_SidebarMenu.html">components/Sidebar/SidebarMenu</a></li><li><a href="module-components_Sidebar_SidebarStyles.html">components/Sidebar/SidebarStyles</a></li><li><a href="module-components_Skills_Skills.html">components/Skills/Skills</a></li><li><a href="module-context_ThemeContext.html">context/ThemeContext</a></li><li><a href="module-i18n_index.html">i18n/index</a></li><li><a href="module-src___tests___App.html">src/__tests__/App</a></li><li><a href="module-src___tests___components_About.html">src/__tests__/components/About</a></li><li><a href="module-src___tests___components_Contact.html">src/__tests__/components/Contact</a></li><li><a href="module-src___tests___components_ErrorBoundary.html">src/__tests__/components/ErrorBoundary</a></li><li><a href="module-src___tests___components_Hero.html">src/__tests__/components/Hero</a></li><li><a href="module-src___tests___components_Legal.html">src/__tests__/components/Legal</a></li><li><a href="module-src___tests___components_ProjectCard.html">src/__tests__/components/ProjectCard</a></li><li><a href="module-src___tests___components_Projects.html">src/__tests__/components/Projects</a></li><li><a href="module-src___tests___components_Sidebar_Sidebar.html">src/__tests__/components/Sidebar/Sidebar</a></li><li><a href="module-src___tests___components_Sidebar_SidebarMenu.html">src/__tests__/components/Sidebar/SidebarMenu</a></li><li><a href="module-src___tests___components_Skills.html">src/__tests__/components/Skills</a></li><li><a href="module-src___tests___components_projectsUtils.html">src/__tests__/components/projectsUtils</a></li><li><a href="module-src___tests___config_jest_reactDomTestUtils.html">src/__tests__/config/jest/reactDomTestUtils</a></li><li><a href="module-src___tests___context_ThemeContext.html">src/__tests__/context/ThemeContext</a></li><li><a href="module-src___tests___i18n.html">src/__tests__/i18n</a></li><li><a href="module-src___tests___index.html">src/__tests__/index</a></li><li><a href="module-src___tests___scripts_ci_detectPipelineScope.html">src/__tests__/scripts/ci/detectPipelineScope</a></li><li><a href="module-src___tests___scripts_ci_runPipelineScope.html">src/__tests__/scripts/ci/runPipelineScope</a></li><li><a href="module-src___tests___scripts_run-eslint-dev.html">src/__tests__/scripts/run-eslint-dev</a></li><li><a href="module-src_index.html">src/index</a></li><li><a href="module-styles_GlobalStyles.html">styles/GlobalStyles</a></li><li><a href="src___tests___components_Sidebar_SidebarMenu.module_i18n.html">src/__tests__/components/Sidebar/SidebarMenu.i18n</a></li></ul><h3>Global</h3><ul><li><a href="global.html#projects">projects</a></li><li><a href="global.html#skillGroups">skillGroups</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 22 2026 09:46:26 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
