@@ -47,13 +47,17 @@
       <div class="site-header__spacer"></div>
       <nav aria-label="Docs navigation">
         <ul class="site-header__nav">
-          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+          <!-- No trailing arrow glyph: U+2197 has an emoji presentation form and
+               renders in colour on some platforms, which the zero-emoji rule for
+               docs output excludes. target/rel already carry the "opens elsewhere"
+               semantics for assistive tech. -->
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub</a></li>
         </ul>
       </nav>
       <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
       <span class="lang-switch">
-        <a href="index.html" aria-current="true">EN</a>
-        <a href="index-de.html">DE</a>
+        <a href="../../index.html" aria-current="true">EN</a>
+        <a href="../../index-de.html">DE</a>
       </span>
       <button class="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle light or dark theme">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -104,7 +108,7 @@
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="status">Status</h2>
-<p>Accepted — topology since evolved to four workflows with parallel docs dispatch; see <a href="#update-2026-07-17">Update</a> below. This section describes the original decision as made and is left unedited.</p>
+<p>Accepted — topology since evolved to four workflows with parallel docs dispatch; see <a href="#update-2026-07-17">Update</a> below. The site this workflow publishes was later renamed from &quot;API docs&quot; to the Code Reference, and its dispatch input from <code>apiDocs</code> to <code>codeRef</code> — see <a href="ADR-008-code-reference.html">ADR-008</a>. This section describes the original decision as made and is left unedited.</p>
 <h2 id="context">Context</h2>
 <p>An initial single-workflow approach covering lint, test, build, fetch, and
 deploy became difficult to maintain. It also caused unnecessary full re-runs

@@ -47,7 +47,11 @@
       <div class="site-header__spacer"></div>
       <nav aria-label="Docs navigation">
         <ul class="site-header__nav">
-          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+          <!-- No trailing arrow glyph: U+2197 has an emoji presentation form and
+               renders in colour on some platforms, which the zero-emoji rule for
+               docs output excludes. target/rel already carry the "opens elsewhere"
+               semantics for assistive tech. -->
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub</a></li>
         </ul>
       </nav>
       <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
@@ -95,8 +99,8 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>API Docs</td>
-<td>Auto-generated JSDoc reference from source</td>
+<td>Code Reference</td>
+<td>Generated reference for every source module, built from the JSDoc comments in <code>src/</code></td>
 <td><a href="/my-portfolio/jsdoc/index.html">jsdoc/index.html</a></td>
 </tr>
 <tr>
@@ -105,24 +109,29 @@
 <td><a href="https://keglev.github.io/my-portfolio/coverage/index.html">coverage/index.html</a></td>
 </tr>
 <tr>
+<td>Architecture</td>
+<td>arc42 architecture documentation (chapters 01-12)</td>
+<td><a href="architecture/index.html">architecture/index.md</a></td>
+</tr>
+<tr>
+<td>Decisions (ADRs)</td>
+<td>Architecture decision records, including the Vite and test-runner migrations</td>
+<td><a href="architecture/09-decisions/index.html">architecture/09-decisions/index.md</a></td>
+</tr>
+<tr>
 <td>Deployment</td>
 <td>Vercel configuration, environment variables, and build process</td>
-<td><a href="architecture/07b-deployment-configuration.html">DEPLOY.md</a></td>
+<td><a href="architecture/07b-deployment-configuration.html">architecture/07b-deployment-configuration.md</a></td>
 </tr>
 <tr>
 <td>Deploy data flow</td>
 <td>How data moves through the build pipeline to Vercel and GitHub Pages</td>
-<td><a href="architecture/03-context.html">deploy/data-flow.md</a></td>
+<td><a href="architecture/03-context.html">architecture/03-context.md</a></td>
 </tr>
 <tr>
 <td>Tests</td>
-<td>Test strategy, runners, coverage thresholds, and how to run locally</td>
-<td><a href="architecture/08c-concepts-testing.html">TESTS.md</a></td>
-</tr>
-<tr>
-<td>Architecture</td>
-<td>arc42 architecture documentation (chapters 01-12)</td>
-<td><a href="architecture/index.html">architecture/index.md</a></td>
+<td>Test strategy, runner, coverage thresholds, and how to run locally</td>
+<td><a href="architecture/08c-concepts-testing.html">architecture/08c-concepts-testing.md</a></td>
 </tr>
 <tr>
 <td>Pipeline topology</td>

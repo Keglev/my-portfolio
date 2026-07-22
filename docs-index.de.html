@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
-  <title>Quality Requirements — my-portfolio docs</title>
+  <title>Dokumentationsindex — my-portfolio docs</title>
 
   <!-- Set the theme before paint to avoid a flash. Dark is the fallback
        default, mirroring src/context/ThemeContext.js's own no-storage
@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <!-- Path adjusted at build time for pages nested below docs/ root (see adjustTemplate in scripts/docs/lib/renderPages.js) -->
-  <link rel="stylesheet" href="../_theme/css/styles.css" />
+  <link rel="stylesheet" href="_theme/css/styles.css" />
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -41,7 +41,7 @@
       <a class="site-header__title" href="https://keglev.github.io/">Portfolio</a>
       <span class="site-header__sep">/</span>
       <!-- href adjusted at build time for subdirectory pages -->
-      <a class="site-header__title" href="../index.html">my-portfolio</a>
+      <a class="site-header__title" href="index.html">my-portfolio</a>
       <span class="site-header__sep">/</span>
       <span class="site-header__section">Docs</span>
       <div class="site-header__spacer"></div>
@@ -56,8 +56,8 @@
       </nav>
       <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
       <span class="lang-switch">
-        <a href="../index.html" aria-current="true">EN</a>
-        <a href="../index-de.html">DE</a>
+        <a href="index.html" aria-current="true">EN</a>
+        <a href="index-de.html">DE</a>
       </span>
       <button class="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle light or dark theme">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -82,90 +82,88 @@
       <!-- Replaced at build time by tocBuilder.buildToc() (see
            scripts/docs/lib/tocBuilder.js); empty string when the page
            has fewer than two headings -->
-      <ul class="doc-toc__list">
-  <li><a href="#table-of-contents">Table of Contents</a></li>
-  <li><a href="#quality-tree">Quality Tree</a></li>
-  <li><a href="#quality-scenarios">Quality Scenarios</a></li>
-  <li class="toc-h3"><a href="#performance">Performance</a></li>
-  <li class="toc-h3"><a href="#reliability">Reliability</a></li>
-  <li class="toc-h3"><a href="#internationalisation">Internationalisation</a></li>
-  <li class="toc-h3"><a href="#accessibility">Accessibility</a></li>
-  <li class="toc-h3"><a href="#maintainability">Maintainability</a></li>
-  <li><a href="#references">References</a></li>
-</ul>
+      
     </aside>
 
     <article class="article">
       <!-- Replaced at build time by renderPages.convertMd() (see
            scripts/docs/lib/renderPages.js) -->
-      <h1 id="quality-requirements">Quality Requirements</h1>
-<p><a href="index.html">← Architecture index</a></p>
-<p>The quality tree and concrete scenarios behind this architecture&#39;s decisions. Where <a href="04-solution-strategy.html">Solution Strategy</a> says <em>what</em> was chosen, this chapter says <em>what quality it was chosen for</em> and how to check it holds.</p>
-<h2 id="table-of-contents">Table of Contents</h2>
-<ul>
-<li><a href="#quality-tree">Quality Tree</a></li>
-<li><a href="#quality-scenarios">Quality Scenarios</a></li>
-<li><a href="#references">References</a></li>
-</ul>
-<h2 id="quality-tree">Quality Tree</h2>
+      <h1 id="dokumentationsindex">Dokumentationsindex</h1>
+<p>Ein persönliches Portfolio, gebaut mit React und Vite, gestaltet mit styled-components, übersetzt mit i18next und navigiert mit react-scroll — bereitgestellt auf Vercel (Live-Seite) und GitHub Pages (generierte Dokumentation und Testabdeckung).</p>
+<p>Die meisten verlinkten Seiten sind nur auf Englisch verfügbar; auf solchen Seiten ist die Schaltfläche DE oben deaktiviert. Übersetzt sind die Startseite, dieser Index und arc42-Kapitel 01.</p>
 <table>
 <thead>
 <tr>
-<th>Quality goal</th>
-<th>Sub-aspects</th>
+<th>Bereich</th>
+<th>Beschreibung</th>
+<th>Link</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>Performance</td>
-<td>No runtime API dependency; CDN-served static assets; Core Web Vitals monitored</td>
+<td>Code-Referenz</td>
+<td>Generierte Referenz aller Quellmodule, erzeugt aus den JSDoc-Kommentaren in <code>src/</code> (EN)</td>
+<td><a href="/my-portfolio/jsdoc/index.html">jsdoc/index.html</a></td>
 </tr>
 <tr>
-<td>Reliability</td>
-<td>Render-error containment; CI gates every deploy on tests and lint</td>
+<td>Testabdeckung</td>
+<td>Istanbul/Vitest-HTML-Bericht (EN)</td>
+<td><a href="https://keglev.github.io/my-portfolio/coverage/index.html">coverage/index.html</a></td>
 </tr>
 <tr>
-<td>Internationalisation</td>
-<td>Full EN/DE coverage; no hardcoded UI text</td>
+<td>Architektur</td>
+<td>arc42-Architekturdokumentation, Kapitel 01-12 (EN)</td>
+<td><a href="architecture/index.html">architecture/index.md</a></td>
 </tr>
 <tr>
-<td>Accessibility</td>
-<td>Semantic HTML; keyboard navigation; labeled icon-only controls</td>
+<td>Architektur — Kapitel 01</td>
+<td>Einführung und Ziele, auf Deutsch</td>
+<td><a href="architecture/01-introduction-and-goals.de.html">architecture/01-introduction-and-goals.de.md</a></td>
 </tr>
 <tr>
-<td>Maintainability</td>
-<td>Decision history preserved (ADRs); generated docs stay current with the code</td>
+<td>Entscheidungen (ADRs)</td>
+<td>Architekturentscheidungen, einschließlich Vite- und Test-Runner-Migration (EN)</td>
+<td><a href="architecture/09-decisions/index.html">architecture/09-decisions/index.md</a></td>
+</tr>
+<tr>
+<td>Deployment</td>
+<td>Vercel-Konfiguration, Umgebungsvariablen und Build-Prozess (EN)</td>
+<td><a href="architecture/07b-deployment-configuration.html">architecture/07b-deployment-configuration.md</a></td>
+</tr>
+<tr>
+<td>Deploy-Datenfluss</td>
+<td>Wie Daten durch die Build-Pipeline zu Vercel und GitHub Pages fließen (EN)</td>
+<td><a href="architecture/03-context.html">architecture/03-context.md</a></td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>Teststrategie, Runner, Abdeckungsschwellen und lokale Ausführung (EN)</td>
+<td><a href="architecture/08c-concepts-testing.html">architecture/08c-concepts-testing.md</a></td>
+</tr>
+<tr>
+<td>Pipeline-Topologie</td>
+<td>CI/CD-Workflow-Karte, Concurrency-Gruppen und Verifikationsergebnisse (EN)</td>
+<td><a href="architecture/07-deployment.html">architecture/07-deployment.md</a></td>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>Styling- und Lokalisierungsleitfäden (EN)</td>
+<td><a href="architecture/08b-concepts-i18n-theming.html">architecture/08b-concepts-i18n-theming.md</a></td>
+</tr>
+<tr>
+<td>Skripte</td>
+<td>Referenz für Build- und Qualitätsprüfungs-Tooling (EN)</td>
+<td><a href="architecture/08d-concepts-build-tooling.html">architecture/08d-concepts-build-tooling.md</a></td>
+</tr>
+<tr>
+<td>Vorlagen</td>
+<td>Leere Vorlagen für ADRs, Komponentendokumentation und Testpläne (EN)</td>
+<td><a href="templates/index.html">templates/index.md</a></td>
 </tr>
 </tbody></table>
-<h2 id="quality-scenarios">Quality Scenarios</h2>
-<p>Each scenario follows a stimulus → response format: something happens, and the architecture responds in a specific, checkable way.</p>
-<h3 id="performance">Performance</h3>
+<h2 id="verweise">Verweise</h2>
 <ul>
-<li><strong>Scenario</strong>: A visitor loads the live site. <strong>Response</strong>: Project data is read from static JSON bundled at build time — no GitHub API call happens in the browser, so the page has no external data dependency to wait on. Vercel Speed Insights records Core Web Vitals for every real visit, with no cookie consent required. See <a href="09-decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a>.</li>
-</ul>
-<h3 id="reliability">Reliability</h3>
-<ul>
-<li><strong>Scenario</strong>: A component throws during render. <strong>Response</strong>: <code>ErrorBoundary</code>, wrapping the entire React tree, catches it and shows a fallback UI instead of a blank page.</li>
-<li><strong>Scenario</strong>: A pull request has a failing test or lint error. <strong>Response</strong>: CI blocks the merge — no deploy can reach <code>main</code> with a known-broken build. See <a href="07-deployment.html">Deployment</a>.</li>
-</ul>
-<h3 id="internationalisation">Internationalisation</h3>
-<ul>
-<li><strong>Scenario</strong>: A visitor switches language. <strong>Response</strong>: Every visible string re-renders in the selected locale — there are no hardcoded UI strings outside i18next&#39;s locale JSON files, so no partial-translation state is reachable. See <a href="08b-concepts-i18n-theming.html">i18n &amp; Theming</a>.</li>
-</ul>
-<h3 id="accessibility">Accessibility</h3>
-<ul>
-<li><strong>Scenario</strong>: A keyboard-only visitor navigates the site. <strong>Response</strong>: All sections are reachable via the sidebar without a mouse, and icon-only buttons (theme toggle, social links) carry <code>aria-label</code>s so a screen reader announces their purpose.</li>
-</ul>
-<h3 id="maintainability">Maintainability</h3>
-<ul>
-<li><strong>Scenario</strong>: A future maintainer (possibly the current one, months later) needs to know why a technical choice was made. <strong>Response</strong>: The choice has an ADR under <a href="09-decisions/index.html">chapter 09</a> recording its context and consequences, not just its outcome.</li>
-<li><strong>Scenario</strong>: A change lands on <code>main</code>. <strong>Response</strong>: The generated Code Reference and, where in scope, the coverage report are republished to GitHub Pages automatically — the deployed docs never drift far from the code they describe.</li>
-<li><strong>Scenario</strong>: A change lowers a module&#39;s test coverage. <strong>Response</strong>: CI fails. A minimum of <strong>85% statements, branches, functions, and lines is enforced per file</strong>, not as a project aggregate — an aggregate lets a well-covered module mask an untested one. A short, individually justified exception list is encoded in <code>vite.config.js</code>, where each entry names the specific uncovered mechanism and what covering it would cost. See <a href="08c-concepts-testing.html">Testing</a>.</li>
-</ul>
-<h2 id="references">References</h2>
-<ul>
-<li><a href="01-introduction-and-goals.html">01-introduction-and-goals.md</a> — where these quality goals were first identified</li>
-<li><a href="08c-concepts-testing.html">Testing</a> — how reliability and maintainability scenarios are actually checked</li>
-<li><a href="11-risks-technical-debt.html">Risks and Technical Debt</a> — known risks and deferred work tracked against this architecture</li>
+<li><a href="https://github.com/Keglev/my-portfolio">GitHub-Repository — Keglev/my-portfolio</a></li>
+<li><a href="https://keglev.github.io/my-portfolio/">Live-Dokumentation — GitHub Pages</a></li>
 </ul>
 
     </article>
@@ -266,7 +264,7 @@
   </footer>
 
   <!-- Theme toggle, active-link marking, and the EN/DE language switch (see docs/_theme/js/docs.js). Path adjusted at build time like the stylesheet link above. -->
-  <script src="../_theme/js/docs.js"></script>
+  <script src="_theme/js/docs.js"></script>
 
 </body>
 </html>

@@ -47,13 +47,17 @@
       <div class="site-header__spacer"></div>
       <nav aria-label="Docs navigation">
         <ul class="site-header__nav">
-          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+          <!-- No trailing arrow glyph: U+2197 has an emoji presentation form and
+               renders in colour on some platforms, which the zero-emoji rule for
+               docs output excludes. target/rel already carry the "opens elsewhere"
+               semantics for assistive tech. -->
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub</a></li>
         </ul>
       </nav>
       <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
       <span class="lang-switch">
-        <a href="index.html" aria-current="true">EN</a>
-        <a href="index-de.html">DE</a>
+        <a href="../index.html" aria-current="true">EN</a>
+        <a href="../index-de.html">DE</a>
       </span>
       <button class="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle light or dark theme">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -161,7 +165,7 @@
     MarkdownDocs[&quot;docs/*.md\n(authored documentation)&quot;]
     BuildDocs[&quot;scripts/docs/build_docs.js\n(Markdown → HTML via templates)&quot;]
     SrcCode[&quot;src/\n(JSDoc comments in source)&quot;]
-    JSDocOutput[&quot;docs/jsdoc/\n(generated API reference)&quot;]
+    JSDocOutput[&quot;docs/jsdoc/\n(generated Code Reference)&quot;]
     GHPages[&quot;GitHub Pages\nkeglev.github.io/my-portfolio&quot;]
 
     CIJob --&gt;|&quot;actions/upload-artifact&quot;| CoverageArtifact
@@ -169,7 +173,7 @@
     MarkdownDocs --&gt;|&quot;converted to HTML&quot;| BuildDocs
     BuildDocs --&gt;|&quot;docs/*.html&quot;| GHPages
     SrcCode --&gt;|&quot;npm run docs:jsdoc&quot;| JSDocOutput
-    JSDocOutput --&gt;|&quot;published with docs/&quot;| GHPages
+    JSDocOutput --&gt;|&quot;published by api-docs.yml&quot;| GHPages
 
     class CIJob,MarkdownDocs,SrcCode l1
     class CoverageArtifact,BuildDocs,JSDocOutput l2
@@ -179,7 +183,7 @@
     classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
     classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
 </pre></div>
-<p>The right side of this diagram is split across two workflows. <code>api-docs.yml</code> handles the coverage and JSDoc branches — it is dispatched by <code>ci.yml</code> in parallel with <code>deploy.yml</code> (not after it), and only when the changed files could affect the API surface or test coverage. <code>architecture-docs.yml</code> handles the Markdown-to-HTML branch — it triggers directly on pushes to <code>docs/**</code> or <code>scripts/docs/**</code>, independently of the deploy chain, which lets small documentation edits publish without running the full pipeline.</p>
+<p>The right side of this diagram is split across two workflows. <code>api-docs.yml</code> handles the coverage and Code Reference branches — it is dispatched by <code>ci.yml</code> in parallel with <code>deploy.yml</code> (not after it), and only when the changed files could affect the API surface or test coverage. <code>architecture-docs.yml</code> handles the Markdown-to-HTML branch — it triggers directly on pushes to <code>docs/**</code> or <code>scripts/docs/**</code>, independently of the deploy chain, which lets small documentation edits publish without running the full pipeline.</p>
 <h2 id="technical-context-artifact-summary">Technical Context: Artifact Summary</h2>
 <p>The table below lists every intermediate and final artifact produced by the deployment system, where it originates, and where it lands.</p>
 <table>
@@ -219,7 +223,7 @@
 <td><code>docs/*.html</code></td>
 <td><code>scripts/docs/build_docs.js</code></td>
 <td>architecture-docs.yml</td>
-<td>Published to <code>gh-pages</code> branch (staged copy excluding <code>jsdoc/</code> and <code>coverage/</code>)</td>
+<td>Published to <code>gh-pages</code> branch (staged copy excluding <code>coverage/</code>)</td>
 </tr>
 <tr>
 <td><code>docs/_theme/css/styles.css</code></td>

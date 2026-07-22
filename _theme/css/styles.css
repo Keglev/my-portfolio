@@ -621,10 +621,26 @@ button:focus-visible {
 /* Snap back to resting position on press */
 .card:active { transform: translateY(0); }
 
-.card__icon {
-  font-size: 1.375rem;
-  line-height: 1;
-  margin-bottom: 0.125rem;
+/* Cards carry no icon. The emoji icons this rule used to size are gone (no
+   color emoji anywhere in docs output), and the reference theme's landing
+   uses a text tag rather than an icon -- so "none" was taken over authoring
+   a monochrome SVG set.
+
+   .card__tag replaces the one icon that carried meaning rather than
+   decoration: the German card's flag. Four of the six cards are two EN/DE
+   pairs with near-identical titles, so the language marker has to be
+   visible before the description is read. Text, not a flag -- a flag stands
+   for a country, and the marker is about a language. */
+.card__tag {
+  align-self: flex-start;
+  padding: 0.125rem 0.4rem;
+  border-radius: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: .04em;
+  color: var(--muted);
 }
 
 .card__title {

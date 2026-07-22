@@ -47,13 +47,17 @@
       <div class="site-header__spacer"></div>
       <nav aria-label="Docs navigation">
         <ul class="site-header__nav">
-          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+          <!-- No trailing arrow glyph: U+2197 has an emoji presentation form and
+               renders in colour on some platforms, which the zero-emoji rule for
+               docs output excludes. target/rel already carry the "opens elsewhere"
+               semantics for assistive tech. -->
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub</a></li>
         </ul>
       </nav>
       <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
       <span class="lang-switch">
-        <a href="index.html" aria-current="true">EN</a>
-        <a href="index-de.html">DE</a>
+        <a href="../index.html" aria-current="true">EN</a>
+        <a href="../index-de.html">DE</a>
       </span>
       <button class="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle light or dark theme">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -120,15 +124,19 @@
 </tr>
 <tr>
 <td>gh-pages</td>
-<td>The git branch GitHub Pages serves static content from — the deploy target for this documentation site, JSDoc output, and coverage reports.</td>
+<td>The git branch GitHub Pages serves static content from — the deploy target for this documentation site, the Code Reference, and coverage reports.</td>
 </tr>
 <tr>
 <td>i18next namespace</td>
 <td>A named group of translation keys; this app uses a single <code>translation</code> namespace, so no prefix is needed when calling <code>t()</code>. See <a href="08b-concepts-i18n-theming.html">i18n &amp; Theming</a>.</td>
 </tr>
 <tr>
+<td>Code Reference</td>
+<td>The generated HTML reference for every module under <code>src/</code>, built by JSDoc and published to <code>docs/jsdoc/</code>. Named for what it is: this app exposes no API of its own, so &quot;API docs&quot; described the generator rather than the content (ADR-008).</td>
+</tr>
+<tr>
 <td>JSDoc</td>
-<td>A documentation-comment convention for JavaScript, and the tool that generates HTML API reference from those comments — published to <code>docs/jsdoc/</code>.</td>
+<td>A documentation-comment convention for JavaScript, and the tool that generates the Code Reference from those comments.</td>
 </tr>
 <tr>
 <td>Mermaid</td>

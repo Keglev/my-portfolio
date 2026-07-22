@@ -45,7 +45,7 @@ flowchart TD
     MarkdownDocs["docs/*.md\n(authored documentation)"]
     BuildDocs["scripts/docs/build_docs.js\n(Markdown → HTML via templates)"]
     SrcCode["src/\n(JSDoc comments in source)"]
-    JSDocOutput["docs/jsdoc/\n(generated API reference)"]
+    JSDocOutput["docs/jsdoc/\n(generated Code Reference)"]
     GHPages["GitHub Pages\nkeglev.github.io/my-portfolio"]
 
     CIJob -->|"actions/upload-artifact"| CoverageArtifact
@@ -53,7 +53,7 @@ flowchart TD
     MarkdownDocs -->|"converted to HTML"| BuildDocs
     BuildDocs -->|"docs/*.html"| GHPages
     SrcCode -->|"npm run docs:jsdoc"| JSDocOutput
-    JSDocOutput -->|"published with docs/"| GHPages
+    JSDocOutput -->|"published by api-docs.yml"| GHPages
 
     class CIJob,MarkdownDocs,SrcCode l1
     class CoverageArtifact,BuildDocs,JSDocOutput l2
@@ -64,7 +64,7 @@ flowchart TD
     classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
 ```
 
-The right side of this diagram is split across two workflows. `api-docs.yml` handles the coverage and JSDoc branches — it is dispatched by `ci.yml` in parallel with `deploy.yml` (not after it), and only when the changed files could affect the API surface or test coverage. `architecture-docs.yml` handles the Markdown-to-HTML branch — it triggers directly on pushes to `docs/**` or `scripts/docs/**`, independently of the deploy chain, which lets small documentation edits publish without running the full pipeline.
+The right side of this diagram is split across two workflows. `api-docs.yml` handles the coverage and Code Reference branches — it is dispatched by `ci.yml` in parallel with `deploy.yml` (not after it), and only when the changed files could affect the API surface or test coverage. `architecture-docs.yml` handles the Markdown-to-HTML branch — it triggers directly on pushes to `docs/**` or `scripts/docs/**`, independently of the deploy chain, which lets small documentation edits publish without running the full pipeline.
 
 ## Technical Context: Artifact Summary
 
@@ -76,7 +76,7 @@ The table below lists every intermediate and final artifact produced by the depl
 | `.vercel/output/static/` | `scripts/prepareVercelOutput.sh` | Pre-deploy | Deployed to Vercel CDN |
 | `coverage/` | Vitest (`npm run test:coverage` in CI) | CI | Uploaded as `coverage-report` artifact; later downloaded into `docs/coverage/` by api-docs.yml |
 | `docs/jsdoc/` | `npm run docs:jsdoc` (JSDoc) | api-docs.yml | Published to `gh-pages` under `destination_dir: jsdoc` |
-| `docs/*.html` | `scripts/docs/build_docs.js` | architecture-docs.yml | Published to `gh-pages` branch (staged copy excluding `jsdoc/` and `coverage/`) |
+| `docs/*.html` | `scripts/docs/build_docs.js` | architecture-docs.yml | Published to `gh-pages` branch (staged copy excluding `coverage/`) |
 | `docs/_theme/css/styles.css` | `scripts/docs/build_docs.js` (concatenated from `docs/_theme/css/*.css`) | architecture-docs.yml | Published to `gh-pages` branch alongside `docs/*.html` |
 
 ## References

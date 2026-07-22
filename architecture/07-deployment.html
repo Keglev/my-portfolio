@@ -47,13 +47,17 @@
       <div class="site-header__spacer"></div>
       <nav aria-label="Docs navigation">
         <ul class="site-header__nav">
-          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+          <!-- No trailing arrow glyph: U+2197 has an emoji presentation form and
+               renders in colour on some platforms, which the zero-emoji rule for
+               docs output excludes. target/rel already carry the "opens elsewhere"
+               semantics for assistive tech. -->
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub</a></li>
         </ul>
       </nav>
       <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->
       <span class="lang-switch">
-        <a href="index.html" aria-current="true">EN</a>
-        <a href="index-de.html">DE</a>
+        <a href="../index.html" aria-current="true">EN</a>
+        <a href="../index-de.html">DE</a>
       </span>
       <button class="theme-toggle" aria-label="Toggle light or dark theme" title="Toggle light or dark theme">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -128,7 +132,7 @@
     end
 
     subgraph AD[&quot;api-docs.yml&quot;]
-        JSDoc[&quot;Generate JSDoc\n(if apiDocs)&quot;]
+        JSDoc[&quot;Generate Code Reference\n(if codeRef)&quot;]
         Coverage[&quot;Download coverage artifact\n(if coverage)&quot;]
         GHPagesAPI[&quot;Publish jsdoc/, coverage/\nto gh-pages&quot;]
         JSDoc --&gt; GHPagesAPI
@@ -146,7 +150,7 @@
 
     Push --&gt; Lint
     Scope --&gt;|&quot;workflow_dispatch, always&quot;| BuildReact
-    Scope --&gt;|&quot;workflow_dispatch, if apiDocs||coverage&quot;| JSDoc
+    Scope --&gt;|&quot;workflow_dispatch, if codeRef||coverage&quot;| JSDoc
     DocsPush --&gt; Templates
 
     class Push,DocsPush l1
@@ -180,13 +184,13 @@
 </tr>
 <tr>
 <td><code>.github/workflows/api-docs.yml</code></td>
-<td>Dispatched by <code>ci.yml</code> with <code>apiDocs</code>/<code>coverage</code> inputs; manual <code>workflow_dispatch</code> (defaults both inputs to true)</td>
-<td>Generate JSDoc (if <code>apiDocs</code>), download the coverage artifact from the latest CI run and publish it (if <code>coverage</code>); publishes <code>jsdoc/</code> and <code>coverage/</code> to <code>gh-pages</code> via separate <code>destination_dir</code> scoped steps</td>
+<td>Dispatched by <code>ci.yml</code> with <code>codeRef</code>/<code>coverage</code> inputs; manual <code>workflow_dispatch</code> (defaults both inputs to true)</td>
+<td>Generate the Code Reference (if <code>codeRef</code>), download the coverage artifact from the latest CI run and publish it (if <code>coverage</code>), inject the back-to-docs link into both reports; publishes <code>jsdoc/</code> and <code>coverage/</code> to <code>gh-pages</code> via separate <code>destination_dir</code> scoped steps</td>
 </tr>
 <tr>
 <td><code>.github/workflows/architecture-docs.yml</code></td>
 <td>Push to <code>docs/**</code> or <code>scripts/docs/**</code>; manual <code>workflow_dispatch</code></td>
-<td>Apply HTML templates to Markdown, pre-render Mermaid diagrams, publish a staged copy of <code>docs/</code> (excluding <code>jsdoc/</code> and <code>coverage/</code>) to <code>gh-pages</code></td>
+<td>Apply HTML templates to Markdown, pre-render Mermaid diagrams, publish a staged copy of <code>docs/</code> (excluding <code>coverage/</code>) to <code>gh-pages</code></td>
 </tr>
 <tr>
 <td><code>.github/actions/node-setup/</code></td>
@@ -207,9 +211,9 @@
 <p>Job <code>start-deploy-stage</code> (push to <code>main</code> only; skipped on pull requests):</p>
 <ol>
 <li>Checkout with <code>fetch-depth: 0</code> (full history, required to diff <code>before</code>..<code>sha</code>)</li>
-<li>Run <code>scripts/ci/runPipelineScope.js &quot;$before&quot; &quot;$sha&quot;</code> — resolves <code>apiDocs</code>/<code>coverage</code>/<code>archDocs</code>/<code>deploy</code> flags from the changed-file list. If the diff range can&#39;t be resolved (new branch, force-push), every flag defaults to <code>true</code> rather than skipping work.</li>
+<li>Run <code>scripts/ci/runPipelineScope.js &quot;$before&quot; &quot;$sha&quot;</code> — resolves <code>codeRef</code>/<code>coverage</code>/<code>archDocs</code>/<code>deploy</code> flags from the changed-file list. If the diff range can&#39;t be resolved (new branch, force-push), every flag defaults to <code>true</code> rather than skipping work.</li>
 <li>Dispatch <code>deploy.yml</code> unconditionally</li>
-<li>Dispatch <code>api-docs.yml</code> (with <code>apiDocs</code>/<code>coverage</code> inputs) only when at least one of those flags is <code>true</code> — dispatched immediately after step 3, not waiting for <code>deploy.yml</code> to finish, so build/deploy and docs generation run in parallel</li>
+<li>Dispatch <code>api-docs.yml</code> (with <code>codeRef</code>/<code>coverage</code> inputs) only when at least one of those flags is <code>true</code> — dispatched immediately after step 3, not waiting for <code>deploy.yml</code> to finish, so build/deploy and docs generation run in parallel</li>
 </ol>
 <h3 id="deployyml">deploy.yml</h3>
 <ol>
@@ -223,10 +227,10 @@
 <h3 id="api-docsyml">api-docs.yml</h3>
 <ol>
 <li>Checkout and <code>node-setup</code></li>
-<li>Generate JSDoc API docs with <code>npm run docs:jsdoc</code> (skipped if <code>apiDocs</code> input is <code>false</code>)</li>
+<li>Generate the Code Reference with <code>npm run docs:jsdoc</code> (skipped if the <code>codeRef</code> input is <code>false</code>)</li>
 <li>Locate the latest successful <code>ci.yml</code> run via the <code>gh</code> CLI (skipped if <code>coverage</code> input is <code>false</code>)</li>
 <li>Download the <code>coverage-report</code> artifact from that run into <code>docs/coverage/</code></li>
-<li>Publish <code>docs/jsdoc/</code> to <code>gh-pages</code> under <code>destination_dir: jsdoc</code> (skipped if <code>apiDocs</code> is <code>false</code>)</li>
+<li>Publish <code>docs/jsdoc/</code> to <code>gh-pages</code> under <code>destination_dir: jsdoc</code> (skipped if <code>codeRef</code> is <code>false</code>)</li>
 <li>Publish <code>docs/coverage/</code> to <code>gh-pages</code> under <code>destination_dir: coverage</code> (skipped if <code>coverage</code> is <code>false</code>)</li>
 <li>Smoke-test <code>https://keglev.github.io/my-portfolio/jsdoc/index.html</code> (warning-only)</li>
 </ol>
@@ -235,7 +239,7 @@
 <li>Checkout and <code>node-setup</code></li>
 <li>Apply doc templates via <code>scripts/docs/build_docs.js</code></li>
 <li>Pre-render Mermaid diagrams via <code>scripts/docs/build_mermaid.js</code>; falls back to CDN client-side rendering when <code>mmdc</code> is not installed</li>
-<li>Stage <code>docs/</code> into a temp directory excluding <code>jsdoc/</code> and <code>coverage/</code> (those are api-docs.yml&#39;s territory; <code>docs/jsdoc/*.html</code> is also git-tracked on <code>main</code> as legacy generated output, so publishing <code>./docs</code> unfiltered would overwrite api-docs.yml&#39;s fresher <code>gh-pages/jsdoc/</code> with stale committed snapshots)</li>
+<li>Stage <code>docs/</code> into a temp directory excluding <code>coverage/</code> (api-docs.yml&#39;s territory). The <code>jsdoc/</code> exclusion that stood beside it is retired: <code>docs/jsdoc/*.html</code> used to be git-tracked, so publishing <code>./docs</code> unfiltered would have overwritten api-docs.yml&#39;s fresher <code>gh-pages/jsdoc/</code> with stale committed snapshots — those files are now deleted and gitignored (ADR-008)</li>
 <li>Deploy the staged copy to the <code>gh-pages</code> branch via <code>peaceiris/actions-gh-pages@v4</code> with <code>keep_files: true</code></li>
 <li>Smoke-test <code>https://keglev.github.io/my-portfolio</code> (warning-only)</li>
 </ol>
@@ -293,7 +297,7 @@
 <tr>
 <td>2</td>
 <td>test-only push</td>
-<td><code>deploy.yml</code> + coverage publish; JSDoc rebuild skipped; <code>architecture-docs.yml</code> skipped</td>
+<td><code>deploy.yml</code> + coverage publish; Code Reference rebuild skipped; <code>architecture-docs.yml</code> skipped</td>
 <td>Pass</td>
 </tr>
 <tr>
