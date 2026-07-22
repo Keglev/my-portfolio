@@ -78,7 +78,11 @@
       <!-- Replaced at build time by tocBuilder.buildToc() (see
            scripts/docs/lib/tocBuilder.js); empty string when the page
            has fewer than two headings -->
-      
+      <ul class="doc-toc__list">
+  <li><a href="#open">Open</a></li>
+  <li class="toc-h3"><a href="#cb-p10-01-partition-completeness-meta-test-for-coverage-globs">CB-P10-01 — partition-completeness meta-test for coverage globs</a></li>
+  <li><a href="#closed">Closed</a></li>
+</ul>
     </aside>
 
     <article class="article">
@@ -90,8 +94,30 @@
 source. Open items keep their marker at the site; only closed IDs are
 purged from both the marker and this list.</p>
 <h2 id="open">Open</h2>
-<p>None.</p>
-<p>The most recent entry, <strong>CB-P8-01</strong> (verify the <code>global.React</code> polyfill&#39;s
+<h3 id="cb-p10-01-partition-completeness-meta-test-for-coverage-globs">CB-P10-01 — partition-completeness meta-test for coverage globs</h3>
+<p><strong>Site:</strong> <code>vite.config.js</code>, the <code>test.coverage.thresholds</code> block.</p>
+<p><strong>Context:</strong> coverage thresholds are enforced per file through ten glob
+groups rather than a project-wide setting, because Vitest applies a
+top-level threshold to <em>every</em> file even when a glob entry also matches it —
+which makes documented exceptions unreachable. The groups therefore have to
+partition the measured tree between them.</p>
+<p>Nothing currently enforces that partition. A source file matching none of
+the ten globs is silently ungated, and a glob matching no files passes
+silently while gating nothing. Both failure modes are invisible in a green
+run: during P10-C step 3 the config passed cleanly at a point when four of
+the ten groups were, in fact, enforcing nothing. That was caught only by
+replicating Vitest&#39;s matcher by hand.</p>
+<p><strong>Proposed fix:</strong> a test that reads the threshold globs and the set of
+measured files, then asserts every file matches exactly one group and every
+group matches at least one file.</p>
+<p><strong>Why deferred:</strong> the test needs the list of measured files, which only
+exists after a coverage run has written <code>coverage/coverage-summary.json</code>.
+Making a unit test depend on a prior coverage run — or reimplementing
+Vitest&#39;s file-discovery to avoid that — is a fragile coupling, and a flaky
+meta-test about coverage is worse than a documented risk. The config
+comments state the constraint at the point of use in the meantime.</p>
+<h2 id="closed">Closed</h2>
+<p>The previous entry, <strong>CB-P8-01</strong> (verify the <code>global.React</code> polyfill&#39;s
 necessity and its cross-realm behaviour under the CRA test runner), was
 closed during the Vitest migration. The question it asked has no remaining
 subject: the polyfill was proven unnecessary by running the full suite with

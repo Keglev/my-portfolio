@@ -91,7 +91,7 @@
            scripts/docs/lib/renderPages.js) -->
       <h1 id="einfhrung-und-ziele">Einführung und Ziele</h1>
 <p><a href="index.html">← Architekturindex</a></p>
-<p>Dieses persönliche Portfolio ist eine Single-Page-Anwendung, erstellt mit React (Create React App). Es präsentiert eine Hero-Einführung, einen About-Bereich mit einer kompakten Karriere-/Ausbildungsübersicht, eine Skills-Übersicht, eine Projektpräsentation, ein Kontaktformular und rechtliche Hinweise — auf Englisch und Deutsch. Die Projektdaten sind als statischer, handkuratierter Code in <code>src/data/projects.config.js</code> hinterlegt und direkt im JavaScript-Build gebündelt; es gibt keinen GitHub-API-Aufruf, weder zur Build-Zeit noch zur Laufzeit. Die gebaute App wird auf Vercel bereitgestellt; generierte Dokumentation und Test-Coverage-Berichte werden separat auf GitHub Pages veröffentlicht.</p>
+<p>Dieses persönliche Portfolio ist eine Single-Page-Anwendung, erstellt mit React und Vite. Es präsentiert eine Hero-Einführung, einen About-Bereich mit einer kompakten Karriere-/Ausbildungsübersicht, eine Skills-Übersicht, eine Projektpräsentation, ein Kontaktformular und rechtliche Hinweise — auf Englisch und Deutsch. Die Projektdaten sind als statischer, handkuratierter Code in <code>src/data/projects.config.js</code> hinterlegt und direkt im JavaScript-Build gebündelt; es gibt keinen GitHub-API-Aufruf, weder zur Build-Zeit noch zur Laufzeit. Die gebaute App wird auf Vercel bereitgestellt; generierte Dokumentation und Test-Coverage-Berichte werden separat auf GitHub Pages veröffentlicht.</p>
 <h2 id="inhaltsverzeichnis">Inhaltsverzeichnis</h2>
 <ul>
 <li><a href="#tech-stack">Tech-Stack</a></li>
@@ -110,8 +110,13 @@
 </thead>
 <tbody><tr>
 <td>UI-Framework</td>
-<td>React 18 (Create React App)</td>
-<td>Ausgereiftes Ökosystem; CRA bietet Zero-Config-Build-Tooling</td>
+<td>React 18</td>
+<td>Ausgereiftes Ökosystem; die größte Menge an Dokumentation und Antworten für eine einzelne wartende Person</td>
+</tr>
+<tr>
+<td>Build-Tooling</td>
+<td>Vite 8</td>
+<td>Schneller Dev-Server und Build; ersetzt Create React App, das im Februar 2025 eingestellt wurde — siehe <a href="09-decisions/ADR-007-vite-migration.html">ADR-007</a></td>
 </tr>
 <tr>
 <td>Styling</td>
@@ -145,13 +150,13 @@
 </tr>
 <tr>
 <td>Testing</td>
-<td>Jest + React Testing Library</td>
-<td>Komponentenbasierte Unit-Tests, am Nutzerverhalten ausgerichtet</td>
+<td>Vitest + React Testing Library</td>
+<td>Ein Runner, der sich die Build-Toolchain teilt; Tests werden exakt so transformiert wie die App</td>
 </tr>
 <tr>
 <td>Linting</td>
-<td>ESLint (react-app-Konfiguration)</td>
-<td>Fehler vor CI abfangen; keine zusätzliche Konfiguration nötig</td>
+<td>ESLint 9 (Flat Config)</td>
+<td>Fehler vor CI abfangen; das Regelwerk ist explizit statt von einem Preset geerbt</td>
 </tr>
 <tr>
 <td>CI/CD</td>
@@ -174,9 +179,9 @@
 <div class="mermaid-wrapper"><pre class="mermaid">graph TD
     Browser[&quot;Browser&quot;]
     Vercel[&quot;Vercel CDN&quot;]
-    ReactApp[&quot;React App\n(CRA-Bundle)&quot;]
+    ReactApp[&quot;React App\n(Vite-Bundle)&quot;]
     i18next[&quot;i18next\n(Sprachzustand)&quot;]
-    ProjectsConfig[&quot;projects.config.js\n(im CRA-Build gebündelt)&quot;]
+    ProjectsConfig[&quot;projects.config.js\n(zur Build-Zeit gebündelt)&quot;]
     GHPages[&quot;GitHub Pages\n(Docs + Coverage)&quot;]
 
     Browser --&gt;|&quot;Seitenaufruf&quot;| Vercel
@@ -202,7 +207,7 @@
 <li><a href="https://react.dev">React-Dokumentation</a></li>
 <li><a href="https://www.i18next.com">i18next-Dokumentation</a></li>
 <li><a href="https://vercel.com/docs">Vercel-Dokumentation</a></li>
-<li><a href="https://create-react-app.dev">Create React App Dokumentation</a></li>
+<li><a href="https://vite.dev">Vite Dokumentation</a></li>
 <li><a href="https://docs.github.com/en/actions">GitHub Actions Dokumentation</a></li>
 </ul>
 

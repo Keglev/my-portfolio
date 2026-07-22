@@ -134,16 +134,16 @@
 <td>Project data must be static and bundled at build time — see <a href="09-decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a> for why an earlier runtime-fetch approach was retired in favor of this</td>
 </tr>
 <tr>
-<td>Create React App, not ejected</td>
-<td>Build configuration (Babel, Webpack) is fixed to CRA&#39;s defaults; anything requiring a custom build step needs a workaround rather than a config edit — see <a href="09-decisions/ADR-001-react.html">ADR-001</a></td>
+<td>Vite as the build tool</td>
+<td>Build configuration lives in one commented <code>vite.config.js</code>; the constraint is Vite&#39;s conventions (an <code>index.html</code> entry, <code>VITE_</code>-prefixed client env vars, JSX only in <code>.jsx</code> files) rather than an unmodifiable preset — see <a href="09-decisions/ADR-007-vite-migration.html">ADR-007</a></td>
 </tr>
 <tr>
 <td>Static hosting only (Vercel + GitHub Pages)</td>
 <td>No server-side rendering or API routes; deployment is a <strong>prebuilt artifact</strong> (Vercel Build Output API v3), not the standard Vercel build-from-source integration — see <a href="09-decisions/ADR-005-vercel-hosting.html">ADR-005</a></td>
 </tr>
 <tr>
-<td>Two incompatible Jest environments</td>
-<td>Node-only scripts (e.g. the docs build) and CRA component tests need separate Jest configs to avoid Babel/CSS transform conflicts — see <a href="08c-concepts-testing.html">Testing</a></td>
+<td>One test runner for two runtime targets</td>
+<td>Node-only scripts (e.g. the docs build) and React component tests run under a single Vitest config. Node modules must therefore be loaded with ESM <code>import</code> in tests — a CommonJS <code>require</code> bypasses both coverage instrumentation and module mocking — see <a href="08c-concepts-testing.html">Testing</a></td>
 </tr>
 </tbody></table>
 <h2 id="conventions">Conventions</h2>

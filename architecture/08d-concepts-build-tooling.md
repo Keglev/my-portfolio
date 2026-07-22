@@ -17,7 +17,7 @@ These scripts are executed directly by `npm run` commands or GitHub Actions work
 | Script | Purpose | Key inputs | Key outputs |
 |--------|---------|-----------|------------|
 | `audit-check.js` | Runs `npm audit --json`; fails the process if any high or critical vulnerabilities are found | npm audit JSON output | Exit code 0 (pass) / 1 (vulns found) / 2 (audit failed) |
-| `prepareVercelOutput.sh` | Assembles the Vercel Output API v3 artifact: resets `.vercel/output/`, copies `build/`, writes `config.json` | `build/` | `.vercel/output/static/` |
+| `prepareVercelOutput.sh` | Assembles the Vercel Output API v3 artifact: resets `.vercel/output/`, copies `dist/`, writes `config.json`; fails loudly if `dist/` is missing | `dist/` | `.vercel/output/static/` |
 
 ## Documentation Generation Scripts
 

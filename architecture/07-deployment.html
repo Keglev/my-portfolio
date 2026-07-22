@@ -170,7 +170,7 @@
 </thead>
 <tbody><tr>
 <td><code>.github/workflows/ci.yml</code></td>
-<td>Push to <code>main</code> (<code>src/**</code>, <code>scripts/**</code>, <code>config/**</code>, <code>jest.node.config.js</code>, <code>package.json</code>, <code>.github/workflows/**</code>), PRs to <code>main</code></td>
+<td>Push to <code>main</code> (<code>src/**</code>, <code>scripts/**</code>, <code>config/**</code>, <code>package.json</code>, <code>vite.config.js</code>, <code>index.html</code>, <code>.github/workflows/**</code>), PRs to <code>main</code></td>
 <td>Lint, run full test suite, upload coverage artifact; on push, resolve scope and dispatch <code>deploy.yml</code> (always) and <code>api-docs.yml</code> (conditionally) in parallel</td>
 </tr>
 <tr>
@@ -191,7 +191,7 @@
 <tr>
 <td><code>.github/actions/node-setup/</code></td>
 <td>Composite action used by all four workflows</td>
-<td>Sets up Node.js 22, restores the npm cache, and runs <code>npm ci --legacy-peer-deps</code>; called after <code>actions/checkout@v4</code> in each workflow</td>
+<td>Sets up Node.js 24, restores the npm cache, and runs <code>npm ci</code>; called after <code>actions/checkout@v7</code> in each workflow</td>
 </tr>
 </tbody></table>
 <h2 id="step-details">Step Details</h2>
@@ -201,7 +201,7 @@
 <li>Checkout the repository</li>
 <li>Run the <code>node-setup</code> composite action</li>
 <li>Run <code>npm run lint</code> — fails fast before any test runs</li>
-<li>Run <code>npx jest --config=jest.node.config.js --runInBand --coverage</code> — serial execution prevents resource contention in CI</li>
+<li>Run <code>npm run test:coverage</code> — all runner configuration lives in <code>vite.config.js</code>, so the workflow step carries no flags of its own and cannot drift from a local run</li>
 <li>Upload <code>coverage/</code> as the <code>coverage-report</code> artifact (7-day retention)</li>
 </ol>
 <p>Job <code>start-deploy-stage</code> (push to <code>main</code> only; skipped on pull requests):</p>
@@ -214,7 +214,7 @@
 <h3 id="deployyml">deploy.yml</h3>
 <ol>
 <li>Checkout and <code>node-setup</code></li>
-<li>Run <code>npm run build</code> — production CRA build</li>
+<li>Run <code>npm run build</code> — production Vite build</li>
 <li>Run <code>scripts/prepareVercelOutput.sh</code> — assemble <code>.vercel/output/static/</code></li>
 <li>Verify prebuilt static artifacts — confirms <code>index.html</code> is present in <code>.vercel/output/static/</code>; fails the workflow if missing</li>
 <li>Deploy with <code>vercel --prod --prebuilt</code></li>

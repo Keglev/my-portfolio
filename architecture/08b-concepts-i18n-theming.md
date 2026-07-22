@@ -168,7 +168,7 @@ Three files provide the foundation on which all component styles build.
 
 | File | Purpose |
 |------|---------|
-| `src/index.css` | CSS custom properties (design tokens) and the CRA default base reset |
+| `src/index.css` | CSS custom properties (design tokens) and the base reset |
 | `src/styles/GlobalStyles.js` | styled-components global reset: universal box-sizing, Montserrat font, dark background, base line-height |
 | `src/App.css` | Two-column layout shell (`.container`, `.main-content`, `.section`) |
 

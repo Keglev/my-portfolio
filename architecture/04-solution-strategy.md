@@ -13,7 +13,7 @@ The handful of decisions that shaped everything else, distinct from the [Constra
 
 ## Technology Decisions
 
-- **React with Create React App, not ejected** — mature ecosystem, zero-config build tooling. See [ADR-001](09-decisions/ADR-001-react.md).
+- **React, built with Vite** — mature ecosystem for the UI layer; a maintained, fast build tool underneath it. See [ADR-001](09-decisions/ADR-001-react.md) for React and [ADR-007](09-decisions/ADR-007-vite-migration.md) for the move off Create React App.
 - **styled-components over plain CSS modules** — co-located styles, no class-name collisions. See [ADR-003](09-decisions/ADR-003-styling-approach.md).
 - **i18next for internationalisation, default locale German** — industry-standard React i18n, and the portfolio targets a German-speaking job market. See [ADR-002](09-decisions/ADR-002-i18next-internationalization.md).
 - **Vercel prebuilt artifact deployment** — the app is built once in GitHub Actions and deployed as a finished `.vercel/output` artifact, keeping full control over the build environment instead of letting Vercel rebuild from source. See [ADR-005](09-decisions/ADR-005-vercel-hosting.md).
@@ -26,7 +26,7 @@ The handful of decisions that shaped everything else, distinct from the [Constra
 
 ## Achieving Quality Goals
 
-- **Reliability**: two separate Jest runners — Node-only scripts use a config independent of the CRA runner, avoiding Babel/CSS transform conflicts that would otherwise make one or the other unreliable. See [Testing](08c-concepts-testing.md).
+- **Reliability**: one Vitest runner for both Node scripts and React components, sharing the Vite transform that builds the app — so the code under test is transformed exactly as the shipped code is. Coverage is enforced per file at 85%. See [Testing](08c-concepts-testing.md).
 - **Maintainability**: an ADR for every significant technical choice, and generated docs/coverage published to GitHub Pages on every successful deployment, so the *why* behind a decision and the current *state* of the code are both one click away.
 - **Internationalisation**: full EN/DE coverage enforced by keeping every visible string in i18next locale JSON — no hardcoded UI text. See [i18n & Theming](08b-concepts-i18n-theming.md).
 

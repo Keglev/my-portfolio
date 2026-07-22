@@ -156,7 +156,7 @@
 <h2 id="technical-context-documentation-and-coverage-flow">Technical Context: Documentation and Coverage Flow</h2>
 <p>The diagram below shows how documentation sources and the test coverage report flow into GitHub Pages independently of the Vercel deployment.</p>
 <div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
-    CIJob[&quot;CI workflow\n(jest --coverage)&quot;]
+    CIJob[&quot;CI workflow\n(vitest run --coverage)&quot;]
     CoverageArtifact[&quot;GitHub Actions artifact\ncoverage-report (7-day retention)&quot;]
     MarkdownDocs[&quot;docs/*.md\n(authored documentation)&quot;]
     BuildDocs[&quot;scripts/docs/build_docs.js\n(Markdown → HTML via templates)&quot;]
@@ -192,8 +192,8 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>build/</code></td>
-<td><code>npm run build</code> (CRA)</td>
+<td><code>dist/</code></td>
+<td><code>npm run build</code> (Vite)</td>
 <td>Build-time</td>
 <td>Merged into <code>.vercel/output/static/</code></td>
 </tr>
@@ -205,7 +205,7 @@
 </tr>
 <tr>
 <td><code>coverage/</code></td>
-<td>Jest (<code>--coverage</code> flag in CI)</td>
+<td>Vitest (<code>npm run test:coverage</code> in CI)</td>
 <td>CI</td>
 <td>Uploaded as <code>coverage-report</code> artifact; later downloaded into <code>docs/coverage/</code> by api-docs.yml</td>
 </tr>

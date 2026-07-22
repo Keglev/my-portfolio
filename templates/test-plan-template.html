@@ -104,7 +104,7 @@
 </ul>
 <h2 id="scope">Scope</h2>
 <p>What is covered by these tests and what is explicitly excluded.</p>
-<p>Describe the file paths or features under test, the boundaries (e.g. &quot;unit tests only — no network calls&quot;), and the reason for any exclusions (e.g. &quot;DOM rendering is excluded; covered by the CRA test suite&quot;).</p>
+<p>Describe the file paths or features under test, the boundaries (e.g. &quot;unit tests only — no network calls&quot;), and the reason for any exclusions (e.g. &quot;DOM rendering is excluded; covered by the component test suite&quot;).</p>
 <h2 id="test-cases">Test Cases</h2>
 <p>Add one row per scenario. Use ordered IDs so cases can be referenced unambiguously in code reviews and bug reports.</p>
 <table>
@@ -159,8 +159,8 @@
 <p>Ordered steps to execute these tests locally.</p>
 <ol>
 <li>Install dependencies: <code>npm install</code></li>
-<li>Run the Node-only test suite: <code>npm run test:node</code></li>
-<li>Run the CRA test suite: <code>npm run test:cra</code></li>
+<li>Run the test suite: <code>npm test</code></li>
+<li>Run the suite with coverage: <code>npm run test:coverage</code></li>
 <li>Open the HTML coverage report: <code>coverage/index.html</code></li>
 </ol>
 <p>Replace steps 2–3 with the specific runner and flags for the module under test if it differs from the project defaults.</p>

@@ -91,7 +91,7 @@
            scripts/docs/lib/renderPages.js) -->
       <h1 id="introduction-and-goals">Introduction and Goals</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>This personal portfolio is a single-page React application built with Create React App. It presents a hero introduction, an about section with a condensed career/education strip, a skills overview, a project showcase, a contact form, and legal notices — in both English and German. Project data is hand-curated as static code in <code>src/data/projects.config.js</code>, bundled directly into the JavaScript build; there is no GitHub API call, at build time or at runtime. The built app is deployed to Vercel; generated documentation and test coverage reports are published separately to GitHub Pages.</p>
+<p>This personal portfolio is a single-page React application built with Vite. It presents a hero introduction, an about section with a condensed career/education strip, a skills overview, a project showcase, a contact form, and legal notices — in both English and German. Project data is hand-curated as static code in <code>src/data/projects.config.js</code>, bundled directly into the JavaScript build; there is no GitHub API call, at build time or at runtime. The built app is deployed to Vercel; generated documentation and test coverage reports are published separately to GitHub Pages.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
 <li><a href="#tech-stack">Tech Stack</a></li>
@@ -110,8 +110,13 @@
 </thead>
 <tbody><tr>
 <td>UI framework</td>
-<td>React 18 (Create React App)</td>
-<td>Mature ecosystem; CRA provides zero-config build tooling</td>
+<td>React 18</td>
+<td>Mature ecosystem; the largest pool of documentation and answers for a solo maintainer</td>
+</tr>
+<tr>
+<td>Build tooling</td>
+<td>Vite 8</td>
+<td>Fast dev server and build; replaced Create React App, deprecated in February 2025 — see <a href="09-decisions/ADR-007-vite-migration.html">ADR-007</a></td>
 </tr>
 <tr>
 <td>Styling</td>
@@ -145,13 +150,13 @@
 </tr>
 <tr>
 <td>Testing</td>
-<td>Jest + React Testing Library</td>
-<td>Component-level unit tests aligned with user behaviour</td>
+<td>Vitest + React Testing Library</td>
+<td>One runner shared with the build toolchain; tests transform exactly as the app does</td>
 </tr>
 <tr>
 <td>Linting</td>
-<td>ESLint (react-app config)</td>
-<td>Catches issues before CI runs without extra configuration</td>
+<td>ESLint 9 (flat config)</td>
+<td>Catches issues before CI runs; rule set is explicit rather than inherited from a preset</td>
 </tr>
 <tr>
 <td>CI/CD</td>
@@ -174,9 +179,9 @@
 <div class="mermaid-wrapper"><pre class="mermaid">graph TD
     Browser[&quot;Browser&quot;]
     Vercel[&quot;Vercel CDN&quot;]
-    ReactApp[&quot;React App\n(CRA bundle)&quot;]
+    ReactApp[&quot;React App\n(Vite bundle)&quot;]
     i18next[&quot;i18next\n(language state)&quot;]
-    ProjectsConfig[&quot;projects.config.js\n(bundled into CRA build)&quot;]
+    ProjectsConfig[&quot;projects.config.js\n(bundled at build time)&quot;]
     GHPages[&quot;GitHub Pages\n(docs + coverage)&quot;]
 
     Browser --&gt;|&quot;page request&quot;| Vercel
@@ -202,7 +207,7 @@
 <li><a href="https://react.dev">React documentation</a></li>
 <li><a href="https://www.i18next.com">i18next documentation</a></li>
 <li><a href="https://vercel.com/docs">Vercel documentation</a></li>
-<li><a href="https://create-react-app.dev">Create React App documentation</a></li>
+<li><a href="https://vite.dev">Vite documentation</a></li>
 <li><a href="https://docs.github.com/en/actions">GitHub Actions documentation</a></li>
 </ul>
 
