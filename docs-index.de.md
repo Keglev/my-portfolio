@@ -6,7 +6,6 @@ Die meisten verlinkten Seiten sind nur auf Englisch verfügbar; auf solchen Seit
 
 | Bereich | Beschreibung | Link |
 |---------|--------------|------|
-| Code-Referenz | Generierte Referenz aller Quellmodule, erzeugt aus den JSDoc-Kommentaren in `src/` (EN) | [jsdoc/index.html](/my-portfolio/jsdoc/index.html) |
 | Testabdeckung | Istanbul/Vitest-HTML-Bericht (EN) | [coverage/index.html](https://keglev.github.io/my-portfolio/coverage/index.html) |
 | Architektur | arc42-Architekturdokumentation, Kapitel 01-12 (EN) | [architecture/index.md](architecture/index.md) |
 | Architektur — Kapitel 01 | Einführung und Ziele, auf Deutsch | [architecture/01-introduction-and-goals.de.md](architecture/01-introduction-and-goals.de.md) |

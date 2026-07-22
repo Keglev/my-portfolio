@@ -12,6 +12,13 @@
 
 ## Status
 
+Superseded by [ADR-009](ADR-009-retire-code-reference.md) (2026-07-22), which
+retired the published site outright rather than keeping it under a better
+name. The decision below was made and executed as written; the follow-up
+note is here rather than in the body because the reasoning that led to
+"keep, renamed" is exactly what ADR-009 had to answer, and rewriting it
+would leave that answer arguing with nothing.
+
 Accepted (2026-07-22).
 
 Records a decision that [ADR-004](ADR-004-three-workflow-cicd.md) assumed

@@ -116,7 +116,7 @@
 </thead>
 <tbody><tr>
 <td>Site visitor</td>
-<td>Browses the live portfolio at <code>carloskeglevich.vercel.app</code> — no account, no write access, read-only</td>
+<td>Browses the live portfolio at <a href="https://carloskeglevich.de">https://carloskeglevich.de</a> — no account, no write access, read-only</td>
 </tr>
 <tr>
 <td>Recruiter / employer</td>
@@ -133,7 +133,7 @@
 </tbody></table>
 <p>There is no runtime API dependency and no user-generated content — every external interaction is either a visitor&#39;s browser reading a static page, or the CI/CD pipeline itself reading its own configuration. That absence of a live backend is itself the most consequential fact in this system&#39;s context.</p>
 <h2 id="technical-context-configuration-inputs">Technical Context: Configuration Inputs</h2>
-<p>Before the build pipeline can deploy, one category of external input must be available as environment variables in the GitHub Actions runner.</p>
+<p>Two categories of external input must be available as environment variables in the GitHub Actions runner before the build pipeline can deploy.</p>
 <table>
 <thead>
 <tr>
@@ -150,13 +150,20 @@
 <td>Yes</td>
 </tr>
 <tr>
+<td><code>VITE_WEB3FORMS_KEY</code></td>
+<td>GitHub repository secret</td>
+<td><code>npm run build</code> — baked into the bundle for the contact form</td>
+<td>Yes</td>
+</tr>
+<tr>
 <td><code>GITHUB_TOKEN</code></td>
 <td>Automatically injected by Actions</td>
-<td><code>gh</code> CLI calls in <code>ci.yml</code>, <code>api-docs.yml</code>, <code>architecture-docs.yml</code></td>
+<td><code>gh</code> CLI calls in <code>ci.yml</code>, <code>coverage.yml</code>, <code>architecture-docs.yml</code></td>
 <td>Yes (automatic)</td>
 </tr>
 </tbody></table>
-<p>The Projects section is static, hand-curated content in <code>src/data/projects.config.js</code> — there is no GitHub API or translation API call at build time, so no corresponding secrets are needed.</p>
+<p><code>VITE_WEB3FORMS_KEY</code> is the only application secret the build consumes. It is a Web3Forms <em>public</em> access key: the value is deliberately visible in the deployed JavaScript, and it lives in Actions secrets to keep it out of git history, not because exposure would be a breach. <code>deploy.yml</code> fails fast when it is unset, because a build that silently ships an empty key produces a contact form that accepts submissions and delivers nothing.</p>
+<p>One secret that used to be here is gone. A GitHub personal access token was once required at build time, to read repository READMEs and pinned-project data for the Projects section. That fetch was retired along with <code>scripts/fetchProjects.js</code> (see <a href="09-decisions/ADR-006-build-time-github-data-fetch.html">ADR-006</a>); project copy is now hand-curated in <code>src/data/projects.config.js</code>. No personal access token is used anywhere in this pipeline. The <code>GITHUB_TOKEN</code> in the table above is a different thing entirely — the ephemeral, per-run token Actions injects for <code>gh</code> CLI calls against this repository.</p>
 <h2 id="technical-context-documentation-and-coverage-flow">Technical Context: Documentation and Coverage Flow</h2>
 <p>The diagram below shows how documentation sources and the test coverage report flow into GitHub Pages independently of the Vercel deployment.</p>
 <div class="mermaid-wrapper"><pre class="mermaid">flowchart TD
@@ -164,26 +171,22 @@
     CoverageArtifact[&quot;GitHub Actions artifact\ncoverage-report (7-day retention)&quot;]
     MarkdownDocs[&quot;docs/*.md\n(authored documentation)&quot;]
     BuildDocs[&quot;scripts/docs/build_docs.js\n(Markdown → HTML via templates)&quot;]
-    SrcCode[&quot;src/\n(JSDoc comments in source)&quot;]
-    JSDocOutput[&quot;docs/jsdoc/\n(generated Code Reference)&quot;]
     GHPages[&quot;GitHub Pages\nkeglev.github.io/my-portfolio&quot;]
 
     CIJob --&gt;|&quot;actions/upload-artifact&quot;| CoverageArtifact
-    CoverageArtifact --&gt;|&quot;gh run download in api-docs.yml&quot;| GHPages
+    CoverageArtifact --&gt;|&quot;gh run download in coverage.yml&quot;| GHPages
     MarkdownDocs --&gt;|&quot;converted to HTML&quot;| BuildDocs
     BuildDocs --&gt;|&quot;docs/*.html&quot;| GHPages
-    SrcCode --&gt;|&quot;npm run docs:jsdoc&quot;| JSDocOutput
-    JSDocOutput --&gt;|&quot;published by api-docs.yml&quot;| GHPages
 
-    class CIJob,MarkdownDocs,SrcCode l1
-    class CoverageArtifact,BuildDocs,JSDocOutput l2
+    class CIJob,MarkdownDocs l1
+    class CoverageArtifact,BuildDocs l2
     class GHPages l3
 
     classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
     classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
     classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
 </pre></div>
-<p>The right side of this diagram is split across two workflows. <code>api-docs.yml</code> handles the coverage and Code Reference branches — it is dispatched by <code>ci.yml</code> in parallel with <code>deploy.yml</code> (not after it), and only when the changed files could affect the API surface or test coverage. <code>architecture-docs.yml</code> handles the Markdown-to-HTML branch — it triggers directly on pushes to <code>docs/**</code> or <code>scripts/docs/**</code>, independently of the deploy chain, which lets small documentation edits publish without running the full pipeline.</p>
+<p>The right side of this diagram is split across two workflows. <code>coverage.yml</code> handles the coverage branch — it is dispatched by <code>ci.yml</code> in parallel with <code>deploy.yml</code> (not after it), and only when a <code>src/**</code> change could have altered the report. <code>architecture-docs.yml</code> handles the Markdown-to-HTML branch — it triggers directly on pushes to <code>docs/**</code> or <code>scripts/docs/**</code>, independently of the deploy chain, which lets small documentation edits publish without running the full pipeline.</p>
 <h2 id="technical-context-artifact-summary">Technical Context: Artifact Summary</h2>
 <p>The table below lists every intermediate and final artifact produced by the deployment system, where it originates, and where it lands.</p>
 <table>
@@ -211,13 +214,7 @@
 <td><code>coverage/</code></td>
 <td>Vitest (<code>npm run test:coverage</code> in CI)</td>
 <td>CI</td>
-<td>Uploaded as <code>coverage-report</code> artifact; later downloaded into <code>docs/coverage/</code> by api-docs.yml</td>
-</tr>
-<tr>
-<td><code>docs/jsdoc/</code></td>
-<td><code>npm run docs:jsdoc</code> (JSDoc)</td>
-<td>api-docs.yml</td>
-<td>Published to <code>gh-pages</code> under <code>destination_dir: jsdoc</code></td>
+<td>Uploaded as <code>coverage-report</code> artifact; later downloaded into <code>docs/coverage/</code> by coverage.yml</td>
 </tr>
 <tr>
 <td><code>docs/*.html</code></td>

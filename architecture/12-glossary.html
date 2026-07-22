@@ -124,19 +124,15 @@
 </tr>
 <tr>
 <td>gh-pages</td>
-<td>The git branch GitHub Pages serves static content from — the deploy target for this documentation site, the Code Reference, and coverage reports.</td>
+<td>The git branch GitHub Pages serves static content from — the deploy target for this documentation site and the coverage report.</td>
 </tr>
 <tr>
 <td>i18next namespace</td>
 <td>A named group of translation keys; this app uses a single <code>translation</code> namespace, so no prefix is needed when calling <code>t()</code>. See <a href="08b-concepts-i18n-theming.html">i18n &amp; Theming</a>.</td>
 </tr>
 <tr>
-<td>Code Reference</td>
-<td>The generated HTML reference for every module under <code>src/</code>, built by JSDoc and published to <code>docs/jsdoc/</code>. Named for what it is: this app exposes no API of its own, so &quot;API docs&quot; described the generator rather than the content (ADR-008).</td>
-</tr>
-<tr>
 <td>JSDoc</td>
-<td>A documentation-comment convention for JavaScript, and the tool that generates the Code Reference from those comments.</td>
+<td>The documentation-comment convention used throughout <code>src/</code> and <code>scripts/</code>. A generated HTML site was published from these comments until <a href="09-decisions/ADR-009-retire-code-reference.html">ADR-009</a> retired it; the comments themselves remain required — they are read in the source, which is where they were always most useful.</td>
 </tr>
 <tr>
 <td>Mermaid</td>

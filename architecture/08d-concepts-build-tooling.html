@@ -137,11 +137,11 @@
 </thead>
 <tbody><tr>
 <td><code>scripts/docs/build_docs.js</code></td>
-<td>Reads the page-shell templates from <code>docs/_theme/templates/</code>; converts every <code>docs/*.md</code> to <code>docs/*.html</code>, skipping <code>docs/jsdoc/</code>, <code>docs/coverage/</code>, and <code>docs/_theme/</code>; generates a sidebar TOC from h2/h3 headings; wraps Mermaid code blocks in <code>.mermaid-wrapper</code> divs; concatenates the split CSS sources under <code>docs/_theme/css/</code> into <code>docs/_theme/css/styles.css</code>; assembles the bilingual landing (<code>landing-en.html</code>/<code>landing-de.html</code>) into <code>docs/index.html</code> and <code>docs/index-de.html</code></td>
+<td>Reads the page-shell templates from <code>docs/_theme/templates/</code>; converts every <code>docs/*.md</code> to <code>docs/*.html</code>, skipping <code>docs/coverage/</code> and <code>docs/_theme/</code>; generates a sidebar TOC from h2/h3 headings; wraps Mermaid code blocks in <code>.mermaid-wrapper</code> divs; concatenates the split CSS sources under <code>docs/_theme/css/</code> into <code>docs/_theme/css/styles.css</code>; assembles the bilingual landing (<code>landing-en.html</code>/<code>landing-de.html</code>) into <code>docs/index.html</code> and <code>docs/index-de.html</code></td>
 </tr>
 <tr>
 <td><code>scripts/docs/build_mermaid.js</code></td>
-<td>Scans the generated HTML files (excluding <code>jsdoc/</code>, <code>coverage/</code>, <code>_theme/</code>) for Mermaid wrapper blocks and pre-renders them to inline SVG using <code>@mermaid-js/mermaid-cli</code> (<code>mmdc</code>); exits cleanly when <code>mmdc</code> is not installed so that client-side CDN rendering acts as the fallback</td>
+<td>Scans the generated HTML files (excluding <code>coverage/</code> and <code>_theme/</code>) for Mermaid wrapper blocks and pre-renders them to inline SVG using <code>@mermaid-js/mermaid-cli</code> (<code>mmdc</code>); exits cleanly when <code>mmdc</code> is not installed so that client-side CDN rendering acts as the fallback</td>
 </tr>
 </tbody></table>
 <h2 id="references">References</h2>

@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
-  <title>ADR-004: Three-Workflow CI/CD Architecture — my-portfolio docs</title>
+  <title>ADR-009: Retire the Published Code Reference — my-portfolio docs</title>
 
   <!-- Set the theme before paint to avoid a flash. Dark is the fallback
        default, mirroring src/context/ThemeContext.js's own no-storage
@@ -88,7 +88,6 @@
   <li><a href="#context">Context</a></li>
   <li><a href="#decision">Decision</a></li>
   <li><a href="#consequences">Consequences</a></li>
-  <li><a href="#update-2026-07-17">Update (2026-07-17)</a></li>
   <li><a href="#references">References</a></li>
 </ul>
     </aside>
@@ -96,7 +95,7 @@
     <article class="article">
       <!-- Replaced at build time by renderPages.convertMd() (see
            scripts/docs/lib/renderPages.js) -->
-      <h1 id="adr-004-three-workflow-cicd-architecture">ADR-004: Three-Workflow CI/CD Architecture</h1>
+      <h1 id="adr-009-retire-the-published-code-reference">ADR-009: Retire the Published Code Reference</h1>
 <p><a href="index.html">← Decisions index</a></p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
@@ -104,99 +103,81 @@
 <li><a href="#context">Context</a></li>
 <li><a href="#decision">Decision</a></li>
 <li><a href="#consequences">Consequences</a></li>
-<li><a href="#update-2026-07-17">Update (2026-07-17)</a></li>
 <li><a href="#references">References</a></li>
 </ul>
 <h2 id="status">Status</h2>
-<p>Accepted — topology since evolved to four workflows with parallel docs dispatch; see <a href="#update-2026-07-17">Update</a> below. The site this workflow publishes was later renamed from &quot;API docs&quot; to the Code Reference, and its dispatch input from <code>apiDocs</code> to <code>codeRef</code> — see <a href="ADR-008-code-reference.html">ADR-008</a>. That site was then retired altogether and the workflow reduced to publishing coverage, as <code>coverage.yml</code>; see <a href="ADR-009-retire-code-reference.html">ADR-009</a>. This section describes the original decision as made and is left unedited.</p>
+<p>Accepted (2026-07-22).</p>
+<p>Supersedes <a href="ADR-008-code-reference.html">ADR-008</a>, which kept the same site
+under a corrected name. ADR-008&#39;s body is left as written — it records the
+reasoning this decision had to answer.</p>
+<p>Also updates the topology recorded in
+<a href="ADR-004-three-workflow-cicd.html">ADR-004</a>: the workflow that published the
+site is now <code>coverage.yml</code> and publishes only the coverage report. ADR-004&#39;s
+four-workflow decision is unaffected; one of the four does less than it did.</p>
 <h2 id="context">Context</h2>
-<p>An initial single-workflow approach covering lint, test, build, fetch, and
-deploy became difficult to maintain. It also caused unnecessary full re-runs
-when only documentation files changed — there was no reason to re-run tests
-and rebuild the React app for a Markdown edit.</p>
-<p>A further constraint was coverage reporting: the test step produces a
-coverage artifact that must reach the documentation site, but re-running
-tests inside the docs workflow would be wasteful and could produce a
-different result from the artifact that guarded the deployment.</p>
-<h2 id="decision">Decision</h2>
-<p>Split CI/CD into three sequential workflows, each with a single
-responsibility:</p>
+<p>ADR-008 asked whether the generated reference was worth keeping and answered
+&quot;yes, under an honest name&quot;. Renaming it made the question sharper rather
+than settling it: once the site was called a <em>code reference</em> instead of <em>API
+docs</em>, what it actually offers a reader became the whole of its value.</p>
+<p>For a <strong>library</strong>, that value is clear — the generated site is the contract
+between the code and people who cannot read it, because they only ever see
+the published package. For an <strong>application</strong>, the audience is a reviewer or
+a maintainer, and both have the source in front of them. Everything the site
+showed — module list, signatures, the JSDoc prose itself — reads better in
+the file, next to the code it describes, with the surrounding context that a
+generated page necessarily strips away.</p>
+<p>What the site cost was not nothing:</p>
 <ul>
-<li><p><strong><code>ci.yml</code></strong> — lint, run the full test suite with coverage, upload the
-<code>coverage-report</code> artifact (7-day retention). Triggers on push to <code>main</code>
-for source-affecting paths and on PRs to <code>main</code>. On a successful push,
-dispatches <code>build-and-fetch.yml</code>.</p>
-</li>
-<li><p><strong><code>build-and-fetch.yml</code></strong> — fetch pinned GitHub project data (GraphQL +
-DeepL translation), build the React app, assemble the Vercel Build Output
-API v3 prebuilt artifact, deploy to Vercel, smoke-test the deployment.
-Dispatches <code>docs-refresh.yml</code> on success.</p>
-</li>
-<li><p><strong><code>docs-refresh.yml</code></strong> — apply HTML templates to Markdown, pre-render
-Mermaid diagrams, generate JSDoc, download the <code>coverage-report</code> artifact
-from the latest successful <code>ci.yml</code> run, and publish <code>docs/</code> to the
-<code>gh-pages</code> branch. Also triggered directly on pushes to <code>docs/**</code> or
-<code>scripts/docs/**</code> to keep documentation edits fast.</p>
-</li>
+<li>a devDependency (<code>jsdoc</code>) with a transitive high-severity advisory that had
+no fix, waived permanently in <code>audit-check.js</code> — a standing exception whose
+only justification was this site</li>
+<li>a workflow branch, a scope flag (<code>codeRef</code>), and a published tree on
+<code>gh-pages</code> that had to be kept in step with the source</li>
+<li>a generator whose default output included every test file until it was
+narrowed by hand</li>
 </ul>
-<p>All three workflows share the <code>portfolio-pipeline</code> concurrency group with
-<code>cancel-in-progress: false</code>, so runs queue rather than cancel each other.
-Docs-only pushes trigger <code>docs-refresh.yml</code> under a separate <code>docs-only</code>
-concurrency group so they never block or are blocked by a full pipeline run.</p>
-<p>A composite GitHub Action (<code>node-setup</code>) centralises the Node.js setup and
-dependency caching step used by all three workflows.</p>
+<h2 id="decision">Decision</h2>
+<p><strong>Retire the published site.</strong> The in-source JSDoc standards remain fully in
+force — every module keeps its <code>@file</code>/<code>@module</code>/<code>@summary</code> header and its
+documented functions. Only the published mirror is gone.</p>
+<p>Removed: the <code>jsdoc</code> devDependency, <code>jsdoc.json</code>, the <code>docs:jsdoc</code> npm
+script, the landing card in both languages, and the <code>codeRef</code> scope flag.
+<code>api-docs.yml</code> becomes <code>coverage.yml</code> (&quot;Docs — test coverage&quot;), with its
+concurrency group renamed <code>coverage-pipeline</code> to match, and it takes no
+inputs — with one job left, dispatching it is the instruction. <code>ci.yml</code> still
+decides whether to dispatch, from the <code>coverage</code> scope flag.</p>
+<p>The <code>gh-pages</code> copy is deleted by a one-time direct commit to that branch,
+not by a workflow step. The residue is a one-off consequence of this
+decision, and a step whose only purpose is to run once either runs forever or
+needs a second change to remove it.</p>
 <h2 id="consequences">Consequences</h2>
 <ul>
-<li>Coverage is computed once (in <code>ci.yml</code>) and reused; no risk of the
-published report diverging from the build that was actually deployed</li>
-<li>Each workflow can be triggered independently via <code>workflow_dispatch</code>
-for debugging or emergency re-runs</li>
-<li>Documentation-only edits publish in one workflow step without waiting
-for a full lint/build/deploy cycle</li>
-<li>The sequential dispatch chain (ci → build-and-fetch → docs-refresh) means
-a single push to <code>main</code> can take 10–20 minutes end-to-end</li>
-<li>Three workflow files are slightly more complex to onboard a new contributor
-than a single file</li>
-<li>The concurrency group prevents race conditions when multiple pushes land
-in quick succession</li>
+<li><strong>The audit allowlist shrinks to one entry, by subtraction rather than by
+decision.</strong> <code>linkify-it</code> reached the tree through <code>jsdoc</code> → <code>markdown-it</code>;
+uninstalling <code>jsdoc</code> took the finding with it. The waiver was not renewed,
+it stopped being necessary. <code>brace-expansion</code> remains, unrelated, from the
+ESLint toolchain (see <a href="ADR-007-vite-migration.html">ADR-007</a>).</li>
+<li><strong>The scope logic gets simpler without losing a rule.</strong> <code>codeRef</code> separated
+&quot;the exported surface changed&quot; from &quot;only tests changed&quot; because the first
+needed a rebuild and the second did not. Coverage never made that
+distinction — it was true for either — so the two collapse into one
+<code>src/**</code> check.</li>
+<li><strong>Links to <code>/jsdoc/</code> from outside this repository will break.</strong> Nothing in
+the repo points there any more, but anything published elsewhere that did
+will 404 once the <code>gh-pages</code> copy is removed. Accepted: the alternative is
+serving a page whose content is a snapshot of a codebase that has moved on.</li>
+<li><strong>JSDoc coverage is no longer visible as a site.</strong> It is visible where it
+matters — in the source, and in review. If a future consumer needs a
+published contract (a shared component package, say), this decision is the
+one to revisit, and ADR-008 records what the &quot;keep&quot; case looked like.</li>
 </ul>
-<h2 id="update-2026-07-17">Update (2026-07-17)</h2>
-<p><code>build-and-fetch.yml</code> was renamed <code>deploy.yml</code> (it had already stopped fetching
-project data — see <a href="ADR-006-build-time-github-data-fetch.html">ADR-006</a>) and
-<code>docs-refresh.yml</code> was split into two independently-triggered workflows,
-<code>api-docs.yml</code> (JSDoc + coverage, dispatched by <code>ci.yml</code> in parallel with
-<code>deploy.yml</code>, gated on whether the pushed diff could affect the API surface
-or test coverage) and <code>architecture-docs.yml</code> (Markdown/Mermaid, triggers
-only on <code>docs/**</code> pushes, unchanged from before). The sequential
-ci → build-and-fetch → docs-refresh dispatch chain became a fan-out: <code>ci.yml</code>
-now dispatches <code>deploy.yml</code> and <code>api-docs.yml</code> at the same time instead of
-docs waiting on deploy to finish, and <code>scripts/ci/detectPipelineScope.js</code>
-decides which workflows need to run at all.</p>
-<p>The shared <code>portfolio-pipeline</code> concurrency group described in <code>Decision</code>
-above does <strong>not</strong> carry over to the fan-out. <code>deploy.yml</code> and
-<code>api-docs.yml</code> were first put in <code>portfolio-pipeline</code> alongside <code>ci.yml</code>
-to match this ADR&#39;s original model, and it broke deploys in production:
-GitHub Actions only protects an already <strong>in-progress</strong> run from
-cancellation under <code>cancel-in-progress: false</code> — a <strong>queued</strong> run is not
-protected, and is silently cancelled if a second run joins the same
-group&#39;s queue first. Since <code>ci.yml</code> dispatches both workflows back to
-back while its own run still holds the group, <code>api-docs.yml</code>&#39;s queued run
-was cancelling <code>deploy.yml</code>&#39;s queued run on every push. The fix gives each
-of <code>deploy.yml</code> and <code>api-docs.yml</code> its own concurrency group
-(<code>deploy-pipeline</code>, <code>api-docs-pipeline</code>); <code>ci.yml</code> keeps <code>portfolio-pipeline</code>
-for itself. See <a href="../07-deployment.html#concurrency-strategy">ci-cd-pipeline.md</a>
-for the current four-group topology; the <code>Decision</code> and <code>Consequences</code>
-sections above describe the original three-workflow shape, including its
-single shared concurrency group, as it was when accepted — not the
-corrected model in effect today.</p>
 <h2 id="references">References</h2>
 <ul>
-<li><a href="https://docs.github.com/en/actions">GitHub Actions documentation</a></li>
-<li><a href="../07-deployment.html">ci-cd-pipeline.md</a> — pipeline diagram and per-step breakdown</li>
-<li><code>.github/workflows/ci.yml</code></li>
-<li><code>.github/workflows/build-and-fetch.yml</code> (now <code>deploy.yml</code>)</li>
-<li><code>.github/workflows/docs-refresh.yml</code> (now split into <code>api-docs.yml</code> and <code>architecture-docs.yml</code>)</li>
-<li><code>.github/actions/node-setup/</code> — composite action</li>
+<li><a href="ADR-008-code-reference.html">ADR-008: Keep the Generated Reference, Renamed &quot;Code Reference&quot;</a></li>
+<li><a href="ADR-004-three-workflow-cicd.html">ADR-004: Three-Workflow CI/CD Architecture</a></li>
+<li><a href="ADR-007-vite-migration.html">ADR-007: Vite as the Build Tool</a></li>
+<li><a href="../07-deployment.html">Deployment &amp; CI/CD pipeline</a></li>
+<li><code>.github/workflows/coverage.yml</code>, <code>scripts/audit-check.js</code></li>
 </ul>
 
     </article>
