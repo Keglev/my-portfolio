@@ -31,6 +31,11 @@ on:
       - 'config/**'
       - 'jest.node.config.js'
       - 'package.json'
+      # Build inputs: a change to either can alter the deployed bundle, so
+      # neither may skip the pipeline. index.html moved to the repo root with
+      # the Vite migration; under CRA it lived in public/ and was not listed.
+      - 'vite.config.js'
+      - 'index.html'
       - '.github/workflows/**'
   pull_request:
     branches: [ main ]

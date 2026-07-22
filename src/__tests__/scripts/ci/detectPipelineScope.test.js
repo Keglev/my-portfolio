@@ -101,5 +101,28 @@ describe('detectPipelineScope', () => {
 
       expect(scope).toEqual({ apiDocs: false, coverage: false, archDocs: false, deploy: true });
     });
+
+    // The Vite migration added vite.config.js and moved index.html to the repo
+    // root. Both are build inputs: a change to either can alter the deployed
+    // bundle but cannot alter the documented API surface or test coverage, so
+    // they must classify exactly like package.json. resolveScope needed no
+    // change to achieve this (neither path is under docs/, so the catch-all
+    // deploy rule already covers them) -- these cases exist to keep it that
+    // way if the prefix rules are ever rewritten.
+    it('should flag only deploy when vite.config.js changes without any src/** or docs/** change', () => {
+      const changedFiles = ['vite.config.js'];
+
+      const scope = resolveScope(changedFiles);
+
+      expect(scope).toEqual({ apiDocs: false, coverage: false, archDocs: false, deploy: true });
+    });
+
+    it('should flag only deploy when the root index.html build entry changes', () => {
+      const changedFiles = ['index.html'];
+
+      const scope = resolveScope(changedFiles);
+
+      expect(scope).toEqual({ apiDocs: false, coverage: false, archDocs: false, deploy: true });
+    });
   });
 });
