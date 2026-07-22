@@ -100,20 +100,26 @@ purged from both the marker and this list.</p>
 <h2 id="open">Open</h2>
 <h3 id="cb-p10-01-partition-completeness-meta-test-for-coverage-globs">CB-P10-01 — partition-completeness meta-test for coverage globs</h3>
 <p><strong>Site:</strong> <code>vite.config.js</code>, the <code>test.coverage.thresholds</code> block.</p>
-<p><strong>Context:</strong> coverage thresholds are enforced per file through ten glob
+<p><strong>Context:</strong> coverage thresholds are enforced per file through eleven glob
 groups rather than a project-wide setting, because Vitest applies a
 top-level threshold to <em>every</em> file even when a glob entry also matches it —
 which makes documented exceptions unreachable. The groups therefore have to
 partition the measured tree between them.</p>
 <p>Nothing currently enforces that partition. A source file matching none of
-the ten globs is silently ungated, and a glob matching no files passes
+them is silently ungated, and a glob matching no files passes
 silently while gating nothing. Both failure modes are invisible in a green
 run: during P10-C step 3 the config passed cleanly at a point when four of
-the ten groups were, in fact, enforcing nothing. That was caught only by
+the groups were, in fact, enforcing nothing. That was caught only by
 replicating Vitest&#39;s matcher by hand.</p>
 <p><strong>Proposed fix:</strong> a test that reads the threshold globs and the set of
 measured files, then asserts every file matches exactly one group and every
 group matches at least one file.</p>
+<p><strong>Checked by hand each time the config changes</strong>, which is the interim
+control this entry describes rather than a substitute for it. Most recently
+after <code>detectPipelineScope.js</code> gained its own entry: 11 groups, 31 measured
+files, every file matching exactly one group. The count in this entry is
+maintained for the same reason — a stale number here would be the first
+sign the check stopped happening.</p>
 <p><strong>Why deferred:</strong> the test needs the list of measured files, which only
 exists after a coverage run has written <code>coverage/coverage-summary.json</code>.
 Making a unit test depend on a prior coverage run — or reimplementing
