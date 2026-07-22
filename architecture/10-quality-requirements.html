@@ -154,7 +154,8 @@
 <h3 id="maintainability">Maintainability</h3>
 <ul>
 <li><strong>Scenario</strong>: A future maintainer (possibly the current one, months later) needs to know why a technical choice was made. <strong>Response</strong>: The choice has an ADR under <a href="09-decisions/index.html">chapter 09</a> recording its context and consequences, not just its outcome.</li>
-<li><strong>Scenario</strong>: A change lands on <code>main</code>. <strong>Response</strong>: Generated API docs and, where in scope, the coverage report are republished to GitHub Pages automatically — the deployed docs never drift far from the code they describe. Coverage percentages are visible in the published report, but no minimum threshold is currently enforced in CI — see <a href="08c-concepts-testing.html">Testing</a>.</li>
+<li><strong>Scenario</strong>: A change lands on <code>main</code>. <strong>Response</strong>: Generated API docs and, where in scope, the coverage report are republished to GitHub Pages automatically — the deployed docs never drift far from the code they describe.</li>
+<li><strong>Scenario</strong>: A change lowers a module&#39;s test coverage. <strong>Response</strong>: CI fails. A minimum of <strong>85% statements, branches, functions, and lines is enforced per file</strong>, not as a project aggregate — an aggregate lets a well-covered module mask an untested one. A short, individually justified exception list is encoded in <code>vite.config.js</code>, where each entry names the specific uncovered mechanism and what covering it would cost. See <a href="08c-concepts-testing.html">Testing</a>.</li>
 </ul>
 <h2 id="references">References</h2>
 <ul>

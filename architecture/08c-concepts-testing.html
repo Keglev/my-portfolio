@@ -82,6 +82,8 @@
   <li><a href="#contents">Contents</a></li>
   <li><a href="#test-runner">Test runner</a></li>
   <li><a href="#coverage">Coverage</a></li>
+  <li class="toc-h3"><a href="#enforced-thresholds">Enforced thresholds</a></li>
+  <li class="toc-h3"><a href="#exceptions">Exceptions</a></li>
   <li><a href="#running-tests-locally">Running tests locally</a></li>
   <li><a href="#reading-the-coverage-report">Reading the coverage report</a></li>
   <li><a href="#what-is-tested-and-what-is-excluded">What is tested and what is excluded</a></li>
@@ -151,11 +153,54 @@ decision that made this possible.</p>
 report different branch percentages for identical code, and this project&#39;s
 coverage plan was baselined under istanbul; pinning the provider keeps the
 numbers comparable across the runner change.</p>
-<p>No minimum coverage thresholds are enforced yet. Run <code>npm run test:coverage</code>
-to generate a local HTML report with statements, branches, functions, and
-line coverage.</p>
 <p>Coverage is collected from <code>src/**/*.{js,jsx}</code>, <code>scripts/**/*.js</code>, and
-<code>config/**/*.js</code>.</p>
+<code>config/**/*.js</code>. Run <code>npm run test:coverage</code> for a local HTML report.</p>
+<h3 id="enforced-thresholds">Enforced thresholds</h3>
+<p><strong>85% statements, branches, functions, and lines — enforced per file.</strong> CI
+fails if any module drops below it.</p>
+<p>Per file, not as a project aggregate. An aggregate percentage lets a
+well-covered module mask an untested one: adding a fully covered file raises
+the project total while the untested file stays exactly as untested as
+before. Per-file means every module carries its own weight.</p>
+<h3 id="exceptions">Exceptions</h3>
+<p>Four modules are held to lower numbers. Each is a case where 85% is only
+reachable through filler assertions, or through a change that would make the
+suite worse than the gap it closes. The thresholds are set at or just under
+the measured value, so they are regression guards — a <strong>drop</strong> still fails
+the build.</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Held at</th>
+<th>Uncovered mechanism</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>scripts/docs/build_mermaid.js</code></td>
+<td>65 / 45 / 90 / 65</td>
+<td><code>renderDiagram</code> and <code>run</code>&#39;s rendering loop need a real <code>mmdc</code> binary. Covering them means adding <code>@mermaid-js/mermaid-cli</code> (and Chromium) as a devDependency, or mocking the subprocess under test. The path CI actually takes — mmdc absent, clean no-op exit — <em>is</em> covered.</td>
+</tr>
+<tr>
+<td><code>scripts/docs/lib/markedConfig.js</code></td>
+<td>80 / 45 / 90 / 80</td>
+<td>Two load-time <code>process.exit</code> fail-fast paths and the library-version resolution ternaries. All run at import, before any export exists, through a CommonJS <code>require</code> that <code>vi.mock</code> cannot intercept.</td>
+</tr>
+<tr>
+<td><code>scripts/docs/build_docs.js</code></td>
+<td>95 / 50 / 90 / 95</td>
+<td>Branch gap only. The uncovered branches are CLI default-param bindings; exercising them requires letting a test write to the real, tracked <code>docs/</code> tree.</td>
+</tr>
+<tr>
+<td><code>src/data/projects.config.js</code></td>
+<td>0</td>
+<td>A static data array. The only test that would cover it is an assertion on its length or contents — filler that breaks whenever a project is added or its copy edited. Kept measured, not excluded, so it stays visible in the report.</td>
+</tr>
+</tbody></table>
+<p>Translation catalogues (<code>src/i18n/locales/*.json</code>) are excluded from
+collection outright: data is not code.</p>
+<p>Adding an entry to this list requires the same justification these carry —
+name the specific uncovered mechanism, and say what covering it would cost.</p>
 <h2 id="running-tests-locally">Running tests locally</h2>
 <ol>
 <li>Install dependencies: <code>npm install</code></li>
