@@ -2,7 +2,7 @@
 
 Ein persönliches Portfolio, gebaut mit React und Vite, gestaltet mit styled-components, übersetzt mit i18next und navigiert mit react-scroll — bereitgestellt auf Vercel (Live-Seite) und GitHub Pages (generierte Dokumentation und Testabdeckung).
 
-Die meisten verlinkten Seiten sind nur auf Englisch verfügbar. Übersetzt sind die Startseite, dieser Index und arc42-Kapitel 01.
+Die meisten verlinkten Seiten sind nur auf Englisch verfügbar; auf solchen Seiten ist die Schaltfläche DE oben deaktiviert. Übersetzt sind die Startseite, dieser Index und arc42-Kapitel 01.
 
 | Bereich | Beschreibung | Link |
 |---------|--------------|------|
