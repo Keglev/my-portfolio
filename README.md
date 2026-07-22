@@ -40,9 +40,15 @@ The application has no backend of its own. Project data is hand-curated code bun
 
 ## Screenshots
 
-<img src="docs/assets/readme/project-image.png" alt="The About section in dark theme, with sidebar navigation and a technology list" width="600"/>
+Both are the German interface, which is what a first-time visitor sees.
 
-<img src="docs/assets/readme/project-image2.png" alt="The Projects section in dark theme, showing project cards with descriptions and technology tags" width="600"/>
+<img src="docs/assets/readme/project-image.png" alt="Hero section in dark theme and German: sidebar navigation, DE/EN and theme switches, headline, three call-to-action buttons, and a profile photo" width="600"/>
+
+*Hero and profile, dark theme. The sidebar carries the section navigation, the DE/EN switch, and the theme toggle; the same three controls persist on every section.*
+
+<img src="docs/assets/readme/project-image2.png" alt="Projects section in light theme and German: two project cards with preview images, descriptions, and technology tags" width="600"/>
+
+*Projects, light theme — the same components under the second token set. Each card carries a preview image, a description, and technology tags, all from the hand-curated project data.*
 
 ---
 
