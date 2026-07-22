@@ -111,4 +111,48 @@ describe('Contact', () => {
     ]);
     expect(screen.getByRole('link', { name: 'GitHub' })).toHaveAttribute('href', 'https://github.com/keglev');
   });
+
+  describe('submit guards', () => {
+    // The disabled submit button is the visible half of the consent gate; the
+    // handler's own check is the half that actually holds. A form can still be
+    // submitted with the Enter key while a disabled button is focused
+    // elsewhere, so the guard below is what keeps a message from being sent
+    // without consent -- a GDPR requirement, not a nicety.
+    it('should not send the message when the form is submitted without consent', () => {
+      render(<Contact />);
+      fill();
+
+      fireEvent.submit(screen.getByRole('form', { name: 'contactSection.title' }));
+
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it('should not show a status message when a submit is rejected for missing consent', () => {
+      render(<Contact />);
+      fill();
+
+      fireEvent.submit(screen.getByRole('form', { name: 'contactSection.title' }));
+
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+
+    it('should send the message only once when the visitor submits again while the first send is in flight', async () => {
+      // Double submission would deliver the same enquiry twice. The button is
+      // disabled during send, but an Enter-key submit bypasses that.
+      let resolveFetch;
+      global.fetch.mockReturnValue(new Promise((resolve) => { resolveFetch = resolve; }));
+      render(<Contact />);
+      fill();
+      fireEvent.click(screen.getByRole('checkbox', { name: 'contactSection.consent' }));
+      const form = screen.getByRole('form', { name: 'contactSection.title' });
+
+      fireEvent.submit(form);
+      fireEvent.submit(form);
+
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      resolveFetch({ json: async () => ({ success: true }) });
+      expect(await screen.findByRole('status')).toHaveTextContent('contactSection.success');
+    });
+  });
 });

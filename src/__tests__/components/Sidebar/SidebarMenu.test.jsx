@@ -14,6 +14,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import SidebarMenu from '../../../components/Sidebar/SidebarMenu';
+import { ThemeProvider } from '../../../context/ThemeContext';
 
 vi.mock('react-scroll');
 vi.mock('react-i18next', () => ({ useTranslation: vi.fn() }));
@@ -56,5 +57,61 @@ describe('SidebarMenu', () => {
     rerender(<SidebarMenu activeSection="Contact" />);
 
     expect(screen.getByRole('link', { name: /^contact$/i })).toBeInTheDocument();
+  });
+
+  describe('theme switch', () => {
+    // The button is a toggle whose label, tooltip, and glyph must all describe
+    // the theme it will switch TO, not the one currently active. Getting that
+    // backwards is invisible in a screenshot but tells a screen-reader user
+    // the opposite of what the button does.
+    beforeEach(() => {
+      useTranslation.mockReturnValue({
+        t: (k, def) => def || k,
+        i18n: { language: 'en', changeLanguage: vi.fn() },
+      });
+      window.localStorage.clear();
+      document.documentElement.removeAttribute('data-theme');
+    });
+
+    it('should offer to switch to the light theme while the dark theme is active', () => {
+      render(
+        <ThemeProvider>
+          <SidebarMenu activeSection="About" />
+        </ThemeProvider>
+      );
+
+      const button = screen.getByRole('button', { name: 'Switch to light theme' });
+
+      expect(button).toHaveAttribute('title', 'Light theme');
+      expect(button).toHaveTextContent('☀');
+    });
+
+    it('should offer to switch back to the dark theme once the light theme is active', () => {
+      window.localStorage.setItem('portfolio-theme', 'light');
+
+      render(
+        <ThemeProvider>
+          <SidebarMenu activeSection="About" />
+        </ThemeProvider>
+      );
+
+      const button = screen.getByRole('button', { name: 'Switch to dark theme' });
+
+      expect(button).toHaveAttribute('title', 'Dark theme');
+      expect(button).toHaveTextContent('☾');
+    });
+
+    it('should switch the theme when the visitor clicks the toggle', () => {
+      render(
+        <ThemeProvider>
+          <SidebarMenu activeSection="About" />
+        </ThemeProvider>
+      );
+
+      fireEvent.click(screen.getByRole('button', { name: 'Switch to light theme' }));
+
+      expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+      expect(screen.getByRole('button', { name: 'Switch to dark theme' })).toBeInTheDocument();
+    });
   });
 });

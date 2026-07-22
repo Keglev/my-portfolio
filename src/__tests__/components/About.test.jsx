@@ -71,4 +71,18 @@ describe('About', () => {
     expect(img.getAttribute('src')).not.toBe('/profile.jpg');
     expect(img.getAttribute('data-fallback')).toBe('1');
   });
+
+  it('should keep showing the fallback portrait when that image also fails to load', () => {
+    // Without the data-fallback guard the error handler would reassign the
+    // same failing source on every error event, looping indefinitely and
+    // pinning the browser tab.
+    render(<About />);
+    const img = screen.getByAltText('Carlos Keglevich portrait');
+
+    fireEvent.error(img);
+    const fallbackSrc = img.getAttribute('src');
+    fireEvent.error(img);
+
+    expect(img.getAttribute('src')).toBe(fallbackSrc);
+  });
 });
