@@ -98,7 +98,7 @@ describe('runPipelineScope', () => {
 
       const scope = resolveScopeForRange('abc123', 'def456', exec);
 
-      expect(scope).toEqual({ codeRef: false, coverage: false, archDocs: true, deploy: false });
+      expect(scope).toEqual({ coverage: false, archDocs: true, deploy: false });
     });
 
     it('should force every flag true when the diff is unavailable', () => {
@@ -108,7 +108,7 @@ describe('runPipelineScope', () => {
 
       const scope = resolveScopeForRange('abc123', 'def456', exec);
 
-      expect(scope).toEqual({ codeRef: true, coverage: true, archDocs: true, deploy: true });
+      expect(scope).toEqual({ coverage: true, archDocs: true, deploy: true });
     });
   });
 
@@ -145,7 +145,6 @@ describe('runPipelineScope', () => {
 
       const [target, written] = appendFileSync.mock.calls[0];
       expect(target).toBe('/tmp/gh-output');
-      expect(written).toContain('codeRef=true');
       expect(written).toContain('coverage=true');
       expect(written).toContain('archDocs=true');
       expect(written).toContain('deploy=true');
