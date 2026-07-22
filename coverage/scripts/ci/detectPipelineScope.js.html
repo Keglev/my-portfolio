@@ -145,32 +145,32 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-yes">23x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -192,11 +192,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * @file detectPipelineScope.js
  * @module scripts/ci/detectPipelineScope
@@ -245,17 +245,17 @@ function resolveScope(changedFiles) {
  * (workflows supply it via `git diff --name-only &lt;before&gt; &lt;sha&gt;`) and
  * writes the resolved scope flags to $GITHUB_OUTPUT.
  */
-function <span class="fstat-no" title="function not covered" >runCli(</span>) {
+function <span class="fstat-no" title="function not covered" >runCli() {</span>
   const stdin = <span class="cstat-no" title="statement not covered" >fs.readFileSync(0, 'utf8');</span>
-  const changedFiles = <span class="cstat-no" title="statement not covered" >stdin.split('\n').map(<span class="fstat-no" title="function not covered" >(l</span>ine) =&gt; <span class="cstat-no" title="statement not covered" >line.trim())</span>.filter(Boolean);</span>
+  const changedFiles = <span class="cstat-no" title="statement not covered" >stdin.split('\n').<span class="fstat-no" title="function not covered" >map((l</span>ine) =&gt; <span class="cstat-no" title="statement not covered" >line.trim())</span>.filter(Boolean);</span>
   const scope = <span class="cstat-no" title="statement not covered" >resolveScope(changedFiles);</span>
 &nbsp;
   const outputPath = <span class="cstat-no" title="statement not covered" >process.env.GITHUB_OUTPUT;</span>
-  const lines = <span class="cstat-no" title="statement not covered" >Object.entries(scope).map(<span class="fstat-no" title="function not covered" >([</span>key, value]) =&gt; <span class="cstat-no" title="statement not covered" >`${key}=${value}`)</span>;</span>
+  const lines = <span class="cstat-no" title="statement not covered" >Object.entries(scope).<span class="fstat-no" title="function not covered" >map(([</span>key, value]) =&gt; <span class="cstat-no" title="statement not covered" >`${key}=${value}`)</span>;</span>
 <span class="cstat-no" title="statement not covered" >  if (outputPath) {</span>
 <span class="cstat-no" title="statement not covered" >    fs.appendFileSync(outputPath, lines.join('\n') + '\n');</span>
   } else {
-<span class="cstat-no" title="statement not covered" >    lines.forEach(<span class="fstat-no" title="function not covered" >(l</span>ine) =&gt; <span class="cstat-no" title="statement not covered" >console.log(line))</span>;</span>
+<span class="cstat-no" title="statement not covered" >    lines.<span class="fstat-no" title="function not covered" >forEach((l</span>ine) =&gt; <span class="cstat-no" title="statement not covered" >console.log(line))</span>;</span>
   }
 }
 &nbsp;
@@ -271,7 +271,7 @@ module.exports = { resolveScope };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-22T09:45:34.512Z
+                at 2026-07-22T12:43:35.745Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
