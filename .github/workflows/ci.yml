@@ -111,11 +111,11 @@ jobs:
 
       # Dispatched alongside deploy.yml (not after it) so build/deploy and
       # docs generation run in parallel instead of docs waiting on deploy.
-      - name: Trigger api-docs workflow
-        if: steps.scope.outputs.apiDocs == 'true' || steps.scope.outputs.coverage == 'true'
+      - name: Trigger the code reference and coverage workflow
+        if: steps.scope.outputs.codeRef == 'true' || steps.scope.outputs.coverage == 'true'
         run: |
           gh workflow run api-docs.yml --repo ${{ github.repository }} --ref main \
-            -f apiDocs="${{ steps.scope.outputs.apiDocs }}" \
+            -f codeRef="${{ steps.scope.outputs.codeRef }}" \
             -f coverage="${{ steps.scope.outputs.coverage }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

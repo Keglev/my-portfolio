@@ -133,7 +133,7 @@ A `useEffect` keyed on `theme` mirrors the value onto `<html data-theme="...">` 
 
 | Component | Usage |
 |-----------|-------|
-| `SidebarMenu` | Renders the ☀/☾ toggle button (`onClick={toggleTheme}`), with `aria-label` and `title` both reflecting the *next* state the click will produce |
+| `SidebarMenu` | Renders the toggle button, whose label is a sun glyph (`U+2600`) in dark mode and a moon glyph (`U+263E`) in light mode; `onClick={toggleTheme}`, with `aria-label` and `title` both reflecting the *next* state the click will produce |
 | `ProjectCard` | Selects which theme-specific screenshot variant to display for a project, via `project.images[theme]` |
 
 ### CSS Integration

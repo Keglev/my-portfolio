@@ -27,11 +27,13 @@
 # gh-pages root --
 # so destination_dir cannot express "everything except jsdoc/ and
 # coverage/" in one publish step. We use keep_files: true instead, and
-# publish a STAGED copy of docs/ with jsdoc/ and coverage/ excluded
-# (not ./docs itself): docs/jsdoc/*.html happens to be git-tracked on
-# main as legacy generated output, so publishing ./docs unfiltered would
-# overwrite api-docs.yml's freshly generated gh-pages/jsdoc/ with stale
-# committed snapshots. keep_files: true also means a page removed from
+# publish a STAGED copy of docs/ with coverage/ excluded (not ./docs
+# itself). The jsdoc half of that exclusion is retired: docs/jsdoc/ used
+# to be git-tracked as legacy generated output, so publishing ./docs
+# unfiltered would have overwritten api-docs.yml's fresh gh-pages/jsdoc/
+# with stale committed snapshots. Those files are deleted and gitignored
+# as of the Code Reference rename (ADR-008), so this checkout has no
+# docs/jsdoc/ to stage. keep_files: true also means a page removed from
 # docs/ is never deleted from gh-pages by this workflow -- stale
 # architecture pages must be cleaned up manually if a doc is ever
 # deleted outright.
@@ -102,15 +104,17 @@ jobs:
           node -e "require('marked')" 2>/dev/null || npm install --no-save marked@^9
           npm run docs:build
 
-      # docs/jsdoc/ is git-tracked on main as legacy generated output —
-      # exclude it (and docs/coverage/, generated only by api-docs.yml) from
-      # this publish so keep_files: true below can't clobber api-docs.yml's
-      # gh-pages content. See header comment.
-      - name: Stage architecture docs (excludes jsdoc/ and coverage/)
+      # docs/coverage/ is api-docs.yml's territory; excluding it here keeps
+      # keep_files: true below from clobbering that workflow's gh-pages
+      # content should a coverage directory ever be present in this
+      # workspace. The jsdoc exclude that stood beside it is gone: the
+      # generated code reference is no longer committed, so there is nothing
+      # under docs/jsdoc/ in this checkout to stage. See header comment.
+      - name: Stage architecture docs (excludes coverage/)
         run: |
           rm -rf /tmp/gh-pages-arch
           mkdir -p /tmp/gh-pages-arch
-          rsync -a --exclude 'jsdoc' --exclude 'coverage' docs/ /tmp/gh-pages-arch/
+          rsync -a --exclude 'coverage' docs/ /tmp/gh-pages-arch/
 
       # ── Deploy ──────────────────────────────────────────────────────────
       # peaceiris/actions-gh-pages@v4 — use v4, not v3 (v3 has a known token scope bug).

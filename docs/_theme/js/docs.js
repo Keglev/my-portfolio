@@ -36,10 +36,12 @@ if (toggle) {
 })();
 
 // Language switch: point EN/DE at the current page's translated twin when one
-// exists. Only the landing and ch01 (01-introduction-and-goals) are
-// translated today, so any other page routes DE to the German landing
-// rather than a missing -de file. Done at runtime to avoid wiring a
-// per-page twin URL through the build.
+// exists. Three pages are translated today -- the landing, the documentation
+// index, and ch01 (01-introduction-and-goals). On every other page DE is
+// shown disabled rather than pointed anywhere: sending a reader who asked for
+// German to an unrelated English page (or to the landing, losing their place)
+// is worse than telling them plainly that this page has no German version.
+// Done at runtime to avoid wiring a per-page twin URL through the build.
 (function () {
   var links = document.querySelectorAll(".lang-switch a");
   if (links.length < 2) return;
@@ -70,6 +72,12 @@ if (toggle) {
   } else if (path === base + "/index-de.html") {
     enableBoth();
     en.href = base + "/"; de.href = base + "/index-de.html"; current(de);
+  } else if (file === "docs-index.html") {
+    enableBoth();
+    en.href = path; de.href = dir + "docs-index.de.html"; current(en);
+  } else if (file === "docs-index.de.html") {
+    enableBoth();
+    en.href = dir + "docs-index.html"; de.href = path; current(de);
   } else if (file === "01-introduction-and-goals.html") {
     enableBoth();
     en.href = path; de.href = dir + "01-introduction-and-goals.de.html"; current(en);
@@ -78,12 +86,16 @@ if (toggle) {
     en.href = dir + "01-introduction-and-goals.html"; de.href = path; current(de);
   } else {
     // English-only page: there is no German twin, so EN stays active and DE
-    // falls back to the German landing rather than a 404 -- it is left
-    // navigable (not aria-disabled) because a landing fallback is always a
-    // valid destination, unlike the reference theme's per-section case.
-    enableBoth();
+    // is shown disabled -- greyed, inert, and explaining itself on hover
+    // (see .lang-switch a[aria-disabled] in components.css). Removing the
+    // href is what actually blocks navigation; aria-disabled is what tells
+    // assistive tech, and neither alone is enough.
     en.href = path;
-    de.href = base + "/index-de.html";
+    en.removeAttribute("aria-disabled");
+    en.removeAttribute("title");
+    de.removeAttribute("href");
+    de.setAttribute("aria-disabled", "true");
+    de.setAttribute("title", "Diese Seite ist nur auf Englisch verfügbar");
     current(en);
   }
 })();

@@ -22,6 +22,27 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Generated docs output (npm run docs:build). The HTML is built in CI by
+# architecture-docs.yml and published to gh-pages -- it is never committed.
+# Listed explicitly rather than as a blanket docs/**/*.html because
+# docs/_theme/templates/*.html and docs/pipeline.html are hand-written
+# sources that must stay tracked. Without these entries a local docs build
+# leaves ~35 untracked files sitting next to real new sources, and any
+# git-status-based cleanup step then risks taking a genuine new file with it
+# (that is how an untracked ADR was deleted during the Vite migration).
+/docs/index.html
+/docs/index-de.html
+/docs/docs-index*.html
+/docs/architecture/**/*.html
+/docs/templates/*.html
+/docs/_theme/css/styles.css
+/docs/coverage/
+# The Code Reference (npm run docs:jsdoc). Its 55 files were committed until
+# the rename in ADR-008, which let architecture-docs.yml drop the rsync
+# exclude that existed only to stop those stale snapshots from overwriting
+# the freshly generated gh-pages copy.
+/docs/jsdoc/
+
 # local generated artifacts
 eslint-output.txt
 *.log

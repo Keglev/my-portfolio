@@ -2,7 +2,7 @@
 
 [← Architecture index](index.md)
 
-This project deploys the React app to Vercel (live site). The Projects section is static, hand-curated content in `src/data/projects.config.js` — there is no data-fetch step before the build. The generated API docs are published separately to GitHub Pages via the `gh-pages` branch.
+This project deploys the React app to Vercel (live site). The Projects section is static, hand-curated content in `src/data/projects.config.js` — there is no data-fetch step before the build. The generated Code Reference and coverage report are published separately to GitHub Pages via the `gh-pages` branch.
 
 ## Contents
 
@@ -20,7 +20,7 @@ This project deploys the React app to Vercel (live site). The Projects section i
 | Target | URL | Trigger | Branch |
 |--------|-----|---------|--------|
 | Vercel (live site) | `carloskeglevich.vercel.app` | Push to main | main |
-| GitHub Pages (API docs) | https://keglev.github.io/my-portfolio/ | Workflow dispatch | gh-pages |
+| GitHub Pages (docs site) | https://keglev.github.io/my-portfolio/ | Workflow dispatch | gh-pages |
 
 ## Environment variables
 

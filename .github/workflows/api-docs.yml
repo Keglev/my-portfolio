@@ -1,15 +1,17 @@
 ############################################################
-# Docs — API reference and coverage
+# Docs — Code Reference and coverage
 #
 # Purpose
-# - Generate JSDoc into docs/jsdoc/ (skipped unless apiDocs input is true)
+# - Generate the Code Reference into docs/jsdoc/ (skipped unless the codeRef
+#   input is true). JSDoc remains the generator and docs/jsdoc/ the published
+#   path -- the rename is of the site, not the tool or the URL (ADR-008).
 # - Download the coverage report from the latest successful CI run and
 #   publish it under docs/coverage/ (skipped unless coverage input is true)
 # - Publish each to gh-pages under its own destination_dir, isolated from
 #   architecture-docs.yml's output
 #
 # Triggers
-# - Dispatched by ci.yml's start-deploy-stage job with apiDocs/coverage
+# - Dispatched by ci.yml's start-deploy-stage job with codeRef/coverage
 #   inputs from scripts/ci/runPipelineScope.js, only when at least one is
 #   true (see ci.yml).
 # - Manual via workflow_dispatch; both inputs default true so an ad-hoc
@@ -37,13 +39,13 @@
 # reflects the latest push's scope, so superseding a stale queued run is
 # correct, not a bug.
 ############################################################
-name: Docs — API reference and coverage
+name: Docs — Code Reference and coverage
 
 on:
   workflow_dispatch:
     inputs:
-      apiDocs:
-        description: 'Rebuild JSDoc API reference'
+      codeRef:
+        description: 'Rebuild the generated Code Reference'
         type: boolean
         default: true
       coverage:
@@ -73,9 +75,9 @@ jobs:
       - name: Node setup
         uses: ./.github/actions/node-setup
 
-      # ── JSDoc ── Generates API reference from src/ into docs/jsdoc/ (see jsdoc.json).
-      - name: Generate JSDoc API docs
-        if: inputs.apiDocs
+      # ── Code Reference ── Generated from src/ into docs/jsdoc/ (see jsdoc.json).
+      - name: Generate the Code Reference (JSDoc)
+        if: inputs.codeRef
         run: npm run docs:jsdoc
 
       # ── Coverage ──
@@ -110,13 +112,28 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
+      # ── Back link ──
+      # Both reports are generator output with their own page shell, so the
+      # docs theme's header never appears on them and a reader who arrived
+      # from a landing card has no way back. scripts/ci/injectBackLink.js adds
+      # one fixed-position link to each.
+      #
+      # Runs unconditionally and without a per-file `if`: the script reports a
+      # missing file rather than failing, which is the case that actually
+      # happens (the coverage download above is continue-on-error, and the
+      # first ever run has no artifact). It is also idempotent -- gh-pages is
+      # republished rather than rebuilt, so it routinely sees its own previous
+      # output and must not stack a second link onto it.
+      - name: Inject the back-to-docs link into the generated reports
+        run: node scripts/ci/injectBackLink.js docs/coverage/index.html docs/jsdoc/index.html
+
       # ── Deploy ──────────────────────────────────────────────────────────
       # peaceiris/actions-gh-pages@v4 — use v4, not v3 (v3 has a known token
       # scope bug). destination_dir scopes both publish and stale-file
       # cleanup (keep_files defaults to false) to that one subdirectory —
       # nothing outside jsdoc/ or coverage/ on gh-pages is touched.
-      - name: Publish JSDoc to gh-pages
-        if: inputs.apiDocs
+      - name: Publish the Code Reference to gh-pages
+        if: inputs.codeRef
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -124,7 +141,7 @@ jobs:
           destination_dir: jsdoc
           publish_branch: gh-pages
           force_orphan: false
-          commit_message: "docs: rebuild JSDoc [${{ github.sha }}]"
+          commit_message: "docs: rebuild the Code Reference [${{ github.sha }}]"
 
       - name: Publish coverage to gh-pages
         if: inputs.coverage

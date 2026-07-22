@@ -128,6 +128,23 @@ describe('renderPages', () => {
       expect(out).toContain('href="../index.html"');
     });
 
+    it('should prefix every landing href, not just the first, in both languages', () => {
+      // header.html carries index.html twice (breadcrumb + the EN half of the
+      // language switch) and index-de.html once. Rewriting only the first
+      // match left the language switch pointing at whatever index.html sat in
+      // the current directory -- architecture/index.html, for instance.
+      const tmpl =
+        '<a href="index.html">my-portfolio</a>' +
+        '<span class="lang-switch"><a href="index.html">EN</a><a href="index-de.html">DE</a></span>';
+
+      const out = adjustTemplate(tmpl, 1);
+
+      expect(out).not.toContain('href="index.html"');
+      expect(out).not.toContain('href="index-de.html"');
+      expect(out.match(/href="\.\.\/index\.html"/g)).toHaveLength(2);
+      expect(out).toContain('href="../index-de.html"');
+    });
+
     it('should repeat the prefix once per level when nested more deeply', () => {
       const tmpl = '<link href="_theme/css/styles.css">';
 
