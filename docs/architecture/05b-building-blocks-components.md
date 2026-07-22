@@ -54,7 +54,7 @@ All six section components accept no external props; they source their content v
 | `About` | `About` | `aboutSection` | i18n locale JSON; renders `CareerStrip` as its final child |
 | `Skills` | `SkillsSection` | `skills`, `skillsSection` | `data/skills.config` (group structure) + i18n locale JSON (labels) |
 | `Projects` | `Projects` | `projects`, `portfolioMeta` | `data/projects.config` (static, no fetch) |
-| `Contact` | `ContactSection` | `contactSection` | Web3Forms API (`REACT_APP_WEB3FORMS_KEY` env var) |
+| `Contact` | `ContactSection` | `contactSection` | Web3Forms API (`VITE_WEB3FORMS_KEY` env var) |
 | `Legal` | `Impressum`, `Datenschutz` | `legal` | i18n locale JSON (HTML strings via `dangerouslySetInnerHTML`) |
 
 ## Sub-components

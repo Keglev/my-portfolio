@@ -40,7 +40,7 @@ The diagram below shows how documentation sources and the test coverage report f
 
 ```mermaid
 flowchart TD
-    CIJob["CI workflow\n(jest --coverage)"]
+    CIJob["CI workflow\n(vitest run --coverage)"]
     CoverageArtifact["GitHub Actions artifact\ncoverage-report (7-day retention)"]
     MarkdownDocs["docs/*.md\n(authored documentation)"]
     BuildDocs["scripts/docs/build_docs.js\n(Markdown → HTML via templates)"]
@@ -72,9 +72,9 @@ The table below lists every intermediate and final artifact produced by the depl
 
 | Artifact | Produced by | Stage | Destination |
 |----------|------------|-------|-------------|
-| `build/` | `npm run build` (CRA) | Build-time | Merged into `.vercel/output/static/` |
+| `dist/` | `npm run build` (Vite) | Build-time | Merged into `.vercel/output/static/` |
 | `.vercel/output/static/` | `scripts/prepareVercelOutput.sh` | Pre-deploy | Deployed to Vercel CDN |
-| `coverage/` | Jest (`--coverage` flag in CI) | CI | Uploaded as `coverage-report` artifact; later downloaded into `docs/coverage/` by api-docs.yml |
+| `coverage/` | Vitest (`npm run test:coverage` in CI) | CI | Uploaded as `coverage-report` artifact; later downloaded into `docs/coverage/` by api-docs.yml |
 | `docs/jsdoc/` | `npm run docs:jsdoc` (JSDoc) | api-docs.yml | Published to `gh-pages` under `destination_dir: jsdoc` |
 | `docs/*.html` | `scripts/docs/build_docs.js` | architecture-docs.yml | Published to `gh-pages` branch (staged copy excluding `jsdoc/` and `coverage/`) |
 | `docs/_theme/css/styles.css` | `scripts/docs/build_docs.js` (concatenated from `docs/_theme/css/*.css`) | architecture-docs.yml | Published to `gh-pages` branch alongside `docs/*.html` |
