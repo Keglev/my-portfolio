@@ -79,18 +79,18 @@ Still under construction; a more detailed test guide will follow in a separate d
 
 The app itself makes no third-party API calls at build time or runtime — project data is hand-curated static code, and the only outbound request is the Contact form's submission to Web3Forms.
 
-Generated API reference (JSDoc, from source comments) is published on GitHub Pages:
+The test coverage report is published on GitHub Pages:
 
-https://keglev.github.io/my-portfolio/jsdoc/index.html
+https://keglev.github.io/my-portfolio/coverage/index.html
 
-You can also generate the docs locally with:
+You can regenerate it locally with:
 
 ```powershell
-npm run docs:jsdoc
+npm run test:coverage
 ```
 ## Architecture docs
 
-Full architecture documentation — component diagrams, data-flow diagrams, CI/CD pipeline overview, a 6-ADR decision log, and a German-language overview — is published on GitHub Pages:
+Full architecture documentation — component diagrams, data-flow diagrams, CI/CD pipeline overview, a 9-ADR decision log, and a German-language overview — is published on GitHub Pages:
 
 https://keglev.github.io/my-portfolio/
 

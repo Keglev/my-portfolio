@@ -2,7 +2,7 @@
 
 [← Architecture index](index.md)
 
-The portfolio uses four GitHub Actions workflows. `ci.yml` runs first (lint, test, coverage) and, on a successful push to `main`, dispatches `deploy.yml` and `api-docs.yml` in parallel — deploy always runs; api-docs only runs when the changed files could affect the API surface or test coverage. `architecture-docs.yml` is independent of that chain: it triggers directly on `docs/**` or `scripts/docs/**` pushes. Each of the four workflows has its own concurrency group (see [Concurrency Strategy](#concurrency-strategy)), so `deploy.yml` and `api-docs.yml` can genuinely run at the same time instead of queuing behind each other.
+The portfolio uses four GitHub Actions workflows. `ci.yml` runs first (lint, test, coverage) and, on a successful push to `main`, dispatches `deploy.yml` and `coverage.yml` in parallel — deploy always runs; coverage only runs when a `src/**` change could have altered the report. `architecture-docs.yml` is independent of that chain: it triggers directly on `docs/**` or `scripts/docs/**` pushes. Each of the four workflows has its own concurrency group (see [Concurrency Strategy](#concurrency-strategy)), so `deploy.yml` and `coverage.yml` can genuinely run at the same time instead of queuing behind each other.
 
 `deploy.yml` does not fetch project data — the Projects section renders from the static, hand-curated `src/data/projects.config.js`. The workflow only builds and deploys.
 
@@ -35,12 +35,11 @@ flowchart TD
         BuildReact --> VercelDeploy
     end
 
-    subgraph AD["api-docs.yml"]
-        JSDoc["Generate Code Reference\n(if codeRef)"]
-        Coverage["Download coverage artifact\n(if coverage)"]
-        GHPagesAPI["Publish jsdoc/, coverage/\nto gh-pages"]
-        JSDoc --> GHPagesAPI
-        Coverage --> GHPagesAPI
+    subgraph AD["coverage.yml"]
+        Coverage["Download coverage artifact"]
+        BackLink["Inject back-to-docs link"]
+        GHPagesAPI["Publish coverage/\nto gh-pages"]
+        Coverage --> BackLink --> GHPagesAPI
     end
 
     subgraph AR["architecture-docs.yml"]
@@ -54,13 +53,13 @@ flowchart TD
 
     Push --> Lint
     Scope -->|"workflow_dispatch, always"| BuildReact
-    Scope -->|"workflow_dispatch, if codeRef||coverage"| JSDoc
+    Scope -->|"workflow_dispatch, if coverage"| Coverage
     DocsPush --> Templates
 
     class Push,DocsPush l1
     class Lint,Test,Artifact,Scope l2
     class BuildReact,VercelDeploy l3
-    class JSDoc,Coverage,GHPagesAPI,Templates,Mermaid,GHPagesArch l4
+    class Coverage,BackLink,GHPagesAPI,Templates,Mermaid,GHPagesArch l4
 
     classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
     classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
@@ -72,9 +71,9 @@ flowchart TD
 
 | File | Trigger | Responsibility |
 |------|---------|---------------|
-| `.github/workflows/ci.yml` | Push to `main` (`src/**`, `scripts/**`, `config/**`, `package.json`, `vite.config.js`, `index.html`, `.github/workflows/**`), PRs to `main` | Lint, run full test suite, upload coverage artifact; on push, resolve scope and dispatch `deploy.yml` (always) and `api-docs.yml` (conditionally) in parallel |
+| `.github/workflows/ci.yml` | Push to `main` (`src/**`, `scripts/**`, `config/**`, `package.json`, `vite.config.js`, `index.html`, `.github/workflows/**`), PRs to `main` | Lint, run full test suite, upload coverage artifact; on push, resolve scope and dispatch `deploy.yml` (always) and `coverage.yml` (conditionally) in parallel |
 | `.github/workflows/deploy.yml` | Dispatched by `ci.yml`; manual `workflow_dispatch` | Build React app, deploy prebuilt output to Vercel. Does not dispatch anything else. |
-| `.github/workflows/api-docs.yml` | Dispatched by `ci.yml` with `codeRef`/`coverage` inputs; manual `workflow_dispatch` (defaults both inputs to true) | Generate the Code Reference (if `codeRef`), download the coverage artifact from the latest CI run and publish it (if `coverage`), inject the back-to-docs link into both reports; publishes `jsdoc/` and `coverage/` to `gh-pages` via separate `destination_dir` scoped steps |
+| `.github/workflows/coverage.yml` | Dispatched by `ci.yml` when the `coverage` scope flag is true; manual `workflow_dispatch` | Download the coverage artifact from the latest CI run, inject the back-to-docs link into it, and publish it to `gh-pages` under `destination_dir: coverage`. Takes no inputs — dispatching it is the instruction |
 | `.github/workflows/architecture-docs.yml` | Push to `docs/**` or `scripts/docs/**`; manual `workflow_dispatch` | Apply HTML templates to Markdown, pre-render Mermaid diagrams, publish a staged copy of `docs/` (excluding `coverage/`) to `gh-pages` |
 | `.github/actions/node-setup/` | Composite action used by all four workflows | Sets up Node.js 24, restores the npm cache, and runs `npm ci`; called after `actions/checkout@v7` in each workflow |
 
@@ -91,9 +90,9 @@ Job `lint-and-test`:
 
 Job `start-deploy-stage` (push to `main` only; skipped on pull requests):
 1. Checkout with `fetch-depth: 0` (full history, required to diff `before`..`sha`)
-2. Run `scripts/ci/runPipelineScope.js "$before" "$sha"` — resolves `codeRef`/`coverage`/`archDocs`/`deploy` flags from the changed-file list. If the diff range can't be resolved (new branch, force-push), every flag defaults to `true` rather than skipping work.
+2. Run `scripts/ci/runPipelineScope.js "$before" "$sha"` — resolves `coverage`/`archDocs`/`deploy` flags from the changed-file list. If the diff range can't be resolved (new branch, force-push), every flag defaults to `true` rather than skipping work.
 3. Dispatch `deploy.yml` unconditionally
-4. Dispatch `api-docs.yml` (with `codeRef`/`coverage` inputs) only when at least one of those flags is `true` — dispatched immediately after step 3, not waiting for `deploy.yml` to finish, so build/deploy and docs generation run in parallel
+4. Dispatch `coverage.yml` (no inputs) only when the `coverage` flag is `true` — dispatched immediately after step 3, not waiting for `deploy.yml` to finish, so build/deploy and docs generation run in parallel
 
 ### deploy.yml
 
@@ -104,22 +103,21 @@ Job `start-deploy-stage` (push to `main` only; skipped on pull requests):
 5. Deploy with `vercel --prod --prebuilt`
 6. Smoke-test the Vercel URL (HTTP 200 required)
 
-### api-docs.yml
+### coverage.yml
 
 1. Checkout and `node-setup`
-2. Generate the Code Reference with `npm run docs:jsdoc` (skipped if the `codeRef` input is `false`)
-3. Locate the latest successful `ci.yml` run via the `gh` CLI (skipped if `coverage` input is `false`)
-4. Download the `coverage-report` artifact from that run into `docs/coverage/`
-5. Publish `docs/jsdoc/` to `gh-pages` under `destination_dir: jsdoc` (skipped if `codeRef` is `false`)
-6. Publish `docs/coverage/` to `gh-pages` under `destination_dir: coverage` (skipped if `coverage` is `false`)
-7. Smoke-test `https://keglev.github.io/my-portfolio/jsdoc/index.html` (warning-only)
+2. Locate the latest successful `ci.yml` run via the `gh` CLI. If none exists (no CI history yet), the download below is skipped and the publish leaves `gh-pages/coverage/` untouched
+3. Download the `coverage-report` artifact from that run into `docs/coverage/` (`continue-on-error`: the artifact expires after 7 days)
+4. Inject the back-to-docs link via `scripts/ci/injectBackLink.js` — idempotent, and a no-op when the download produced nothing
+5. Publish `docs/coverage/` to `gh-pages` under `destination_dir: coverage`
+6. Smoke-test `https://keglev.github.io/my-portfolio/coverage/index.html` (warning-only)
 
 ### architecture-docs.yml
 
 1. Checkout and `node-setup`
 2. Apply doc templates via `scripts/docs/build_docs.js`
 3. Pre-render Mermaid diagrams via `scripts/docs/build_mermaid.js`; falls back to CDN client-side rendering when `mmdc` is not installed
-4. Stage `docs/` into a temp directory excluding `coverage/` (api-docs.yml's territory). The `jsdoc/` exclusion that stood beside it is retired: `docs/jsdoc/*.html` used to be git-tracked, so publishing `./docs` unfiltered would have overwritten api-docs.yml's fresher `gh-pages/jsdoc/` with stale committed snapshots — those files are now deleted and gitignored (ADR-008)
+4. Stage `docs/` into a temp directory excluding `coverage/` (coverage.yml's territory). A `jsdoc/` exclusion stood beside it until the code reference was retired (ADR-009); nothing generates that directory now
 5. Deploy the staged copy to the `gh-pages` branch via `peaceiris/actions-gh-pages@v4` with `keep_files: true`
 6. Smoke-test `https://keglev.github.io/my-portfolio` (warning-only)
 
@@ -131,14 +129,14 @@ Four separate concurrency groups are in play, deliberately **not** one shared gr
 |-------|-------|-----------------|
 | `portfolio-pipeline` | `ci.yml` only | — |
 | `deploy-pipeline` | `deploy.yml` only | — |
-| `api-docs-pipeline` | `api-docs.yml` only | — |
+| `coverage-pipeline` | `coverage.yml` only | — |
 | `docs-only` | `architecture-docs.yml`'s direct `docs/**` push trigger | — |
 
-`ci.yml`'s `start-deploy-stage` job dispatches `deploy.yml` and `api-docs.yml` back to back, while `ci.yml`'s own run is still holding `portfolio-pipeline`. GitHub Actions only protects an **already in-progress** run from cancellation when `cancel-in-progress: false` — a run that is still **queued** is not protected, and is silently cancelled if a second run joins the same group's queue before the first one starts. An earlier version of this pipeline put `deploy.yml` and `api-docs.yml` in the shared `portfolio-pipeline` group; in practice this meant `api-docs.yml`'s queued run cancelled `deploy.yml`'s queued run on every push, so builds silently never reached Vercel. Giving each workflow its own group (`deploy-pipeline`, `api-docs-pipeline`) removes the race and lets them run in parallel, at the cost of `ci.yml` runs no longer queuing behind `deploy.yml`/`api-docs.yml` runs — accepted deliberately, since `ci.yml` never touches Vercel or `gh-pages` and each of the other two workflows still self-serializes within its own group.
+`ci.yml`'s `start-deploy-stage` job dispatches `deploy.yml` and `coverage.yml` back to back, while `ci.yml`'s own run is still holding `portfolio-pipeline`. GitHub Actions only protects an **already in-progress** run from cancellation when `cancel-in-progress: false` — a run that is still **queued** is not protected, and is silently cancelled if a second run joins the same group's queue before the first one starts. An earlier version of this pipeline put `deploy.yml` and the coverage workflow (then `api-docs.yml`) in the shared `portfolio-pipeline` group; in practice this meant the docs workflow's queued run cancelled `deploy.yml`'s queued run on every push, so builds silently never reached Vercel. Giving each workflow its own group (`deploy-pipeline`, `coverage-pipeline`) removes the race and lets them run in parallel, at the cost of `ci.yml` runs no longer queuing behind `deploy.yml`/`coverage.yml` runs — accepted deliberately, since `ci.yml` never touches Vercel or `gh-pages` and each of the other two workflows still self-serializes within its own group.
 
-Docs-only pushes — changes to `docs/**` or `scripts/docs/**` — trigger `architecture-docs.yml` directly using the separate `docs-only` concurrency group, so small documentation edits don't queue behind any of the portfolio-pipeline/deploy-pipeline/api-docs-pipeline lineage.
+Docs-only pushes — changes to `docs/**` or `scripts/docs/**` — trigger `architecture-docs.yml` directly using the separate `docs-only` concurrency group, so small documentation edits don't queue behind any of the portfolio-pipeline/deploy-pipeline/coverage-pipeline lineage.
 
-`api-docs.yml` and `architecture-docs.yml` publish to the same `gh-pages` branch from independent trigger paths and could in principle run concurrently. Both declare a job-level `gh-pages-deploy` concurrency group (matched by name across workflows), which serializes just their publish jobs without changing either workflow's top-level trigger concurrency.
+`coverage.yml` and `architecture-docs.yml` publish to the same `gh-pages` branch from independent trigger paths and could in principle run concurrently. Both declare a job-level `gh-pages-deploy` concurrency group (matched by name across workflows), which serializes just their publish jobs without changing either workflow's top-level trigger concurrency.
 
 ## Live Verification (2026-07-17)
 
@@ -146,14 +144,14 @@ The four-workflow topology above was verified live against production, not just 
 
 | # | Scenario | Expected | Result |
 |---|----------|----------|--------|
-| 1 | src-only push | `lint-and-test` → `deploy.yml` + `api-docs.yml` in parallel; `architecture-docs.yml` skipped | Pass |
-| 2 | test-only push | `deploy.yml` + coverage publish; Code Reference rebuild skipped; `architecture-docs.yml` skipped | Pass |
+| 1 | src-only push | `lint-and-test` → `deploy.yml` + `coverage.yml` in parallel; `architecture-docs.yml` skipped | Pass |
+| 2 | test-only push | `deploy.yml` + coverage publish; `architecture-docs.yml` skipped | Pass |
 | 3 | `docs/**`-only push | Only `architecture-docs.yml` runs; `ci.yml` doesn't trigger | Pass |
-| 4 | gh-pages content | `/jsdoc/`, `/coverage/`, architecture pages, and root all reachable | Pass |
+| 4 | gh-pages content | `/coverage/`, architecture pages, and root all reachable | Pass |
 
 Two bugs were found and fixed during this verification, both now on `main`:
 
-- Shared `portfolio-pipeline` concurrency group across `ci.yml`, `deploy.yml`, and `api-docs.yml` caused `deploy.yml`'s queued run to be silently cancelled by `api-docs.yml`'s queued run on every push — no Vercel deploy actually went out until this was fixed (see [Concurrency Strategy](#concurrency-strategy) above for the root cause).
+- Shared `portfolio-pipeline` concurrency group across `ci.yml`, `deploy.yml`, and the docs workflow (then `api-docs.yml`, now `coverage.yml`) caused `deploy.yml`'s queued run to be silently cancelled on every push — no Vercel deploy actually went out until this was fixed (see [Concurrency Strategy](#concurrency-strategy) above for the root cause).
 - An edit that expanded `deploy.yml`'s concurrency-group header comment accidentally deleted its `name:` and `on:` keys, leaving the workflow with no trigger.
 
 ## References
