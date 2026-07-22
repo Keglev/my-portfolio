@@ -50,12 +50,39 @@ report different branch percentages for identical code, and this project's
 coverage plan was baselined under istanbul; pinning the provider keeps the
 numbers comparable across the runner change.
 
-No minimum coverage thresholds are enforced yet. Run `npm run test:coverage`
-to generate a local HTML report with statements, branches, functions, and
-line coverage.
-
 Coverage is collected from `src/**/*.{js,jsx}`, `scripts/**/*.js`, and
-`config/**/*.js`.
+`config/**/*.js`. Run `npm run test:coverage` for a local HTML report.
+
+### Enforced thresholds
+
+**85% statements, branches, functions, and lines — enforced per file.** CI
+fails if any module drops below it.
+
+Per file, not as a project aggregate. An aggregate percentage lets a
+well-covered module mask an untested one: adding a fully covered file raises
+the project total while the untested file stays exactly as untested as
+before. Per-file means every module carries its own weight.
+
+### Exceptions
+
+Four modules are held to lower numbers. Each is a case where 85% is only
+reachable through filler assertions, or through a change that would make the
+suite worse than the gap it closes. The thresholds are set at or just under
+the measured value, so they are regression guards — a **drop** still fails
+the build.
+
+| Module | Held at | Uncovered mechanism |
+|---|---|---|
+| `scripts/docs/build_mermaid.js` | 65 / 45 / 90 / 65 | `renderDiagram` and `run`'s rendering loop need a real `mmdc` binary. Covering them means adding `@mermaid-js/mermaid-cli` (and Chromium) as a devDependency, or mocking the subprocess under test. The path CI actually takes — mmdc absent, clean no-op exit — *is* covered. |
+| `scripts/docs/lib/markedConfig.js` | 80 / 45 / 90 / 80 | Two load-time `process.exit` fail-fast paths and the library-version resolution ternaries. All run at import, before any export exists, through a CommonJS `require` that `vi.mock` cannot intercept. |
+| `scripts/docs/build_docs.js` | 95 / 50 / 90 / 95 | Branch gap only. The uncovered branches are CLI default-param bindings; exercising them requires letting a test write to the real, tracked `docs/` tree. |
+| `src/data/projects.config.js` | 0 | A static data array. The only test that would cover it is an assertion on its length or contents — filler that breaks whenever a project is added or its copy edited. Kept measured, not excluded, so it stays visible in the report. |
+
+Translation catalogues (`src/i18n/locales/*.json`) are excluded from
+collection outright: data is not code.
+
+Adding an entry to this list requires the same justification these carry —
+name the specific uncovered mechanism, and say what covering it would cost.
 
 ## Running tests locally
 
