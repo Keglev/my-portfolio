@@ -13,6 +13,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import ProjectCard from '../../components/Projects/ProjectCard';
+import { ThemeProvider } from '../../context/ThemeContext';
 
 vi.mock('react-i18next', () => ({ useTranslation: vi.fn() }));
 import { useTranslation } from 'react-i18next';
@@ -150,5 +151,140 @@ describe('ProjectCard', () => {
     fireEvent.error(img);
 
     expect(img.getAttribute('src')).toBe(srcAfterFirst);
+  });
+
+  describe('preview image selection', () => {
+    // The card picks a screenshot by active theme first, then by language.
+    // Every step below the first exists so that one missing asset degrades to
+    // a slightly-wrong-but-correct-looking image instead of an empty card.
+    const imageOf = () => screen.getByAltText('Demo Project preview').getAttribute('src');
+
+    beforeEach(() => {
+      window.localStorage.clear();
+      document.documentElement.removeAttribute('data-theme');
+    });
+
+    it('should show the German screenshot when the site language is German', () => {
+      useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'de' } });
+
+      render(<ProjectCard project={baseProject} index={0} />);
+
+      expect(imageOf()).toBe('/projects/demo-dark-de.png');
+    });
+
+    it('should show the light-theme screenshot when the visitor has chosen the light theme', () => {
+      useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'en' } });
+      window.localStorage.setItem('portfolio-theme', 'light');
+
+      render(
+        <ThemeProvider>
+          <ProjectCard project={baseProject} index={0} />
+        </ThemeProvider>
+      );
+
+      expect(imageOf()).toBe('/projects/demo-light-en.png');
+    });
+
+    it('should fall back to the English screenshot when the German one is missing', () => {
+      // A German visitor still sees the project, just captioned in English,
+      // rather than an empty image frame.
+      useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'de' } });
+      const project = {
+        ...baseProject,
+        images: { dark: { en: '/projects/demo-dark-en.png' } },
+      };
+
+      render(<ProjectCard project={project} index={0} />);
+
+      expect(imageOf()).toBe('/projects/demo-dark-en.png');
+    });
+
+    it('should fall back to the dark screenshot when the light theme has no image at all', () => {
+      // Light-theme screenshots are added per project over time; until one
+      // exists, the dark capture is shown rather than nothing.
+      useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'en' } });
+      window.localStorage.setItem('portfolio-theme', 'light');
+      const project = {
+        ...baseProject,
+        images: { dark: { en: '/projects/demo-dark-en.png' } },
+      };
+
+      render(
+        <ThemeProvider>
+          <ProjectCard project={project} index={0} />
+        </ThemeProvider>
+      );
+
+      expect(imageOf()).toBe('/projects/demo-dark-en.png');
+    });
+
+    it('should still render the card when the project has no screenshots configured at all', () => {
+      // A newly added project with no imagery must not break the grid; the
+      // empty src triggers the placeholder path on error.
+      useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'en' } });
+      const project = { ...baseProject, images: undefined };
+
+      render(<ProjectCard project={project} index={0} />);
+
+      expect(imageOf()).toBe('');
+      expect(screen.getByText('Demo Project')).toBeInTheDocument();
+    });
+
+    it('should treat a regional German locale as German when choosing the screenshot', () => {
+      useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'de-DE' } });
+
+      render(<ProjectCard project={baseProject} index={0} />);
+
+      expect(imageOf()).toBe('/projects/demo-dark-de.png');
+    });
+
+    it('should show the English screenshot when the language has not been resolved yet', () => {
+      // i18n.language is undefined for the first frame after mount.
+      useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: undefined } });
+
+      render(<ProjectCard project={baseProject} index={0} />);
+
+      expect(imageOf()).toBe('/projects/demo-dark-en.png');
+    });
+
+    it('should mark its own slot as loaded so the grid can fade the card in', () => {
+      // The grid keeps one shared loaded-map for every card and uses it to add
+      // the .visible/.loaded classes. Each card must record itself under its
+      // OWN index without disturbing its siblings' entries.
+      useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'en' } });
+      let tracked = { 0: true };
+      const setLoadedImages = vi.fn((updater) => { tracked = updater(tracked); });
+      render(<ProjectCard project={baseProject} index={3} setLoadedImages={setLoadedImages} />);
+
+      fireEvent.load(screen.getByAltText('Demo Project preview'));
+
+      expect(tracked).toEqual({ 0: true, 3: true });
+    });
+
+    it('should still mark its slot as loaded when the screenshot fails and the placeholder is shown', () => {
+      // Otherwise a card whose image 404s stays permanently transparent,
+      // because the grid never learns it finished.
+      useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'en' } });
+      let tracked = {};
+      const setLoadedImages = vi.fn((updater) => { tracked = updater(tracked); });
+      render(<ProjectCard project={baseProject} index={1} setLoadedImages={setLoadedImages} />);
+
+      fireEvent.error(screen.getByAltText('Demo Project preview'));
+
+      expect(tracked).toEqual({ 1: true });
+    });
+
+    it('should render standalone, without the grid supplying load-tracking props', () => {
+      // project and index are the only required props; the load-tracking pair
+      // defaults to a no-op so the card can be rendered outside the Projects
+      // grid without wiring up state it does not own.
+      useTranslation.mockReturnValue({ t: (k, def) => def || k, i18n: { language: 'en' } });
+      render(<ProjectCard project={baseProject} index={0} />);
+      const img = screen.getByAltText('Demo Project preview');
+
+      expect(() => fireEvent.load(img)).not.toThrow();
+      expect(() => fireEvent.error(img)).not.toThrow();
+      expect(img.getAttribute('src')).toContain('data:image/svg+xml');
+    });
   });
 });

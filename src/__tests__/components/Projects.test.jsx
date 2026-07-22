@@ -17,10 +17,14 @@ import { render, screen } from '@testing-library/react';
 vi.mock('react-i18next', () => ({ useTranslation: () => ({ t: (k, def) => def || k }) }));
 
 // Deterministic, minimal config so the test does not depend on real copy.
+// The third entry deliberately has no slug: slug is optional in the config
+// shape, and the grid falls back to the array index for React's key so a
+// project added without one still renders instead of collapsing the list.
 vi.mock('../../data/projects.config', () => ({
   default: [
     { slug: 'proj-a', displayName: 'Proj A' },
     { slug: 'proj-b', displayName: 'Proj B' },
+    { displayName: 'Proj C (no slug yet)' },
   ],
 }));
 
@@ -33,15 +37,23 @@ vi.mock('../../components/Projects/ProjectCard', () => ({
 
 describe('Projects', () => {
   it('should render one ProjectCard per curated config entry when Projects mounts', () => {
-
-
     render(<Projects />);
     const cards = screen.getAllByTestId('project-card');
 
-    expect(cards).toHaveLength(2);
+    expect(cards).toHaveLength(3);
     expect(cards[0].getAttribute('data-slug')).toBe('proj-a');
     expect(cards[0].getAttribute('data-index')).toBe('0');
     expect(cards[1].getAttribute('data-slug')).toBe('proj-b');
+  });
+
+  it('should still render a project that has no slug yet', () => {
+    // slug is optional in the config shape and doubles as React's key. A
+    // missing one must fall back to the array index, not drop the card.
+    render(<Projects />);
+    const cards = screen.getAllByTestId('project-card');
+
+    expect(cards[2].getAttribute('data-index')).toBe('2');
+    expect(cards[2].getAttribute('data-slug')).toBeNull();
   });
 
   it('should render the portfolio-meta strip with links to source, docs, and coverage when Projects mounts', () => {

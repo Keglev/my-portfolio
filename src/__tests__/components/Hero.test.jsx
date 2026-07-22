@@ -49,4 +49,30 @@ describe('Hero', () => {
 
     document.body.removeChild(target);
   });
+
+  it('should scroll to the career section when the visitor clicks the experience button', () => {
+    // The second scroll CTA was never exercised, so a typo in its target id
+    // would have shipped as a button that silently does nothing.
+    const target = document.createElement('div');
+    target.id = 'Career';
+    target.scrollIntoView = vi.fn();
+    document.body.appendChild(target);
+    render(<Hero />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'hero.ctaExperience' }));
+
+    expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
+
+    document.body.removeChild(target);
+  });
+
+  it('should do nothing rather than crash when the scroll target is not on the page', () => {
+    // Optional chaining guards this; without it, clicking a CTA before its
+    // section mounts would throw and blank the page via the ErrorBoundary.
+    render(<Hero />);
+
+    expect(() =>
+      fireEvent.click(screen.getByRole('button', { name: 'hero.ctaProjects' }))
+    ).not.toThrow();
+  });
 });

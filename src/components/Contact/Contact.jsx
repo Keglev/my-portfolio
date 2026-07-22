@@ -80,7 +80,16 @@ const Contact = () => {
       <h2>{t('contactSection.heading')}</h2>
       <p className="contact-lead">{t('contactSection.lead')}</p>
 
-      <form className="contact-form" onSubmit={handleSubmit} noValidate={false}>
+      {/* aria-label gives the form an accessible name, which promotes it to a
+          named `form` landmark for screen readers instead of an anonymous
+          group. It is also what lets tests address the form by role rather
+          than reaching into the DOM. */}
+      <form
+        className="contact-form"
+        aria-label={t('contactSection.title')}
+        onSubmit={handleSubmit}
+        noValidate={false}
+      >
         {/* Honeypot: hidden from users, bots fill it and get filtered by Web3Forms */}
         <input type="checkbox" name="botcheck" tabIndex="-1" className="contact-botcheck" aria-hidden="true" />
 
