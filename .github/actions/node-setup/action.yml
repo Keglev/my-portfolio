@@ -22,7 +22,11 @@ runs:
           ${{ runner.os }}-node-24-
 
     - name: Install dependencies
-      # --legacy-peer-deps: react-scripts v5 conflicts with newer peer dep resolution
-      run: npm ci --legacy-peer-deps
+      # Plain `npm ci` -- --legacy-peer-deps existed solely because
+      # react-scripts v5 conflicted with strict peer resolution. With CRA gone
+      # the dependency graph resolves cleanly, and .npmrc's global
+      # legacy-peer-deps=true was removed for the same reason. Verified by a
+      # full install with no .npmrc present.
+      run: npm ci
       # shell: required — composite action run steps don't inherit a default shell
       shell: bash

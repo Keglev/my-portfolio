@@ -34,7 +34,6 @@ jest.mock('../../components/Projects/ProjectCard', () => ({
 
 describe('Projects', () => {
   it('should render one ProjectCard per curated config entry when Projects mounts', () => {
-    // eslint-disable-next-line global-require
     const Projects = require('../../components/Projects/Projects').default;
 
     render(<Projects />);
@@ -47,7 +46,6 @@ describe('Projects', () => {
   });
 
   it('should render the portfolio-meta strip with links to source, docs, and coverage when Projects mounts', () => {
-    // eslint-disable-next-line global-require
     const Projects = require('../../components/Projects/Projects').default;
 
     render(<Projects />);

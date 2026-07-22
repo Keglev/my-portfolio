@@ -87,7 +87,6 @@ describe('runPipelineScope', () => {
 
   describe('resolveScopeForRange', () => {
     it('should resolve normal scope flags when the diff is available', () => {
-      // eslint-disable-next-line global-require
       const { resolveScopeForRange } = require('../../../../scripts/ci/runPipelineScope');
       const exec = jest.fn()
         .mockReturnValueOnce('')
@@ -99,7 +98,6 @@ describe('runPipelineScope', () => {
     });
 
     it('should force every flag true when the diff is unavailable', () => {
-      // eslint-disable-next-line global-require
       const { resolveScopeForRange } = require('../../../../scripts/ci/runPipelineScope');
       const exec = jest.fn(() => {
         throw new Error('fatal: bad revision');
