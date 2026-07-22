@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/components/Legal/Legal.js</title>
+    <title>Code coverage report for src/components/About/About.jsx</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/components/Legal</a> Legal.js</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/components/About</a> About.jsx</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -113,7 +113,17 @@
 <a name='L48'></a><a href='#L48'>48</a>
 <a name='L49'></a><a href='#L49'>49</a>
 <a name='L50'></a><a href='#L50'>50</a>
-<a name='L51'></a><a href='#L51'>51</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -132,8 +142,22 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -145,13 +169,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">44x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -164,55 +182,64 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * @file Legal.js
- * @module components/Legal/Legal
- * @summary Renders the German legal pages: Impressum and Datenschutzerklarung.
- * @enterprise Both sections reuse the project-card layout for visual
- * consistency with the rest of the site. dangerouslySetInnerHTML is safe
- * here specifically because legal.impressumContent/datenschutzContent are
- * developer-authored strings in the locale JSON files, not user input --
- * the trust boundary is "whoever can edit en.json/de.json", same as any
- * other hardcoded copy in this repo.
+ * @file About.js
+ * @module components/About/About
+ * @summary About section: profile photo, four storytelling blocks, and a
+ * condensed career/education strip.
+ * @enterprise Storytelling blocks are the career-changer pitch, in a fixed
+ * order (BLOCKS) matching aboutSection.&lt;key&gt; in the locale files. The photo
+ * prefers /profile.jpg (a curated public/ file, swappable without a
+ * rebuild) and falls back to the bundled src/assets asset on load error, so
+ * a missing public file never breaks the layout. Renders CareerStrip as its
+ * final section.
  */
 import React from 'react';
+import './About.css';
+import ProfilePicFallback from '../../assets/profile-pic.jpg';
 import { useTranslation } from 'react-i18next';
-import './Legal.css';
+import CareerStrip from './CareerStrip';
+&nbsp;
+// Render order of the four storytelling blocks; keys map to aboutSection.&lt;key&gt; in the locales
+const BLOCKS = ['block1', 'block2', 'block3', 'block4'];
 &nbsp;
 /**
- * @returns {JSX.Element} Fragment containing Impressum and Datenschutz sections.
+ * @returns {JSX.Element}
  */
-const Legal = () =&gt; {
+const About = () =&gt; {
   const { t } = useTranslation();
-  return (
-    &lt;&gt;
-      &lt;div className="project-container" id="Impressum"&gt;
-        &lt;h2 className="legal-heading"&gt;{t('legal.impressumHeading')}&lt;/h2&gt;
-        &lt;div className="project-grid"&gt;
-          &lt;div className="project-card visible"&gt;
-            &lt;div className="project-content legal-content"&gt;
-              {/* Legal text contains links and line-break tags authored in the locale files */}
-              &lt;div dangerouslySetInnerHTML={{ __html: t('legal.impressumContent') }} /&gt;
-            &lt;/div&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/div&gt;
 &nbsp;
-      &lt;div className="project-container" id="Datenschutz"&gt;
-        &lt;h2 className="legal-heading"&gt;{t('legal.datenschutzHeading')}&lt;/h2&gt;
-        &lt;div className="project-grid"&gt;
-          &lt;div className="project-card visible"&gt;
-            &lt;div className="project-content legal-content"&gt;
-              {/* Legal text contains links and line-break tags authored in the locale files */}
-              &lt;div dangerouslySetInnerHTML={{ __html: t('legal.datenschutzContent') }} /&gt;
-            &lt;/div&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
+  const handleImgError = (e) =&gt; {
+    const img = e.currentTarget;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (img.getAttribute('data-fallback') !== '1') {
+      img.setAttribute('data-fallback', '1');
+      img.src = ProfilePicFallback;
+    }
+  };
+&nbsp;
+  return (
+    &lt;div className="about-container" id="About"&gt;
+      &lt;div className="about-header"&gt;
+        &lt;img
+          src="/profile.jpg"
+          alt="Carlos Keglevich portrait"
+          onError={handleImgError}
+        /&gt;
+        &lt;h2&gt;{t('aboutSection.heading')}&lt;/h2&gt;
       &lt;/div&gt;
-    &lt;/&gt;
+      &lt;div className="about-blocks"&gt;
+        {BLOCKS.map((key) =&gt; (
+          &lt;article className="about-block" key={key}&gt;
+            &lt;h3&gt;{t(`aboutSection.${key}.title`)}&lt;/h3&gt;
+            &lt;p&gt;{t(`aboutSection.${key}.text`)}&lt;/p&gt;
+          &lt;/article&gt;
+        ))}
+      &lt;/div&gt;
+      &lt;CareerStrip /&gt;
+    &lt;/div&gt;
   );
 };
 &nbsp;
-export default Legal;
+export default About;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -220,7 +247,7 @@ export default Legal;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-20T17:08:28.578Z
+                at 2026-07-22T09:45:34.512Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

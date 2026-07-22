@@ -3,15 +3,15 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for src/components/Projects/Projects.js</title>
+    <title>Code coverage report for src/App.jsx</title>
     <meta charset="utf-8" />
-    <link rel="stylesheet" href="../../../prettify.css" />
-    <link rel="stylesheet" href="../../../base.css" />
-    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style type='text/css'>
         .coverage-summary .sorter {
-            background-image: url(../../../sort-arrow-sprite.png);
+            background-image: url(../sort-arrow-sprite.png);
         }
     </style>
 </head>
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/components/Projects</a> Projects.js</h1>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">src</a> App.jsx</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>0/0</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>5/5</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
@@ -115,11 +115,7 @@
 <a name='L50'></a><a href='#L50'>50</a>
 <a name='L51'></a><a href='#L51'>51</a>
 <a name='L52'></a><a href='#L52'>52</a>
-<a name='L53'></a><a href='#L53'>53</a>
-<a name='L54'></a><a href='#L54'>54</a>
-<a name='L55'></a><a href='#L55'>55</a>
-<a name='L56'></a><a href='#L56'>56</a>
-<a name='L57'></a><a href='#L57'>57</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L53'></a><a href='#L53'>53</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -140,21 +136,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -176,61 +168,57 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/**
- * @file Projects.js
- * @module components/Projects/Projects
- * @summary Renders the portfolio's Projects section.
- * @enterprise Reads curated project data directly from data/projects.config
- * (no runtime fetch). Card content, titles, tech tags, images, and links
- * are all controlled there. `loadedImages` tracks per-card image load
- * state for the entrance animation handled in ProjectCard/Projects.css.
- * Below the grid, a small "portfolio meta" strip links to this site's own
- * source, docs, and coverage report -- proof the same documentation and
- * testing standard applies to itself.
+ * @file App.js
+ * @module App
+ * @summary Root application component; composes the fixed sidebar with the
+ * scrollable main content column.
+ * @enterprise Single-page portfolio: no router, no pages/ layer -- each
+ * section (Hero/About/Skills/Projects/Contact/Legal) renders exactly once,
+ * in the order the sidebar nav expects (SidebarMenu's NAV_ITEMS ids match
+ * these section ids for react-scroll). Wraps everything in ThemeProvider so
+ * every descendant can read the active theme. "./i18n" is imported for its
+ * side effect only (i18next init) and must run before any translated
+ * component renders.
  */
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import ProjectCard from './ProjectCard';
-import projects from '../../data/projects.config';
-import './Projects.css';
+import React from 'react';
+import './App.css';
+import Projects from './components/Projects/Projects';
+import About from './components/About/About';
+import Sidebar from './components/Sidebar/Sidebar';
+import Hero from './components/Hero/Hero';
+import Skills from './components/Skills/Skills';
+import Contact from './components/Contact/Contact';
+import { ThemeProvider } from './context/ThemeContext';
+import Legal from './components/Legal/Legal';
+import { GlobalStyles } from './styles/GlobalStyles';
+import { SpeedInsights } from "@vercel/speed-insights/react";
+import "./i18n"; // must be imported before any translated component renders
 &nbsp;
 /**
- * @returns {JSX.Element} Grid of curated project cards plus the portfolio-meta strip.
+ * @returns {JSX.Element}
  */
-const Projects = () =&gt; {
-  const { t } = useTranslation();
-  const [loadedImages, setLoadedImages] = useState({});
-&nbsp;
+function App() {
   return (
-    &lt;section className="project-container" id="Projects"&gt;
-      &lt;h2&gt;{t('projects', 'Projects')}&lt;/h2&gt;
-      &lt;div className="project-grid"&gt;
-        {projects.map((project, idx) =&gt; (
-          &lt;ProjectCard
-            key={project.slug || <span class="branch-1 cbranch-no" title="branch not covered" >idx}</span>
-            project={project}
-            index={idx}
-            loadedImages={loadedImages}
-            setLoadedImages={setLoadedImages}
-          /&gt;
-        ))}
+    &lt;ThemeProvider&gt;
+      &lt;SpeedInsights /&gt;
+      &lt;GlobalStyles /&gt;
+      &lt;div className="container"&gt;
+        &lt;Sidebar /&gt;
+        {/* id matches the containerId prop used by react-scroll in SidebarMenu */}
+        &lt;div className="main-content" id="scroll-container"&gt;
+          &lt;div className="section" id="Hero"&gt;&lt;Hero /&gt;&lt;/div&gt;
+          &lt;div className="section" id="About"&gt;&lt;About /&gt;&lt;/div&gt;
+          &lt;div className="section" id="Skills"&gt;&lt;Skills /&gt;&lt;/div&gt;
+          &lt;div className="section" id="Projects"&gt;&lt;Projects /&gt;&lt;/div&gt;
+          &lt;div className="section" id="Contact"&gt;&lt;Contact /&gt;&lt;/div&gt;
+          &lt;div className="section" id="Legal"&gt;&lt;Legal /&gt;&lt;/div&gt;
+        &lt;/div&gt;
       &lt;/div&gt;
-      &lt;p className="portfolio-meta"&gt;
-        {t('portfolioMeta.text')}{' '}
-        &lt;a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener noreferrer"&gt;
-          {t('portfolioMeta.source')}
-        &lt;/a&gt; ·{' '}
-        &lt;a href="https://keglev.github.io/my-portfolio/" target="_blank" rel="noopener noreferrer"&gt;
-          {t('portfolioMeta.docs')}
-        &lt;/a&gt; ·{' '}
-        &lt;a href="https://keglev.github.io/my-portfolio/coverage/index.html" target="_blank" rel="noopener noreferrer"&gt;
-          {t('portfolioMeta.coverage')}
-        &lt;/a&gt;
-      &lt;/p&gt;
-    &lt;/section&gt;
+    &lt;/ThemeProvider&gt;
   );
-};
+}
 &nbsp;
-export default Projects;
+export default App;
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -238,16 +226,16 @@ export default Projects;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-20T17:08:28.613Z
+                at 2026-07-22T09:45:34.512Z
             </div>
-        <script src="../../../prettify.js"></script>
+        <script src="../prettify.js"></script>
         <script>
             window.onload = function () {
                 prettyPrint();
             };
         </script>
-        <script src="../../../sorter.js"></script>
-        <script src="../../../block-navigation.js"></script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
     </body>
 </html>
     

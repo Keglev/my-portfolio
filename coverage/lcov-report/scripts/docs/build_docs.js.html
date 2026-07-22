@@ -25,7 +25,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/35</span>
+                <span class='fraction'>0/40</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/33</span>
+                <span class='fraction'>0/38</span>
             </div>
         
             
@@ -140,7 +140,17 @@
 <a name='L75'></a><a href='#L75'>75</a>
 <a name='L76'></a><a href='#L76'>76</a>
 <a name='L77'></a><a href='#L77'>77</a>
-<a name='L78'></a><a href='#L78'>78</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -169,10 +179,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -180,10 +186,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -196,6 +204,14 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -204,8 +220,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -245,50 +265,60 @@ const { processDir } = <span class="cstat-no" title="statement not covered" >req
 &nbsp;
 const REPO_ROOT   = <span class="cstat-no" title="statement not covered" >path.resolve(__dirname, '..', '..');</span>
 const DOCS_DIR    = <span class="cstat-no" title="statement not covered" >path.join(REPO_ROOT, 'docs');</span>
-const TMPL_DIR    = <span class="cstat-no" title="statement not covered" >path.join(__dirname, 'templates');</span>
+const THEME_DIR   = <span class="cstat-no" title="statement not covered" >path.join(DOCS_DIR, '_theme');</span>
+const TMPL_DIR    = <span class="cstat-no" title="statement not covered" >path.join(THEME_DIR, 'templates');</span>
+const CSS_DIR     = <span class="cstat-no" title="statement not covered" >path.join(THEME_DIR, 'css');</span>
 &nbsp;
-// Template parts — assembled at runtime into full page and hub HTML
-const HEADER_TMPL = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'header.html');</span>
-const FOOTER_TMPL = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'footer.html');</span>
-const PAGE_TMPL   = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'page.html');</span>
-const HUB_TMPL    = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'hub.html');</span>
+// Template parts — assembled at runtime into full page and landing HTML
+const HEADER_TMPL      = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'header.html');</span>
+const FOOTER_TMPL      = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'footer.html');</span>
+const PAGE_TMPL        = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'page.html');</span>
+const LANDING_EN_TMPL  = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'landing-en.html');</span>
+const LANDING_DE_TMPL  = <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, 'landing-de.html');</span>
 &nbsp;
-// CSS source files in cascade order; concatenated into one output stylesheet
-const CSS_PARTS   = <span class="cstat-no" title="statement not covered" >['base.css', 'layout.css', 'components.css', 'typography.css', 'utilities.css']</span>
-                      .map(<span class="fstat-no" title="function not covered" >f </span>=&gt; <span class="cstat-no" title="statement not covered" >path.join(TMPL_DIR, f))</span>;
-const STYLES_OUT  = <span class="cstat-no" title="statement not covered" >path.join(DOCS_DIR, 'templates', 'styles.css');</span>
+// CSS source files in cascade order; concatenated into one output stylesheet.
+// mermaid.css from the reference theme is deliberately not ported — page.html
+// keeps an explicit dark themeVariables Mermaid init instead (see page.html).
+const CSS_PARTS   = <span class="cstat-no" title="statement not covered" >['tokens.css', 'base.css', 'layout.css', 'components.css', 'content.css', 'landing.css']</span>
+                      .map(<span class="fstat-no" title="function not covered" >f </span>=&gt; <span class="cstat-no" title="statement not covered" >path.join(CSS_DIR, f))</span>;
+const STYLES_OUT  = <span class="cstat-no" title="statement not covered" >path.join(CSS_DIR, 'styles.css');</span>
 &nbsp;
 function <span class="fstat-no" title="function not covered" >run(</span>) {
   // Verify all template parts exist before starting
-<span class="cstat-no" title="statement not covered" >  for (const tmpl of [HEADER_TMPL, FOOTER_TMPL, PAGE_TMPL, HUB_TMPL]) {</span>
+<span class="cstat-no" title="statement not covered" >  for (const tmpl of [HEADER_TMPL, FOOTER_TMPL, PAGE_TMPL, LANDING_EN_TMPL, LANDING_DE_TMPL]) {</span>
 <span class="cstat-no" title="statement not covered" >    if (!fs.existsSync(tmpl)) {</span>
 <span class="cstat-no" title="statement not covered" >      console.error(`[build_docs] Template not found: ${tmpl}`);</span>
 <span class="cstat-no" title="statement not covered" >      process.exit(1);</span>
     }
   }
 &nbsp;
-  const headerTmpl   = <span class="cstat-no" title="statement not covered" >fs.readFileSync(HEADER_TMPL, 'utf8');</span>
-  const footerTmpl   = <span class="cstat-no" title="statement not covered" >fs.readFileSync(FOOTER_TMPL, 'utf8');</span>
-  const pageBodyTmpl = <span class="cstat-no" title="statement not covered" >fs.readFileSync(PAGE_TMPL,   'utf8');</span>
-  const hubBodyTmpl  = <span class="cstat-no" title="statement not covered" >fs.readFileSync(HUB_TMPL,    'utf8');</span>
+  const headerTmpl     = <span class="cstat-no" title="statement not covered" >fs.readFileSync(HEADER_TMPL,     'utf8');</span>
+  const footerTmpl     = <span class="cstat-no" title="statement not covered" >fs.readFileSync(FOOTER_TMPL,     'utf8');</span>
+  const pageBodyTmpl   = <span class="cstat-no" title="statement not covered" >fs.readFileSync(PAGE_TMPL,       'utf8');</span>
+  const landingEnTmpl  = <span class="cstat-no" title="statement not covered" >fs.readFileSync(LANDING_EN_TMPL, 'utf8');</span>
+  const landingDeTmpl  = <span class="cstat-no" title="statement not covered" >fs.readFileSync(LANDING_DE_TMPL, 'utf8');</span>
 &nbsp;
   // Assemble the full doc-page template from its three parts
   const pageTemplate = <span class="cstat-no" title="statement not covered" >headerTmpl + '\n' + pageBodyTmpl + '\n' + footerTmpl;</span>
 <span class="cstat-no" title="statement not covered" >  processDir(DOCS_DIR, 0, pageTemplate, DOCS_DIR);</span>
 &nbsp;
   // Concatenate split CSS source files into a single output stylesheet
-  const stylesDir = <span class="cstat-no" title="statement not covered" >path.dirname(STYLES_OUT);</span>
-<span class="cstat-no" title="statement not covered" >  if (!fs.existsSync(stylesDir)) <span class="cstat-no" title="statement not covered" >fs.mkdirSync(stylesDir, { recursive: true });</span></span>
+<span class="cstat-no" title="statement not covered" >  if (!fs.existsSync(CSS_DIR)) <span class="cstat-no" title="statement not covered" >fs.mkdirSync(CSS_DIR, { recursive: true });</span></span>
   const combinedCss = <span class="cstat-no" title="statement not covered" >CSS_PARTS.map(<span class="fstat-no" title="function not covered" >f </span>=&gt; <span class="cstat-no" title="statement not covered" >fs.readFileSync(f, 'utf8'))</span>.join('\n');</span>
 <span class="cstat-no" title="statement not covered" >  fs.writeFileSync(STYLES_OUT, combinedCss, 'utf8');</span>
-<span class="cstat-no" title="statement not covered" >  console.log('[build_docs]  styles/{base,layout,components,typography,utilities}.css → docs/templates/styles.css');</span>
+<span class="cstat-no" title="statement not covered" >  console.log('[build_docs]  _theme/css/{tokens,base,layout,components,content,landing}.css → docs/_theme/css/styles.css');</span>
 &nbsp;
-  // Assemble the hub landing page and write it directly to docs/index.html
-  const hubHtml = <span class="cstat-no" title="statement not covered" >headerTmpl.replace('{{TITLE}}', 'my-portfolio — Documentation')</span>
-                + '\n' + hubBodyTmpl
-                + '\n' + footerTmpl;
-<span class="cstat-no" title="statement not covered" >  fs.writeFileSync(path.join(DOCS_DIR, 'index.html'), hubHtml, 'utf8');</span>
-<span class="cstat-no" title="statement not covered" >  console.log('[build_docs]  hub assembled → index.html');</span>
+  // Assemble the bilingual landing pages and write them directly to docs/
+  const landingEnHtml = <span class="cstat-no" title="statement not covered" >headerTmpl.replace('{{TITLE}}', 'my-portfolio — Documentation')</span>
+                       + '\n' + landingEnTmpl
+                       + '\n' + footerTmpl;
+<span class="cstat-no" title="statement not covered" >  fs.writeFileSync(path.join(DOCS_DIR, 'index.html'), landingEnHtml, 'utf8');</span>
+&nbsp;
+  const landingDeHtml = <span class="cstat-no" title="statement not covered" >headerTmpl.replace('{{TITLE}}', 'my-portfolio — Dokumentation')</span>
+                       + '\n' + landingDeTmpl
+                       + '\n' + footerTmpl;
+<span class="cstat-no" title="statement not covered" >  fs.writeFileSync(path.join(DOCS_DIR, 'index-de.html'), landingDeHtml, 'utf8');</span>
+<span class="cstat-no" title="statement not covered" >  console.log('[build_docs]  landing assembled → index.html, index-de.html');</span>
 &nbsp;
 <span class="cstat-no" title="statement not covered" >  console.log('[build_docs] Done.');</span>
 }
@@ -301,7 +331,7 @@ function <span class="fstat-no" title="function not covered" >run(</span>) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-20T17:08:28.613Z
+                at 2026-07-22T09:45:34.531Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
