@@ -12,22 +12,29 @@ purged from both the marker and this list.
 
 **Site:** `vite.config.js`, the `test.coverage.thresholds` block.
 
-**Context:** coverage thresholds are enforced per file through ten glob
+**Context:** coverage thresholds are enforced per file through eleven glob
 groups rather than a project-wide setting, because Vitest applies a
 top-level threshold to *every* file even when a glob entry also matches it —
 which makes documented exceptions unreachable. The groups therefore have to
 partition the measured tree between them.
 
 Nothing currently enforces that partition. A source file matching none of
-the ten globs is silently ungated, and a glob matching no files passes
+them is silently ungated, and a glob matching no files passes
 silently while gating nothing. Both failure modes are invisible in a green
 run: during P10-C step 3 the config passed cleanly at a point when four of
-the ten groups were, in fact, enforcing nothing. That was caught only by
+the groups were, in fact, enforcing nothing. That was caught only by
 replicating Vitest's matcher by hand.
 
 **Proposed fix:** a test that reads the threshold globs and the set of
 measured files, then asserts every file matches exactly one group and every
 group matches at least one file.
+
+**Checked by hand each time the config changes**, which is the interim
+control this entry describes rather than a substitute for it. Most recently
+after `detectPipelineScope.js` gained its own entry: 11 groups, 31 measured
+files, every file matching exactly one group. The count in this entry is
+maintained for the same reason — a stale number here would be the first
+sign the check stopped happening.
 
 **Why deferred:** the test needs the list of measured files, which only
 exists after a coverage run has written `coverage/coverage-summary.json`.
