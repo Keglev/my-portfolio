@@ -44,9 +44,17 @@ function convertMd(mdPath, template) {
 }
 
 /**
- * For pages one or more levels below docs/, rewrite the two relative hrefs
- * in header.html so the stylesheet and the hub back-link resolve correctly.
- * Depth 0 = docs/ root; depth 1 = docs/architecture/, etc.
+ * For pages one or more levels below docs/, rewrite the root-relative hrefs
+ * in header.html so the stylesheet, the runtime script, and the links back to
+ * the two landings resolve correctly. Depth 0 = docs/ root; depth 1 =
+ * docs/architecture/, etc.
+ *
+ * The landing hrefs are rewritten with replaceAll, not replace: header.html
+ * carries index.html twice -- the breadcrumb and the EN half of the language
+ * switch -- and rewriting only the first left the second pointing at whatever
+ * index.html happened to sit in the current directory. Both landings are
+ * covered for the same reason. docs.js resets both hrefs at runtime anyway,
+ * so this is what the page means before its script runs.
  *
  * @param {string} template
  * @param {number} depth
@@ -58,7 +66,8 @@ function adjustTemplate(template, depth) {
   return template
     .replace('href="_theme/css/styles.css"', `href="${prefix}_theme/css/styles.css"`)
     .replace('src="_theme/js/docs.js"',      `src="${prefix}_theme/js/docs.js"`)
-    .replace('href="index.html"',            `href="${prefix}index.html"`);
+    .replaceAll('href="index.html"',         `href="${prefix}index.html"`)
+    .replaceAll('href="index-de.html"',      `href="${prefix}index-de.html"`);
 }
 
 /**

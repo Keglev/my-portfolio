@@ -36,7 +36,7 @@ flowchart TD
     end
 
     subgraph AD["api-docs.yml"]
-        JSDoc["Generate JSDoc\n(if apiDocs)"]
+        JSDoc["Generate Code Reference\n(if codeRef)"]
         Coverage["Download coverage artifact\n(if coverage)"]
         GHPagesAPI["Publish jsdoc/, coverage/\nto gh-pages"]
         JSDoc --> GHPagesAPI
@@ -54,7 +54,7 @@ flowchart TD
 
     Push --> Lint
     Scope -->|"workflow_dispatch, always"| BuildReact
-    Scope -->|"workflow_dispatch, if apiDocs||coverage"| JSDoc
+    Scope -->|"workflow_dispatch, if codeRef||coverage"| JSDoc
     DocsPush --> Templates
 
     class Push,DocsPush l1
@@ -74,8 +74,8 @@ flowchart TD
 |------|---------|---------------|
 | `.github/workflows/ci.yml` | Push to `main` (`src/**`, `scripts/**`, `config/**`, `package.json`, `vite.config.js`, `index.html`, `.github/workflows/**`), PRs to `main` | Lint, run full test suite, upload coverage artifact; on push, resolve scope and dispatch `deploy.yml` (always) and `api-docs.yml` (conditionally) in parallel |
 | `.github/workflows/deploy.yml` | Dispatched by `ci.yml`; manual `workflow_dispatch` | Build React app, deploy prebuilt output to Vercel. Does not dispatch anything else. |
-| `.github/workflows/api-docs.yml` | Dispatched by `ci.yml` with `apiDocs`/`coverage` inputs; manual `workflow_dispatch` (defaults both inputs to true) | Generate JSDoc (if `apiDocs`), download the coverage artifact from the latest CI run and publish it (if `coverage`); publishes `jsdoc/` and `coverage/` to `gh-pages` via separate `destination_dir` scoped steps |
-| `.github/workflows/architecture-docs.yml` | Push to `docs/**` or `scripts/docs/**`; manual `workflow_dispatch` | Apply HTML templates to Markdown, pre-render Mermaid diagrams, publish a staged copy of `docs/` (excluding `jsdoc/` and `coverage/`) to `gh-pages` |
+| `.github/workflows/api-docs.yml` | Dispatched by `ci.yml` with `codeRef`/`coverage` inputs; manual `workflow_dispatch` (defaults both inputs to true) | Generate the Code Reference (if `codeRef`), download the coverage artifact from the latest CI run and publish it (if `coverage`), inject the back-to-docs link into both reports; publishes `jsdoc/` and `coverage/` to `gh-pages` via separate `destination_dir` scoped steps |
+| `.github/workflows/architecture-docs.yml` | Push to `docs/**` or `scripts/docs/**`; manual `workflow_dispatch` | Apply HTML templates to Markdown, pre-render Mermaid diagrams, publish a staged copy of `docs/` (excluding `coverage/`) to `gh-pages` |
 | `.github/actions/node-setup/` | Composite action used by all four workflows | Sets up Node.js 24, restores the npm cache, and runs `npm ci`; called after `actions/checkout@v7` in each workflow |
 
 ## Step Details
@@ -91,9 +91,9 @@ Job `lint-and-test`:
 
 Job `start-deploy-stage` (push to `main` only; skipped on pull requests):
 1. Checkout with `fetch-depth: 0` (full history, required to diff `before`..`sha`)
-2. Run `scripts/ci/runPipelineScope.js "$before" "$sha"` — resolves `apiDocs`/`coverage`/`archDocs`/`deploy` flags from the changed-file list. If the diff range can't be resolved (new branch, force-push), every flag defaults to `true` rather than skipping work.
+2. Run `scripts/ci/runPipelineScope.js "$before" "$sha"` — resolves `codeRef`/`coverage`/`archDocs`/`deploy` flags from the changed-file list. If the diff range can't be resolved (new branch, force-push), every flag defaults to `true` rather than skipping work.
 3. Dispatch `deploy.yml` unconditionally
-4. Dispatch `api-docs.yml` (with `apiDocs`/`coverage` inputs) only when at least one of those flags is `true` — dispatched immediately after step 3, not waiting for `deploy.yml` to finish, so build/deploy and docs generation run in parallel
+4. Dispatch `api-docs.yml` (with `codeRef`/`coverage` inputs) only when at least one of those flags is `true` — dispatched immediately after step 3, not waiting for `deploy.yml` to finish, so build/deploy and docs generation run in parallel
 
 ### deploy.yml
 
@@ -107,10 +107,10 @@ Job `start-deploy-stage` (push to `main` only; skipped on pull requests):
 ### api-docs.yml
 
 1. Checkout and `node-setup`
-2. Generate JSDoc API docs with `npm run docs:jsdoc` (skipped if `apiDocs` input is `false`)
+2. Generate the Code Reference with `npm run docs:jsdoc` (skipped if the `codeRef` input is `false`)
 3. Locate the latest successful `ci.yml` run via the `gh` CLI (skipped if `coverage` input is `false`)
 4. Download the `coverage-report` artifact from that run into `docs/coverage/`
-5. Publish `docs/jsdoc/` to `gh-pages` under `destination_dir: jsdoc` (skipped if `apiDocs` is `false`)
+5. Publish `docs/jsdoc/` to `gh-pages` under `destination_dir: jsdoc` (skipped if `codeRef` is `false`)
 6. Publish `docs/coverage/` to `gh-pages` under `destination_dir: coverage` (skipped if `coverage` is `false`)
 7. Smoke-test `https://keglev.github.io/my-portfolio/jsdoc/index.html` (warning-only)
 
@@ -119,7 +119,7 @@ Job `start-deploy-stage` (push to `main` only; skipped on pull requests):
 1. Checkout and `node-setup`
 2. Apply doc templates via `scripts/docs/build_docs.js`
 3. Pre-render Mermaid diagrams via `scripts/docs/build_mermaid.js`; falls back to CDN client-side rendering when `mmdc` is not installed
-4. Stage `docs/` into a temp directory excluding `jsdoc/` and `coverage/` (those are api-docs.yml's territory; `docs/jsdoc/*.html` is also git-tracked on `main` as legacy generated output, so publishing `./docs` unfiltered would overwrite api-docs.yml's fresher `gh-pages/jsdoc/` with stale committed snapshots)
+4. Stage `docs/` into a temp directory excluding `coverage/` (api-docs.yml's territory). The `jsdoc/` exclusion that stood beside it is retired: `docs/jsdoc/*.html` used to be git-tracked, so publishing `./docs` unfiltered would have overwritten api-docs.yml's fresher `gh-pages/jsdoc/` with stale committed snapshots — those files are now deleted and gitignored (ADR-008)
 5. Deploy the staged copy to the `gh-pages` branch via `peaceiris/actions-gh-pages@v4` with `keep_files: true`
 6. Smoke-test `https://keglev.github.io/my-portfolio` (warning-only)
 
@@ -147,7 +147,7 @@ The four-workflow topology above was verified live against production, not just 
 | # | Scenario | Expected | Result |
 |---|----------|----------|--------|
 | 1 | src-only push | `lint-and-test` → `deploy.yml` + `api-docs.yml` in parallel; `architecture-docs.yml` skipped | Pass |
-| 2 | test-only push | `deploy.yml` + coverage publish; JSDoc rebuild skipped; `architecture-docs.yml` skipped | Pass |
+| 2 | test-only push | `deploy.yml` + coverage publish; Code Reference rebuild skipped; `architecture-docs.yml` skipped | Pass |
 | 3 | `docs/**`-only push | Only `architecture-docs.yml` runs; `ci.yml` doesn't trigger | Pass |
 | 4 | gh-pages content | `/jsdoc/`, `/coverage/`, architecture pages, and root all reachable | Pass |
 

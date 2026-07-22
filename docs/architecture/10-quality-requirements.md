@@ -44,7 +44,7 @@ Each scenario follows a stimulus → response format: something happens, and the
 ### Maintainability
 
 - **Scenario**: A future maintainer (possibly the current one, months later) needs to know why a technical choice was made. **Response**: The choice has an ADR under [chapter 09](09-decisions/index.md) recording its context and consequences, not just its outcome.
-- **Scenario**: A change lands on `main`. **Response**: Generated API docs and, where in scope, the coverage report are republished to GitHub Pages automatically — the deployed docs never drift far from the code they describe.
+- **Scenario**: A change lands on `main`. **Response**: The generated Code Reference and, where in scope, the coverage report are republished to GitHub Pages automatically — the deployed docs never drift far from the code they describe.
 - **Scenario**: A change lowers a module's test coverage. **Response**: CI fails. A minimum of **85% statements, branches, functions, and lines is enforced per file**, not as a project aggregate — an aggregate lets a well-covered module mask an untested one. A short, individually justified exception list is encoded in `vite.config.js`, where each entry names the specific uncovered mechanism and what covering it would cost. See [Testing](08c-concepts-testing.md).
 
 ## References

@@ -4,7 +4,7 @@
   },
   "source": {
     "include": ["src"],
-    "exclude": ["node_modules", "build", "public", "docs"],
+    "exclude": ["node_modules", "build", "public", "docs", "src/__tests__"],
     "includePattern": ".+\\.js(doc|x)?$",
     "excludePattern": "(^|\\/)node_modules\\/"
   },

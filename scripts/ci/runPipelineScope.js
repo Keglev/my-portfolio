@@ -42,12 +42,12 @@ function resolveChangedFiles(before, after, exec = (cmd) => execSync(cmd, { enco
  * @param {string} before
  * @param {string} after
  * @param {(cmd: string) => string} [exec]
- * @returns {{apiDocs: boolean, coverage: boolean, archDocs: boolean, deploy: boolean}}
+ * @returns {{codeRef: boolean, coverage: boolean, archDocs: boolean, deploy: boolean}}
  */
 function resolveScopeForRange(before, after, exec) {
   const changedFiles = resolveChangedFiles(before, after, exec);
   if (changedFiles === null) {
-    return { apiDocs: true, coverage: true, archDocs: true, deploy: true };
+    return { codeRef: true, coverage: true, archDocs: true, deploy: true };
   }
   return resolveScope(changedFiles);
 }
