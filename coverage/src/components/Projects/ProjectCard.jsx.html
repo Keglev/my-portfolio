@@ -23,23 +23,23 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.88% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>16/18</span>
+                <span class='fraction'>18/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">73.52% </span>
+                <span class="strong">94.11% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>25/34</span>
+                <span class='fraction'>32/34</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">62.5% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/8</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
@@ -211,39 +211,31 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -251,8 +243,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">38x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -328,20 +328,20 @@ import { useTheme } from '../../context/ThemeContext';
  * @param {Function} setLoadedImages - Setter for loadedImages state
  * @returns {JSX.Element}
  */
-const ProjectCard = ({ project, index, loadedImages = {}, <span class="fstat-no" title="function not covered" >setLoadedImages = () =&gt; {</span>} }) =&gt; {
+const ProjectCard = ({ project, index, loadedImages = {}, setLoadedImages = () =&gt; {} }) =&gt; {
   const { t, i18n } = useTranslation();
 &nbsp;
   // Active theme (from ThemeContext; defaults to dark without a provider) picks
   // the screenshot set; language picks the variant, falling back to English,
   // then to the dark English image so a missing light asset never breaks a card.
   const { theme } = useTheme();
-  const lang = (i18n.language || <span class="branch-1 cbranch-no" title="branch not covered" >'en')</span>.toLowerCase().startsWith('de') ? 'de' : 'en';
-  const themeSet = (project.images &amp;&amp; project.images[theme]) || <span class="branch-2 cbranch-no" title="branch not covered" >{};</span>
+  const lang = (i18n.language || 'en').toLowerCase().startsWith('de') ? 'de' : 'en';
+  const themeSet = (project.images &amp;&amp; project.images[theme]) || {};
   const imageSrc =
     themeSet[lang] ||
-<span class="branch-1 cbranch-no" title="branch not covered" >    themeSet.en ||</span>
-    (<span class="branch-2 cbranch-no" title="branch not covered" >project.images &amp;&amp; <span class="branch-3 cbranch-no" title="branch not covered" >p</span>roject.images.dark &amp;&amp; <span class="branch-4 cbranch-no" title="branch not covered" >p</span>roject.images.dark.en) ||</span>
-<span class="branch-5 cbranch-no" title="branch not covered" >    '';</span>
+    themeSet.en ||
+    (project.images &amp;&amp; project.images.dark &amp;&amp; project.images.dark.en) ||
+    '';
 &nbsp;
   // Single, deterministic fallback: config image -&gt; inline SVG placeholder.
   const handleError = (e) =&gt; {
@@ -350,7 +350,7 @@ const ProjectCard = ({ project, index, loadedImages = {}, <span class="fstat-no"
       img.setAttribute('data-fallback', '1');
       img.src = generatePlaceholderSVGDataUrl(project.displayName);
     }
-<span class="fstat-no" title="function not covered" >    setLoadedImages(p</span>rev =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, [index]: true }))</span>;
+    setLoadedImages(prev =&gt; ({ ...prev, [index]: true }));
   };
 &nbsp;
   return (
@@ -361,7 +361,7 @@ const ProjectCard = ({ project, index, loadedImages = {}, <span class="fstat-no"
           alt={project.displayName + ' preview'}
           className={'project-image ' + (loadedImages[index] ? <span class="branch-0 cbranch-no" title="branch not covered" >'loaded' : '</span>')}
           loading="lazy"
-          onLoad={() =&gt; <span class="fstat-no" title="function not covered" >setLoadedImages(p</span>rev =&gt; (<span class="cstat-no" title="statement not covered" >{ ...prev, [index]: true }))</span>}
+          onLoad={() =&gt; setLoadedImages(prev =&gt; ({ ...prev, [index]: true }))}
           onError={handleError}
         /&gt;
       &lt;/div&gt;
@@ -424,7 +424,7 @@ export default ProjectCard;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-22T13:42:01.724Z
+                at 2026-07-22T14:21:42.294Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>
