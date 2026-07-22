@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: src/__tests__/components/Hero</title>
+    <title>JSDoc: Source: __tests__/components/Sidebar/SidebarMenu.i18n.test.jsx</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,134 +17,64 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: src/__tests__/components/Hero</h1>
+    <h1 class="page-title">Source: __tests__/components/Sidebar/SidebarMenu.i18n.test.jsx</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-            
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Contract tests for the Hero section: locale-driven copy,
-the language-specific CV link (via data/cvAssets.config), and the
-primary CTA's scroll-to-Projects behavior.</div>
-        
-
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="-__tests___components_Hero.test.jsx.html">__tests__/components/Hero.test.jsx</a>, <a href="-__tests___components_Hero.test.jsx.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file SidebarMenu.i18n.test.js
+ * @module src/__tests__/components/Sidebar/SidebarMenu.i18n
+ * @testing components/Sidebar/SidebarMenu.js
+ * @description Real-i18n integration test for SidebarMenu's dynamic
+ * NAV_ITEMS key resolution.
+ *
+ * Every other SidebarMenu test mocks react-i18next (see
+ * SidebarMenu.test.js) -- this file deliberately does not. SidebarMenu.js
+ * renders its nav labels via t(key) where `key` comes from the NAV_ITEMS
+ * array, not a literal string in source (unlike most other components,
+ * which call t('some.key') directly). A mocked identity translation
+ * (t: (k) => k) would make a typo in NAV_ITEMS or a missing key in
+ * en.json/de.json invisible: the mock renders whatever string it's given
+ * regardless of whether that key actually resolves in the real locale
+ * files. Only a test against the real i18n instance can catch that class
+ * of bug, so this one case is kept as a real integration test rather than
+ * converted to match the sibling mock pattern.
+ */
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import { I18nextProvider } from 'react-i18next';
+import SidebarMenu from '../../../components/Sidebar/SidebarMenu';
+import i18n from '../../../i18n';
+
+// react-i18next stays REAL here (that is this file's whole point), but
+// react-scroll still has to go: its Link registers a scroll-spy handler on
+// mount that jsdom cannot satisfy. Resolves to __mocks__/react-scroll.jsx.
+vi.mock('react-scroll');
+
+describe('SidebarMenu (real i18n)', () => {
+  it('should render the navigation links with their real translated labels when the language is English', () => {
+    i18n.changeLanguage('en');
+
+    render(
+      &lt;I18nextProvider i18n={i18n}>
+        &lt;SidebarMenu activeSection="Projects" />
+      &lt;/I18nextProvider>
+    );
+
+    // use role/name queries to avoid ambiguous matches (e.g. "Projects Documentation")
+    expect(screen.getByRole('link', { name: /^projects$/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /about/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /^contact$/i })).toBeInTheDocument();
+  });
+});
+</code></pre>
+        </article>
+    </section>
 
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: src/__tests__/components/Hero</title>
+    <title>JSDoc: Source: __tests__/components/ErrorBoundary.test.jsx</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,134 +17,66 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: src/__tests__/components/Hero</h1>
+    <h1 class="page-title">Source: __tests__/components/ErrorBoundary.test.jsx</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-            
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Contract tests for the Hero section: locale-driven copy,
-the language-specific CV link (via data/cvAssets.config), and the
-primary CTA's scroll-to-Projects behavior.</div>
-        
-
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="-__tests___components_Hero.test.jsx.html">__tests__/components/Hero.test.jsx</a>, <a href="-__tests___components_Hero.test.jsx.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file ErrorBoundary.test.js
+ * @module src/__tests__/components/ErrorBoundary
+ * @testing components/ErrorBoundary/ErrorBoundary.js
+ * @description Contract tests for the error boundary: normal child
+ * rendering passes through unchanged, and a render error is caught and
+ * replaced with the fallback UI (error message + logged console.error).
+ */
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import ErrorBoundary from '../../components/ErrorBoundary/ErrorBoundary';
+
+function Bomb() {
+  throw new Error('boom');
+}
+
+describe('ErrorBoundary', () => {
+  let consoleErrorSpy;
+
+  beforeEach(() => {
+    // Suppress React's uncaught error output; this test intentionally triggers render errors
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => consoleErrorSpy.mockRestore());
+
+  it('should render children when nothing throws', () => {
+    render(
+      &lt;ErrorBoundary>
+        &lt;div>safe child&lt;/div>
+      &lt;/ErrorBoundary>
+    );
+
+    expect(screen.getByText('safe child')).toBeInTheDocument();
+  });
+
+  it('should render a fallback when a child throws', () => {
+    render(
+      &lt;ErrorBoundary>
+        &lt;Bomb />
+      &lt;/ErrorBoundary>
+    );
+
+    expect(screen.getByText('Something went wrong while rendering the app.')).toBeInTheDocument();
+    expect(screen.getByText(/Error: boom/)).toBeInTheDocument();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+  });
+});
+</code></pre>
+        </article>
+    </section>
 
 
 

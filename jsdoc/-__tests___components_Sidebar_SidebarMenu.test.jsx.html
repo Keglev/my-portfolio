@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: src/__tests__/components/Hero</title>
+    <title>JSDoc: Source: __tests__/components/Sidebar/SidebarMenu.test.jsx</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,134 +17,78 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: src/__tests__/components/Hero</h1>
+    <h1 class="page-title">Source: __tests__/components/Sidebar/SidebarMenu.test.jsx</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-            
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Contract tests for the Hero section: locale-driven copy,
-the language-specific CV link (via data/cvAssets.config), and the
-primary CTA's scroll-to-Projects behavior.</div>
-        
-
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="-__tests___components_Hero.test.jsx.html">__tests__/components/Hero.test.jsx</a>, <a href="-__tests___components_Hero.test.jsx.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file SidebarMenu.test.js
+ * @module src/__tests__/components/Sidebar/SidebarMenu
+ * @testing components/Sidebar/SidebarMenu.js
+ * @description Contract tests for the sidebar menu: language-button click
+ * behavior, the German CV link/label swap, and nav-link rendering across
+ * activeSection values.
+ *
+ * Out of scope: real translation resolution of the dynamic NAV_ITEMS keys
+ * (t(key) where key is a variable, not a literal in source) -- covered
+ * separately in SidebarMenu.i18n.test.js, which uses the real i18n
+ * instance instead of this file's mock. See that file's header for why.
+ */
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import SidebarMenu from '../../../components/Sidebar/SidebarMenu';
+
+vi.mock('react-scroll');
+vi.mock('react-i18next', () => ({ useTranslation: vi.fn() }));
+import { useTranslation } from 'react-i18next';
+
+describe('SidebarMenu', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('should call i18n.changeLanguage with the correct locale when a language button is clicked', () => {
+    const changeLanguage = vi.fn();
+    useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en', changeLanguage } });
+
+    render(&lt;SidebarMenu activeSection="Projects" />);
+
+    fireEvent.click(screen.getByRole('button', { name: /switch to english/i }));
+    fireEvent.click(screen.getByRole('button', { name: /auf deutsch umschalten/i }));
+
+    expect(changeLanguage).toHaveBeenCalledWith('en');
+    expect(changeLanguage).toHaveBeenCalledWith('de');
+  });
+
+  it('should render the German CV label and file when the active language is de', () => {
+    useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'de', changeLanguage: vi.fn() } });
+
+    render(&lt;SidebarMenu activeSection="About" />);
+
+    expect(screen.getByRole('link', { name: /lebenslauf herunterladen/i })).toHaveAttribute(
+      'href',
+      '/Carlos_Keglevich_Lebenslauf_DE.pdf'
+    );
+  });
+
+  it('should render the nav link for each recognized activeSection value when activeSection changes across rerenders', () => {
+    useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en', changeLanguage: vi.fn() } });
+
+    const { rerender } = render(&lt;SidebarMenu activeSection="Skills" />);
+
+    expect(screen.getByRole('link', { name: /^skills$/i })).toBeInTheDocument();
+
+    rerender(&lt;SidebarMenu activeSection="Contact" />);
+
+    expect(screen.getByRole('link', { name: /^contact$/i })).toBeInTheDocument();
+  });
+});
+</code></pre>
+        </article>
+    </section>
 
 
 

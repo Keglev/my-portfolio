@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: src/__tests__/components/Hero</title>
+    <title>JSDoc: Source: __tests__/components/About.test.jsx</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,134 +17,92 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: src/__tests__/components/Hero</h1>
+    <h1 class="page-title">Source: __tests__/components/About.test.jsx</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-            
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Contract tests for the Hero section: locale-driven copy,
-the language-specific CV link (via data/cvAssets.config), and the
-primary CTA's scroll-to-Projects behavior.</div>
-        
-
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="-__tests___components_Hero.test.jsx.html">__tests__/components/Hero.test.jsx</a>, <a href="-__tests___components_Hero.test.jsx.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file About.test.js
+ * @module src/__tests__/components/About
+ * @testing components/About/About.js, components/About/CareerStrip.js
+ * @description Contract tests for the About section: the four
+ * storytelling blocks, the career/education strip lists, and the profile
+ * image's public-path src with bundled-asset fallback on load error.
+ *
+ * Out of scope: CareerStrip's own i18n list-resource guard against a
+ * missing/malformed translation resource (not exercised here; this mock
+ * always returns well-formed arrays).
+ */
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import About from '../../components/About/About';
+
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key, opts) => {
+      const map = {
+        'aboutSection.heading': 'About me',
+        'aboutSection.block1.title': 'Block one title',
+        'aboutSection.block1.text': 'Block one text',
+        'aboutSection.block2.title': 'Block two title',
+        'aboutSection.block2.text': 'Block two text',
+        'aboutSection.block3.title': 'Block three title',
+        'aboutSection.block3.text': 'Block three text',
+        'aboutSection.block4.title': 'Block four title',
+        'aboutSection.block4.text': 'Block four text',
+        'aboutSection.careerHeading': 'Career at a glance',
+        'aboutSection.educationHeading': 'Education &amp; certification',
+      };
+      if (opts &amp;&amp; opts.returnObjects) {
+        if (key === 'aboutSection.career') return ['Career line A', 'Career line B'];
+        if (key === 'aboutSection.educationItems') return ['Education line A'];
+      }
+      return map[key] || key;
+    },
+  }),
+}));
+
+describe('About', () => {
+  it('should render the heading and all four storytelling blocks when About mounts', () => {
+    render(&lt;About />);
+
+    expect(screen.getByRole('heading', { level: 2 })).toHaveTextContent('About me');
+    ['one', 'two', 'three', 'four'].forEach((n) => {
+      expect(screen.getByText(`Block ${n} title`)).toBeInTheDocument();
+      expect(screen.getByText(`Block ${n} text`)).toBeInTheDocument();
+    });
+  });
+
+  it('should render the career strip with both career and education entries when About mounts', () => {
+    render(&lt;About />);
+
+    expect(screen.getByText('Career at a glance')).toBeInTheDocument();
+    expect(screen.getByText('Education &amp; certification')).toBeInTheDocument();
+    expect(screen.getByText('Career line A')).toBeInTheDocument();
+    expect(screen.getByText('Career line B')).toBeInTheDocument();
+    expect(screen.getByText('Education line A')).toBeInTheDocument();
+  });
+
+  it('should fall back to the bundled asset once when the profile image fails to load', () => {
+    render(&lt;About />);
+    const img = screen.getByAltText('Carlos Keglevich portrait');
+
+    expect(img).toHaveAttribute('src', '/profile.jpg');
+
+    fireEvent.error(img);
+
+    expect(img.getAttribute('src')).not.toBe('/profile.jpg');
+    expect(img.getAttribute('data-fallback')).toBe('1');
+  });
+});
+</code></pre>
+        </article>
+    </section>
 
 
 

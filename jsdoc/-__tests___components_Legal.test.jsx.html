@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: src/__tests__/components/Hero</title>
+    <title>JSDoc: Source: __tests__/components/Legal.test.jsx</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,134 +17,56 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: src/__tests__/components/Hero</h1>
+    <h1 class="page-title">Source: __tests__/components/Legal.test.jsx</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-            
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Contract tests for the Hero section: locale-driven copy,
-the language-specific CV link (via data/cvAssets.config), and the
-primary CTA's scroll-to-Projects behavior.</div>
-        
-
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="-__tests___components_Hero.test.jsx.html">__tests__/components/Hero.test.jsx</a>, <a href="-__tests___components_Hero.test.jsx.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file Legal.test.js
+ * @module src/__tests__/components/Legal
+ * @testing components/Legal/Legal.js
+ * @description Contract test for the Legal section: Impressum and
+ * Datenschutz headings render, and their dangerouslySetInnerHTML content
+ * (developer-authored HTML from the locale files, per Legal.js's header)
+ * is injected correctly.
+ */
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import Legal from '../../components/Legal/Legal';
+
+vi.mock('react-i18next', () => ({ useTranslation: vi.fn() }));
+import { useTranslation } from 'react-i18next';
+
+describe('Legal', () => {
+  afterEach(() => vi.clearAllMocks());
+
+  it('should render the Impressum and Datenschutz headings with their injected HTML content when Legal mounts', () => {
+    useTranslation.mockReturnValue({
+      t: (k) => {
+        if (k === 'legal.impressumHeading') return 'Impressum';
+        if (k === 'legal.datenschutzHeading') return 'Datenschutz';
+        if (k === 'legal.impressumContent') return '&lt;p>Impressum &lt;strong>Details&lt;/strong>&lt;/p>';
+        if (k === 'legal.datenschutzContent') return '&lt;p>Datenschutz &lt;em>Info&lt;/em>&lt;/p>';
+        return k;
+      },
+    });
+
+    render(&lt;Legal />);
+
+    expect(screen.getByRole('heading', { name: 'Impressum' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Datenschutz' })).toBeInTheDocument();
+    expect(screen.getByText('Details')).toBeInTheDocument();
+    expect(screen.getByText('Info')).toBeInTheDocument();
+  });
+});
+</code></pre>
+        </article>
+    </section>
 
 
 

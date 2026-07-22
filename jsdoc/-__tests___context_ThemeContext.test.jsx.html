@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: src/__tests__/components/Hero</title>
+    <title>JSDoc: Source: __tests__/context/ThemeContext.test.jsx</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,134 +17,78 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: src/__tests__/components/Hero</h1>
+    <h1 class="page-title">Source: __tests__/context/ThemeContext.test.jsx</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-            
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Contract tests for the Hero section: locale-driven copy,
-the language-specific CV link (via data/cvAssets.config), and the
-primary CTA's scroll-to-Projects behavior.</div>
-        
-
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="-__tests___components_Hero.test.jsx.html">__tests__/components/Hero.test.jsx</a>, <a href="-__tests___components_Hero.test.jsx.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file ThemeContext.test.js
+ * @module src/__tests__/context/ThemeContext
+ * @testing context/ThemeContext.js
+ * @description Contract tests for the theme provider: it defaults to
+ * dark and syncs the &lt;html data-theme> attribute, toggles to light and
+ * persists the choice to localStorage, restores a persisted theme on
+ * mount, and falls back to dark when rendered without a provider.
+ */
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider, useTheme } from '../../context/ThemeContext';
+
+const Probe = () => {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    &lt;div>
+      &lt;span data-testid="theme">{theme}&lt;/span>
+      &lt;button onClick={toggleTheme}>toggle&lt;/button>
+    &lt;/div>
+  );
+};
+
+describe('ThemeContext', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    document.documentElement.removeAttribute('data-theme');
+  });
+
+  it('should default to dark and sync the data-theme attribute when no theme is persisted', () => {
+    render(&lt;ThemeProvider>&lt;Probe />&lt;/ThemeProvider>);
+
+    expect(screen.getByTestId('theme')).toHaveTextContent('dark');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+  });
+
+  it('should toggle to light, update the attribute, and persist the choice when toggleTheme is called', () => {
+    render(&lt;ThemeProvider>&lt;Probe />&lt;/ThemeProvider>);
+
+    fireEvent.click(screen.getByText('toggle'));
+
+    expect(screen.getByTestId('theme')).toHaveTextContent('light');
+    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    expect(window.localStorage.getItem('portfolio-theme')).toBe('light');
+  });
+
+  it('should restore a persisted light theme when the provider mounts', () => {
+    window.localStorage.setItem('portfolio-theme', 'light');
+
+    render(&lt;ThemeProvider>&lt;Probe />&lt;/ThemeProvider>);
+
+    expect(screen.getByTestId('theme')).toHaveTextContent('light');
+  });
+
+  it('should fall back to dark when there is no provider', () => {
+    render(&lt;Probe />);
+
+    expect(screen.getByTestId('theme')).toHaveTextContent('dark');
+  });
+});
+</code></pre>
+        </article>
+    </section>
 
 
 

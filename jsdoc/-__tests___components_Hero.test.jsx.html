@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: src/__tests__/components/Hero</title>
+    <title>JSDoc: Source: __tests__/components/Hero.test.jsx</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,134 +17,70 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: src/__tests__/components/Hero</h1>
+    <h1 class="page-title">Source: __tests__/components/Hero.test.jsx</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        
-            
-        
-    
-</header>
-
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description">Contract tests for the Hero section: locale-driven copy,
-the language-specific CV link (via data/cvAssets.config), and the
-primary CTA's scroll-to-Projects behavior.</div>
-        
-
-        
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="-__tests___components_Hero.test.jsx.html">__tests__/components/Hero.test.jsx</a>, <a href="-__tests___components_Hero.test.jsx.html#line1">line 1</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file Hero.test.js
+ * @module src/__tests__/components/Hero
+ * @testing components/Hero/Hero.js
+ * @description Contract tests for the Hero section: locale-driven copy,
+ * the language-specific CV link (via data/cvAssets.config), and the
+ * primary CTA's scroll-to-Projects behavior.
+ */
+import React from 'react';
+import { render, screen, fireEvent } from '@testing-library/react';
+import Hero from '../../components/Hero/Hero';
+
+vi.mock('react-i18next', () => ({ useTranslation: vi.fn() }));
+import { useTranslation } from 'react-i18next';
+
+describe('Hero', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('should render eyebrow, headline with highlight, lead, and three CTAs when the language is English', () => {
+    useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en' } });
+
+    render(&lt;Hero />);
+
+    expect(screen.getByText('hero.eyebrow')).toBeInTheDocument();
+    expect(screen.getByText('hero.headlineHighlight')).toBeInTheDocument();
+    expect(screen.getByText('hero.lead')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'hero.ctaCv' })).toHaveAttribute('href', '/Carlos_Keglevich_CV_EN.pdf');
+  });
+
+  it('should serve the German CV when the locale is a de variant (incl. de-DE)', () => {
+    useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'de-DE' } });
+
+    render(&lt;Hero />);
+
+    expect(screen.getByRole('link', { name: 'hero.ctaCv' })).toHaveAttribute('href', '/Carlos_Keglevich_Lebenslauf_DE.pdf');
+  });
+
+  it('should scroll to the Projects section when the primary CTA is clicked', () => {
+    useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en' } });
+    const target = document.createElement('div');
+    target.id = 'Projects';
+    target.scrollIntoView = vi.fn();
+    document.body.appendChild(target);
+    render(&lt;Hero />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'hero.ctaProjects' }));
+
+    expect(target.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth' });
+
+    document.body.removeChild(target);
+  });
+});
+</code></pre>
+        </article>
+    </section>
 
 
 
