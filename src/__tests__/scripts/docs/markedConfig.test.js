@@ -14,7 +14,7 @@
  * 'marked' -- which asserts that vi.mock works, not that this module does.
  * They are covered by the build failing loudly in CI if marked is absent.
  */
-import { markedFn } from '../../../../scripts/docs/lib/markedConfig.js';
+import { markedFn, renderHeading, slugify } from '../../../../scripts/docs/lib/markedConfig.js';
 
 describe('markedConfig', () => {
   describe('markedFn', () => {
@@ -77,6 +77,57 @@ describe('markedConfig', () => {
 
       expect(html).toContain('id="reading-the-coverage-report"');
       expect(html).toContain('id="troubleshooting"');
+    });
+  });
+
+  describe('renderHeading', () => {
+    // marked changed this renderer's signature across majors: through v9 --
+    // the pinned range -- it calls heading(text, depth); from v12 it passes a
+    // single token object. Both shapes are exercised here so the branch that
+    // is currently inactive is still verified rather than left as untested
+    // dead weight.
+    it('should render a heading from the (text, depth) form used by the pinned marked version', () => {
+      const html = renderHeading('Section Title', 2);
+
+      expect(html).toBe('<h2 id="section-title">Section Title</h2>\n');
+    });
+
+    it('should render a heading from the token-object form used by newer marked versions', () => {
+      // Without this branch a marked bump would stringify the token into
+      // every id, breaking in-page navigation site-wide.
+      const html = renderHeading({ text: 'Section Title', depth: 3 });
+
+      expect(html).toBe('<h3 id="section-title">Section Title</h3>\n');
+    });
+
+    it('should strip inline markup from the id while keeping it in the visible text', () => {
+      const html = renderHeading('Using <code>vi.mock</code>', 2);
+
+      expect(html).toContain('id="using-vimock"');
+      expect(html).toContain('<code>vi.mock</code></h2>');
+    });
+  });
+
+  describe('slugify', () => {
+    it.each([
+      ['Simple Heading', 'simple-heading'],
+      ['UPPER Case', 'upper-case'],
+      ['Spaced    Out', 'spaced-out'],
+      ['Trailing punctuation!', 'trailing-punctuation'],
+      ['Hyphen-Keeping Words', 'hyphen-keeping-words'],
+    ])('should slugify %j to %j', (input, expected) => {
+      expect(slugify(input)).toBe(expected);
+    });
+
+    it.each([
+      ['&#39;', "What&#39;s next", 'whats-next'],
+      ['&amp;', 'Risks &amp; Debt', 'risks-debt'],
+      ['&quot;', 'The &quot;good&quot; parts', 'the-good-parts'],
+      ['hex &#x27;', 'It&#x27;s fine', 'its-fine'],
+    ])('should decode the %s entity before stripping punctuation', (_label, input, expected) => {
+      // Regression: stripping first removed only "&" and ";", leaving the
+      // numeric body behind ("what39s-next").
+      expect(slugify(input)).toBe(expected);
     });
   });
 });

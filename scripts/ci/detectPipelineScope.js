@@ -64,4 +64,7 @@ if (require.main === module) {
   runCli();
 }
 
-module.exports = { resolveScope };
+// runCli is exported for testing only -- the CLI guard above is what runs it
+// in production. Its stdin parsing and the $GITHUB_OUTPUT-vs-stdout fallback
+// are real behaviour that ci.yml depends on, so they need to be assertable.
+module.exports = { resolveScope, runCli };
