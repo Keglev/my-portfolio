@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: __tests__/scripts/docs/markedConfig.test.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: __tests__/scripts/docs/markedConfig.test.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file markedConfig.test.js
+ * @module src/__tests__/scripts/docs/markedConfig
+ * @testing scripts/docs/lib/markedConfig.js
+ * @description Contract tests for the configured markdown parser: it
+ * resolves a usable parse function from marked, and its custom heading
+ * renderer injects the slugified ids that tocBuilder and every in-page
+ * anchor link depend on.
+ *
+ * Out of scope: marked's own markdown correctness, and the two
+ * process.exit(1) load-failure paths (marked missing / no resolvable parse
+ * function). Those run at module load before any export exists, so
+ * exercising them would mean re-importing the module under a mocked
+ * 'marked' -- which asserts that vi.mock works, not that this module does.
+ * They are covered by the build failing loudly in CI if marked is absent.
+ */
+import { markedFn, renderHeading, slugify } from '../../../../scripts/docs/lib/markedConfig.js';
+
+describe('markedConfig', () => {
+  describe('markedFn', () => {
+    it('should expose a callable parse function when the module loads', () => {
+      expect(typeof markedFn).toBe('function');
+    });
+
+    it('should render standard markdown to HTML when given a paragraph', () => {
+      const html = markedFn('Hello **world**.');
+
+      expect(html).toContain('&lt;strong>world&lt;/strong>');
+    });
+  });
+
+  describe('heading id injection', () => {
+    it('should add a lowercased slug id when rendering a simple heading', () => {
+      const html = markedFn('## Test Runner');
+
+      expect(html).toContain('id="test-runner"');
+    });
+
+    it('should strip punctuation from the id when the heading contains it', () => {
+      // Anchors must be URL-safe; punctuation in an id breaks the href.
+      const html = markedFn("## What's tested, and what isn't?");
+
+      expect(html).toMatch(/id="whats-tested-and-what-isnt"/);
+    });
+
+    it('should decode escaped entities before slugifying so no numeric residue leaks into the id', () => {
+      // Regression: marked escapes heading text before the renderer runs, so
+      // an apostrophe arrives as "&amp;#39;". Stripping punctuation first removed
+      // only "&amp;" and ";" and left "39" behind -- "What's" became "what39s".
+      const apostrophe = markedFn("## What's next");
+      const ampersand = markedFn('## Risks &amp; Debt');
+
+      expect(apostrophe).toContain('id="whats-next"');
+      expect(ampersand).toContain('id="risks-debt"');
+      expect(apostrophe).not.toMatch(/id="[^"]*\d/);
+      expect(ampersand).not.toMatch(/id="[^"]*amp/);
+    });
+
+    it('should collapse whitespace runs into single dashes when slugifying', () => {
+      const html = markedFn('## Spaced    Out   Heading');
+
+      expect(html).toContain('id="spaced-out-heading"');
+    });
+
+    it('should preserve the heading level when injecting the id', () => {
+      const h2 = markedFn('## Level Two');
+      const h3 = markedFn('### Level Three');
+
+      expect(h2).toContain('&lt;h2 id="level-two"');
+      expect(h3).toContain('&lt;h3 id="level-three"');
+    });
+
+    it('should produce ids that match the anchors tocBuilder generates', () => {
+      // The contract between these two modules is the id string itself --
+      // if slugify changes, every sidebar link silently 404s in-page.
+      const html = markedFn('## Reading the coverage report\n\n## Troubleshooting');
+
+      expect(html).toContain('id="reading-the-coverage-report"');
+      expect(html).toContain('id="troubleshooting"');
+    });
+  });
+
+  describe('renderHeading', () => {
+    // marked changed this renderer's signature across majors: through v9 --
+    // the pinned range -- it calls heading(text, depth); from v12 it passes a
+    // single token object. Both shapes are exercised here so the branch that
+    // is currently inactive is still verified rather than left as untested
+    // dead weight.
+    it('should render a heading from the (text, depth) form used by the pinned marked version', () => {
+      const html = renderHeading('Section Title', 2);
+
+      expect(html).toBe('&lt;h2 id="section-title">Section Title&lt;/h2>\n');
+    });
+
+    it('should render a heading from the token-object form used by newer marked versions', () => {
+      // Without this branch a marked bump would stringify the token into
+      // every id, breaking in-page navigation site-wide.
+      const html = renderHeading({ text: 'Section Title', depth: 3 });
+
+      expect(html).toBe('&lt;h3 id="section-title">Section Title&lt;/h3>\n');
+    });
+
+    it('should strip inline markup from the id while keeping it in the visible text', () => {
+      const html = renderHeading('Using &lt;code>vi.mock&lt;/code>', 2);
+
+      expect(html).toContain('id="using-vimock"');
+      expect(html).toContain('&lt;code>vi.mock&lt;/code>&lt;/h2>');
+    });
+  });
+
+  describe('slugify', () => {
+    it.each([
+      ['Simple Heading', 'simple-heading'],
+      ['UPPER Case', 'upper-case'],
+      ['Spaced    Out', 'spaced-out'],
+      ['Trailing punctuation!', 'trailing-punctuation'],
+      ['Hyphen-Keeping Words', 'hyphen-keeping-words'],
+    ])('should slugify %j to %j', (input, expected) => {
+      expect(slugify(input)).toBe(expected);
+    });
+
+    it.each([
+      ['&amp;#39;', "What&amp;#39;s next", 'whats-next'],
+      ['&amp;amp;', 'Risks &amp;amp; Debt', 'risks-debt'],
+      ['&amp;quot;', 'The &amp;quot;good&amp;quot; parts', 'the-good-parts'],
+      ['hex &amp;#x27;', 'It&amp;#x27;s fine', 'its-fine'],
+    ])('should decode the %s entity before stripping punctuation', (_label, input, expected) => {
+      // Regression: stripping first removed only "&amp;" and ";", leaving the
+      // numeric body behind ("what39s-next").
+      expect(slugify(input)).toBe(expected);
+    });
+  });
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="data_cvAssets.module_config.html">data/cvAssets.config</a></li><li><a href="module-App.html">App</a></li><li><a href="module-components_About_About.html">components/About/About</a></li><li><a href="module-components_About_CareerStrip.html">components/About/CareerStrip</a></li><li><a href="module-components_Contact_Contact.html">components/Contact/Contact</a></li><li><a href="module-components_ErrorBoundary_ErrorBoundary.html">components/ErrorBoundary/ErrorBoundary</a></li><li><a href="module-components_Hero_Hero.html">components/Hero/Hero</a></li><li><a href="module-components_Legal_Legal.html">components/Legal/Legal</a></li><li><a href="module-components_Projects_ProjectCard.html">components/Projects/ProjectCard</a></li><li><a href="module-components_Projects_ProjectSummary.html">components/Projects/ProjectSummary</a></li><li><a href="module-components_Projects_Projects.html">components/Projects/Projects</a></li><li><a href="module-components_Projects_projectsUtils.html">components/Projects/projectsUtils</a></li><li><a href="module-components_Sidebar_Sidebar.html">components/Sidebar/Sidebar</a></li><li><a href="module-components_Sidebar_SidebarMenu.html">components/Sidebar/SidebarMenu</a></li><li><a href="module-components_Sidebar_SidebarStyles.html">components/Sidebar/SidebarStyles</a></li><li><a href="module-components_Skills_Skills.html">components/Skills/Skills</a></li><li><a href="module-context_ThemeContext.html">context/ThemeContext</a></li><li><a href="module-i18n_index.html">i18n/index</a></li><li><a href="module-src___tests___App.html">src/__tests__/App</a></li><li><a href="module-src___tests___components_About.html">src/__tests__/components/About</a></li><li><a href="module-src___tests___components_Contact.html">src/__tests__/components/Contact</a></li><li><a href="module-src___tests___components_ErrorBoundary.html">src/__tests__/components/ErrorBoundary</a></li><li><a href="module-src___tests___components_Hero.html">src/__tests__/components/Hero</a></li><li><a href="module-src___tests___components_Legal.html">src/__tests__/components/Legal</a></li><li><a href="module-src___tests___components_ProjectCard.html">src/__tests__/components/ProjectCard</a></li><li><a href="module-src___tests___components_Projects.html">src/__tests__/components/Projects</a></li><li><a href="module-src___tests___components_Sidebar_Sidebar.html">src/__tests__/components/Sidebar/Sidebar</a></li><li><a href="module-src___tests___components_Sidebar_SidebarMenu.html">src/__tests__/components/Sidebar/SidebarMenu</a></li><li><a href="module-src___tests___components_Skills.html">src/__tests__/components/Skills</a></li><li><a href="module-src___tests___components_projectsUtils.html">src/__tests__/components/projectsUtils</a></li><li><a href="module-src___tests___context_ThemeContext.html">src/__tests__/context/ThemeContext</a></li><li><a href="module-src___tests___i18n.html">src/__tests__/i18n</a></li><li><a href="module-src___tests___index.html">src/__tests__/index</a></li><li><a href="module-src___tests___scripts_ci_detectPipelineScope.html">src/__tests__/scripts/ci/detectPipelineScope</a></li><li><a href="module-src___tests___scripts_ci_runPipelineScope.html">src/__tests__/scripts/ci/runPipelineScope</a></li><li><a href="module-src___tests___scripts_docs_buildDocs.html">src/__tests__/scripts/docs/buildDocs</a></li><li><a href="module-src___tests___scripts_docs_buildMermaid.html">src/__tests__/scripts/docs/buildMermaid</a></li><li><a href="module-src___tests___scripts_docs_htmlPostprocess.html">src/__tests__/scripts/docs/htmlPostprocess</a></li><li><a href="module-src___tests___scripts_docs_markedConfig.html">src/__tests__/scripts/docs/markedConfig</a></li><li><a href="module-src___tests___scripts_docs_renderPages.html">src/__tests__/scripts/docs/renderPages</a></li><li><a href="module-src___tests___scripts_docs_tocBuilder.html">src/__tests__/scripts/docs/tocBuilder</a></li><li><a href="module-src_index.html">src/index</a></li><li><a href="module-styles_GlobalStyles.html">styles/GlobalStyles</a></li><li><a href="src___tests___components_Sidebar_SidebarMenu.module_i18n.html">src/__tests__/components/Sidebar/SidebarMenu.i18n</a></li><li><a href="src___tests___data_cvAssets.module_config.html">src/__tests__/data/cvAssets.config</a></li></ul><h3>Global</h3><ul><li><a href="global.html#projects">projects</a></li><li><a href="global.html#skillGroups">skillGroups</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 22 2026 14:22:24 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

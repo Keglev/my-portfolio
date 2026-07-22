@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: __tests__/scripts/docs/tocBuilder.test.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: __tests__/scripts/docs/tocBuilder.test.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file tocBuilder.test.js
+ * @module src/__tests__/scripts/docs/tocBuilder
+ * @testing scripts/docs/lib/tocBuilder.js
+ * @description Contract tests for sidebar TOC generation: which headings
+ * are collected, the two-heading suppression threshold, h3 indent marking,
+ * and inline-tag stripping in link text.
+ *
+ * Out of scope: the heading-id injection this module depends on, which is
+ * markedConfig's renderer (see markedConfig.test.js). These tests feed
+ * hand-written HTML so a change in markedConfig cannot silently mask a
+ * regression here.
+ */
+import { buildToc } from '../../../../scripts/docs/lib/tocBuilder.js';
+
+describe('tocBuilder', () => {
+  describe('buildToc', () => {
+    it('should return an empty string when the HTML contains no headings', () => {
+      const html = '&lt;p>Just a paragraph.&lt;/p>';
+
+      const toc = buildToc(html);
+
+      expect(toc).toBe('');
+    });
+
+    it('should return an empty string when only one heading is present', () => {
+      // A single-heading page has nothing to navigate between, so a
+      // one-item sidebar would be noise rather than navigation.
+      const html = '&lt;h2 id="alone">Alone&lt;/h2>';
+
+      const toc = buildToc(html);
+
+      expect(toc).toBe('');
+    });
+
+    it('should build a list item per heading when two or more headings are present', () => {
+      const html = '&lt;h2 id="first">First&lt;/h2>&lt;h2 id="second">Second&lt;/h2>';
+
+      const toc = buildToc(html);
+
+      expect(toc).toContain('&lt;ul class="doc-toc__list">');
+      expect(toc).toContain('&lt;a href="#first">First&lt;/a>');
+      expect(toc).toContain('&lt;a href="#second">Second&lt;/a>');
+      expect(toc).toContain('&lt;/ul>');
+    });
+
+    it('should mark h3 entries with the toc-h3 class and leave h2 entries unmarked', () => {
+      const html = '&lt;h2 id="parent">Parent&lt;/h2>&lt;h3 id="child">Child&lt;/h3>';
+
+      const toc = buildToc(html);
+
+      expect(toc).toContain('&lt;li>&lt;a href="#parent">Parent&lt;/a>&lt;/li>');
+      expect(toc).toContain('&lt;li class="toc-h3">&lt;a href="#child">Child&lt;/a>&lt;/li>');
+    });
+
+    it('should strip inline tags from the heading text when a heading contains markup', () => {
+      const html =
+        '&lt;h2 id="code-heading">Using &lt;code>buildToc&lt;/code>&lt;/h2>' +
+        '&lt;h2 id="plain">Plain&lt;/h2>';
+
+      const toc = buildToc(html);
+
+      expect(toc).toContain('&lt;a href="#code-heading">Using buildToc&lt;/a>');
+      expect(toc).not.toContain('&lt;code>');
+    });
+
+    it('should ignore h1 and h4 headings when collecting entries', () => {
+      // Only h2/h3 are navigable sections; h1 is the page title and h4 is
+      // too granular for a sidebar.
+      const html =
+        '&lt;h1 id="title">Title&lt;/h1>' +
+        '&lt;h2 id="section">Section&lt;/h2>' +
+        '&lt;h3 id="sub">Sub&lt;/h3>' +
+        '&lt;h4 id="detail">Detail&lt;/h4>';
+
+      const toc = buildToc(html);
+
+      expect(toc).toContain('#section');
+      expect(toc).toContain('#sub');
+      expect(toc).not.toContain('#title');
+      expect(toc).not.toContain('#detail');
+    });
+
+    it('should skip headings that carry no id attribute when building entries', () => {
+      // An id-less heading cannot be linked to, so including it would
+      // produce a dead sidebar entry.
+      const html =
+        '&lt;h2 id="linkable">Linkable&lt;/h2>' +
+        '&lt;h2>No id here&lt;/h2>' +
+        '&lt;h2 id="other">Other&lt;/h2>';
+
+      const toc = buildToc(html);
+
+      expect(toc).toContain('#linkable');
+      expect(toc).toContain('#other');
+      expect(toc).not.toContain('No id here');
+    });
+
+    it('should preserve document order when headings are interleaved across levels', () => {
+      const html =
+        '&lt;h2 id="a">A&lt;/h2>&lt;h3 id="a1">A1&lt;/h3>&lt;h2 id="b">B&lt;/h2>';
+
+      const toc = buildToc(html);
+      const order = [toc.indexOf('#a"'), toc.indexOf('#a1'), toc.indexOf('#b')];
+
+      expect(order[0]).toBeLessThan(order[1]);
+      expect(order[1]).toBeLessThan(order[2]);
+    });
+  });
+});
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="data_cvAssets.module_config.html">data/cvAssets.config</a></li><li><a href="module-App.html">App</a></li><li><a href="module-components_About_About.html">components/About/About</a></li><li><a href="module-components_About_CareerStrip.html">components/About/CareerStrip</a></li><li><a href="module-components_Contact_Contact.html">components/Contact/Contact</a></li><li><a href="module-components_ErrorBoundary_ErrorBoundary.html">components/ErrorBoundary/ErrorBoundary</a></li><li><a href="module-components_Hero_Hero.html">components/Hero/Hero</a></li><li><a href="module-components_Legal_Legal.html">components/Legal/Legal</a></li><li><a href="module-components_Projects_ProjectCard.html">components/Projects/ProjectCard</a></li><li><a href="module-components_Projects_ProjectSummary.html">components/Projects/ProjectSummary</a></li><li><a href="module-components_Projects_Projects.html">components/Projects/Projects</a></li><li><a href="module-components_Projects_projectsUtils.html">components/Projects/projectsUtils</a></li><li><a href="module-components_Sidebar_Sidebar.html">components/Sidebar/Sidebar</a></li><li><a href="module-components_Sidebar_SidebarMenu.html">components/Sidebar/SidebarMenu</a></li><li><a href="module-components_Sidebar_SidebarStyles.html">components/Sidebar/SidebarStyles</a></li><li><a href="module-components_Skills_Skills.html">components/Skills/Skills</a></li><li><a href="module-context_ThemeContext.html">context/ThemeContext</a></li><li><a href="module-i18n_index.html">i18n/index</a></li><li><a href="module-src___tests___App.html">src/__tests__/App</a></li><li><a href="module-src___tests___components_About.html">src/__tests__/components/About</a></li><li><a href="module-src___tests___components_Contact.html">src/__tests__/components/Contact</a></li><li><a href="module-src___tests___components_ErrorBoundary.html">src/__tests__/components/ErrorBoundary</a></li><li><a href="module-src___tests___components_Hero.html">src/__tests__/components/Hero</a></li><li><a href="module-src___tests___components_Legal.html">src/__tests__/components/Legal</a></li><li><a href="module-src___tests___components_ProjectCard.html">src/__tests__/components/ProjectCard</a></li><li><a href="module-src___tests___components_Projects.html">src/__tests__/components/Projects</a></li><li><a href="module-src___tests___components_Sidebar_Sidebar.html">src/__tests__/components/Sidebar/Sidebar</a></li><li><a href="module-src___tests___components_Sidebar_SidebarMenu.html">src/__tests__/components/Sidebar/SidebarMenu</a></li><li><a href="module-src___tests___components_Skills.html">src/__tests__/components/Skills</a></li><li><a href="module-src___tests___components_projectsUtils.html">src/__tests__/components/projectsUtils</a></li><li><a href="module-src___tests___context_ThemeContext.html">src/__tests__/context/ThemeContext</a></li><li><a href="module-src___tests___i18n.html">src/__tests__/i18n</a></li><li><a href="module-src___tests___index.html">src/__tests__/index</a></li><li><a href="module-src___tests___scripts_ci_detectPipelineScope.html">src/__tests__/scripts/ci/detectPipelineScope</a></li><li><a href="module-src___tests___scripts_ci_runPipelineScope.html">src/__tests__/scripts/ci/runPipelineScope</a></li><li><a href="module-src___tests___scripts_docs_buildDocs.html">src/__tests__/scripts/docs/buildDocs</a></li><li><a href="module-src___tests___scripts_docs_buildMermaid.html">src/__tests__/scripts/docs/buildMermaid</a></li><li><a href="module-src___tests___scripts_docs_htmlPostprocess.html">src/__tests__/scripts/docs/htmlPostprocess</a></li><li><a href="module-src___tests___scripts_docs_markedConfig.html">src/__tests__/scripts/docs/markedConfig</a></li><li><a href="module-src___tests___scripts_docs_renderPages.html">src/__tests__/scripts/docs/renderPages</a></li><li><a href="module-src___tests___scripts_docs_tocBuilder.html">src/__tests__/scripts/docs/tocBuilder</a></li><li><a href="module-src_index.html">src/index</a></li><li><a href="module-styles_GlobalStyles.html">styles/GlobalStyles</a></li><li><a href="src___tests___components_Sidebar_SidebarMenu.module_i18n.html">src/__tests__/components/Sidebar/SidebarMenu.i18n</a></li><li><a href="src___tests___data_cvAssets.module_config.html">src/__tests__/data/cvAssets.config</a></li></ul><h3>Global</h3><ul><li><a href="global.html#projects">projects</a></li><li><a href="global.html#skillGroups">skillGroups</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Wed Jul 22 2026 14:22:24 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
