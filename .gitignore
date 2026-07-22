@@ -32,7 +32,7 @@ yarn-error.log*
 # (that is how an untracked ADR was deleted during the Vite migration).
 /docs/index.html
 /docs/index-de.html
-/docs/docs-index.html
+/docs/docs-index*.html
 /docs/architecture/**/*.html
 /docs/templates/*.html
 /docs/_theme/css/styles.css
