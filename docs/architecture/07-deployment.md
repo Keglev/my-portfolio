@@ -72,11 +72,11 @@ flowchart TD
 
 | File | Trigger | Responsibility |
 |------|---------|---------------|
-| `.github/workflows/ci.yml` | Push to `main` (`src/**`, `scripts/**`, `config/**`, `jest.node.config.js`, `package.json`, `.github/workflows/**`), PRs to `main` | Lint, run full test suite, upload coverage artifact; on push, resolve scope and dispatch `deploy.yml` (always) and `api-docs.yml` (conditionally) in parallel |
+| `.github/workflows/ci.yml` | Push to `main` (`src/**`, `scripts/**`, `config/**`, `package.json`, `vite.config.js`, `index.html`, `.github/workflows/**`), PRs to `main` | Lint, run full test suite, upload coverage artifact; on push, resolve scope and dispatch `deploy.yml` (always) and `api-docs.yml` (conditionally) in parallel |
 | `.github/workflows/deploy.yml` | Dispatched by `ci.yml`; manual `workflow_dispatch` | Build React app, deploy prebuilt output to Vercel. Does not dispatch anything else. |
 | `.github/workflows/api-docs.yml` | Dispatched by `ci.yml` with `apiDocs`/`coverage` inputs; manual `workflow_dispatch` (defaults both inputs to true) | Generate JSDoc (if `apiDocs`), download the coverage artifact from the latest CI run and publish it (if `coverage`); publishes `jsdoc/` and `coverage/` to `gh-pages` via separate `destination_dir` scoped steps |
 | `.github/workflows/architecture-docs.yml` | Push to `docs/**` or `scripts/docs/**`; manual `workflow_dispatch` | Apply HTML templates to Markdown, pre-render Mermaid diagrams, publish a staged copy of `docs/` (excluding `jsdoc/` and `coverage/`) to `gh-pages` |
-| `.github/actions/node-setup/` | Composite action used by all four workflows | Sets up Node.js 22, restores the npm cache, and runs `npm ci --legacy-peer-deps`; called after `actions/checkout@v4` in each workflow |
+| `.github/actions/node-setup/` | Composite action used by all four workflows | Sets up Node.js 24, restores the npm cache, and runs `npm ci`; called after `actions/checkout@v7` in each workflow |
 
 ## Step Details
 
@@ -86,7 +86,7 @@ Job `lint-and-test`:
 1. Checkout the repository
 2. Run the `node-setup` composite action
 3. Run `npm run lint` — fails fast before any test runs
-4. Run `npx jest --config=jest.node.config.js --runInBand --coverage` — serial execution prevents resource contention in CI
+4. Run `npm run test:coverage` — all runner configuration lives in `vite.config.js`, so the workflow step carries no flags of its own and cannot drift from a local run
 5. Upload `coverage/` as the `coverage-report` artifact (7-day retention)
 
 Job `start-deploy-stage` (push to `main` only; skipped on pull requests):
@@ -98,7 +98,7 @@ Job `start-deploy-stage` (push to `main` only; skipped on pull requests):
 ### deploy.yml
 
 1. Checkout and `node-setup`
-2. Run `npm run build` — production CRA build
+2. Run `npm run build` — production Vite build
 3. Run `scripts/prepareVercelOutput.sh` — assemble `.vercel/output/static/`
 4. Verify prebuilt static artifacts — confirms `index.html` is present in `.vercel/output/static/`; fails the workflow if missing
 5. Deploy with `vercel --prod --prebuilt`

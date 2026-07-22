@@ -2,7 +2,7 @@
 
 [← Architecture index](index.md)
 
-This personal portfolio is a single-page React application built with Create React App. It presents a hero introduction, an about section with a condensed career/education strip, a skills overview, a project showcase, a contact form, and legal notices — in both English and German. Project data is hand-curated as static code in `src/data/projects.config.js`, bundled directly into the JavaScript build; there is no GitHub API call, at build time or at runtime. The built app is deployed to Vercel; generated documentation and test coverage reports are published separately to GitHub Pages.
+This personal portfolio is a single-page React application built with Vite. It presents a hero introduction, an about section with a condensed career/education strip, a skills overview, a project showcase, a contact form, and legal notices — in both English and German. Project data is hand-curated as static code in `src/data/projects.config.js`, bundled directly into the JavaScript build; there is no GitHub API call, at build time or at runtime. The built app is deployed to Vercel; generated documentation and test coverage reports are published separately to GitHub Pages.
 
 ## Table of Contents
 
@@ -16,15 +16,16 @@ The table below maps each architectural layer to the chosen technology and the r
 
 | Layer | Technology | Why |
 |-------|-----------|-----|
-| UI framework | React 18 (Create React App) | Mature ecosystem; CRA provides zero-config build tooling |
+| UI framework | React 18 | Mature ecosystem; the largest pool of documentation and answers for a solo maintainer |
+| Build tooling | Vite 8 | Fast dev server and build; replaced Create React App, deprecated in February 2025 — see [ADR-007](09-decisions/ADR-007-vite-migration.md) |
 | Styling | styled-components 6 | Co-located styles, no class-name collisions |
 | Scroll navigation | react-scroll | Smooth-scroll to in-page sections; no server or router required |
 | Internationalisation | i18next 25 + react-i18next 14 | Industry-standard i18n, React hooks API, JSON namespace support |
 | Contact form | Web3Forms (native `fetch`) | Static-site-friendly form backend — no server of our own needed |
 | Icons | react-icons 5 | Social/contact icon set (GitHub, LinkedIn, Xing, email) |
 | Analytics | Vercel Speed Insights | Zero-config Core Web Vitals tracking; no cookies |
-| Testing | Jest + React Testing Library | Component-level unit tests aligned with user behaviour |
-| Linting | ESLint (react-app config) | Catches issues before CI runs without extra configuration |
+| Testing | Vitest + React Testing Library | One runner shared with the build toolchain; tests transform exactly as the app does |
+| Linting | ESLint 9 (flat config) | Catches issues before CI runs; rule set is explicit rather than inherited from a preset |
 | CI/CD | GitHub Actions (4 workflows) | Free for public repos, native GitHub integration |
 | App hosting | Vercel | Automatic HTTPS, edge CDN, prebuilt artifact deployment |
 | Docs hosting | GitHub Pages (gh-pages branch) | Free static hosting co-located with the repository |
@@ -37,9 +38,9 @@ The diagram below shows the runtime flow from a browser request through the depl
 graph TD
     Browser["Browser"]
     Vercel["Vercel CDN"]
-    ReactApp["React App\n(CRA bundle)"]
+    ReactApp["React App\n(Vite bundle)"]
     i18next["i18next\n(language state)"]
-    ProjectsConfig["projects.config.js\n(bundled into CRA build)"]
+    ProjectsConfig["projects.config.js\n(bundled at build time)"]
     GHPages["GitHub Pages\n(docs + coverage)"]
 
     Browser -->|"page request"| Vercel
@@ -67,5 +68,5 @@ Key design decisions (static project data, prebuilt-artifact deployment, two tes
 - [React documentation](https://react.dev)
 - [i18next documentation](https://www.i18next.com)
 - [Vercel documentation](https://vercel.com/docs)
-- [Create React App documentation](https://create-react-app.dev)
+- [Vite documentation](https://vite.dev)
 - [GitHub Actions documentation](https://docs.github.com/en/actions)

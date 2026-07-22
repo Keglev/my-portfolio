@@ -1,11 +1,11 @@
 # Documentation Index
 
-A personal portfolio built with React (Create React App), styled-components, i18next, and react-scroll — deployed on Vercel (live site) and GitHub Pages (generated API docs).
+A personal portfolio built with React and Vite, styled with styled-components, translated with i18next, and navigated with react-scroll — deployed on Vercel (live site) and GitHub Pages (generated docs and coverage).
 
 | Section | Description | Link |
 |---------|-------------|------|
 | API Docs | Auto-generated JSDoc reference from source | [jsdoc/index.html](/my-portfolio/jsdoc/index.html) |
-| Test Coverage | Istanbul / Jest HTML coverage report | [coverage/index.html](https://keglev.github.io/my-portfolio/coverage/index.html) |
+| Test Coverage | Istanbul / Vitest HTML coverage report | [coverage/index.html](https://keglev.github.io/my-portfolio/coverage/index.html) |
 | Deployment | Vercel configuration, environment variables, and build process | [DEPLOY.md](architecture/07b-deployment-configuration.md) |
 | Deploy data flow | How data moves through the build pipeline to Vercel and GitHub Pages | [deploy/data-flow.md](architecture/03-context.md) |
 | Tests | Test strategy, runners, coverage thresholds, and how to run locally | [TESTS.md](architecture/08c-concepts-testing.md) |

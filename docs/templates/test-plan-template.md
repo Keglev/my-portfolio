@@ -16,7 +16,7 @@ One test plan per module or feature. Copy this file, name it after the module be
 
 What is covered by these tests and what is explicitly excluded.
 
-Describe the file paths or features under test, the boundaries (e.g. "unit tests only — no network calls"), and the reason for any exclusions (e.g. "DOM rendering is excluded; covered by the CRA test suite").
+Describe the file paths or features under test, the boundaries (e.g. "unit tests only — no network calls"), and the reason for any exclusions (e.g. "DOM rendering is excluded; covered by the component test suite").
 
 ## Test Cases
 
@@ -43,8 +43,8 @@ These are the minimum thresholds for this module. Adjust them downward only if t
 Ordered steps to execute these tests locally.
 
 1. Install dependencies: `npm install`
-2. Run the Node-only test suite: `npm run test:node`
-3. Run the CRA test suite: `npm run test:cra`
+2. Run the test suite: `npm test`
+3. Run the suite with coverage: `npm run test:coverage`
 4. Open the HTML coverage report: `coverage/index.html`
 
 Replace steps 2–3 with the specific runner and flags for the module under test if it differs from the project defaults.

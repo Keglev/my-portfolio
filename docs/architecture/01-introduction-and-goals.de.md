@@ -2,7 +2,7 @@
 
 [← Architekturindex](index.md)
 
-Dieses persönliche Portfolio ist eine Single-Page-Anwendung, erstellt mit React (Create React App). Es präsentiert eine Hero-Einführung, einen About-Bereich mit einer kompakten Karriere-/Ausbildungsübersicht, eine Skills-Übersicht, eine Projektpräsentation, ein Kontaktformular und rechtliche Hinweise — auf Englisch und Deutsch. Die Projektdaten sind als statischer, handkuratierter Code in `src/data/projects.config.js` hinterlegt und direkt im JavaScript-Build gebündelt; es gibt keinen GitHub-API-Aufruf, weder zur Build-Zeit noch zur Laufzeit. Die gebaute App wird auf Vercel bereitgestellt; generierte Dokumentation und Test-Coverage-Berichte werden separat auf GitHub Pages veröffentlicht.
+Dieses persönliche Portfolio ist eine Single-Page-Anwendung, erstellt mit React und Vite. Es präsentiert eine Hero-Einführung, einen About-Bereich mit einer kompakten Karriere-/Ausbildungsübersicht, eine Skills-Übersicht, eine Projektpräsentation, ein Kontaktformular und rechtliche Hinweise — auf Englisch und Deutsch. Die Projektdaten sind als statischer, handkuratierter Code in `src/data/projects.config.js` hinterlegt und direkt im JavaScript-Build gebündelt; es gibt keinen GitHub-API-Aufruf, weder zur Build-Zeit noch zur Laufzeit. Die gebaute App wird auf Vercel bereitgestellt; generierte Dokumentation und Test-Coverage-Berichte werden separat auf GitHub Pages veröffentlicht.
 
 ## Inhaltsverzeichnis
 
@@ -16,15 +16,16 @@ Die folgende Tabelle ordnet jede Architekturebene der gewählten Technologie und
 
 | Ebene | Technologie | Begründung |
 |-------|-------------|-----------|
-| UI-Framework | React 18 (Create React App) | Ausgereiftes Ökosystem; CRA bietet Zero-Config-Build-Tooling |
+| UI-Framework | React 18 | Ausgereiftes Ökosystem; die größte Menge an Dokumentation und Antworten für eine einzelne wartende Person |
+| Build-Tooling | Vite 8 | Schneller Dev-Server und Build; ersetzt Create React App, das im Februar 2025 eingestellt wurde — siehe [ADR-007](09-decisions/ADR-007-vite-migration.md) |
 | Styling | styled-components 6 | Komponentenlokale Styles, keine Class-Name-Kollisionen |
 | Scroll-Navigation | react-scroll | Sanftes Scrollen zu Seitenabschnitten; kein Server oder Router erforderlich |
 | Internationalisierung | i18next 25 + react-i18next 14 | Industriestandard-i18n, React-Hooks-API, JSON-Namespace-Unterstützung |
 | Kontaktformular | Web3Forms (natives `fetch`) | Static-Site-freundliches Formular-Backend — kein eigener Server nötig |
 | Icons | react-icons 5 | Social-/Kontakt-Icon-Set (GitHub, LinkedIn, Xing, E-Mail) |
 | Analytics | Vercel Speed Insights | Zero-Config Core Web Vitals-Monitoring; ohne Cookies |
-| Testing | Jest + React Testing Library | Komponentenbasierte Unit-Tests, am Nutzerverhalten ausgerichtet |
-| Linting | ESLint (react-app-Konfiguration) | Fehler vor CI abfangen; keine zusätzliche Konfiguration nötig |
+| Testing | Vitest + React Testing Library | Ein Runner, der sich die Build-Toolchain teilt; Tests werden exakt so transformiert wie die App |
+| Linting | ESLint 9 (Flat Config) | Fehler vor CI abfangen; das Regelwerk ist explizit statt von einem Preset geerbt |
 | CI/CD | GitHub Actions (4 Workflows) | Kostenlos für öffentliche Repos, native GitHub-Integration |
 | App-Hosting | Vercel | Automatisches HTTPS, Edge-CDN, Prebuilt-Artifact-Deployment |
 | Docs-Hosting | GitHub Pages (gh-pages-Branch) | Kostenloses statisches Hosting, zusammen mit dem Repository |
@@ -37,9 +38,9 @@ Das folgende Diagramm zeigt den Laufzeitfluss von einer Browser-Anfrage durch di
 graph TD
     Browser["Browser"]
     Vercel["Vercel CDN"]
-    ReactApp["React App\n(CRA-Bundle)"]
+    ReactApp["React App\n(Vite-Bundle)"]
     i18next["i18next\n(Sprachzustand)"]
-    ProjectsConfig["projects.config.js\n(im CRA-Build gebündelt)"]
+    ProjectsConfig["projects.config.js\n(zur Build-Zeit gebündelt)"]
     GHPages["GitHub Pages\n(Docs + Coverage)"]
 
     Browser -->|"Seitenaufruf"| Vercel
@@ -67,5 +68,5 @@ Zentrale Designentscheidungen (statische Projektdaten, Prebuilt-Artifact-Deploym
 - [React-Dokumentation](https://react.dev)
 - [i18next-Dokumentation](https://www.i18next.com)
 - [Vercel-Dokumentation](https://vercel.com/docs)
-- [Create React App Dokumentation](https://create-react-app.dev)
+- [Vite Dokumentation](https://vite.dev)
 - [GitHub Actions Dokumentation](https://docs.github.com/en/actions)
