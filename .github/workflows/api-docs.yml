@@ -110,6 +110,21 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
+      # ── Back link ──
+      # Both reports are generator output with their own page shell, so the
+      # docs theme's header never appears on them and a reader who arrived
+      # from a landing card has no way back. scripts/ci/injectBackLink.js adds
+      # one fixed-position link to each.
+      #
+      # Runs unconditionally and without a per-file `if`: the script reports a
+      # missing file rather than failing, which is the case that actually
+      # happens (the coverage download above is continue-on-error, and the
+      # first ever run has no artifact). It is also idempotent -- gh-pages is
+      # republished rather than rebuilt, so it routinely sees its own previous
+      # output and must not stack a second link onto it.
+      - name: Inject the back-to-docs link into the generated reports
+        run: node scripts/ci/injectBackLink.js docs/coverage/index.html docs/jsdoc/index.html
+
       # ── Deploy ──────────────────────────────────────────────────────────
       # peaceiris/actions-gh-pages@v4 — use v4, not v3 (v3 has a known token
       # scope bug). destination_dir scopes both publish and stale-file
