@@ -40,8 +40,17 @@ const RendererCtor =
 
 function slugify(text) {
   return text
-    .toLowerCase()
     .replace(/<[^>]+>/g, '')
+    // Entities must be decoded BEFORE punctuation is stripped. marked escapes
+    // heading text before the renderer sees it, so an apostrophe arrives as
+    // "&#39;". Stripping punctuation first removes only the "&" and ";" and
+    // leaves the digits behind, turning "What's tested" into "what39s-tested"
+    // -- a silently broken anchor. Decoding first lets the strip below remove
+    // the real character.
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&[a-z][a-z0-9]*;/gi, '')
+    .toLowerCase()
     .replace(/[^\w\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-');
