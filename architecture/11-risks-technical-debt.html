@@ -78,10 +78,7 @@
       <!-- Replaced at build time by tocBuilder.buildToc() (see
            scripts/docs/lib/tocBuilder.js); empty string when the page
            has fewer than two headings -->
-      <ul class="doc-toc__list">
-  <li><a href="#open">Open</a></li>
-  <li class="toc-h3"><a href="#cb-p8-01-verify-react-polyfill-necessity-cross-realm-behavior-under-cra-runner">CB-P8-01 — verify React polyfill necessity + cross-realm behavior under CRA runner</a></li>
-</ul>
+      
     </aside>
 
     <article class="article">
@@ -93,38 +90,14 @@
 source. Open items keep their marker at the site; only closed IDs are
 purged from both the marker and this list.</p>
 <h2 id="open">Open</h2>
-<h3 id="cb-p8-01-verify-react-polyfill-necessity-cross-realm-behavior-under-cra-runner">CB-P8-01 — verify React polyfill necessity + cross-realm behavior under CRA runner</h3>
-<p><strong>Site:</strong> <code>config/jest/setupTestsNode.js</code>, the <code>global.React = require(&#39;react&#39;)</code>
-polyfill block.</p>
-<p><strong>Context:</strong> while fixing a vacuous test assertion in
-<code>src/__tests__/config/jest/setupTestsNode.test.js</code> (P8 batch 4a), discovered
-that this polyfill behaves differently across the two Jest runners this repo
-uses:</p>
-<ul>
-<li>Under <code>test:node</code> (the standalone <code>jest.node.config.js</code> runner), the
-polyfill works as intended: <code>global.React</code> is set to the real <code>react</code>
-module and is visible to code that reads it afterward.</li>
-<li>Under <code>test:cra</code> (<code>react-scripts test</code>, CRA&#39;s own Jest environment), the
-module executes in a different realm than the test file that requires it
--- <code>global</code> inside <code>config/jest/setupTestsNode.js</code> is not the same object
-as <code>global</code> in the requiring test file. The assignment happens (verified
-via temporary debug logging during the P8 investigation) but is not
-observable from test code, making the polyfill effectively inert under
-this runner.</li>
-</ul>
-<p><strong>Likely outcome:</strong> CRA&#39;s runner uses the modern JSX transform and its own
-<code>src/setupTests.js</code> bootstrap, which may mean a <code>global.React</code> polyfill was
-never actually needed there in the first place -- older code sometimes
-required a global React for the classic JSX transform or for
-<code>react-dom/test-utils</code> compat shims, neither of which should apply here.
-If so, the right fix is scoping (skip/remove the polyfill for the CRA
-runner, or document that it&#39;s node-runner-only) rather than repairing the
-cross-realm assignment to somehow work under CRA too.</p>
-<p><strong>Why deferred:</strong> proving which of those is true, and fixing it, is
-source-level work (<code>config/jest/</code>) outside P8 batch 4&#39;s test-file-only
-scope. The test itself now asserts only what is verifiably true per
-runner (see <code>setupTestsNode.test.js</code>), so this doesn&#39;t block correctness
-of the test suite -- it&#39;s a source-behavior question to resolve later.</p>
+<p>None.</p>
+<p>The most recent entry, <strong>CB-P8-01</strong> (verify the <code>global.React</code> polyfill&#39;s
+necessity and its cross-realm behaviour under the CRA test runner), was
+closed during the Vitest migration. The question it asked has no remaining
+subject: the polyfill was proven unnecessary by running the full suite with
+it removed, and both the file that held it (<code>config/jest/setupTestsNode.js</code>)
+and the second test runner whose behaviour it questioned were deleted with
+Create React App. See the runner-migration commit for the evidence.</p>
 
     </article>
 

@@ -80,11 +80,12 @@
            has fewer than two headings -->
       <ul class="doc-toc__list">
   <li><a href="#contents">Contents</a></li>
-  <li><a href="#test-runners">Test runners</a></li>
+  <li><a href="#test-runner">Test runner</a></li>
   <li><a href="#coverage">Coverage</a></li>
   <li><a href="#running-tests-locally">Running tests locally</a></li>
   <li><a href="#reading-the-coverage-report">Reading the coverage report</a></li>
   <li><a href="#what-is-tested-and-what-is-excluded">What is tested and what is excluded</a></li>
+  <li><a href="#test-doubles">Test doubles</a></li>
   <li><a href="#troubleshooting">Troubleshooting</a></li>
   <li><a href="#references">References</a></li>
 </ul>
@@ -95,42 +96,24 @@
            scripts/docs/lib/renderPages.js) -->
       <h1 id="tests">Tests</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>This project uses two separate Jest runners to handle the mixed runtime requirements of Node build scripts and React frontend components.</p>
+<p>This project runs a single test runner — <strong>Vitest</strong> — over both the React
+frontend components and the Node build scripts.</p>
 <h2 id="contents">Contents</h2>
 <ul>
-<li><a href="#test-runners">Test runners</a></li>
+<li><a href="#test-runner">Test runner</a></li>
 <li><a href="#coverage">Coverage</a></li>
 <li><a href="#running-tests-locally">Running tests locally</a></li>
 <li><a href="#reading-the-coverage-report">Reading the coverage report</a></li>
 <li><a href="#what-is-tested-and-what-is-excluded">What is tested and what is excluded</a></li>
+<li><a href="#test-doubles">Test doubles</a></li>
 <li><a href="#troubleshooting">Troubleshooting</a></li>
 <li><a href="#references">References</a></li>
 </ul>
-<h2 id="test-runners">Test runners</h2>
-<p>Two runners are needed because CRA injects its own Babel and CSS transform pipeline; running CRA tests with raw Jest fails to parse CSS and static asset imports.</p>
-<table>
-<thead>
-<tr>
-<th>Runner</th>
-<th>Command</th>
-<th>Config</th>
-<th>Scope</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Node</td>
-<td><code>npm run test:node</code></td>
-<td><code>jest.node.config.js</code></td>
-<td><code>src/__tests__/</code></td>
-</tr>
-<tr>
-<td>CRA</td>
-<td><code>npm run test:cra</code></td>
-<td>CRA built-in</td>
-<td><code>src/**/*.test.{js,jsx}</code></td>
-</tr>
-</tbody></table>
-<p>Combined commands:</p>
+<h2 id="test-runner">Test runner</h2>
+<p>Vitest exposes a <strong>Jest-compatible API</strong> — <code>describe</code>, <code>it</code>, <code>expect</code>,
+<code>beforeEach</code>, and the mocking helpers all keep their names, with <code>vi</code>
+replacing <code>jest</code> as the mock namespace. Tests run with <code>globals: true</code>, so
+no per-file imports of those names are needed.</p>
 <table>
 <thead>
 <tr>
@@ -139,59 +122,116 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><code>npm run test:all</code></td>
-<td>Runs both runners sequentially</td>
+<td><code>npm test</code></td>
+<td>Runs the suite once and exits</td>
 </tr>
 <tr>
-<td><code>npm run test:ci</code></td>
-<td>Non-interactive CI mode for both runners</td>
+<td><code>npm run test:watch</code></td>
+<td>Re-runs affected tests on file change</td>
+</tr>
+<tr>
+<td><code>npm run test:coverage</code></td>
+<td>Runs once with an instrumented coverage report</td>
 </tr>
 </tbody></table>
+<p><strong>Why one runner.</strong> The project previously ran two Jest configurations —
+CRA&#39;s built-in runner and a standalone <code>jest.node.config.js</code> — because CRA
+injected its own Babel and CSS transform pipeline that raw Jest could not
+reproduce. Comparing <code>--listTests</code> output from each showed both were
+executing the <em>identical</em> set of files: one suite run twice, not two suites.
+Vitest removes the reason for the split entirely, because it transforms test
+files with the same Vite pipeline that builds the app. The transform under
+test is therefore provably the transform that ships.</p>
+<p>All configuration lives in the <code>test</code> block of <code>vite.config.js</code>, alongside
+the build config, so the two cannot drift apart. See
+<a href="09-decisions/ADR-007-vite-migration.html">ADR-007</a> for the build-tooling
+decision that made this possible.</p>
 <h2 id="coverage">Coverage</h2>
-<p>No minimum coverage thresholds are currently enforced. Run <code>npm run test:node -- --coverage</code> to generate a local HTML report and view current percentages. The report includes statements, branches, functions, and line coverage.</p>
-<p>Coverage is collected from <code>config/jest/**/*.js</code>, <code>src/**/*.{js,jsx}</code>, and <code>scripts/**/*.js</code>.</p>
+<p>Coverage uses the <strong>istanbul</strong> provider, not Vitest&#39;s default v8. The two
+report different branch percentages for identical code, and this project&#39;s
+coverage plan was baselined under istanbul; pinning the provider keeps the
+numbers comparable across the runner change.</p>
+<p>No minimum coverage thresholds are enforced yet. Run <code>npm run test:coverage</code>
+to generate a local HTML report with statements, branches, functions, and
+line coverage.</p>
+<p>Coverage is collected from <code>src/**/*.{js,jsx}</code>, <code>scripts/**/*.js</code>, and
+<code>config/**/*.js</code>.</p>
 <h2 id="running-tests-locally">Running tests locally</h2>
 <ol>
 <li>Install dependencies: <code>npm install</code></li>
-<li>Run the Node runner: <code>npm run test:node</code></li>
-<li>Run the CRA runner: <code>npm run test:cra</code></li>
-<li>Run both at once: <code>npm run test:all</code></li>
-<li>For CI (non-interactive, no watch mode): <code>npm run test:ci</code></li>
+<li>Run the suite: <code>npm test</code></li>
+<li>Iterate with watch mode: <code>npm run test:watch</code></li>
+<li>Generate a coverage report: <code>npm run test:coverage</code></li>
 </ol>
 <h2 id="reading-the-coverage-report">Reading the coverage report</h2>
-<p>After running <code>npm run test:node -- --coverage</code>, open <code>coverage/index.html</code> in a browser to see the full line-by-line HTML report. A machine-readable summary is also written to <code>coverage/coverage-summary.json</code>.</p>
+<p>After running <code>npm run test:coverage</code>, open <code>coverage/index.html</code> in a
+browser for the line-by-line HTML report. A machine-readable summary is also
+written to <code>coverage/coverage-summary.json</code>, and <code>coverage/lcov.info</code> is the
+artifact CI uploads for republication.</p>
 <p>The deployed coverage report is available at
 <a href="https://keglev.github.io/my-portfolio/coverage/index.html">keglev.github.io/my-portfolio/coverage/index.html</a>.</p>
 <h2 id="what-is-tested-and-what-is-excluded">What is tested and what is excluded</h2>
 <p>Tested source locations:</p>
 <ul>
-<li><code>src/**/*.{js,jsx}</code> — React components and hooks</li>
-<li><code>scripts/**/*.js</code> — build-time scripts (README parsing, media downloads, postprocessing)</li>
-<li><code>config/jest/**/*.js</code> — Jest configuration helpers</li>
+<li><code>src/**/*.{js,jsx}</code> — React components, context, and config modules</li>
+<li><code>scripts/**/*.js</code> — CI scope-resolution and documentation build scripts</li>
 </ul>
 <p>Intentionally excluded from coverage:</p>
 <ul>
-<li>Test files (<code>__tests__/</code>, <code>*.test.js</code>, <code>*.spec.js</code>)</li>
-<li>CRA test setup (<code>setupTests.js</code>)</li>
-<li>Standalone audit scripts (<code>audit-check.js</code>)</li>
+<li>Test files and fixtures (<code>src/__tests__/</code>, <code>__mocks__/</code>)</li>
+<li>Test infrastructure (<code>config/vitest/</code>)</li>
+<li>Standalone operator scripts (<code>audit-check.js</code>), run by hand and not part
+of the application</li>
 </ul>
-<p><code>audit-check.js</code> runs <code>npm audit --json</code> and fails on any high/critical
-finding. <code>package.json</code>&#39;s <code>overrides</code> block (<code>nth-check</code>, <code>postcss</code>,
-<code>svgo</code>, <code>resolve-url-loader</code>, <code>serialize-javascript</code>) exists to force
-patched versions of transitive dependencies that <code>npm audit</code> flagged --
-<code>react-scripts</code> itself pins older ranges that resolve to the vulnerable
-versions. <code>@pmmmwh/react-refresh-webpack-plugin</code> is pinned for a
-different reason: a missing-tarball CI failure, not a vulnerability.</p>
+<p><code>audit-check.js</code> runs <code>npm audit --json</code> and fails on any high or critical
+finding. The <code>overrides</code> block it used to work around no longer exists:
+every entry pinned a vulnerable transitive of <code>react-scripts</code>, and all of
+them left with CRA.</p>
+<h2 id="test-doubles">Test doubles</h2>
+<p>Vite handles CSS and static-asset imports natively, so the CRA-era style and
+file mocks are gone. Two deliberate doubles remain:</p>
+<table>
+<thead>
+<tr>
+<th>Double</th>
+<th>Location</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@vercel/speed-insights/react</code></td>
+<td><code>config/vitest/speedInsightsMock.js</code>, wired via <code>test.alias</code></td>
+<td>The real SDK would initialise live telemetry during component tests</td>
+</tr>
+<tr>
+<td><code>react-scroll</code></td>
+<td><code>__mocks__/react-scroll.jsx</code></td>
+<td>Its <code>Link</code> registers a scroll-spy handler on mount that jsdom cannot satisfy</td>
+</tr>
+</tbody></table>
+<p>The <code>react-scroll</code> mock lives at the repo root because Vitest resolves manual
+mocks for <code>node_modules</code> packages relative to the project root. Unlike Jest,
+Vitest does <strong>not</strong> apply it automatically — each test file that needs it
+must call <code>vi.mock(&#39;react-scroll&#39;)</code> explicitly.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <ul>
-<li><strong>CSS parsing errors when running raw <code>jest</code></strong> — use <code>npm run test:cra</code> instead, which uses CRA&#39;s transform pipeline.</li>
-<li><strong>Missing <code>fetch</code> in Node tests</strong> — confirm that <code>node-fetch</code> v2 is installed as a devDependency (<code>npm install --save-dev node-fetch@2</code>).</li>
+<li><strong>A mocked module is ignored and the real one runs.</strong> Vitest keys its mock
+registry on the exact specifier. Mocking <code>&#39;child_process&#39;</code> does not cover
+<code>&#39;node:child_process&#39;</code>, or vice versa — register both when the module under
+test could use either.</li>
+<li><strong>A module reports 0% coverage although its tests pass.</strong> The test is
+almost certainly loading it with <code>require()</code> instead of <code>import</code>. CommonJS
+requires bypass Vitest&#39;s instrumented transform, so the code runs and the
+assertions pass while nothing is measured.</li>
+<li><strong>A module-scope side effect does not re-run between tests.</strong> Dynamic
+<code>import()</code> is served from the module cache; call <code>vi.resetModules()</code> first.</li>
 </ul>
 <h2 id="references">References</h2>
 <ul>
-<li><a href="https://jestjs.io/docs/getting-started">Jest documentation</a></li>
-<li><a href="https://create-react-app.dev/docs/running-tests/">Create React App — running tests</a></li>
+<li><a href="https://vitest.dev/">Vitest documentation</a></li>
+<li><a href="https://vitest.dev/guide/migration.html">Vitest — migrating from Jest</a></li>
 <li><a href="https://testing-library.com/docs/">Testing Library documentation</a></li>
+<li><a href="09-decisions/ADR-007-vite-migration.html">ADR-007</a> — the Vite migration that made a single runner possible</li>
 </ul>
 
     </article>
