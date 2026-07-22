@@ -32,7 +32,9 @@ export default [
   js.configs.recommended,
 
   {
-    files: ['src/**/*.{js,jsx}'],
+    // __mocks__ is included here (not only in the test block below) so it
+    // inherits the JSX parser options -- the react-scroll mock renders JSX.
+    files: ['src/**/*.{js,jsx}', '__mocks__/**/*.{js,jsx}'],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
@@ -103,13 +105,18 @@ export default [
 
   {
     // Test and mock files. Replaces the `react-app/jest` half of the old
-    // preset, which supplied the Jest globals and a CommonJS environment.
-    // Without this block every `describe`/`it`/`expect`/`jest` and every
-    // `require`/`process` in the suite reports as no-undef.
-    files: ['src/__tests__/**/*.{js,jsx}', 'src/__mocks__/**/*.{js,jsx}'],
+    // preset, which supplied the test globals. Without this block every
+    // `describe`/`it`/`expect`/`vi` in the suite reports as no-undef.
+    files: ['src/__tests__/**/*.{js,jsx}', '__mocks__/**/*.{js,jsx}'],
     languageOptions: {
       globals: {
+        // Vitest runs with `globals: true`, and its global names are the Jest
+        // ones -- describe/it/expect/beforeEach/afterEach/beforeAll/afterAll.
+        // The `globals` package ships no vitest set, and reusing the jest set
+        // is accurate rather than lazy: these are the same identifiers.
         ...globals.jest,
+        // The one name Vitest does NOT share with Jest.
+        vi: 'readonly',
         ...globals.node,
       },
     },

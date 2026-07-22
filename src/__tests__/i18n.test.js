@@ -9,8 +9,8 @@
  */
 import i18n from '../i18n';
 // Prevent react-i18next from running browser-specific plugin setup
-jest.mock('react-i18next', () => ({
-  initReactI18next: { type: '3rdParty', init: jest.fn() },
+vi.mock('react-i18next', () => ({
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
 }));
 
 describe('i18n', () => {

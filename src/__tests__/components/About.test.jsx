@@ -14,7 +14,7 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import About from '../../components/About/About';
 
-jest.mock('react-i18next', () => ({
+vi.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key, opts) => {
       const map = {

@@ -10,11 +10,11 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import Hero from '../../components/Hero/Hero';
 
-jest.mock('react-i18next', () => ({ useTranslation: jest.fn() }));
-const { useTranslation } = require('react-i18next');
+vi.mock('react-i18next', () => ({ useTranslation: vi.fn() }));
+import { useTranslation } from 'react-i18next';
 
 describe('Hero', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => vi.clearAllMocks());
 
   it('should render eyebrow, headline with highlight, lead, and three CTAs when the language is English', () => {
     useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en' } });
@@ -39,7 +39,7 @@ describe('Hero', () => {
     useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en' } });
     const target = document.createElement('div');
     target.id = 'Projects';
-    target.scrollIntoView = jest.fn();
+    target.scrollIntoView = vi.fn();
     document.body.appendChild(target);
     render(<Hero />);
 

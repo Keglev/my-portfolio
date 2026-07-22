@@ -26,7 +26,7 @@
  * $GITHUB_OUTPUT writing) is covered separately once scripts/ci/
  * detectPipelineScope.js grows a CLI wrapper around this pure function.
  */
-const { resolveScope } = require('../../../../scripts/ci/detectPipelineScope');
+import { resolveScope } from '../../../../scripts/ci/detectPipelineScope.js';
 
 describe('detectPipelineScope', () => {
   describe('resolveScope', () => {

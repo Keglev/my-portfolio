@@ -15,14 +15,15 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import SidebarMenu from '../../../components/Sidebar/SidebarMenu';
 
-jest.mock('react-i18next', () => ({ useTranslation: jest.fn() }));
-const { useTranslation } = require('react-i18next');
+vi.mock('react-scroll');
+vi.mock('react-i18next', () => ({ useTranslation: vi.fn() }));
+import { useTranslation } from 'react-i18next';
 
 describe('SidebarMenu', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => vi.clearAllMocks());
 
   it('should call i18n.changeLanguage with the correct locale when a language button is clicked', () => {
-    const changeLanguage = jest.fn();
+    const changeLanguage = vi.fn();
     useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en', changeLanguage } });
 
     render(<SidebarMenu activeSection="Projects" />);
@@ -35,7 +36,7 @@ describe('SidebarMenu', () => {
   });
 
   it('should render the German CV label and file when the active language is de', () => {
-    useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'de', changeLanguage: jest.fn() } });
+    useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'de', changeLanguage: vi.fn() } });
 
     render(<SidebarMenu activeSection="About" />);
 
@@ -46,7 +47,7 @@ describe('SidebarMenu', () => {
   });
 
   it('should render the nav link for each recognized activeSection value when activeSection changes across rerenders', () => {
-    useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en', changeLanguage: jest.fn() } });
+    useTranslation.mockReturnValue({ t: (k) => k, i18n: { language: 'en', changeLanguage: vi.fn() } });
 
     const { rerender } = render(<SidebarMenu activeSection="Skills" />);
 

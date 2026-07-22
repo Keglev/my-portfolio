@@ -19,7 +19,7 @@ describe('ErrorBoundary', () => {
 
   beforeEach(() => {
     // Suppress React's uncaught error output; this test intentionally triggers render errors
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
   });
 
   afterEach(() => consoleErrorSpy.mockRestore());
