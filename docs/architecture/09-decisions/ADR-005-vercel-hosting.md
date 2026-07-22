@@ -16,6 +16,11 @@ Accepted. Note: `build-and-fetch.yml`, named below, was renamed `deploy.yml`
 in the workflow rework described in [ADR-004's Update](ADR-004-three-workflow-cicd.md#update-2026-07-17);
 the prebuilt-artifact deployment mechanism itself is unchanged.
 
+Note: the `buildCommand` recorded below as `"react-scripts build"` is now
+`"vite build"`, with an explicit `outputDirectory: "dist"`, following
+[ADR-007](ADR-007-vite-migration.md). It remains unexercised for the reason
+given below — `--prebuilt` means Vercel never runs a build of its own.
+
 ## Context
 
 The portfolio is a React SPA built with Create React App. It requires HTTPS,

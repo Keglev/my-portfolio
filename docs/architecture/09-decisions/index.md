@@ -17,6 +17,7 @@ is the fastest way to understand *why* the project is structured the way it is.
 | [ADR-004](ADR-004-three-workflow-cicd.md) | Three-Workflow CI/CD Architecture | Accepted |
 | [ADR-005](ADR-005-vercel-hosting.md) | Vercel as the Hosting Platform | Accepted |
 | [ADR-006](ADR-006-build-time-github-data-fetch.md) | Build-Time GitHub Data Fetch over Runtime API Calls | Superseded |
+| [ADR-007](ADR-007-vite-migration.md) | Vite as the Build Tool (replacing Create React App) | Accepted |
 
 ## How to read an ADR
 
