@@ -13,7 +13,7 @@
 
 ## Status
 
-Accepted — topology since evolved to four workflows with parallel docs dispatch; see [Update](#update-2026-07-17) below. The site this workflow publishes was later renamed from "API docs" to the Code Reference, and its dispatch input from `apiDocs` to `codeRef` — see [ADR-008](ADR-008-code-reference.md). This section describes the original decision as made and is left unedited.
+Accepted — topology since evolved to four workflows with parallel docs dispatch; see [Update](#update-2026-07-17) below. The site this workflow publishes was later renamed from "API docs" to the Code Reference, and its dispatch input from `apiDocs` to `codeRef` — see [ADR-008](ADR-008-code-reference.md). That site was then retired altogether and the workflow reduced to publishing coverage, as `coverage.yml`; see [ADR-009](ADR-009-retire-code-reference.md). This section describes the original decision as made and is left unedited.
 
 ## Context
 

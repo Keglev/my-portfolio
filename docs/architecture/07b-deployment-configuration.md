@@ -2,7 +2,7 @@
 
 [← Architecture index](index.md)
 
-This project deploys the React app to Vercel (live site). The Projects section is static, hand-curated content in `src/data/projects.config.js` — there is no data-fetch step before the build. The generated Code Reference and coverage report are published separately to GitHub Pages via the `gh-pages` branch.
+This project deploys the React app to Vercel (live site). The Projects section is static, hand-curated content in `src/data/projects.config.js` — there is no data-fetch step before the build. The documentation site and the test coverage report are published separately to GitHub Pages via the `gh-pages` branch.
 
 ## Contents
 
@@ -19,12 +19,18 @@ This project deploys the React app to Vercel (live site). The Projects section i
 
 | Target | URL | Trigger | Branch |
 |--------|-----|---------|--------|
-| Vercel (live site) | `carloskeglevich.vercel.app` | Push to main | main |
+| Vercel (live site) | https://carloskeglevich.de | Push to main | main |
 | GitHub Pages (docs site) | https://keglev.github.io/my-portfolio/ | Workflow dispatch | gh-pages |
+
+`carloskeglevich.de` is the site. The apex redirects (308) to the `www` host, and Vercel's generated `*.vercel.app` deployment URL still resolves — both are hosting details, not addresses to publish. `deploy.yml`'s smoke test follows the redirect and checks the custom domain, so a healthy build behind broken DNS fails the deploy instead of passing it.
 
 ## Environment variables
 
-The build itself needs no secrets — the Vercel token/org/project IDs used to deploy the prebuilt artifact are configured as GitHub Actions secrets (see [architecture/ci-cd-pipeline.md](07-deployment.md)), not as Vercel build-time environment variables.
+The build consumes exactly one application secret: `VITE_WEB3FORMS_KEY`, the Web3Forms access key for the contact form. It is read at build time as `import.meta.env.VITE_WEB3FORMS_KEY` and baked into the bundle, so it must be present in the GitHub Actions environment before `npm run build` — `deploy.yml` fails fast if it is unset rather than shipping a form that silently delivers nothing. The `VITE_` prefix is required: Vite exposes only prefixed variables to client code.
+
+"Public access key" is accurate rather than careless. Web3Forms keys are designed to be visible in client-side bundles; this one lives in Actions secrets to keep it out of git history, not because exposure would be a breach.
+
+Separately, the `VERCEL_TOKEN`/`VERCEL_ORG_ID`/`VERCEL_PROJECT_ID` triple is deploy-time only — used by the Vercel CLI to upload the prebuilt artifact, never read by the build. See [Context](03-context.md) for the full input table, including the GitHub personal access token that this pipeline no longer uses at all.
 
 ## Deploying to Vercel
 
@@ -60,7 +66,7 @@ npm run build
 ```powershell
 Remove-Item -Recurse -Force .vercel\output -ErrorAction SilentlyContinue
 New-Item -ItemType Directory -Force .vercel\output\static | Out-Null
-Copy-Item -Path build\* -Destination .vercel\output\static -Recurse -Force
+Copy-Item -Path dist\* -Destination .vercel\output\static -Recurse -Force
 
 @"
 {

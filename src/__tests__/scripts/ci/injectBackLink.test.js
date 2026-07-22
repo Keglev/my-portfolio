@@ -108,9 +108,9 @@ describe('injectBackLink', () => {
 
     it('should not rewrite a file whose link is already present', () => {
       const injected = injectIntoHtml(PAGE, DEFAULT_HREF).html;
-      const fileSystem = fakeFs({ 'docs/jsdoc/index.html': injected });
+      const fileSystem = fakeFs({ 'docs/coverage/index.html': injected });
 
-      const status = injectIntoFile('docs/jsdoc/index.html', DEFAULT_HREF, fileSystem);
+      const status = injectIntoFile('docs/coverage/index.html', DEFAULT_HREF, fileSystem);
 
       expect(status).toBe('present');
       expect(fileSystem.writeFileSync).not.toHaveBeenCalled();

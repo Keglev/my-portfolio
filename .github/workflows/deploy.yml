@@ -117,11 +117,16 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: npx --yes vercel --prod --token "$VERCEL_TOKEN" --yes --prebuilt .
 
-      # Confirm the deployed app is reachable.
+      # Confirm the deployed app is reachable at the address visitors use.
+      # Checks the custom domain, not the *.vercel.app deployment URL: the
+      # vercel.app host can serve a healthy build while DNS or the domain
+      # assignment is broken, which is exactly the failure a smoke test
+      # should catch. -L is required because the apex redirects (308) to the
+      # www host; without it the gate would fail on a working site.
       - name: Smoke test Vercel deployment
         run: |
-          echo "Checking Vercel deployment is reachable..."
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://carloskeglevich.vercel.app)
+          echo "Checking the live site is reachable..."
+          STATUS=$(curl -sL -o /dev/null -w "%{http_code}" https://carloskeglevich.de)
           echo "HTTP status: $STATUS"
           if [ "$STATUS" != "200" ]; then
             echo "ERROR: Vercel deployment returned $STATUS"; exit 1;

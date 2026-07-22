@@ -1,9 +1,8 @@
 /**
  * @file injectBackLink.js
  * @module scripts/ci/injectBackLink
- * @summary Injects a fixed-position "Back to docs" link into generated
- * report pages (the coverage report and the JSDoc code reference) that the
- * docs theme does not own and cannot template.
+ * @summary Injects a fixed-position "Back to docs" link into the generated
+ * coverage report, a page the docs theme does not own and cannot template.
  * @enterprise Both reports are third-party generator output published to
  * gh-pages beside the docs site. A reader who follows a card from the docs
  * landing into either one has no way back except the browser button: the
@@ -19,7 +18,7 @@
  * all). Neither condition is assertable in inline YAML.
  *
  * Usage (from repo root):
- *   node scripts/ci/injectBackLink.js docs/coverage/index.html docs/jsdoc/index.html
+ *   node scripts/ci/injectBackLink.js docs/coverage/index.html
  *   node scripts/ci/injectBackLink.js --href=/other/ docs/coverage/index.html
  */
 const fs = require('fs');

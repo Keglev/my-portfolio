@@ -1,0 +1,144 @@
+############################################################
+# Docs — test coverage
+#
+# Purpose
+# - Download the coverage report from the latest successful CI run and
+#   publish it to gh-pages under coverage/
+# - Inject the back-to-docs link into it on the way
+#
+# This workflow used to do two jobs; the code-reference half was retired
+# (ADR-009) and what remains is the coverage publish. The file, its name,
+# and its concurrency group were renamed to match -- a workflow called
+# api-docs that publishes no API docs is a trap for the next reader.
+#
+# No inputs. The old codeRef/coverage pair existed to select between the two
+# halves; with one half left, dispatching this workflow IS the instruction to
+# publish coverage. ci.yml still decides whether to dispatch at all, from the
+# scope flags -- the decision moved up a level rather than disappearing.
+#
+# Triggers
+# - Dispatched by ci.yml's start-deploy-stage job when the coverage scope
+#   flag is true (see ci.yml).
+# - Manual via workflow_dispatch for an ad-hoc republish.
+#
+# gh-pages clobber guard: this workflow and architecture-docs.yml
+# (docs-only lineage, triggers independently on docs/** pushes) both
+# publish to gh-pages and could run concurrently. The job-level
+# `gh-pages-deploy` concurrency group below is shared by name with
+# architecture-docs.yml's job, serializing the two publishes without
+# touching either workflow's top-level trigger concurrency.
+# destination_dir additionally scopes this publish's cleanup to coverage/,
+# so neither run can delete the other's files.
+#
+# Coverage artifact: it's produced by a separate ci.yml run, and
+# actions/download-artifact@v4 only searches the CURRENT run by default —
+# so we use the gh CLI to locate the latest successful ci.yml run and
+# download its artifact directly.
+#
+# Concurrency group: coverage-pipeline, NOT shared with ci.yml,
+# deploy.yml, or architecture-docs.yml — see deploy.yml's header for the
+# full root cause (a shared group let this workflow's queued run silently
+# cancel deploy.yml's queued run every time, in production). Within
+# coverage-pipeline itself, a newer queued run replacing an older one is
+# intentional: it reflects the latest push, so superseding a stale queued
+# run is correct, not a bug.
+############################################################
+name: Docs — test coverage
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: coverage-pipeline
+  cancel-in-progress: false
+
+jobs:
+  publish-coverage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # required by peaceiris/actions-gh-pages to push to gh-pages
+      actions: read      # required to query workflow runs and download artifacts from ci.yml
+    # Shared across workflows by name — see "gh-pages clobber guard" above.
+    concurrency:
+      group: gh-pages-deploy
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Node setup
+        uses: ./.github/actions/node-setup
+
+      # ── Coverage ──
+      # If no successful CI run exists (e.g. very first run with no prior
+      # CI history), the download step is skipped and the publish below
+      # leaves gh-pages/coverage/ untouched for this run.
+      - name: Find latest successful CI run
+        id: ci-run
+        run: |
+          RUN_ID=$(gh api \
+            "/repos/${{ github.repository }}/actions/workflows/ci.yml/runs?status=success&per_page=1" \
+            --jq '.workflow_runs[0].id // empty')
+          echo "run-id=${RUN_ID}" >> "$GITHUB_OUTPUT"
+          if [ -z "$RUN_ID" ]; then
+            echo "No successful CI run found — coverage will not be published this run."
+          else
+            echo "Using coverage from CI run $RUN_ID"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # continue-on-error guards against artifact expiry (retention-days: 7 in ci.yml) or unavailability.
+      - name: Download coverage artifact from CI run
+        if: steps.ci-run.outputs.run-id != ''
+        run: |
+          gh run download "${{ steps.ci-run.outputs.run-id }}" \
+            --name coverage-report \
+            --dir docs/coverage/ \
+            --repo "${{ github.repository }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      # ── Back link ──
+      # The coverage report is generator output with its own page shell, so
+      # the docs theme's header never appears on it and a reader who arrived
+      # from the landing card has no way back. scripts/ci/injectBackLink.js
+      # adds one fixed-position link.
+      #
+      # Runs unconditionally: the script reports a missing file rather than
+      # failing, which is the case that actually happens (the download above
+      # is continue-on-error, and the first ever run has no artifact). It is
+      # also idempotent -- gh-pages is republished rather than rebuilt, so it
+      # routinely sees its own previous output and must not stack a second
+      # link onto it.
+      - name: Inject the back-to-docs link into the coverage report
+        run: node scripts/ci/injectBackLink.js docs/coverage/index.html
+
+      # ── Deploy ──────────────────────────────────────────────────────────
+      # peaceiris/actions-gh-pages@v4 — use v4, not v3 (v3 has a known token
+      # scope bug). destination_dir scopes both publish and stale-file
+      # cleanup (keep_files defaults to false) to coverage/ — nothing else
+      # on gh-pages is touched.
+      - name: Publish coverage to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/coverage
+          destination_dir: coverage
+          publish_branch: gh-pages
+          force_orphan: false
+          commit_message: "docs: republish coverage report [${{ github.sha }}]"
+
+      # gh-pages propagation can take up to 60 s after publish.
+      # This step is informational — the workflow exits 0 regardless.
+      - name: Smoke test gh-pages
+        run: |
+          echo "Waiting 15 s for gh-pages propagation..."
+          sleep 15
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://keglev.github.io/my-portfolio/coverage/index.html)
+          echo "HTTP status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            echo "WARNING: gh-pages/coverage returned $STATUS — may still be propagating."
+          fi

@@ -167,7 +167,8 @@ export default defineConfig({
         '**/src/data/!(projects.config).js': {
           statements: 85, branches: 85, functions: 85, lines: 85,
         },
-        '**/scripts/ci/**/*.js': {
+        // Carve-out: detectPipelineScope.js has its own entry further down.
+        '**/scripts/ci/!(detectPipelineScope).js': {
           statements: 85, branches: 85, functions: 85, lines: 85,
         },
         // Carve-out: markedConfig.js has its own entry further down.
@@ -216,6 +217,18 @@ export default defineConfig({
         // violation than the uncovered branches are.
         '**/scripts/docs/build_docs.js': {
           statements: 95, branches: 50, functions: 90, lines: 95,
+        },
+
+        // Branch gap only, and only since the codeRef flag was removed
+        // (ADR-009). The one uncovered branch is the `require.main === module`
+        // CLI guard, which cannot be covered in-process: taking it means
+        // running the file as a child process, and istanbul does not
+        // instrument one. It was under the 85% group until this file shrank
+        // from ~12 branches to 6, at which point the same single unreachable
+        // branch went from 8% of the total to 17%. Nothing became less
+        // tested -- the denominator moved. Every other metric is >= 96.
+        '**/scripts/ci/detectPipelineScope.js': {
+          statements: 96, branches: 83, functions: 100, lines: 95,
         },
 
         // A static array of project entries with a single export. "0%

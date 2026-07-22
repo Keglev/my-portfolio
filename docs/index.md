@@ -4,7 +4,6 @@ A personal portfolio built with React and Vite, styled with styled-components, t
 
 | Section | Description | Link |
 |---------|-------------|------|
-| Code Reference | Generated reference for every source module, built from the JSDoc comments in `src/` | [jsdoc/index.html](/my-portfolio/jsdoc/index.html) |
 | Test Coverage | Istanbul / Vitest HTML coverage report | [coverage/index.html](https://keglev.github.io/my-portfolio/coverage/index.html) |
 | Architecture | arc42 architecture documentation (chapters 01-12) | [architecture/index.md](architecture/index.md) |
 | Decisions (ADRs) | Architecture decision records, including the Vite and test-runner migrations | [architecture/09-decisions/index.md](architecture/09-decisions/index.md) |

@@ -25,8 +25,8 @@ Scripts in `scripts/docs/` are called by the `architecture-docs.yml` GitHub Acti
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/docs/build_docs.js` | Reads the page-shell templates from `docs/_theme/templates/`; converts every `docs/*.md` to `docs/*.html`, skipping `docs/jsdoc/`, `docs/coverage/`, and `docs/_theme/`; generates a sidebar TOC from h2/h3 headings; wraps Mermaid code blocks in `.mermaid-wrapper` divs; concatenates the split CSS sources under `docs/_theme/css/` into `docs/_theme/css/styles.css`; assembles the bilingual landing (`landing-en.html`/`landing-de.html`) into `docs/index.html` and `docs/index-de.html` |
-| `scripts/docs/build_mermaid.js` | Scans the generated HTML files (excluding `jsdoc/`, `coverage/`, `_theme/`) for Mermaid wrapper blocks and pre-renders them to inline SVG using `@mermaid-js/mermaid-cli` (`mmdc`); exits cleanly when `mmdc` is not installed so that client-side CDN rendering acts as the fallback |
+| `scripts/docs/build_docs.js` | Reads the page-shell templates from `docs/_theme/templates/`; converts every `docs/*.md` to `docs/*.html`, skipping `docs/coverage/` and `docs/_theme/`; generates a sidebar TOC from h2/h3 headings; wraps Mermaid code blocks in `.mermaid-wrapper` divs; concatenates the split CSS sources under `docs/_theme/css/` into `docs/_theme/css/styles.css`; assembles the bilingual landing (`landing-en.html`/`landing-de.html`) into `docs/index.html` and `docs/index-de.html` |
+| `scripts/docs/build_mermaid.js` | Scans the generated HTML files (excluding `coverage/` and `_theme/`) for Mermaid wrapper blocks and pre-renders them to inline SVG using `@mermaid-js/mermaid-cli` (`mmdc`); exits cleanly when `mmdc` is not installed so that client-side CDN rendering acts as the fallback |
 
 ## References
 

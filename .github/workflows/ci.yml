@@ -4,21 +4,21 @@
 # Purpose
 # - Lint source files to catch issues before tests run
 # - Run the full test suite and collect coverage
-# - Upload coverage as a pipeline artifact for api-docs.yml
+# - Upload coverage as a pipeline artifact for coverage.yml
 # - On push to main: resolve which downstream work actually changed
 #   (scripts/ci/runPipelineScope.js) and dispatch deploy.yml and
-#   api-docs.yml in parallel — deploy always runs, api-docs only when
-#   the API surface or test coverage could have changed.
+#   coverage.yml in parallel — deploy always runs, coverage only when
+#   source or test files could have changed the report.
 #
 # Triggers
 # - Push to main when any workflow, source, test, or config file changes
 #   (widened to .github/workflows/** so a change to deploy.yml or
-#   api-docs.yml alone still exercises the pipeline instead of sitting
+#   coverage.yml alone still exercises the pipeline instead of sitting
 #   untested until the next src/** push)
 # - Pull requests to main (lint-and-test only, no dispatch)
 #
 # Does NOT deploy anything itself. Deployment and docs generation are
-# dispatched to deploy.yml / api-docs.yml, which run in parallel.
+# dispatched to deploy.yml / coverage.yml, which run in parallel.
 ############################################################
 name: CI
 
@@ -68,7 +68,7 @@ jobs:
         # its own and cannot drift from a local run.
         run: npm run test:coverage
 
-      # Upload coverage so api-docs.yml can consume it without re-running tests.
+      # Upload coverage so coverage.yml can consume it without re-running tests.
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v7
         with:
@@ -111,11 +111,10 @@ jobs:
 
       # Dispatched alongside deploy.yml (not after it) so build/deploy and
       # docs generation run in parallel instead of docs waiting on deploy.
-      - name: Trigger the code reference and coverage workflow
-        if: steps.scope.outputs.codeRef == 'true' || steps.scope.outputs.coverage == 'true'
-        run: |
-          gh workflow run api-docs.yml --repo ${{ github.repository }} --ref main \
-            -f codeRef="${{ steps.scope.outputs.codeRef }}" \
-            -f coverage="${{ steps.scope.outputs.coverage }}"
+      # No inputs: coverage.yml has one job now, so dispatching it IS the
+      # instruction. The decision of whether to dispatch stays here.
+      - name: Trigger the coverage workflow
+        if: steps.scope.outputs.coverage == 'true'
+        run: gh workflow run coverage.yml --repo ${{ github.repository }} --ref main
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
