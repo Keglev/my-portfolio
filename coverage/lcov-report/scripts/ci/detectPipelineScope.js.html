@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.14% </span>
+                <span class="strong">96.29% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>34/35</span>
+                <span class='fraction'>26/27</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.66% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>11/12</span>
+                <span class='fraction'>5/6</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>11/11</span>
+                <span class='fraction'>8/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">96.29% </span>
+                <span class="strong">95.23% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>26/27</span>
+                <span class='fraction'>20/21</span>
             </div>
         
             
@@ -130,15 +130,7 @@
 <a name='L65'></a><a href='#L65'>65</a>
 <a name='L66'></a><a href='#L66'>66</a>
 <a name='L67'></a><a href='#L67'>67</a>
-<a name='L68'></a><a href='#L68'>68</a>
-<a name='L69'></a><a href='#L69'>69</a>
-<a name='L70'></a><a href='#L70'>70</a>
-<a name='L71'></a><a href='#L71'>71</a>
-<a name='L72'></a><a href='#L72'>72</a>
-<a name='L73'></a><a href='#L73'>73</a>
-<a name='L74'></a><a href='#L74'>74</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L68'></a><a href='#L68'>68</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -153,15 +145,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">15x</span>
-<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">32x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -172,8 +160,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">17x</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">17x</span>
 <span class="cline-any cline-yes">17x</span>
@@ -193,11 +181,11 @@
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">24x</span>
+<span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -213,46 +201,40 @@
  * @file detectPipelineScope.js
  * @module scripts/ci/detectPipelineScope
  * @summary Maps a push diff's changed file paths to which downstream
- * pipeline work is needed: the generated code reference, coverage publish,
- * architecture docs, and deploy.
+ * pipeline work is needed: coverage publish, architecture docs, and deploy.
  * @enterprise ci.yml needs to dispatch deploy.yml and the docs workflows in
- * parallel, and skip code-reference/architecture-doc regeneration when
- * nothing that feeds them changed. GitHub Actions path filters can gate an
- * entire trigger but cannot express "test-only changes need coverage but not
- * a code-reference rebuild" on a single trigger -- that needs real logic,
- * which also means it can be unit tested (see
- * src/__tests__/scripts/ci/detectPipelineScope.test.js), unlike a paths:
- * filter block.
+ * parallel, and skip work when nothing that feeds it changed. GitHub Actions
+ * path filters can gate an entire trigger but cannot express "a docs-only
+ * change deploys nothing but still rebuilds the docs site" on a single
+ * trigger -- that needs real logic, which also means it can be unit tested
+ * (see src/__tests__/scripts/ci/detectPipelineScope.test.js), unlike a
+ * paths: filter block.
  */
 const fs = require('fs');
 &nbsp;
-const SRC_TESTS_PREFIX = 'src/__tests__/';
 const SRC_PREFIX = 'src/';
 const SCRIPTS_DOCS_PREFIX = 'scripts/docs/';
 const DOCS_PREFIX = 'docs/';
-const JSDOC_CONFIG_FILE = 'jsdoc.json';
 &nbsp;
-const isSrcTestPath = (file) =&gt; file.startsWith(SRC_TESTS_PREFIX);
-const isSrcNonTestPath = (file) =&gt; file.startsWith(SRC_PREFIX) &amp;&amp; !isSrcTestPath(file);
-const isJsdocConfigFile = (file) =&gt; file === JSDOC_CONFIG_FILE;
+const isSrcPath = (file) =&gt; file.startsWith(SRC_PREFIX);
 const isDocsPath = (file) =&gt; file.startsWith(DOCS_PREFIX) || file.startsWith(SCRIPTS_DOCS_PREFIX);
 &nbsp;
 /**
  * @param {string[]} changedFiles - Repo-relative paths from a push diff
- * @returns {{codeRef: boolean, coverage: boolean, archDocs: boolean, deploy: boolean}}
+ * @returns {{coverage: boolean, archDocs: boolean, deploy: boolean}}
  */
 function resolveScope(changedFiles) {
-  // codeRef, not apiDocs: the published site is the Code Reference (see
-  // ADR-008). jsdoc.json stays the config filename because JSDoc is still
-  // the generator -- the rename is of the site, not of the tool.
-  const codeRef = changedFiles.some(
-    (file) =&gt; isSrcNonTestPath(file) || isJsdocConfigFile(file)
-  );
-  const coverage = codeRef || changedFiles.some(isSrcTestPath);
+  // The codeRef flag is gone with the site it gated (ADR-009). It used to
+  // separate "the exported surface changed" from "only tests changed",
+  // because the first needed a code-reference rebuild and the second did
+  // not. Coverage never made that distinction -- it was true for either --
+  // so removing codeRef collapses both cases into one src/** check rather
+  // than losing a rule.
+  const coverage = changedFiles.some(isSrcPath);
   const archDocs = changedFiles.some(isDocsPath);
   const deploy = changedFiles.some((file) =&gt; !isDocsPath(file));
 &nbsp;
-  return { codeRef, coverage, archDocs, deploy };
+  return { coverage, archDocs, deploy };
 }
 &nbsp;
 /**
@@ -289,7 +271,7 @@ module.exports = { resolveScope, runCli };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-07-22T18:44:59.363Z
+                at 2026-07-22T20:13:27.689Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
