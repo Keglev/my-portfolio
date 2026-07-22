@@ -12,7 +12,14 @@ module.exports = {
     '^.+\\.(js|jsx|mjs|cjs|ts|tsx)$': [
       'babel-jest',
       {
-        presets: ['@babel/preset-env', ['@babel/preset-react', { runtime: 'automatic' }]]
+        presets: ['@babel/preset-env', ['@babel/preset-react', { runtime: 'automatic' }]],
+        // TEMPORARY: rewrites Vite's `import.meta.env` to `process.env`, which
+        // preset-env's CommonJS output cannot represent. Removed together with
+        // config/jest/ when the runner migrates to Vitest, which reads
+        // import.meta.env natively. See the plugin file for the full rationale.
+        // require.resolve, not '<rootDir>/...': Babel resolves plugin paths
+        // itself and never sees Jest's <rootDir> token.
+        plugins: [require.resolve('./config/jest/importMetaEnvBabelPlugin.js')]
       }
     ]
   },

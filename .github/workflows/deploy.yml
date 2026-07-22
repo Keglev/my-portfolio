@@ -71,13 +71,33 @@ jobs:
       - name: Node setup
         uses: ./.github/actions/node-setup
 
-      # Test files are never included — CRA only compiles src/.
-      # REACT_APP_* vars are baked in at build time. The app is built HERE (not
+      # Guard against the migration's sharpest failure mode: if the secret is
+      # unset or still under its old REACT_APP_ name, the build SUCCEEDS and
+      # silently ships an empty access key — the contact form then fails
+      # silently in production with no CI signal at all. Presence is checked;
+      # the value is never printed.
+      - name: Verify Web3Forms key is present
+        env:
+          VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
+        run: |
+          if [ -z "$VITE_WEB3FORMS_KEY" ]; then
+            echo "ERROR: VITE_WEB3FORMS_KEY is unset or empty."
+            echo "Set it in repository secrets (renamed from REACT_APP_WEB3FORMS_KEY)."
+            exit 1
+          fi
+          echo "VITE_WEB3FORMS_KEY is present (value not printed)."
+
+      # Test files are never included — the bundler only follows imports
+      # reachable from index.html, and nothing in src/ imports a test.
+      # VITE_* vars are baked in at build time. The app is built HERE (not
       # on Vercel — we deploy --prebuilt), so client env vars must be provided
       # as GitHub secrets on this step. The Web3Forms key is public by design.
+      # Renamed from REACT_APP_WEB3FORMS_KEY with the Vite migration: Vite
+      # only exposes VITE_-prefixed variables to client code, so the old name
+      # would resolve to undefined and ship an empty access key.
       - name: Build
         env:
-          REACT_APP_WEB3FORMS_KEY: ${{ secrets.REACT_APP_WEB3FORMS_KEY }}
+          VITE_WEB3FORMS_KEY: ${{ secrets.VITE_WEB3FORMS_KEY }}
         run: npm run build
 
       - name: Prepare Vercel prebuilt output

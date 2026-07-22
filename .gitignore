@@ -7,7 +7,10 @@
 /coverage
 
 # production
+# /build is CRA's output dir, /dist is Vite's — both listed while the two
+# build systems coexist; /build is dropped when react-scripts is removed.
 /build
+/dist
 
 # misc
 .env
