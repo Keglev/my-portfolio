@@ -4,8 +4,10 @@
 # Summary: Assembles the Vercel Build Output API v3 directory structure
 #   from the React production build.
 # Enterprise: Must run after `npm run build` and before `vercel --prebuilt`
-#   (see deploy.yml) -- this script has no meaning without a fresh build/
-#   directory already on disk.
+#   (see deploy.yml) -- this script has no meaning without a fresh dist/
+#   directory already on disk. The source directory is dist/ (Vite's
+#   default output) since the migration off Create React App, which
+#   produced build/.
 #
 # Output layout:
 #   .vercel/output/static/   -- compiled React app
@@ -17,7 +19,15 @@ set -e
 # Idempotent reset -- output dir may already exist from a previous attempt.
 rm -rf .vercel/output || true
 mkdir -p .vercel/output/static
-cp -r build/* .vercel/output/static/ || true
+
+# Fail loudly on a missing build. The previous `|| true` silently produced an
+# empty static/ directory, which the deploy.yml verify step then caught one
+# step later with a less obvious error.
+if [ ! -d dist ]; then
+  echo "ERROR: dist/ not found -- run 'npm run build' before this script." >&2
+  exit 1
+fi
+cp -r dist/* .vercel/output/static/
 
 # Empty placeholder required by Vercel's output spec even for static-only projects.
 mkdir -p .vercel/output/functions || true

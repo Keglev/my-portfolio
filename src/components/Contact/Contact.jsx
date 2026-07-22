@@ -3,8 +3,9 @@
  * @module components/Contact/Contact
  * @summary Contact section with a Web3Forms-backed form and social links.
  * @enterprise Web3Forms is static-site friendly (no own backend needed);
- * the public access key comes from the REACT_APP_WEB3FORMS_KEY environment
- * variable, set in Vercel project settings. Includes a required DSGVO
+ * the public access key comes from the VITE_WEB3FORMS_KEY environment
+ * variable, injected at build time by the deploy workflow. Includes a
+ * required DSGVO
  * consent checkbox (submit stays disabled until checked) and a hidden
  * honeypot field ("botcheck") that Web3Forms uses for spam filtering. The
  * social links (GitHub/LinkedIn/Xing/email) are a direct-contact fallback
@@ -24,7 +25,7 @@ const Contact = () => {
   const [status, setStatus] = useState('idle'); // idle | sending | success | error
   const [consent, setConsent] = useState(false);
 
-  const accessKey = process.env.REACT_APP_WEB3FORMS_KEY || '';
+  const accessKey = import.meta.env.VITE_WEB3FORMS_KEY || '';
 
   const handleSubmit = async (e) => {
     e.preventDefault();

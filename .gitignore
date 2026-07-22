@@ -7,7 +7,8 @@
 /coverage
 
 # production
-/build
+# Vite build output (CRA's /build is gone with react-scripts)
+/dist
 
 # misc
 .env
