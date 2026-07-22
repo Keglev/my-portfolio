@@ -47,7 +47,11 @@
       <div class="site-header__spacer"></div>
       <nav aria-label="Docs navigation">
         <ul class="site-header__nav">
-          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub ↗</a></li>
+          <!-- No trailing arrow glyph: U+2197 has an emoji presentation form and
+               renders in colour on some platforms, which the zero-emoji rule for
+               docs output excludes. target/rel already carry the "opens elsewhere"
+               semantics for assistive tech. -->
+          <li><a href="https://github.com/Keglev/my-portfolio" target="_blank" rel="noopener">GitHub</a></li>
         </ul>
       </nav>
       <!-- Hrefs resolved at runtime by docs.js against the current page's translated twin, if any -->

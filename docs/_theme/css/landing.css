@@ -91,11 +91,10 @@
 /* Snap back to resting position on press */
 .card:active { transform: translateY(0); }
 
-.card__icon {
-  font-size: 1.375rem;
-  line-height: 1;
-  margin-bottom: 0.125rem;
-}
+/* Cards carry no icon. The emoji icons this rule used to size are gone (no
+   color emoji anywhere in docs output), and the reference theme's landing
+   uses a text tag rather than an icon -- so "none" was taken over authoring
+   a monochrome SVG set. */
 
 .card__title {
   font-size: 0.9375rem;
