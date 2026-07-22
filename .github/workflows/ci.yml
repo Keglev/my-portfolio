@@ -30,6 +30,12 @@ on:
       - 'scripts/**'
       - 'config/**'
       - 'package.json'
+      # The lockfile is what `npm ci` actually installs from, so a
+      # lockfile-only change (a dependency bump, an `npm audit fix`) can
+      # alter the deployed bundle and must not skip the pipeline. It was
+      # missing here while package.json was listed, which meant exactly
+      # that class of change deployed nothing.
+      - 'package-lock.json'
       # Build inputs: a change to either can alter the deployed bundle, so
       # neither may skip the pipeline. index.html moved to the repo root with
       # the Vite migration; under CRA it lived in public/ and was not listed.
@@ -57,6 +63,21 @@ jobs:
       # Fail fast: lint before running tests.
       - name: Lint
         run: npm run lint
+
+      # Dependency gate. Runs in lint-and-test, which has no path filter on
+      # pull_request, so every PR passes through it -- including a
+      # dependency PR that touches nothing but package.json and the
+      # lockfile. Placed before the test run because a high or critical
+      # advisory is not a result worth spending three minutes of test time
+      # to reach.
+      #
+      # This step can fail on a commit that changed nothing, when an
+      # advisory is published upstream against a dependency already in the
+      # tree. That is the gate working: the response is to upgrade, or to
+      # add a waiver to the allowlist in scripts/audit-check.js naming the
+      # dependency path and why it cannot reach a user.
+      - name: Audit dependencies
+        run: npm run audit:ci
 
       - name: Run tests with coverage
         env:

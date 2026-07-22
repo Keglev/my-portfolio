@@ -7,9 +7,10 @@
  * @enterprise Exits 1 on findings, 2 on execution or parse failure, 0 when
  * clean -- a distinct exit code for parse/exec failure vs. a real finding
  * lets a caller tell "audit itself broke" apart from "audit ran and found
- * problems." Invoked via the audit:ci npm script; not currently wired into
- * any CI workflow step, so it's a manual/local gate a developer runs
- * on demand, not an automated one.
+ * problems." Invoked via the audit:ci npm script, which ci.yml runs in
+ * lint-and-test before the test step: that job has no path filter on
+ * pull_request, so a dependency PR cannot reach main without passing
+ * through here.
  */
 const { exec } = require('child_process');
 

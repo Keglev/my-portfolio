@@ -107,6 +107,17 @@ describe('detectPipelineScope', () => {
       expect(scope).toEqual({ coverage: false, archDocs: false, deploy: true });
     });
 
+    // The lockfile is what `npm ci` installs from, so a dependency bump that
+    // touches only package-lock.json still changes the deployed bundle. It
+    // must classify like package.json, not fall through to "nothing to do".
+    it('should flag only deploy when package-lock.json changes on its own', () => {
+      const changedFiles = ['package-lock.json'];
+
+      const scope = resolveScope(changedFiles);
+
+      expect(scope).toEqual({ coverage: false, archDocs: false, deploy: true });
+    });
+
     // The Vite migration added vite.config.js and moved index.html to the repo
     // root. Both are build inputs: a change to either can alter the deployed
     // bundle but cannot alter the documented API surface or test coverage, so
