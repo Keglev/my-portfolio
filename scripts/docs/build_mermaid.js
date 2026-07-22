@@ -217,4 +217,19 @@ function run() {
   }
 }
 
-run();
+// CLI guard: running the file executes the pipeline, importing it does not.
+// Same pattern as scripts/ci/detectPipelineScope.js, and for the same reason
+// -- the behaviour below (mmdc discovery, block extraction, the clean exit
+// when mmdc is absent) is load-bearing in CI and can only be unit tested if
+// importing the module has no side effects.
+if (require.main === module) {
+  run();
+}
+
+module.exports = {
+  findMmdc,
+  extractBlocks,
+  processFile,
+  collectHtmlFiles,
+  run,
+};
