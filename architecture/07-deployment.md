@@ -12,6 +12,7 @@ The portfolio uses four GitHub Actions workflows. `ci.yml` runs first (lint, tes
 - [Workflow Files](#workflow-files)
 - [Step Details](#step-details)
 - [Concurrency Strategy](#concurrency-strategy)
+- [Repository Layout: why the root files are at the root](#repository-layout-why-the-root-files-are-at-the-root)
 - [Live Verification](#live-verification-2026-07-17)
 - [References](#references)
 
@@ -60,11 +61,6 @@ flowchart TD
     class Lint,Test,Artifact,Scope l2
     class BuildReact,VercelDeploy l3
     class Coverage,BackLink,GHPagesAPI,Templates,Mermaid,GHPagesArch l4
-
-    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
-    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
-    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
-    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 ```
 
 ## Workflow Files
@@ -137,6 +133,38 @@ Four separate concurrency groups are in play, deliberately **not** one shared gr
 Docs-only pushes — changes to `docs/**` or `scripts/docs/**` — trigger `architecture-docs.yml` directly using the separate `docs-only` concurrency group, so small documentation edits don't queue behind any of the portfolio-pipeline/deploy-pipeline/coverage-pipeline lineage.
 
 `coverage.yml` and `architecture-docs.yml` publish to the same `gh-pages` branch from independent trigger paths and could in principle run concurrently. Both declare a job-level `gh-pages-deploy` concurrency group (matched by name across workflows), which serializes just their publish jobs without changing either workflow's top-level trigger concurrency.
+
+## Repository Layout: why the root files are at the root
+
+A repository root fills up with config files, and the honest question about
+each is whether it is there because a tool demands it or because nobody moved
+it. Every tracked root file in this project is in the first category — each
+line below names the tool that requires the location.
+
+This note lives in the deployment chapter rather than the README because
+almost every answer is "a build or deploy tool resolves it from here", which
+is this chapter's subject. Putting it in the README would also duplicate the
+docs site, which the README deliberately does not do.
+
+| File | Why it is at the root |
+|---|---|
+| `package.json`, `package-lock.json` | npm resolves the project manifest and lockfile from the directory it runs in; `npm ci` reads both. |
+| `vite.config.js` | Vite's default config lookup. Moving it needs `--config` on every invocation, including the ones inside CI. |
+| `index.html` | Vite's build entry, not a static asset — it is the module graph's root, and `root: '.'` in the config points at this directory (it lived in `public/` under Create React App). |
+| `vercel.json` | Vercel reads project configuration from the repository root only. |
+| `.vercelignore` | Same: root-only, by the platform's convention. |
+| `eslint.config.mjs` | ESLint 9 flat config searches upward from the working directory; the root is where the search ends. |
+| `jsconfig.json` | Editors resolve it from the project root to type-check and offer completions across `src`, `scripts`, and `config`. Never read by the build. |
+| `.gitignore` | Applies repository-wide from the root. |
+| `.env.example` | Documents the `.env` that Vite loads, and Vite loads `.env` from the project root. Keeping the template beside the real file is the point. |
+| `README.md` | GitHub renders the root README on the repository page. |
+| `LICENSE` | GitHub's licence detection reads the root. |
+
+Nothing under `src/`, `scripts/`, `config/`, or `docs/` is here for a reason
+other than the above. Directories that look like they could be root files
+(`config/vitest/`, `scripts/ci/`, `scripts/docs/`) are deliberately nested,
+because nothing requires them at the root and grouping them by purpose keeps
+the root readable.
 
 ## Live Verification (2026-07-17)
 

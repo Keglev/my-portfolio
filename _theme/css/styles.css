@@ -333,22 +333,33 @@ button:focus-visible {
   overflow-x: auto;
 }
 
-/* Reset pre/div styles that marked injects inside the wrapper */
+/* Reset pre/div styles that marked injects inside the wrapper.
+   width: max-content, not 100%: this element is the wrapper's scroll content,
+   so at 100% it stayed the width of the column and a wider SVG spilled out of
+   it without ever extending the wrapper's scrollable area -- the diagram was
+   clipped rather than scrollable. Sizing it to its content is what makes
+   overflow-x above actually produce a scrollbar. */
 .mermaid-wrapper pre.mermaid,
 .mermaid-wrapper div.mermaid {
   background: transparent;
   border: none;
   padding: 0;
   margin: 0;
-  width: 100%;
+  width: max-content;
+  min-width: 100%;
 }
 
-/* Force SVG to fill the wrapper without overflowing */
+/* Render at natural size and let the wrapper scroll. The previous rule forced
+   width/max-width to 100%, which made a wide diagram shrink to fit the column
+   -- the sequence diagram in 06b-runtime-routing became unreadable long before
+   it reached a narrow viewport. Mermaid is initialised with useMaxWidth: false
+   (see page.html) so it no longer emits a competing width="100%".
+   margin: auto keeps narrow diagrams centred rather than left-stranded. */
 .mermaid-wrapper svg {
-  width: 100% !important;
-  max-width: 100% !important;
+  max-width: none;
   height: auto;
   display: block;
+  margin: 0 auto;
 }
 
 /* Thicker edges and arrowheads for legibility */

@@ -159,45 +159,160 @@
 
   </div>
 
-  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped.
-       Deliberately keeps an explicit dark themeVariables init (not the
-       reference theme's CSS-variable-driven mermaid.css) so diagrams stay
-       legible regardless of the light/dark toggle -- see ROBOT PROMPT P9's
-       B3 instruction to keep explicit themeVariables init. -->
+  <!-- Mermaid: client-side diagram rendering when the mmdc pre-render was
+       skipped, which is what happens in CI today -- @mermaid-js/mermaid-cli
+       is not installed, so build_mermaid.js exits as a no-op and every
+       diagram on the published site is rendered here, in the browser.
+
+       themeVariables are still explicit rather than the reference theme's
+       mermaid.css approach, but they are now DERIVED FROM the theme tokens
+       at render time instead of being hardcoded dark hex values. Mermaid
+       bakes colours into the SVG when it renders, so a stylesheet cannot
+       restyle a finished diagram: following the theme means re-rendering. -->
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'base',
-      themeVariables: {
+
+    const SOURCE_ATTR = 'data-diagram-source';
+
+    /** Reads a theme token off :root, resolved for whichever theme is active. */
+    const token = (name, fallback) =>
+      getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+
+    /** '#rgb' / '#rrggbb' -> [r, g, b]. Theme tokens used here are all hex. */
+    function parseHex(value) {
+      let h = value.replace('#', '').trim();
+      if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+      return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+    }
+
+    /** Blends two hex colours; t = 0 returns a, t = 1 returns b. */
+    function mix(a, b, t) {
+      const [x, y] = [parseHex(a), parseHex(b)];
+      const c = x.map((v, i) => Math.round(v + (y[i] - v) * t));
+      return '#' + c.map((v) => v.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Level shading. Diagrams mark nesting depth with `class <nodes> l1..l4`;
+    // the palette for those levels is built here, from --surface toward
+    // --accent, so it inverts with the theme instead of being pinned to one.
+    //
+    // The fractions are not arbitrary. Each step is far enough from its
+    // neighbour to read as a distinct level (contrast ratio ~1.2 between
+    // adjacent steps in both themes) while the darkest step still holds
+    // 5.99:1 against --text in dark and 7.56:1 in light -- WCAG AA on every
+    // level, in both themes, not just at the comfortable end.
+    const LEVEL_STEPS = [0.12, 0.26, 0.40, 0.54];
+
+    function levelClassDefs() {
+      const surface = token('--surface', '#1A1D2E');
+      const accent = token('--accent', '#3B82F6');
+      const heading = token('--heading', '#F8FAFC');
+      const text = token('--text', '#E2E8F0');
+
+      return LEVEL_STEPS.map((step, i) =>
+        `  classDef l${i + 1} fill:${mix(surface, accent, step)},` +
+        `stroke:${mix(accent, heading, step * 0.6)},stroke-width:2px,color:${text}`
+      ).join('\n');
+    }
+
+    /** True when a diagram assigns nodes to level classes. */
+    const usesLevels = (source) => /\bclass\s+[\w,]+\s+l[1-4]\b/.test(source);
+
+    /**
+     * Mermaid's colour set for the current theme, built from tokens.css.
+     * Read fresh on every render -- the same call returns light values once
+     * data-theme flips, which is the whole point.
+     */
+    function themeVariables() {
+      const surface = token('--surface', '#1A1D2E');
+      const surface2 = token('--surface-2', '#141622');
+      const text = token('--text', '#E2E8F0');
+      const heading = token('--heading', '#F8FAFC');
+      const accent = token('--accent', '#3B82F6');
+      const link = token('--link', '#60A5FA');
+      const bg = token('--bg', '#0F1117');
+
+      return {
         fontFamily: 'Inter, sans-serif',
-        background: '#0F1117',
-        primaryColor: '#1e2d4f',
-        primaryTextColor: '#E2E8F0',
-        primaryBorderColor: '#3B82F6',
-        lineColor: '#60A5FA',
-        secondaryColor: '#2a3d62',
-        tertiaryColor: '#37507a',
-        edgeLabelBackground: '#141622',
-        clusterBkg: '#141622',
-        clusterBorder: '#3B82F6',
-        titleColor: '#E2E8F0',
-        noteBkgColor: '#1e2d4f',
-        noteTextColor: '#E2E8F0',
-        actorBkg: '#1e2d4f',
-        actorBorder: '#3B82F6',
-        actorTextColor: '#E2E8F0',
-        actorLineColor: '#60A5FA',
-        activationBkgColor: '#2a3d62',
-        activationBorderColor: '#3B82F6',
-        signalColor: '#60A5FA',
-        signalTextColor: '#E2E8F0',
-        labelBoxBkgColor: '#1e2d4f',
-        labelBoxBorderColor: '#3B82F6',
-        labelTextColor: '#E2E8F0',
-        loopTextColor: '#E2E8F0',
-        sequenceNumberColor: '#E2E8F0',
-      }
+        background: bg,
+        primaryColor: surface,
+        primaryTextColor: text,
+        primaryBorderColor: accent,
+        lineColor: link,
+        secondaryColor: surface2,
+        tertiaryColor: surface2,
+        edgeLabelBackground: bg,
+        clusterBkg: surface2,
+        clusterBorder: accent,
+        titleColor: heading,
+        noteBkgColor: surface,
+        noteTextColor: text,
+        actorBkg: surface,
+        actorBorder: accent,
+        actorTextColor: text,
+        actorLineColor: link,
+        activationBkgColor: surface2,
+        activationBorderColor: accent,
+        signalColor: link,
+        signalTextColor: text,
+        labelBoxBkgColor: surface,
+        labelBoxBorderColor: accent,
+        labelTextColor: text,
+        loopTextColor: text,
+        sequenceNumberColor: text,
+      };
+    }
+
+    const diagrams = Array.from(document.querySelectorAll('.mermaid-wrapper .mermaid'));
+
+    // Stash the source BEFORE the first render. After rendering, the node's
+    // content is SVG -- the diagram definition is gone, and a re-render would
+    // have nothing to work from.
+    diagrams.forEach((el) => {
+      if (!el.hasAttribute(SOURCE_ATTR)) el.setAttribute(SOURCE_ATTR, el.textContent);
+    });
+
+    async function render() {
+      if (!diagrams.length) return;
+
+      diagrams.forEach((el) => {
+        const source = el.getAttribute(SOURCE_ATTR);
+        // textContent, not innerHTML: the source is plain text and may contain
+        // characters that would otherwise be parsed as markup.
+        // The level palette is appended per render, so it is regenerated for
+        // the current theme rather than carried over from the previous one.
+        el.textContent = usesLevels(source) ? source + '\n' + levelClassDefs() + '\n' : source;
+        // Mermaid skips any node it has already processed.
+        el.removeAttribute('data-processed');
+      });
+
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        // Render at natural size instead of stretching to the container.
+        // With useMaxWidth on, mermaid emits width="100%" and a wide diagram
+        // is squeezed into the column until its labels are unreadable. Off,
+        // it keeps its real width and .mermaid-wrapper scrolls -- which is
+        // what the wrapper's overflow-x has always been there for.
+        flowchart: { useMaxWidth: false },
+        sequence: { useMaxWidth: false },
+        themeVariables: themeVariables(),
+      });
+      await mermaid.run({ nodes: diagrams });
+    }
+
+    // startOnLoad is off and the first render is explicit, so there is exactly
+    // one render path -- initial paint and re-theme run identical code, and a
+    // page opened directly in light theme cannot render dark first.
+    render();
+
+    // A MutationObserver on the attribute rather than a click handler on the
+    // toggle button: this fires for any change to data-theme, whoever made it.
+    // The button is one such source; header.html's pre-paint boot script is
+    // another. Binding to the button would silently miss the rest.
+    new MutationObserver(render).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
     });
   </script>
 

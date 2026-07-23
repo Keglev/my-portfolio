@@ -92,6 +92,7 @@
   <li class="toc-h3"><a href="#coverageyml">coverage.yml</a></li>
   <li class="toc-h3"><a href="#architecture-docsyml">architecture-docs.yml</a></li>
   <li><a href="#concurrency-strategy">Concurrency Strategy</a></li>
+  <li><a href="#repository-layout-why-the-root-files-are-at-the-root">Repository Layout: why the root files are at the root</a></li>
   <li><a href="#live-verification-2026-07-17">Live Verification (2026-07-17)</a></li>
   <li><a href="#references">References</a></li>
 </ul>
@@ -110,6 +111,7 @@
 <li><a href="#workflow-files">Workflow Files</a></li>
 <li><a href="#step-details">Step Details</a></li>
 <li><a href="#concurrency-strategy">Concurrency Strategy</a></li>
+<li><a href="#repository-layout-why-the-root-files-are-at-the-root">Repository Layout: why the root files are at the root</a></li>
 <li><a href="#live-verification-2026-07-17">Live Verification</a></li>
 <li><a href="#references">References</a></li>
 </ul>
@@ -156,11 +158,6 @@
     class Lint,Test,Artifact,Scope l2
     class BuildReact,VercelDeploy l3
     class Coverage,BackLink,GHPagesAPI,Templates,Mermaid,GHPagesArch l4
-
-    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
-    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
-    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
-    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 </pre></div>
 <h2 id="workflow-files">Workflow Files</h2>
 <table>
@@ -275,6 +272,72 @@
 <p><code>ci.yml</code>&#39;s <code>start-deploy-stage</code> job dispatches <code>deploy.yml</code> and <code>coverage.yml</code> back to back, while <code>ci.yml</code>&#39;s own run is still holding <code>portfolio-pipeline</code>. GitHub Actions only protects an <strong>already in-progress</strong> run from cancellation when <code>cancel-in-progress: false</code> — a run that is still <strong>queued</strong> is not protected, and is silently cancelled if a second run joins the same group&#39;s queue before the first one starts. An earlier version of this pipeline put <code>deploy.yml</code> and the coverage workflow (then <code>api-docs.yml</code>) in the shared <code>portfolio-pipeline</code> group; in practice this meant the docs workflow&#39;s queued run cancelled <code>deploy.yml</code>&#39;s queued run on every push, so builds silently never reached Vercel. Giving each workflow its own group (<code>deploy-pipeline</code>, <code>coverage-pipeline</code>) removes the race and lets them run in parallel, at the cost of <code>ci.yml</code> runs no longer queuing behind <code>deploy.yml</code>/<code>coverage.yml</code> runs — accepted deliberately, since <code>ci.yml</code> never touches Vercel or <code>gh-pages</code> and each of the other two workflows still self-serializes within its own group.</p>
 <p>Docs-only pushes — changes to <code>docs/**</code> or <code>scripts/docs/**</code> — trigger <code>architecture-docs.yml</code> directly using the separate <code>docs-only</code> concurrency group, so small documentation edits don&#39;t queue behind any of the portfolio-pipeline/deploy-pipeline/coverage-pipeline lineage.</p>
 <p><code>coverage.yml</code> and <code>architecture-docs.yml</code> publish to the same <code>gh-pages</code> branch from independent trigger paths and could in principle run concurrently. Both declare a job-level <code>gh-pages-deploy</code> concurrency group (matched by name across workflows), which serializes just their publish jobs without changing either workflow&#39;s top-level trigger concurrency.</p>
+<h2 id="repository-layout-why-the-root-files-are-at-the-root">Repository Layout: why the root files are at the root</h2>
+<p>A repository root fills up with config files, and the honest question about
+each is whether it is there because a tool demands it or because nobody moved
+it. Every tracked root file in this project is in the first category — each
+line below names the tool that requires the location.</p>
+<p>This note lives in the deployment chapter rather than the README because
+almost every answer is &quot;a build or deploy tool resolves it from here&quot;, which
+is this chapter&#39;s subject. Putting it in the README would also duplicate the
+docs site, which the README deliberately does not do.</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Why it is at the root</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>package.json</code>, <code>package-lock.json</code></td>
+<td>npm resolves the project manifest and lockfile from the directory it runs in; <code>npm ci</code> reads both.</td>
+</tr>
+<tr>
+<td><code>vite.config.js</code></td>
+<td>Vite&#39;s default config lookup. Moving it needs <code>--config</code> on every invocation, including the ones inside CI.</td>
+</tr>
+<tr>
+<td><code>index.html</code></td>
+<td>Vite&#39;s build entry, not a static asset — it is the module graph&#39;s root, and <code>root: &#39;.&#39;</code> in the config points at this directory (it lived in <code>public/</code> under Create React App).</td>
+</tr>
+<tr>
+<td><code>vercel.json</code></td>
+<td>Vercel reads project configuration from the repository root only.</td>
+</tr>
+<tr>
+<td><code>.vercelignore</code></td>
+<td>Same: root-only, by the platform&#39;s convention.</td>
+</tr>
+<tr>
+<td><code>eslint.config.mjs</code></td>
+<td>ESLint 9 flat config searches upward from the working directory; the root is where the search ends.</td>
+</tr>
+<tr>
+<td><code>jsconfig.json</code></td>
+<td>Editors resolve it from the project root to type-check and offer completions across <code>src</code>, <code>scripts</code>, and <code>config</code>. Never read by the build.</td>
+</tr>
+<tr>
+<td><code>.gitignore</code></td>
+<td>Applies repository-wide from the root.</td>
+</tr>
+<tr>
+<td><code>.env.example</code></td>
+<td>Documents the <code>.env</code> that Vite loads, and Vite loads <code>.env</code> from the project root. Keeping the template beside the real file is the point.</td>
+</tr>
+<tr>
+<td><code>README.md</code></td>
+<td>GitHub renders the root README on the repository page.</td>
+</tr>
+<tr>
+<td><code>LICENSE</code></td>
+<td>GitHub&#39;s licence detection reads the root.</td>
+</tr>
+</tbody></table>
+<p>Nothing under <code>src/</code>, <code>scripts/</code>, <code>config/</code>, or <code>docs/</code> is here for a reason
+other than the above. Directories that look like they could be root files
+(<code>config/vitest/</code>, <code>scripts/ci/</code>, <code>scripts/docs/</code>) are deliberately nested,
+because nothing requires them at the root and grouping them by purpose keeps
+the root readable.</p>
 <h2 id="live-verification-2026-07-17">Live Verification (2026-07-17)</h2>
 <p>The four-workflow topology above was verified live against production, not just read from the workflow files.</p>
 <table>
@@ -329,45 +392,160 @@
 
   </div>
 
-  <!-- Mermaid: client-side diagram rendering when mmdc pre-render was skipped.
-       Deliberately keeps an explicit dark themeVariables init (not the
-       reference theme's CSS-variable-driven mermaid.css) so diagrams stay
-       legible regardless of the light/dark toggle -- see ROBOT PROMPT P9's
-       B3 instruction to keep explicit themeVariables init. -->
+  <!-- Mermaid: client-side diagram rendering when the mmdc pre-render was
+       skipped, which is what happens in CI today -- @mermaid-js/mermaid-cli
+       is not installed, so build_mermaid.js exits as a no-op and every
+       diagram on the published site is rendered here, in the browser.
+
+       themeVariables are still explicit rather than the reference theme's
+       mermaid.css approach, but they are now DERIVED FROM the theme tokens
+       at render time instead of being hardcoded dark hex values. Mermaid
+       bakes colours into the SVG when it renders, so a stylesheet cannot
+       restyle a finished diagram: following the theme means re-rendering. -->
   <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
-    mermaid.initialize({
-      startOnLoad: true,
-      theme: 'base',
-      themeVariables: {
+
+    const SOURCE_ATTR = 'data-diagram-source';
+
+    /** Reads a theme token off :root, resolved for whichever theme is active. */
+    const token = (name, fallback) =>
+      getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+
+    /** '#rgb' / '#rrggbb' -> [r, g, b]. Theme tokens used here are all hex. */
+    function parseHex(value) {
+      let h = value.replace('#', '').trim();
+      if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+      return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+    }
+
+    /** Blends two hex colours; t = 0 returns a, t = 1 returns b. */
+    function mix(a, b, t) {
+      const [x, y] = [parseHex(a), parseHex(b)];
+      const c = x.map((v, i) => Math.round(v + (y[i] - v) * t));
+      return '#' + c.map((v) => v.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Level shading. Diagrams mark nesting depth with `class <nodes> l1..l4`;
+    // the palette for those levels is built here, from --surface toward
+    // --accent, so it inverts with the theme instead of being pinned to one.
+    //
+    // The fractions are not arbitrary. Each step is far enough from its
+    // neighbour to read as a distinct level (contrast ratio ~1.2 between
+    // adjacent steps in both themes) while the darkest step still holds
+    // 5.99:1 against --text in dark and 7.56:1 in light -- WCAG AA on every
+    // level, in both themes, not just at the comfortable end.
+    const LEVEL_STEPS = [0.12, 0.26, 0.40, 0.54];
+
+    function levelClassDefs() {
+      const surface = token('--surface', '#1A1D2E');
+      const accent = token('--accent', '#3B82F6');
+      const heading = token('--heading', '#F8FAFC');
+      const text = token('--text', '#E2E8F0');
+
+      return LEVEL_STEPS.map((step, i) =>
+        `  classDef l${i + 1} fill:${mix(surface, accent, step)},` +
+        `stroke:${mix(accent, heading, step * 0.6)},stroke-width:2px,color:${text}`
+      ).join('\n');
+    }
+
+    /** True when a diagram assigns nodes to level classes. */
+    const usesLevels = (source) => /\bclass\s+[\w,]+\s+l[1-4]\b/.test(source);
+
+    /**
+     * Mermaid's colour set for the current theme, built from tokens.css.
+     * Read fresh on every render -- the same call returns light values once
+     * data-theme flips, which is the whole point.
+     */
+    function themeVariables() {
+      const surface = token('--surface', '#1A1D2E');
+      const surface2 = token('--surface-2', '#141622');
+      const text = token('--text', '#E2E8F0');
+      const heading = token('--heading', '#F8FAFC');
+      const accent = token('--accent', '#3B82F6');
+      const link = token('--link', '#60A5FA');
+      const bg = token('--bg', '#0F1117');
+
+      return {
         fontFamily: 'Inter, sans-serif',
-        background: '#0F1117',
-        primaryColor: '#1e2d4f',
-        primaryTextColor: '#E2E8F0',
-        primaryBorderColor: '#3B82F6',
-        lineColor: '#60A5FA',
-        secondaryColor: '#2a3d62',
-        tertiaryColor: '#37507a',
-        edgeLabelBackground: '#141622',
-        clusterBkg: '#141622',
-        clusterBorder: '#3B82F6',
-        titleColor: '#E2E8F0',
-        noteBkgColor: '#1e2d4f',
-        noteTextColor: '#E2E8F0',
-        actorBkg: '#1e2d4f',
-        actorBorder: '#3B82F6',
-        actorTextColor: '#E2E8F0',
-        actorLineColor: '#60A5FA',
-        activationBkgColor: '#2a3d62',
-        activationBorderColor: '#3B82F6',
-        signalColor: '#60A5FA',
-        signalTextColor: '#E2E8F0',
-        labelBoxBkgColor: '#1e2d4f',
-        labelBoxBorderColor: '#3B82F6',
-        labelTextColor: '#E2E8F0',
-        loopTextColor: '#E2E8F0',
-        sequenceNumberColor: '#E2E8F0',
-      }
+        background: bg,
+        primaryColor: surface,
+        primaryTextColor: text,
+        primaryBorderColor: accent,
+        lineColor: link,
+        secondaryColor: surface2,
+        tertiaryColor: surface2,
+        edgeLabelBackground: bg,
+        clusterBkg: surface2,
+        clusterBorder: accent,
+        titleColor: heading,
+        noteBkgColor: surface,
+        noteTextColor: text,
+        actorBkg: surface,
+        actorBorder: accent,
+        actorTextColor: text,
+        actorLineColor: link,
+        activationBkgColor: surface2,
+        activationBorderColor: accent,
+        signalColor: link,
+        signalTextColor: text,
+        labelBoxBkgColor: surface,
+        labelBoxBorderColor: accent,
+        labelTextColor: text,
+        loopTextColor: text,
+        sequenceNumberColor: text,
+      };
+    }
+
+    const diagrams = Array.from(document.querySelectorAll('.mermaid-wrapper .mermaid'));
+
+    // Stash the source BEFORE the first render. After rendering, the node's
+    // content is SVG -- the diagram definition is gone, and a re-render would
+    // have nothing to work from.
+    diagrams.forEach((el) => {
+      if (!el.hasAttribute(SOURCE_ATTR)) el.setAttribute(SOURCE_ATTR, el.textContent);
+    });
+
+    async function render() {
+      if (!diagrams.length) return;
+
+      diagrams.forEach((el) => {
+        const source = el.getAttribute(SOURCE_ATTR);
+        // textContent, not innerHTML: the source is plain text and may contain
+        // characters that would otherwise be parsed as markup.
+        // The level palette is appended per render, so it is regenerated for
+        // the current theme rather than carried over from the previous one.
+        el.textContent = usesLevels(source) ? source + '\n' + levelClassDefs() + '\n' : source;
+        // Mermaid skips any node it has already processed.
+        el.removeAttribute('data-processed');
+      });
+
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        // Render at natural size instead of stretching to the container.
+        // With useMaxWidth on, mermaid emits width="100%" and a wide diagram
+        // is squeezed into the column until its labels are unreadable. Off,
+        // it keeps its real width and .mermaid-wrapper scrolls -- which is
+        // what the wrapper's overflow-x has always been there for.
+        flowchart: { useMaxWidth: false },
+        sequence: { useMaxWidth: false },
+        themeVariables: themeVariables(),
+      });
+      await mermaid.run({ nodes: diagrams });
+    }
+
+    // startOnLoad is off and the first render is explicit, so there is exactly
+    // one render path -- initial paint and re-theme run identical code, and a
+    // page opened directly in light theme cannot render dark first.
+    render();
+
+    // A MutationObserver on the attribute rather than a click handler on the
+    // toggle button: this fires for any change to data-theme, whoever made it.
+    // The button is one such source; header.html's pre-paint boot script is
+    // another. Binding to the button would silently miss the rest.
+    new MutationObserver(render).observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
     });
   </script>
 

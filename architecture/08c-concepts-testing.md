@@ -76,10 +76,20 @@ the build.
 | `scripts/docs/build_mermaid.js` | 65 / 45 / 90 / 65 | `renderDiagram` and `run`'s rendering loop need a real `mmdc` binary. Covering them means adding `@mermaid-js/mermaid-cli` (and Chromium) as a devDependency, or mocking the subprocess under test. The path CI actually takes — mmdc absent, clean no-op exit — *is* covered. |
 | `scripts/docs/lib/markedConfig.js` | 80 / 45 / 90 / 80 | Two load-time `process.exit` fail-fast paths and the library-version resolution ternaries. All run at import, before any export exists, through a CommonJS `require` that `vi.mock` cannot intercept. |
 | `scripts/docs/build_docs.js` | 95 / 50 / 90 / 95 | Branch gap only. The uncovered branches are CLI default-param bindings; exercising them requires letting a test write to the real, tracked `docs/` tree. |
-| `src/data/projects.config.js` | 0 | A static data array. The only test that would cover it is an assertion on its length or contents — filler that breaks whenever a project is added or its copy edited. Kept measured, not excluded, so it stays visible in the report. |
+| `scripts/ci/detectPipelineScope.js` | 96 / 83 / 100 / 95 | Branch gap only. The one uncovered branch is the `require.main === module` CLI guard, which cannot be exercised in-process — running the file as a child process is not instrumented. It fell below the group threshold only when the file shrank (see [ADR-009](09-decisions/ADR-009-retire-code-reference.md)); the same single branch simply became a larger share of a smaller total. |
 
-Translation catalogues (`src/i18n/locales/*.json`) are excluded from
-collection outright: data is not code.
+Three files are excluded from collection outright, on the same principle:
+data is not code. The translation catalogues (`src/i18n/locales/*.json`),
+and `src/data/projects.config.js` and `src/data/skills.config.js` — exported
+array literals of hand-written copy that happen to live in `.js` because they
+reference i18n keys. Measuring them put a 0% row on the published report that
+reads as untested code, when the only test that would move it is an assertion
+on their length or contents.
+
+`src/data/cvAssets.config.js` is deliberately *not* excluded despite the
+filename. `getCvFile()` has a real branch — regional codes such as `de-DE`
+must resolve to the German PDF, which was a genuine bug once — so it is code,
+and it is held to the full 85%.
 
 Adding an entry to this list requires the same justification these carry —
 name the specific uncovered mechanism, and say what covering it would cost.
