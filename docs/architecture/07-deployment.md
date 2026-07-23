@@ -60,11 +60,6 @@ flowchart TD
     class Lint,Test,Artifact,Scope l2
     class BuildReact,VercelDeploy l3
     class Coverage,BackLink,GHPagesAPI,Templates,Mermaid,GHPagesArch l4
-
-    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
-    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
-    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
-    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 ```
 
 ## Workflow Files

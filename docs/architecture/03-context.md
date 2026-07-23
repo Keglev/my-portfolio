@@ -57,10 +57,6 @@ flowchart TD
     class CIJob,MarkdownDocs l1
     class CoverageArtifact,BuildDocs l2
     class GHPages l3
-
-    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
-    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
-    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
 ```
 
 The right side of this diagram is split across two workflows. `coverage.yml` handles the coverage branch — it is dispatched by `ci.yml` in parallel with `deploy.yml` (not after it), and only when a `src/**` change could have altered the report. `architecture-docs.yml` handles the Markdown-to-HTML branch — it triggers directly on pushes to `docs/**` or `scripts/docs/**`, independently of the deploy chain, which lets small documentation edits publish without running the full pipeline.

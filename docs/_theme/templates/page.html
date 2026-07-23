@@ -43,6 +43,46 @@
     const token = (name, fallback) =>
       getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
 
+    /** '#rgb' / '#rrggbb' -> [r, g, b]. Theme tokens used here are all hex. */
+    function parseHex(value) {
+      let h = value.replace('#', '').trim();
+      if (h.length === 3) h = h.split('').map((c) => c + c).join('');
+      return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+    }
+
+    /** Blends two hex colours; t = 0 returns a, t = 1 returns b. */
+    function mix(a, b, t) {
+      const [x, y] = [parseHex(a), parseHex(b)];
+      const c = x.map((v, i) => Math.round(v + (y[i] - v) * t));
+      return '#' + c.map((v) => v.toString(16).padStart(2, '0')).join('');
+    }
+
+    // Level shading. Diagrams mark nesting depth with `class <nodes> l1..l4`;
+    // the palette for those levels is built here, from --surface toward
+    // --accent, so it inverts with the theme instead of being pinned to one.
+    //
+    // The fractions are not arbitrary. Each step is far enough from its
+    // neighbour to read as a distinct level (contrast ratio ~1.2 between
+    // adjacent steps in both themes) while the darkest step still holds
+    // 5.99:1 against --text in dark and 7.56:1 in light -- WCAG AA on every
+    // level, in both themes, not just at the comfortable end.
+    const LEVEL_STEPS = [0.12, 0.26, 0.40, 0.54];
+
+    function levelClassDefs() {
+      const surface = token('--surface', '#1A1D2E');
+      const accent = token('--accent', '#3B82F6');
+      const heading = token('--heading', '#F8FAFC');
+      const text = token('--text', '#E2E8F0');
+
+      return LEVEL_STEPS.map((step, i) =>
+        `  classDef l${i + 1} fill:${mix(surface, accent, step)},` +
+        `stroke:${mix(accent, heading, step * 0.6)},stroke-width:2px,color:${text}`
+      ).join('\n');
+    }
+
+    /** True when a diagram assigns nodes to level classes. */
+    const usesLevels = (source) => /\bclass\s+[\w,]+\s+l[1-4]\b/.test(source);
+
     /**
      * Mermaid's colour set for the current theme, built from tokens.css.
      * Read fresh on every render -- the same call returns light values once
@@ -101,14 +141,28 @@
       if (!diagrams.length) return;
 
       diagrams.forEach((el) => {
+        const source = el.getAttribute(SOURCE_ATTR);
         // textContent, not innerHTML: the source is plain text and may contain
         // characters that would otherwise be parsed as markup.
-        el.textContent = el.getAttribute(SOURCE_ATTR);
+        // The level palette is appended per render, so it is regenerated for
+        // the current theme rather than carried over from the previous one.
+        el.textContent = usesLevels(source) ? source + '\n' + levelClassDefs() + '\n' : source;
         // Mermaid skips any node it has already processed.
         el.removeAttribute('data-processed');
       });
 
-      mermaid.initialize({ startOnLoad: false, theme: 'base', themeVariables: themeVariables() });
+      mermaid.initialize({
+        startOnLoad: false,
+        theme: 'base',
+        // Render at natural size instead of stretching to the container.
+        // With useMaxWidth on, mermaid emits width="100%" and a wide diagram
+        // is squeezed into the column until its labels are unreadable. Off,
+        // it keeps its real width and .mermaid-wrapper scrolls -- which is
+        // what the wrapper's overflow-x has always been there for.
+        flowchart: { useMaxWidth: false },
+        sequence: { useMaxWidth: false },
+        themeVariables: themeVariables(),
+      });
       await mermaid.run({ nodes: diagrams });
     }
 

@@ -54,11 +54,6 @@ graph TD
     class Vercel,GHPages l2
     class ReactApp l3
     class i18next,ProjectsConfig l4
-
-    classDef l1 fill:#1e2d4f,stroke:#3B82F6,stroke-width:2px,color:#E2E8F0
-    classDef l2 fill:#2a3d62,stroke:#60A5FA,stroke-width:2px,color:#E2E8F0
-    classDef l3 fill:#37507a,stroke:#93C5FD,stroke-width:2px,color:#E2E8F0
-    classDef l4 fill:#466090,stroke:#BFDBFE,stroke-width:2px,color:#E2E8F0
 ```
 
 Key design decisions (static project data, prebuilt-artifact deployment, two test runners, and so on) live in [Solution Strategy](04-solution-strategy.md), not here — this chapter stays focused on *what* the system is; chapter 04 covers *why* it's built the way it is. Non-functional requirements have their own chapter too: see [Quality Requirements](10-quality-requirements.md).
