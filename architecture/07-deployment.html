@@ -305,10 +305,6 @@ docs site, which the README deliberately does not do.</p>
 <td>Vercel reads project configuration from the repository root only.</td>
 </tr>
 <tr>
-<td><code>.vercelignore</code></td>
-<td>Same: root-only, by the platform&#39;s convention.</td>
-</tr>
-<tr>
 <td><code>eslint.config.mjs</code></td>
 <td>ESLint 9 flat config searches upward from the working directory; the root is where the search ends.</td>
 </tr>
@@ -338,6 +334,12 @@ other than the above. Directories that look like they could be root files
 (<code>config/vitest/</code>, <code>scripts/ci/</code>, <code>scripts/docs/</code>) are deliberately nested,
 because nothing requires them at the root and grouping them by purpose keeps
 the root readable.</p>
+<p>Two files the audit questioned are settled, and recorded here so the same
+question is not reopened from scratch:</p>
+<ul>
+<li><strong><code>.vercelignore</code> — removed.</strong> It excluded files from a CLI source upload, and <code>--prebuilt</code> deploys upload only <code>.vercel/output/</code>, so it governed a payload that no longer exists.</li>
+<li><strong><code>jsconfig.json</code> — kept.</strong> No build step reads it, but editors do: it is what gives <code>src</code>, <code>scripts</code>, and <code>config</code> working completions and cross-file navigation.</li>
+</ul>
 <h2 id="live-verification-2026-07-17">Live Verification (2026-07-17)</h2>
 <p>The four-workflow topology above was verified live against production, not just read from the workflow files.</p>
 <table>
