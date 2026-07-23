@@ -152,7 +152,6 @@ docs site, which the README deliberately does not do.
 | `vite.config.js` | Vite's default config lookup. Moving it needs `--config` on every invocation, including the ones inside CI. |
 | `index.html` | Vite's build entry, not a static asset — it is the module graph's root, and `root: '.'` in the config points at this directory (it lived in `public/` under Create React App). |
 | `vercel.json` | Vercel reads project configuration from the repository root only. |
-| `.vercelignore` | Same: root-only, by the platform's convention. |
 | `eslint.config.mjs` | ESLint 9 flat config searches upward from the working directory; the root is where the search ends. |
 | `jsconfig.json` | Editors resolve it from the project root to type-check and offer completions across `src`, `scripts`, and `config`. Never read by the build. |
 | `.gitignore` | Applies repository-wide from the root. |
@@ -165,6 +164,12 @@ other than the above. Directories that look like they could be root files
 (`config/vitest/`, `scripts/ci/`, `scripts/docs/`) are deliberately nested,
 because nothing requires them at the root and grouping them by purpose keeps
 the root readable.
+
+Two files the audit questioned are settled, and recorded here so the same
+question is not reopened from scratch:
+
+- **`.vercelignore` — removed.** It excluded files from a CLI source upload, and `--prebuilt` deploys upload only `.vercel/output/`, so it governed a payload that no longer exists.
+- **`jsconfig.json` — kept.** No build step reads it, but editors do: it is what gives `src`, `scripts`, and `config` working completions and cross-file navigation.
 
 ## Live Verification (2026-07-17)
 
