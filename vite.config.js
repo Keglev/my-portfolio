@@ -118,9 +118,24 @@ export default defineConfig({
         // them as 100%-covered files, which inflated the file count and
         // implied a test had somehow asserted a JSON literal.
         '**/*.json',
+        // Same reasoning, same conclusion, different file extension: these
+        // two are exported array literals of hand-written content -- project
+        // copy and skill labels -- that happen to live in .js because they
+        // reference i18n keys. Measuring them produced a 0% row on the
+        // published report that read as untested code, and the only test
+        // that would have moved it is an assertion on their length or
+        // contents: filler that breaks whenever the copy is edited.
+        //
+        // Note which sibling is NOT here. cvAssets.config.js also sits in
+        // src/data/, but getCvFile() is a real function with a real branch
+        // (regional codes like 'de-DE' must resolve to the German PDF), and
+        // that branch was an actual bug once. It is code, it stays measured
+        // at the 85% standard.
+        'src/data/projects.config.js',
+        'src/data/skills.config.js',
       ],
 
-      // lcov feeds the CI artifact that api-docs.yml republishes;
+      // lcov feeds the CI artifact that coverage.yml republishes;
       // json-summary drives badge generation; text is the terminal table.
       reporter: ['html', 'text', 'lcov', 'json-summary'],
       reportsDirectory: './coverage',
@@ -163,8 +178,10 @@ export default defineConfig({
         '**/src/{i18n,styles}/**/*.js': {
           statements: 85, branches: 85, functions: 85, lines: 85,
         },
-        // Carve-out: projects.config.js has its own entry further down.
-        '**/src/data/!(projects.config).js': {
+        // No carve-out needed: the two data configs that used to require one
+        // are excluded from collection entirely, so cvAssets.config.js is the
+        // only file this group matches.
+        '**/src/data/*.js': {
           statements: 85, branches: 85, functions: 85, lines: 85,
         },
         // Carve-out: detectPipelineScope.js has its own entry further down.
@@ -231,15 +248,11 @@ export default defineConfig({
           statements: 96, branches: 83, functions: 100, lines: 95,
         },
 
-        // A static array of project entries with a single export. "0%
-        // statements" means the array literal was never evaluated by a test.
-        // The only test that would change that is an assertion on its length
-        // or contents -- filler that breaks every time a project is added or
-        // its copy is edited. Kept measured rather than excluded so the file
-        // stays visible in the report.
-        '**/src/data/projects.config.js': {
-          statements: 0, branches: 0, functions: 0, lines: 0,
-        },
+        // projects.config.js used to hold a 0/0/0/0 entry here, on the
+        // reasoning that keeping it measured kept it visible. That was the
+        // wrong trade: what it made visible on the published report was a 0%
+        // row that reads as untested code. It is excluded from collection
+        // now, alongside skills.config.js -- see the exclude list above.
       },
     },
   },
