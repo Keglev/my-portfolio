@@ -8,10 +8,10 @@
  * pair, not a ready-made file list, and that range is not always usable --
  * github.event.before is the all-zero SHA on a brand-new branch, and a
  * force-push can rewrite the before commit out of reachable history. A
- * diff that cannot be computed must not silently skip docs/coverage work,
- * so this module treats "diff unavailable" as "run everything" rather than
- * "nothing changed". That decision lives here (testable) instead of inline
- * workflow YAML.
+ * diff that cannot be computed must not silently skip coverage or deploy
+ * work, so this module treats "diff unavailable" as "run everything" rather
+ * than "nothing changed". That decision lives here (testable) instead of
+ * inline workflow YAML.
  */
 const fs = require('fs');
 const { execSync } = require('child_process');
@@ -42,12 +42,12 @@ function resolveChangedFiles(before, after, exec = (cmd) => execSync(cmd, { enco
  * @param {string} before
  * @param {string} after
  * @param {(cmd: string) => string} [exec]
- * @returns {{coverage: boolean, archDocs: boolean, deploy: boolean}}
+ * @returns {{coverage: boolean, deploy: boolean}}
  */
 function resolveScopeForRange(before, after, exec) {
   const changedFiles = resolveChangedFiles(before, after, exec);
   if (changedFiles === null) {
-    return { coverage: true, archDocs: true, deploy: true };
+    return { coverage: true, deploy: true };
   }
   return resolveScope(changedFiles);
 }

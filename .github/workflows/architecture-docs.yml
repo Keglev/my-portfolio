@@ -10,8 +10,9 @@
 # Triggers
 # - Directly on docs/** or scripts/docs/** pushes to main. NOT dispatched
 #   by ci.yml and NOT run after every deploy -- architecture content only
-#   changes when someone edits docs/ or its templates, which
-#   scripts/ci/detectPipelineScope.js's archDocs flag exists to express
+#   changes when someone edits docs/ or its templates. The docs half of the
+#   pipeline split is expressed by this workflow's own `paths:` trigger below,
+#   not by any scope flag
 #   (see api-docs.yml for the sibling apiDocs/coverage half of that split).
 # - Manual via workflow_dispatch for ad-hoc rebuilds.
 #
