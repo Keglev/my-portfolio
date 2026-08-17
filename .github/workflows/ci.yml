@@ -125,7 +125,13 @@ jobs:
         id: scope
         run: node scripts/ci/runPipelineScope.js "${{ github.event.before }}" "${{ github.sha }}"
 
+      # Gated on the deploy flag. That flag is false exactly when every
+      # changed path is docs territory (docs/** or scripts/docs/**): such a
+      # push changes no bundle input, so it must not trigger a Vercel
+      # production deploy. Everything else -- src, config, lockfile, workflow
+      # files -- flips deploy true and dispatches the build.
       - name: Trigger deploy workflow
+        if: steps.scope.outputs.deploy == 'true'
         run: gh workflow run deploy.yml --repo ${{ github.repository }} --ref main
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
