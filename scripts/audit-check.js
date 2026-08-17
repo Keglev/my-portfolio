@@ -28,18 +28,19 @@ const { exec } = require('child_process');
  * stale waiver survives at most one run past its finding.
  */
 const ALLOWLIST = {
-  // linkify-it used to sit here, waived as the price of keeping the generated
-  // code reference. Retiring that site removed the jsdoc devDependency, and
-  // the finding left with it -- the waiver was not renewed, it became
-  // unnecessary. One entry remains.
-  'brace-expansion': {
-    // eslint-plugin-jsx-a11y and eslint-plugin-testing-library, both via
-    // minimatch. DoS via exponential expansion of a crafted glob. The globs
-    // it expands are the ones in this repository's ESLint config. Arrived
-    // with the ESLint 9 toolchain of the Vite migration (ADR-007), not
-    // through JSDoc. Ends when those plugins ship a patched minimatch range.
-    reason: 'dev-only, eslint plugins -> minimatch; expands only this repo\'s own globs',
-  },
+  // Empty, and that is the state to keep it in: a waiver is a debt, not a
+  // fixture. Two have been retired here so far.
+  //
+  // linkify-it was waived as the price of keeping the generated code
+  // reference. Retiring that site removed the jsdoc devDependency, and the
+  // finding left with it -- the waiver became unnecessary rather than renewed.
+  //
+  // brace-expansion was waived while eslint-plugin-jsx-a11y and
+  // -testing-library still pulled a vulnerable minimatch. Its own entry said
+  // the waiver "ends when those plugins ship a patched minimatch range", and
+  // that is exactly how it ended: a patched brace-expansion (1.1.18 / 5.0.9)
+  // reached the tree via npm audit fix, the finding disappeared, and the
+  // waiver was deleted rather than left to rot behind a passing gate.
 };
 
 /**
