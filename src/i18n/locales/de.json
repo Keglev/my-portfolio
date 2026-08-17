@@ -65,11 +65,12 @@
   "skills": "Technologien",
   "contact": "Kontakt",
   "skillsSection": {
-    "backend": "Backend", "frontend": "Frontend", "devops": "DevOps & Tools", "databases": "Datenbanken",
-    "backendDesc": "Zwei Spring-Boot-Systeme mit gesicherten REST-APIs gebaut und ausgeliefert — mein Kernbereich.",
-    "frontendDesc": "React-+-TypeScript-Oberflächen für beide Projekte und dieses Portfolio; aktuell entwickle ich mit Angular.",
-    "devopsDesc": "Drei-Workflow-CI/CD-Pipeline, Docker-Deployments, Coverage-Gates — selbst aufgebaut, nicht kopiert.",
-    "databasesDesc": "PostgreSQL und Oracle Autonomous DB im Produktivbetrieb; SQL aus Jahren der Datenanalyse."
+    "backend": "Backend", "ai": "KI / AI", "frontend": "Frontend", "devops": "DevOps & Testing", "databases": "Datenbanken",
+    "backendDesc": "Drei Spring-Boot-Systeme mit gesicherten REST-APIs im Produktivbetrieb — mein Kernbereich, die neuesten auf Spring Boot 4 mit Spring Modulith und Keycloak.",
+    "aiDesc": "Ein RAG-Assistent im Produktivbetrieb: pgvector-Suche, Embeddings und EU-gehostete LLM-Inferenz über IONOS — Antworten mit belegten Quellen.",
+    "frontendDesc": "Zwei Angular-22-Apps ausgeliefert, dazu React für dieses Portfolio und SmartSupplyPro — zweisprachige Oberflächen mit Sprachwechsel zur Laufzeit.",
+    "devopsDesc": "Mehrstufige CI/CD-Pipelines mit Coverage- und Audit-Gates, Docker-Deployments und End-to-End-Tests mit Playwright — selbst aufgebaut, nicht kopiert.",
+    "databasesDesc": "PostgreSQL mit pgvector und Oracle Autonomous DB im Produktivbetrieb; SQL aus Jahren der Datenanalyse."
   },
   "contactSection": {
     "heading": "Kontakt",

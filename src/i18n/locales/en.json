@@ -65,11 +65,12 @@
   "skills": "Technologies",
   "contact": "Contact",
   "skillsSection": {
-    "backend": "Backend", "frontend": "Frontend", "devops": "DevOps & tools", "databases": "Databases",
-    "backendDesc": "Built and shipped two Spring Boot systems with secured REST APIs — my core stack.",
-    "frontendDesc": "React + TypeScript interfaces for both projects and this portfolio; currently building with Angular.",
-    "devopsDesc": "Three-workflow CI/CD pipeline, Docker deployments, coverage gates — built from scratch, not copied.",
-    "databasesDesc": "PostgreSQL and Oracle Autonomous DB in production; SQL from years of data analysis."
+    "backend": "Backend", "ai": "KI / AI", "frontend": "Frontend", "devops": "DevOps & Testing", "databases": "Databases",
+    "backendDesc": "Three production Spring Boot systems with secured REST APIs — my core stack, the newest on Spring Boot 4 with Spring Modulith and Keycloak.",
+    "aiDesc": "A RAG assistant in production: pgvector retrieval, embeddings, and EU-hosted LLM inference via IONOS — answers grounded in cited sources.",
+    "frontendDesc": "Two Angular 22 apps shipped, plus React for this portfolio and SmartSupplyPro — bilingual interfaces with runtime language switching.",
+    "devopsDesc": "Multi-workflow CI/CD with coverage and audit gates, Docker deployments, and end-to-end tests with Playwright — built from scratch, not copied.",
+    "databasesDesc": "PostgreSQL with pgvector and Oracle Autonomous DB in production; SQL from years of data analysis."
   },
   "contactSection": {
     "heading": "Contact",
