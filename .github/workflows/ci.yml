@@ -42,6 +42,11 @@ on:
       - 'vite.config.js'
       - 'index.html'
       - '.github/workflows/**'
+  # Every PR runs the full lint-and-test gate, docs-only PRs included.
+  # Skipping them would need a paths-ignore here plus a twin no-op workflow
+  # reporting the same required-check name (so branch protection still passes),
+  # and the suite is short enough that the simpler topology wins. Decision
+  # recorded in ADR-010.
   pull_request:
     branches: [ main ]
 
