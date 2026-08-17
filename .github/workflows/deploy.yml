@@ -13,7 +13,7 @@
 # Triggers
 # - Dispatched by ci.yml's start-deploy-stage job after lint-and-test
 #   passes (push to main only) — dispatched at the same time as
-#   api-docs.yml, not before or after it, so build/deploy and docs
+#   coverage.yml, not before or after it, so build/deploy and docs
 #   generation run in parallel.
 # - Manual via workflow_dispatch for ad-hoc builds or debugging
 #
@@ -23,19 +23,19 @@
 # - Security-sensitive values are provided through repository secrets.
 #   The workflow never prints secret values.
 # - Steps are idempotent where possible.
-# - Does not trigger any docs workflow — ci.yml dispatches api-docs.yml
+# - Does not trigger any docs workflow — ci.yml dispatches coverage.yml
 #   directly and independently.
 #
 # Concurrency group: deploy-pipeline, NOT shared with ci.yml or
-# api-docs.yml. A shared group would make parallel dispatch impossible:
+# coverage.yml. A shared group would make parallel dispatch impossible:
 # GitHub Actions only protects an ALREADY IN-PROGRESS run from
 # cancellation when cancel-in-progress: false — a run that is still
 # QUEUED (not yet started) is not protected, and gets silently cancelled
 # if a second run joins the same group's queue before the first one
-# starts. ci.yml dispatches this workflow and api-docs.yml back to back
+# starts. ci.yml dispatches this workflow and coverage.yml back to back
 # while ci.yml's own run still holds "portfolio-pipeline"; if this
 # workflow shared that group, the older-queued run of this workflow
-# would lose to the newer-queued api-docs.yml run every time (this
+# would lose to the newer-queued coverage.yml run every time (this
 # happened in production before the split — see the fix commit). Giving
 # deploy.yml its own group removes that race entirely.
 # Within deploy-pipeline itself, if two deploys somehow queue back to

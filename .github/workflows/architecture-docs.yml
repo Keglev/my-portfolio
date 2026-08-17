@@ -13,36 +13,31 @@
 #   changes when someone edits docs/ or its templates. The docs half of the
 #   pipeline split is expressed by this workflow's own `paths:` trigger below,
 #   not by any scope flag
-#   (see api-docs.yml for the sibling apiDocs/coverage half of that split).
+#   (see coverage.yml for the sibling coverage half of that split).
 # - Manual via workflow_dispatch for ad-hoc rebuilds.
 #
 # Deployment target: gh-pages only. Nothing here touches Vercel.
 #
 # gh-pages clobber guard and the keep_files tradeoff
 # ----------------------------------------------------
-# api-docs.yml publishes docs/jsdoc/ and docs/coverage/ using
-# destination_dir, which scopes cleanup to that one subdirectory. This
-# workflow's output is NOT confined to one subdirectory -- it spans
-# docs/index.html, docs/architecture/, docs/deploy/, docs/frontend/,
-# docs/_theme/, docs/templates/, docs/DEPLOY.md, docs/TESTS.md, etc. at
-# gh-pages root --
-# so destination_dir cannot express "everything except jsdoc/ and
-# coverage/" in one publish step. We use keep_files: true instead, and
-# publish a STAGED copy of docs/ with coverage/ excluded (not ./docs
-# itself). The jsdoc half of that exclusion is retired: docs/jsdoc/ used
-# to be git-tracked as legacy generated output, so publishing ./docs
-# unfiltered would have overwritten api-docs.yml's fresh gh-pages/jsdoc/
-# with stale committed snapshots. Those files are deleted and gitignored
-# as of the Code Reference rename (ADR-008), so this checkout has no
-# docs/jsdoc/ to stage. keep_files: true also means a page removed from
-# docs/ is never deleted from gh-pages by this workflow -- stale
-# architecture pages must be cleaned up manually if a doc is ever
-# deleted outright.
+# coverage.yml publishes docs/coverage/ using destination_dir, which scopes
+# cleanup to that one subdirectory. This workflow's output is NOT confined
+# to one subdirectory -- it spans docs/index.html, docs/architecture/,
+# docs/_theme/, docs/templates/, etc. at gh-pages root -- so destination_dir
+# cannot express "everything except coverage/" in one publish step. We use
+# keep_files: true instead, and publish a STAGED copy of docs/ with
+# coverage/ excluded (not ./docs itself), so this workflow never overwrites
+# coverage.yml's freshly published gh-pages/coverage/. (A jsdoc/ exclusion
+# stood beside coverage/ until the Code Reference site was retired in
+# ADR-009; docs/jsdoc/ no longer exists to stage.) keep_files: true also
+# means a page removed from docs/ is never deleted from gh-pages by this
+# workflow -- stale architecture pages must be cleaned up manually if a doc
+# is ever deleted outright.
 # The job-level `gh-pages-deploy` concurrency group is still shared with
-# api-docs.yml's job of the same name (GitHub Actions matches concurrency
+# coverage.yml's job of the same name (GitHub Actions matches concurrency
 # groups by name across workflows), so the two publishes never race even
 # though this workflow's docs-only trigger is otherwise independent of
-# the ci.yml-dispatched chain that reaches api-docs.yml.
+# the ci.yml-dispatched chain that reaches coverage.yml.
 ############################################################
 name: Docs — architecture site
 
@@ -58,7 +53,7 @@ on:
 # used to fall back to portfolio-pipeline, but portfolio-pipeline is now
 # ci.yml's dedicated group (see deploy.yml's header for why shared groups
 # cancel queued runs) — this workflow never needs to coordinate with
-# ci.yml, deploy.yml, or api-docs.yml, so it always uses its own group.
+# ci.yml, deploy.yml, or coverage.yml, so it always uses its own group.
 concurrency:
   group: docs-only
   cancel-in-progress: false
@@ -105,7 +100,7 @@ jobs:
           node -e "require('marked')" 2>/dev/null || npm install --no-save marked@^9
           npm run docs:build
 
-      # docs/coverage/ is api-docs.yml's territory; excluding it here keeps
+      # docs/coverage/ is coverage.yml's territory; excluding it here keeps
       # keep_files: true below from clobbering that workflow's gh-pages
       # content should a coverage directory ever be present in this
       # workspace. The jsdoc exclude that stood beside it is gone: the
