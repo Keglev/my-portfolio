@@ -102,8 +102,8 @@ Job `start-deploy-stage` (push to `main` only; skipped on pull requests):
 ### coverage.yml
 
 1. Checkout and `node-setup`
-2. Locate the latest successful `ci.yml` run via the `gh` CLI. If none exists (no CI history yet), the download below is skipped and the publish leaves `gh-pages/coverage/` untouched
-3. Download the `coverage-report` artifact from that run into `docs/coverage/` (`continue-on-error`: the artifact expires after 7 days)
+2. Locate the latest successful `ci.yml` run via the `gh` CLI. If none exists (no CI history yet), both the download below and the publish are skipped (gated on the same `run-id` condition), leaving `gh-pages/coverage/` untouched
+3. Download the `coverage-report` artifact from that run into `docs/coverage/`. A download failure fails the run — there is no `continue-on-error`, so an outage surfaces as a clean, re-runnable failure rather than crashing the publish downstream on a missing directory
 4. Inject the back-to-docs link via `scripts/ci/injectBackLink.js` — idempotent, and a no-op when the download produced nothing
 5. Publish `docs/coverage/` to `gh-pages` under `destination_dir: coverage`
 6. Smoke-test `https://keglev.github.io/my-portfolio/coverage/index.html` (warning-only)

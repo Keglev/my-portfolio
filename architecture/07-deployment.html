@@ -223,8 +223,8 @@
 <h3 id="coverageyml">coverage.yml</h3>
 <ol>
 <li>Checkout and <code>node-setup</code></li>
-<li>Locate the latest successful <code>ci.yml</code> run via the <code>gh</code> CLI. If none exists (no CI history yet), the download below is skipped and the publish leaves <code>gh-pages/coverage/</code> untouched</li>
-<li>Download the <code>coverage-report</code> artifact from that run into <code>docs/coverage/</code> (<code>continue-on-error</code>: the artifact expires after 7 days)</li>
+<li>Locate the latest successful <code>ci.yml</code> run via the <code>gh</code> CLI. If none exists (no CI history yet), both the download below and the publish are skipped (gated on the same <code>run-id</code> condition), leaving <code>gh-pages/coverage/</code> untouched</li>
+<li>Download the <code>coverage-report</code> artifact from that run into <code>docs/coverage/</code>. A download failure fails the run — there is no <code>continue-on-error</code>, so an outage surfaces as a clean, re-runnable failure rather than crashing the publish downstream on a missing directory</li>
 <li>Inject the back-to-docs link via <code>scripts/ci/injectBackLink.js</code> — idempotent, and a no-op when the download produced nothing</li>
 <li>Publish <code>docs/coverage/</code> to <code>gh-pages</code> under <code>destination_dir: coverage</code></li>
 <li>Smoke-test <code>https://keglev.github.io/my-portfolio/coverage/index.html</code> (warning-only)</li>
