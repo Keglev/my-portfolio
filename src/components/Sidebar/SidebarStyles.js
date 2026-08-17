@@ -13,6 +13,14 @@
  * a color source of truth for it is beyond the scope of this
  * comment-only pass.
  */
+/*
+ * LENGTH WAIVER (owner-granted, 2026-08-17): 154 code lines against a
+ * 150-line alarm. This module is the sidebar's complete styled-components
+ * surface — one responsibility, one abstraction level, one reason to
+ * change. Splitting it would scatter a single visual concern across files
+ * to satisfy a number; the length here is the counting rule working as
+ * intended. Register entry: Standards_JS_Portfolio.txt, waiver register.
+ */
 import styled from 'styled-components';
 import { Link } from 'react-scroll';
 
