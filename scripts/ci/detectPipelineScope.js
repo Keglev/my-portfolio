@@ -2,12 +2,12 @@
  * @file detectPipelineScope.js
  * @module scripts/ci/detectPipelineScope
  * @summary Maps a push diff's changed file paths to which downstream
- * pipeline work is needed: coverage publish, architecture docs, and deploy.
- * @enterprise ci.yml needs to dispatch deploy.yml and the docs workflows in
- * parallel, and skip work when nothing that feeds it changed. GitHub Actions
+ * pipeline work is needed: coverage publish and deploy.
+ * @enterprise ci.yml needs to dispatch deploy.yml and coverage.yml in
+ * parallel, and skip each when nothing that feeds it changed. GitHub Actions
  * path filters can gate an entire trigger but cannot express "a docs-only
- * change deploys nothing but still rebuilds the docs site" on a single
- * trigger -- that needs real logic, which also means it can be unit tested
+ * change deploys nothing" on a single trigger -- that needs real logic,
+ * which also means it can be unit tested
  * (see src/__tests__/scripts/ci/detectPipelineScope.test.js), unlike a
  * paths: filter block.
  */
@@ -22,7 +22,7 @@ const isDocsPath = (file) => file.startsWith(DOCS_PREFIX) || file.startsWith(SCR
 
 /**
  * @param {string[]} changedFiles - Repo-relative paths from a push diff
- * @returns {{coverage: boolean, archDocs: boolean, deploy: boolean}}
+ * @returns {{coverage: boolean, deploy: boolean}}
  */
 function resolveScope(changedFiles) {
   // The codeRef flag is gone with the site it gated (ADR-009). It used to
@@ -31,11 +31,15 @@ function resolveScope(changedFiles) {
   // not. Coverage never made that distinction -- it was true for either --
   // so removing codeRef collapses both cases into one src/** check rather
   // than losing a rule.
+  //
+  // archDocs is gone too: no workflow ever consumed it. architecture-docs.yml
+  // self-triggers on its own docs/** paths, so the docs split needs no scope
+  // flag. isDocsPath stays -- deploy is still defined as "any changed file
+  // outside docs territory".
   const coverage = changedFiles.some(isSrcPath);
-  const archDocs = changedFiles.some(isDocsPath);
   const deploy = changedFiles.some((file) => !isDocsPath(file));
 
-  return { coverage, archDocs, deploy };
+  return { coverage, deploy };
 }
 
 /**

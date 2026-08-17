@@ -4,9 +4,9 @@
  * @testing scripts/ci/detectPipelineScope.js
  * @description Contract tests for resolveScope(changedFiles), the pure
  * function that maps a push diff's changed file paths to
- * { coverage, archDocs, deploy } so ci.yml can decide which
- * downstream workflows to dispatch without over- or under-triggering
- * coverage/architecture-doc regeneration.
+ * { coverage, deploy } so ci.yml can decide which downstream workflows to
+ * dispatch without over- or under-triggering coverage publishing or a
+ * production deploy.
  *
  * Contract:
  * - coverage: true when any path under src/** changed, tests included. A
@@ -18,10 +18,11 @@
  *   in this contract until the P1 build-time-fetch retirement deleted that
  *   directory outright; the path class no longer exists, so resolveScope no
  *   longer checks it.
- * - archDocs: true when any path under docs/** or scripts/docs/** changed.
  * - deploy: true when at least one changed file is not a pure
  *   documentation path (docs/** or scripts/docs/**). An empty change list
- *   deploys nothing.
+ *   deploys nothing. An archDocs flag once sat beside these two; it was
+ *   removed because no workflow consumed it (architecture-docs.yml
+ *   self-triggers on its own docs/** paths).
  *
  * Out of scope: the GitHub Actions CLI entry point (stdin/argument parsing,
  * $GITHUB_OUTPUT writing) is covered separately once scripts/ci/
@@ -32,12 +33,12 @@ import { resolveScope, runCli } from '../../../../scripts/ci/detectPipelineScope
 
 describe('detectPipelineScope', () => {
   describe('resolveScope', () => {
-    it('should flag coverage and deploy but not archDocs when only src/** non-test files change', () => {
+    it('should flag coverage and deploy when only src/** non-test files change', () => {
       const changedFiles = ['src/components/Projects/ProjectCard.js'];
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: true, archDocs: false, deploy: true });
+      expect(scope).toEqual({ coverage: true, deploy: true });
     });
 
     it('should flag coverage and deploy when only src/__tests__/** files change', () => {
@@ -45,23 +46,23 @@ describe('detectPipelineScope', () => {
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: true, archDocs: false, deploy: true });
+      expect(scope).toEqual({ coverage: true, deploy: true });
     });
 
-    it('should flag only archDocs when only docs/** files change', () => {
+    it('should flag neither coverage nor deploy when only docs/** files change', () => {
       const changedFiles = ['docs/architecture/overview.md'];
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: false, archDocs: true, deploy: false });
+      expect(scope).toEqual({ coverage: false, deploy: false });
     });
 
-    it('should flag only archDocs when only scripts/docs/** template files change', () => {
+    it('should flag neither coverage nor deploy when only scripts/docs/** template files change', () => {
       const changedFiles = ['scripts/docs/templates/hub.html'];
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: false, archDocs: true, deploy: false });
+      expect(scope).toEqual({ coverage: false, deploy: false });
     });
 
     it('should flag every dimension when a mixed change touches both src/** and docs/**', () => {
@@ -69,7 +70,7 @@ describe('detectPipelineScope', () => {
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: true, archDocs: true, deploy: true });
+      expect(scope).toEqual({ coverage: true, deploy: true });
     });
 
     it('should flag only deploy when a workflow file outside docs/** changes', () => {
@@ -77,7 +78,7 @@ describe('detectPipelineScope', () => {
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: false, archDocs: false, deploy: true });
+      expect(scope).toEqual({ coverage: false, deploy: true });
     });
 
     it('should flag nothing when the changed file list is empty', () => {
@@ -85,7 +86,7 @@ describe('detectPipelineScope', () => {
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: false, archDocs: false, deploy: false });
+      expect(scope).toEqual({ coverage: false, deploy: false });
     });
 
     // jsdoc.json used to trigger coverage through the codeRef flag. The file
@@ -96,7 +97,7 @@ describe('detectPipelineScope', () => {
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: false, archDocs: false, deploy: true });
+      expect(scope).toEqual({ coverage: false, deploy: true });
     });
 
     it('should flag only deploy when package.json changes without any src/** or docs/** change', () => {
@@ -104,7 +105,7 @@ describe('detectPipelineScope', () => {
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: false, archDocs: false, deploy: true });
+      expect(scope).toEqual({ coverage: false, deploy: true });
     });
 
     // The lockfile is what `npm ci` installs from, so a dependency bump that
@@ -115,7 +116,7 @@ describe('detectPipelineScope', () => {
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: false, archDocs: false, deploy: true });
+      expect(scope).toEqual({ coverage: false, deploy: true });
     });
 
     // The Vite migration added vite.config.js and moved index.html to the repo
@@ -130,7 +131,7 @@ describe('detectPipelineScope', () => {
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: false, archDocs: false, deploy: true });
+      expect(scope).toEqual({ coverage: false, deploy: true });
     });
 
     it('should flag only deploy when the root index.html build entry changes', () => {
@@ -138,7 +139,7 @@ describe('detectPipelineScope', () => {
 
       const scope = resolveScope(changedFiles);
 
-      expect(scope).toEqual({ coverage: false, archDocs: false, deploy: true });
+      expect(scope).toEqual({ coverage: false, deploy: true });
     });
   });
 
@@ -170,7 +171,6 @@ describe('detectPipelineScope', () => {
       const [target, written] = appendFileSync.mock.calls[0];
       expect(target).toBe('/tmp/gh-output');
       expect(written).toContain('coverage=true');
-      expect(written).toContain('archDocs=false');
       expect(written).toContain('deploy=true');
     });
 
@@ -194,7 +194,6 @@ describe('detectPipelineScope', () => {
       runCli();
 
       expect(appendFileSync).not.toHaveBeenCalled();
-      expect(console.log).toHaveBeenCalledWith('archDocs=true');
     });
 
     it('should trim entries and drop blank lines when parsing the stdin file list', () => {
@@ -207,7 +206,6 @@ describe('detectPipelineScope', () => {
 
       const written = appendFileSync.mock.calls[0][1];
       expect(written).toContain('coverage=true');
-      expect(written).toContain('archDocs=true');
     });
 
     it('should read the changed-file list from stdin', () => {
@@ -227,7 +225,6 @@ describe('detectPipelineScope', () => {
 
       const written = appendFileSync.mock.calls[0][1];
       expect(written).toContain('coverage=false');
-      expect(written).toContain('archDocs=false');
       expect(written).toContain('deploy=false');
     });
   });
