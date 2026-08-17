@@ -24,12 +24,11 @@
  *   removed because no workflow consumed it (architecture-docs.yml
  *   self-triggers on its own docs/** paths).
  *
- * Out of scope: the GitHub Actions CLI entry point (stdin/argument parsing,
- * $GITHUB_OUTPUT writing) is covered separately once scripts/ci/
- * detectPipelineScope.js grows a CLI wrapper around this pure function.
+ * Out of scope: resolveScope has no CLI of its own. The argv-driven entry
+ * that ci.yml actually invokes, and its $GITHUB_OUTPUT emit contract, live
+ * in runPipelineScope.js and are tested in runPipelineScope.test.js.
  */
-import fs from 'node:fs';
-import { resolveScope, runCli } from '../../../../scripts/ci/detectPipelineScope.js';
+import { resolveScope } from '../../../../scripts/ci/detectPipelineScope.js';
 
 describe('detectPipelineScope', () => {
   describe('resolveScope', () => {
@@ -140,92 +139,6 @@ describe('detectPipelineScope', () => {
       const scope = resolveScope(changedFiles);
 
       expect(scope).toEqual({ coverage: false, deploy: true });
-    });
-  });
-
-  describe('runCli', () => {
-    // fs is spied rather than vi.mock'd: the module resolves fs through a
-    // CommonJS require, which vi.mock does not intercept. Spying mutates the
-    // shared builtin object both sides already hold, so the interception is
-    // real. See chapter 08c's troubleshooting notes.
-    let readFileSync;
-    let appendFileSync;
-
-    beforeEach(() => {
-      readFileSync = vi.spyOn(fs, 'readFileSync');
-      appendFileSync = vi.spyOn(fs, 'appendFileSync').mockImplementation(() => {});
-      vi.spyOn(console, 'log').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      vi.restoreAllMocks();
-      vi.unstubAllEnvs();
-    });
-
-    it('should append every resolved flag to $GITHUB_OUTPUT when the variable is set', () => {
-      readFileSync.mockReturnValue('src/App.jsx\n');
-      vi.stubEnv('GITHUB_OUTPUT', '/tmp/gh-output');
-
-      runCli();
-
-      const [target, written] = appendFileSync.mock.calls[0];
-      expect(target).toBe('/tmp/gh-output');
-      expect(written).toContain('coverage=true');
-      expect(written).toContain('deploy=true');
-    });
-
-    it('should terminate the appended block with a newline so a later append cannot join onto it', () => {
-      // GITHUB_OUTPUT is append-only and shared by every step in the job; a
-      // missing trailing newline silently merges this step's last flag with
-      // the next step's first one.
-      readFileSync.mockReturnValue('docs/index.md\n');
-      vi.stubEnv('GITHUB_OUTPUT', '/tmp/gh-output');
-
-      runCli();
-
-      expect(appendFileSync.mock.calls[0][1].endsWith('\n')).toBe(true);
-    });
-
-    it('should print the flags to stdout when $GITHUB_OUTPUT is not set', () => {
-      // The local-run fallback: the script stays usable outside Actions.
-      readFileSync.mockReturnValue('docs/index.md\n');
-      vi.stubEnv('GITHUB_OUTPUT', '');
-
-      runCli();
-
-      expect(appendFileSync).not.toHaveBeenCalled();
-    });
-
-    it('should trim entries and drop blank lines when parsing the stdin file list', () => {
-      // `git diff --name-only` output ends with a trailing newline, which
-      // would otherwise resolve as an empty-string path.
-      readFileSync.mockReturnValue('  src/App.jsx  \n\n\ndocs/index.md\n');
-      vi.stubEnv('GITHUB_OUTPUT', '/tmp/gh-output');
-
-      runCli();
-
-      const written = appendFileSync.mock.calls[0][1];
-      expect(written).toContain('coverage=true');
-    });
-
-    it('should read the changed-file list from stdin', () => {
-      readFileSync.mockReturnValue('src/App.jsx\n');
-      vi.stubEnv('GITHUB_OUTPUT', '/tmp/gh-output');
-
-      runCli();
-
-      expect(readFileSync).toHaveBeenCalledWith(0, 'utf8');
-    });
-
-    it('should resolve every flag false when stdin is empty', () => {
-      readFileSync.mockReturnValue('');
-      vi.stubEnv('GITHUB_OUTPUT', '/tmp/gh-output');
-
-      runCli();
-
-      const written = appendFileSync.mock.calls[0][1];
-      expect(written).toContain('coverage=false');
-      expect(written).toContain('deploy=false');
     });
   });
 });

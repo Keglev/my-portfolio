@@ -11,8 +11,6 @@
  * (see src/__tests__/scripts/ci/detectPipelineScope.test.js), unlike a
  * paths: filter block.
  */
-const fs = require('fs');
-
 const SRC_PREFIX = 'src/';
 const SCRIPTS_DOCS_PREFIX = 'scripts/docs/';
 const DOCS_PREFIX = 'docs/';
@@ -42,30 +40,8 @@ function resolveScope(changedFiles) {
   return { coverage, deploy };
 }
 
-/**
- * CLI entry: reads a newline-separated changed-file list from stdin
- * (workflows supply it via `git diff --name-only <before> <sha>`) and
- * writes the resolved scope flags to $GITHUB_OUTPUT.
- */
-function runCli() {
-  const stdin = fs.readFileSync(0, 'utf8');
-  const changedFiles = stdin.split('\n').map((line) => line.trim()).filter(Boolean);
-  const scope = resolveScope(changedFiles);
-
-  const outputPath = process.env.GITHUB_OUTPUT;
-  const lines = Object.entries(scope).map(([key, value]) => `${key}=${value}`);
-  if (outputPath) {
-    fs.appendFileSync(outputPath, lines.join('\n') + '\n');
-  } else {
-    lines.forEach((line) => console.log(line));
-  }
-}
-
-if (require.main === module) {
-  runCli();
-}
-
-// runCli is exported for testing only -- the CLI guard above is what runs it
-// in production. Its stdin parsing and the $GITHUB_OUTPUT-vs-stdout fallback
-// are real behaviour that ci.yml depends on, so they need to be assertable.
-module.exports = { resolveScope, runCli };
+// resolveScope is a pure function with no CLI of its own. ci.yml resolves
+// scope by calling runPipelineScope.js (argv-driven), which imports this
+// module; the stdin-reading runCli that used to live here was never invoked
+// by any workflow, so it was deleted along with its $GITHUB_OUTPUT plumbing.
+module.exports = { resolveScope };
