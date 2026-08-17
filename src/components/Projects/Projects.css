@@ -28,6 +28,20 @@
   gap: 2rem;
 }
 
+/* --- Two-plus-one layout (Projects section only; Legal keeps the base grid) ---
+   Desktop: two equal columns; the last card spans both columns and is
+   centered at single-column width. Collapses with the existing mobile
+   media query, which already forces one column. */
+.project-grid--two-plus-one {
+  grid-template-columns: repeat(2, minmax(300px, 1fr));
+}
+
+.project-grid--two-plus-one .project-card:last-child {
+  grid-column: 1 / -1;
+  width: calc(50% - 1rem); /* one column width: half the grid minus half the 2rem gap */
+  justify-self: center;
+}
+
 /* --- Card --- */
 
 /* Cards render hidden and slightly offset; .visible class triggers the entrance transition */
@@ -143,6 +157,14 @@
 @media (max-width: 768px) {
   .project-grid {
     grid-template-columns: 1fr;
+  }
+
+  .project-grid--two-plus-one {
+    grid-template-columns: 1fr;
+  }
+
+  .project-grid--two-plus-one .project-card:last-child {
+    width: 100%;
   }
 }
 
