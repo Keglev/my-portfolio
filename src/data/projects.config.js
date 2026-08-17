@@ -35,6 +35,81 @@
 /** @type {ProjectConfig[]} */
 const projects = [
   {
+    slug: 'maintenance-assistant',
+    displayName: 'KI-Maintenance Assistant',
+    summaryEn:
+      'A retrieval-augmented (RAG) assistant that answers maintenance questions from a plant\'s own protocols. Every answer cites the source protocol, and answers without a grounded source are explicitly labelled. Role-filtered answers server-side, cross-language retrieval (a German question can cite an English protocol), and EU-only processing via the IONOS AI Model Hub in Berlin. Java 21 / Spring Boot backend with pgvector in PostgreSQL, Angular 22 frontend, Keycloak IAM, rendered end-to-end tests with Playwright.',
+    summaryDe:
+      'Ein Retrieval-Augmented-Generation-(RAG)-Assistent, der Wartungsfragen aus den Protokollen der eigenen Anlage beantwortet. Jede Antwort nennt das Quellprotokoll, und Antworten ohne belegte Quelle werden ausdrücklich gekennzeichnet. Serverseitig rollengefilterte Antworten, sprachübergreifende Suche (eine deutsche Frage kann ein englisches Protokoll zitieren) und ausschließlich EU-Verarbeitung über den IONOS AI Model Hub in Berlin. Java-21-/Spring-Boot-Backend mit pgvector in PostgreSQL, Angular-22-Frontend, Keycloak-IAM, gerenderte End-to-End-Tests mit Playwright.',
+    tech: [
+      'Java 21',
+      'Spring Boot 4',
+      'RAG / pgvector',
+      'IONOS AI (EU)',
+      'Keycloak / OAuth2 PKCE',
+      'PostgreSQL',
+      'Flyway',
+      'Angular 22',
+      'TypeScript',
+      'Playwright',
+      'Testcontainers',
+      'GitHub Actions',
+    ],
+    images: {
+      dark: { en: '/projects/maintenance-assistant-dark-en.png', de: '/projects/maintenance-assistant-dark-de.png' },
+      light: { en: '/projects/maintenance-assistant-light-en.png', de: '/projects/maintenance-assistant-light-de.png' },
+    },
+    repoUrl: 'https://github.com/Keglev/maintenance-assistant',
+    repoUrlSecondary: null,
+    liveUrl: 'https://maintenance.smartsupply.com.de/',
+    docsUrl: 'https://keglev.github.io/maintenance-assistant/',
+    apiUrl: 'https://maintenance.smartsupply.com.de/swagger-ui/index.html',
+    docLinks: [
+      { titleEn: 'Architecture (arc42)', titleDe: 'Architektur (arc42)', url: 'https://keglev.github.io/maintenance-assistant/architecture/' },
+      { titleEn: 'Decision records (ADRs)', titleDe: 'Entscheidungsdokumente (ADRs)', url: 'https://keglev.github.io/maintenance-assistant/adr/' },
+      { titleEn: 'Frontend API reference', titleDe: 'Frontend-API-Referenz', url: 'https://keglev.github.io/maintenance-assistant/frontend/api-docs/index.html' },
+    ],
+    featured: true,
+  },
+  {
+    slug: 'stockease',
+    displayName: 'Bestandskontrolle',
+    summaryEn:
+      'Full merchandise-cycle inventory management for small businesses (repository: StockEase): products, suppliers and customers, purchase and sales invoices, an append-only stock-movement ledger, audit trail and reporting with CSV export. A modular monolith (Spring Modulith) whose module boundaries are verified on every build; stock is booked event-driven inside the invoice-closing transaction, so an overselling close rolls back entirely. Angular 22 frontend, bilingual EN/DE at runtime; 619 backend tests against real PostgreSQL via Testcontainers, 916 frontend tests at 99% statement coverage.',
+    summaryDe:
+      'Bestandsverwaltung über den vollständigen Warenzyklus für kleine Unternehmen (Repository: StockEase): Produkte, Lieferanten und Kunden, Ein- und Verkaufsrechnungen, ein Append-only-Lagerbewegungsjournal, Änderungshistorie und Berichte mit CSV-Export. Ein modularer Monolith (Spring Modulith), dessen Modulgrenzen bei jedem Build geprüft werden; Lagerbewegungen werden ereignisgesteuert innerhalb der Rechnungsabschluss-Transaktion gebucht — ein Abschluss über Bestand rollt vollständig zurück. Angular-22-Frontend, zweisprachig DE/EN zur Laufzeit; 619 Backend-Tests gegen echtes PostgreSQL via Testcontainers, 916 Frontend-Tests mit 99 % Statement-Coverage.',
+    tech: [
+      'Java 21',
+      'Spring Boot 4',
+      'Spring Modulith',
+      'Spring Security / JWT',
+      'PostgreSQL',
+      'Flyway',
+      'Testcontainers',
+      'Angular 22',
+      'TypeScript',
+      'Angular Material',
+      'Vitest',
+      'Docker',
+      'GitHub Actions',
+    ],
+    images: {
+      dark: { en: '/projects/stockease-dark-en.png', de: '/projects/stockease-dark-de.png' },
+      light: { en: '/projects/stockease-light-en.png', de: '/projects/stockease-light-de.png' },
+    },
+    repoUrl: 'https://github.com/Keglev/stockease',
+    repoUrlSecondary: null,
+    liveUrl: 'https://bestandskontrolle.vercel.app/',
+    docsUrl: 'https://keglev.github.io/stockease/',
+    apiUrl: 'https://keglev.github.io/stockease/backend/api/index.html',
+    docLinks: [
+      { titleEn: 'Architecture (arc42)', titleDe: 'Architektur (arc42)', url: 'https://keglev.github.io/stockease/backend/architecture/overview.html' },
+      { titleEn: 'Decision records (39 ADRs)', titleDe: 'Entscheidungsdokumente (39 ADRs)', url: 'https://keglev.github.io/stockease/decisions/index.html' },
+      { titleEn: 'Frontend API reference', titleDe: 'Frontend-API-Referenz', url: 'https://keglev.github.io/stockease/frontend/api/index.html' },
+    ],
+    featured: true,
+  },
+  {
     slug: 'smartsupplypro',
     displayName: 'SmartSupplyPro',
     summaryEn:
@@ -65,44 +140,8 @@ const projects = [
     docsUrl: 'https://keglev.github.io/inventory-service/',
     apiUrl: 'https://keglev.github.io/inventory-service/backend/api/index.html',
     docLinks: [
-      { titleEn: 'Architecture overview', titleDe: 'Architektur-Überblick', url: 'https://keglev.github.io/inventory-service/backend/architecture/overview.html' },
+      { titleEn: 'Architecture (arc42)', titleDe: 'Architektur (arc42)', url: 'https://keglev.github.io/inventory-service/backend/architecture/overview.html' },
       { titleEn: 'Backend test coverage', titleDe: 'Backend-Testabdeckung', url: 'https://keglev.github.io/inventory-service/backend/coverage/index.html' },
-    ],
-    featured: true,
-  },
-  {
-    slug: 'stockease',
-    displayName: 'StockEase',
-    summaryEn:
-      'A full-stack inventory management tool for SMEs: a JWT-secured Spring Boot CRUD backend with PostgreSQL, inventory and supplier views, and CSV export for BI tools (Power BI, Tableau), paired with a React + TypeScript frontend. Serves as my reference project for documentation and test-coverage standards.',
-    summaryDe:
-      'Ein Full-Stack-Bestandsmanagement-Tool für KMU: ein JWT-gesichertes Spring-Boot-CRUD-Backend mit PostgreSQL, Bestands- und Lieferantenanzeige sowie CSV-Export für BI-Tools (Power BI, Tableau), kombiniert mit einem React-+-TypeScript-Frontend. Dient als mein Referenzprojekt für Dokumentations- und Testabdeckungsstandards.',
-    tech: [
-      'Java',
-      'Spring Boot',
-      'Spring Security',
-      'JWT',
-      'PostgreSQL',
-      'Hibernate / JPA',
-      'Maven',
-      'React',
-      'TypeScript',
-      'Tailwind CSS',
-      'Vite',
-    ],
-    images: {
-      dark: { en: '/projects/stockease-dark-en.png', de: '/projects/stockease-dark-de.png' },
-      light: { en: '/projects/stockease-light-en.png', de: '/projects/stockease-light-de.png' },
-    },
-    repoUrl: 'https://github.com/Keglev/stockease',
-    repoUrlSecondary: 'https://github.com/Keglev/frontend',
-    liveUrl: 'https://stockeasefrontend.vercel.app',
-    docsUrl: 'https://keglev.github.io/stockease/',
-    apiUrl: 'https://keglev.github.io/stockease/api-docs.html',
-    docLinks: [
-      { titleEn: 'Architecture & security', titleDe: 'Architektur & Sicherheit', url: 'https://keglev.github.io/stockease/architecture/security.html' },
-      { titleEn: 'Test coverage', titleDe: 'Testabdeckung', url: 'https://keglev.github.io/stockease/coverage/index.html' },
-      { titleEn: 'Frontend documentation', titleDe: 'Frontend-Dokumentation', url: 'https://keglev.github.io/frontend/' },
     ],
     featured: true,
   },

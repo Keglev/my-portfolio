@@ -9,6 +9,10 @@
  * Below the grid, a small "portfolio meta" strip links to this site's own
  * source, docs, and coverage report -- proof the same documentation and
  * testing standard applies to itself.
+ *
+ * The grid carries a `project-grid--two-plus-one` modifier so the section's
+ * three cards lay out as two columns with the last card centered below them;
+ * the base `.project-grid` class (shared with Legal) is left unmodified.
  */
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +30,7 @@ const Projects = () => {
   return (
     <section className="project-container" id="Projects">
       <h2>{t('projects', 'Projects')}</h2>
-      <div className="project-grid">
+      <div className="project-grid project-grid--two-plus-one">
         {projects.map((project, idx) => (
           <ProjectCard
             key={project.slug || idx}
