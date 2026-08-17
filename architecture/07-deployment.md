@@ -2,7 +2,7 @@
 
 [← Architecture index](index.md)
 
-The portfolio uses four GitHub Actions workflows. `ci.yml` runs first (lint, test, coverage) and, on a successful push to `main`, dispatches `deploy.yml` and `coverage.yml` in parallel — deploy always runs; coverage only runs when a `src/**` change could have altered the report. `architecture-docs.yml` is independent of that chain: it triggers directly on `docs/**` or `scripts/docs/**` pushes. Each of the four workflows has its own concurrency group (see [Concurrency Strategy](#concurrency-strategy)), so `deploy.yml` and `coverage.yml` can genuinely run at the same time instead of queuing behind each other.
+The portfolio uses four GitHub Actions workflows. `ci.yml` runs first (lint, test, coverage) and, on a successful push to `main`, dispatches `deploy.yml` and `coverage.yml` in parallel — deploy runs unless the push is docs-only; coverage only runs when a `src/**` change could have altered the report. `architecture-docs.yml` is independent of that chain: it triggers directly on `docs/**` or `scripts/docs/**` pushes. Each of the four workflows has its own concurrency group (see [Concurrency Strategy](#concurrency-strategy)), so `deploy.yml` and `coverage.yml` can genuinely run at the same time instead of queuing behind each other.
 
 `deploy.yml` does not fetch project data — the Projects section renders from the static, hand-curated `src/data/projects.config.js`. The workflow only builds and deploys.
 
@@ -53,7 +53,7 @@ flowchart TD
     DocsPush["Push to docs/** or scripts/docs/**"]
 
     Push --> Lint
-    Scope -->|"workflow_dispatch, always"| BuildReact
+    Scope -->|"workflow_dispatch, if deploy"| BuildReact
     Scope -->|"workflow_dispatch, if coverage"| Coverage
     DocsPush --> Templates
 
@@ -67,7 +67,7 @@ flowchart TD
 
 | File | Trigger | Responsibility |
 |------|---------|---------------|
-| `.github/workflows/ci.yml` | Push to `main` (`src/**`, `scripts/**`, `config/**`, `package.json`, `vite.config.js`, `index.html`, `.github/workflows/**`), PRs to `main` | Lint, run full test suite, upload coverage artifact; on push, resolve scope and dispatch `deploy.yml` (always) and `coverage.yml` (conditionally) in parallel |
+| `.github/workflows/ci.yml` | Push to `main` (`src/**`, `scripts/**`, `config/**`, `package.json`, `package-lock.json`, `vite.config.js`, `index.html`, `.github/workflows/**`), PRs to `main` | Lint, run full test suite, upload coverage artifact; on push, resolve scope and dispatch `deploy.yml` (when the `deploy` flag is true) and `coverage.yml` (when the `coverage` flag is true) in parallel |
 | `.github/workflows/deploy.yml` | Dispatched by `ci.yml`; manual `workflow_dispatch` | Build React app, deploy prebuilt output to Vercel. Does not dispatch anything else. |
 | `.github/workflows/coverage.yml` | Dispatched by `ci.yml` when the `coverage` scope flag is true; manual `workflow_dispatch` | Download the coverage artifact from the latest CI run, inject the back-to-docs link into it, and publish it to `gh-pages` under `destination_dir: coverage`. Takes no inputs — dispatching it is the instruction |
 | `.github/workflows/architecture-docs.yml` | Push to `docs/**` or `scripts/docs/**`; manual `workflow_dispatch` | Apply HTML templates to Markdown, pre-render Mermaid diagrams, publish a staged copy of `docs/` (excluding `coverage/`) to `gh-pages` |
@@ -86,8 +86,8 @@ Job `lint-and-test`:
 
 Job `start-deploy-stage` (push to `main` only; skipped on pull requests):
 1. Checkout with `fetch-depth: 0` (full history, required to diff `before`..`sha`)
-2. Run `scripts/ci/runPipelineScope.js "$before" "$sha"` — resolves `coverage`/`archDocs`/`deploy` flags from the changed-file list. If the diff range can't be resolved (new branch, force-push), every flag defaults to `true` rather than skipping work.
-3. Dispatch `deploy.yml` unconditionally
+2. Run `scripts/ci/runPipelineScope.js "$before" "$sha"` — resolves `coverage`/`deploy` flags from the changed-file list. If the diff range can't be resolved (new branch, force-push), every flag defaults to `true` rather than skipping work.
+3. Dispatch `deploy.yml` only when the `deploy` flag is `true` — the flag is false exactly when every changed path is under `docs/**` or `scripts/docs/**`
 4. Dispatch `coverage.yml` (no inputs) only when the `coverage` flag is `true` — dispatched immediately after step 3, not waiting for `deploy.yml` to finish, so build/deploy and docs generation run in parallel
 
 ### deploy.yml

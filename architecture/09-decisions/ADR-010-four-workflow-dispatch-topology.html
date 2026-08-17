@@ -10,7 +10,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!-- Replaced at build time: full page title set by each consumer (page vs. landing) -->
-  <title>Architecture Decision Records — my-portfolio docs</title>
+  <title>ADR-010: Four-Workflow Dispatch Topology — my-portfolio docs</title>
 
   <!-- Set the theme before paint to avoid a flash. Dark is the fallback
        default, mirroring src/context/ThemeContext.js's own no-storage
@@ -83,9 +83,11 @@
            scripts/docs/lib/tocBuilder.js); empty string when the page
            has fewer than two headings -->
       <ul class="doc-toc__list">
-  <li><a href="#decisions">Decisions</a></li>
-  <li><a href="#how-to-read-an-adr">How to read an ADR</a></li>
-  <li><a href="#how-to-add-a-new-adr">How to add a new ADR</a></li>
+  <li><a href="#table-of-contents">Table of Contents</a></li>
+  <li><a href="#status">Status</a></li>
+  <li><a href="#context">Context</a></li>
+  <li><a href="#decision">Decision</a></li>
+  <li><a href="#consequences">Consequences</a></li>
   <li><a href="#references">References</a></li>
 </ul>
     </aside>
@@ -93,89 +95,125 @@
     <article class="article">
       <!-- Replaced at build time by renderPages.convertMd() (see
            scripts/docs/lib/renderPages.js) -->
-      <h1 id="architecture-decision-records">Architecture Decision Records</h1>
-<p><a href="../index.html">← Architecture index</a> · <a href="../../index.html">← Documentation root</a></p>
-<p>This directory records the significant technical decisions made in the
-my-portfolio project. Each ADR captures the context that existed at the time,
-the choice that was made, and the trade-offs accepted. Reading these documents
-is the fastest way to understand <em>why</em> the project is structured the way it is.</p>
-<h2 id="decisions">Decisions</h2>
-<table>
-<thead>
-<tr>
-<th>ADR</th>
-<th>Title</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="ADR-001-react.html">ADR-001</a></td>
-<td>React as the Frontend Framework</td>
-<td>Accepted</td>
-</tr>
-<tr>
-<td><a href="ADR-002-i18next-internationalization.html">ADR-002</a></td>
-<td>i18next for Internationalization</td>
-<td>Accepted</td>
-</tr>
-<tr>
-<td><a href="ADR-003-styling-approach.html">ADR-003</a></td>
-<td>Two-Layer Styling Approach (styled-components + plain CSS)</td>
-<td>Accepted</td>
-</tr>
-<tr>
-<td><a href="ADR-004-three-workflow-cicd.html">ADR-004</a></td>
-<td>Three-Workflow CI/CD Architecture</td>
-<td>Superseded</td>
-</tr>
-<tr>
-<td><a href="ADR-005-vercel-hosting.html">ADR-005</a></td>
-<td>Vercel as the Hosting Platform</td>
-<td>Accepted</td>
-</tr>
-<tr>
-<td><a href="ADR-006-build-time-github-data-fetch.html">ADR-006</a></td>
-<td>Build-Time GitHub Data Fetch over Runtime API Calls</td>
-<td>Superseded</td>
-</tr>
-<tr>
-<td><a href="ADR-007-vite-migration.html">ADR-007</a></td>
-<td>Vite as the Build Tool (replacing Create React App)</td>
-<td>Accepted</td>
-</tr>
-<tr>
-<td><a href="ADR-008-code-reference.html">ADR-008</a></td>
-<td>Keep the Generated Reference, Renamed &quot;Code Reference&quot;</td>
-<td>Superseded</td>
-</tr>
-<tr>
-<td><a href="ADR-009-retire-code-reference.html">ADR-009</a></td>
-<td>Retire the Published Code Reference</td>
-<td>Accepted</td>
-</tr>
-<tr>
-<td><a href="ADR-010-four-workflow-dispatch-topology.html">ADR-010</a></td>
-<td>Four-Workflow Dispatch Topology</td>
-<td>Accepted</td>
-</tr>
-</tbody></table>
-<h2 id="how-to-read-an-adr">How to read an ADR</h2>
-<p>Each record has four sections:</p>
+      <h1 id="adr-010-four-workflow-dispatch-topology">ADR-010: Four-Workflow Dispatch Topology</h1>
+<p><a href="index.html">← Decisions index</a></p>
+<h2 id="table-of-contents">Table of Contents</h2>
 <ul>
-<li><strong>Context</strong> — the forces and constraints that made a decision necessary</li>
-<li><strong>Decision</strong> — what was chosen and exactly how it was implemented</li>
-<li><strong>Consequences</strong> — positive and negative effects, trade-offs accepted</li>
-<li><strong>References</strong> — links to related code, docs, or external resources</li>
+<li><a href="#status">Status</a></li>
+<li><a href="#context">Context</a></li>
+<li><a href="#decision">Decision</a></li>
+<li><a href="#consequences">Consequences</a></li>
+<li><a href="#references">References</a></li>
 </ul>
-<h2 id="how-to-add-a-new-adr">How to add a new ADR</h2>
-<p>Copy <a href="../../templates/adr-template.html">adr-template.md</a> to this directory as
-<code>ADR-NNN-short-title.md</code> (where <code>NNN</code> is the next number), fill in the
-sections, and add a row to the table above.</p>
+<h2 id="status">Status</h2>
+<p>Accepted (2026-08-17).</p>
+<p>Supersedes <a href="ADR-004-three-workflow-cicd.html">ADR-004</a>, whose three-workflow
+sequential chain no longer exists. ADR-004&#39;s body is left as the record of
+its era; this ADR describes the topology in effect today.</p>
+<h2 id="context">Context</h2>
+<p>ADR-004 described three workflows dispatched in sequence
+(<code>ci.yml</code> → <code>build-and-fetch.yml</code> → <code>docs-refresh.yml</code>). None of that shape
+survives:</p>
+<ul>
+<li><code>build-and-fetch.yml</code> became <code>deploy.yml</code> once the build-time GitHub fetch
+was retired (<a href="ADR-006-build-time-github-data-fetch.html">ADR-006</a>).</li>
+<li><code>docs-refresh.yml</code> was split into two independently-triggered workflows:
+<code>architecture-docs.yml</code> (Markdown/Mermaid) and the coverage/code-reference
+publisher, first named <code>api-docs.yml</code>.</li>
+<li>That publisher&#39;s code-reference half was retired
+(<a href="ADR-009-retire-code-reference.html">ADR-009</a>) and the workflow renamed
+<code>coverage.yml</code>, leaving it a single-job coverage publisher.</li>
+<li>The sequential dispatch chain became a fan-out driven by resolved scope,
+and the single shared concurrency group that ADR-004 relied on turned out
+to break deploys in production and was replaced.</li>
+</ul>
+<p>Enough has changed that ADR-004 is no longer a usable description of the
+pipeline. This ADR records what actually runs.</p>
+<h2 id="decision">Decision</h2>
+<p><strong>Four workflows</strong>, each with one responsibility:</p>
+<ul>
+<li><strong><code>ci.yml</code></strong> — lint, dependency audit, full test suite with coverage, and
+the <code>coverage-report</code> artifact upload. Triggers on push to <code>main</code> for
+source- or build-affecting paths (<code>src/**</code>, <code>scripts/**</code>, <code>config/**</code>,
+<code>package.json</code>, <code>package-lock.json</code>, <code>vite.config.js</code>, <code>index.html</code>,
+<code>.github/workflows/**</code>) and on every pull request to <code>main</code>. On a
+successful push it runs <code>scripts/ci/runPipelineScope.js</code> to resolve scope,
+then dispatches <code>deploy.yml</code> and <code>coverage.yml</code>.</li>
+<li><strong><code>deploy.yml</code></strong> — production Vite build, prebuilt-artifact assembly, and
+Vercel deploy. Dispatched by <code>ci.yml</code>, or manually.</li>
+<li><strong><code>coverage.yml</code></strong> — downloads the coverage artifact from the latest
+successful <code>ci.yml</code> run, injects the back-to-docs link, and publishes it to
+<code>gh-pages</code> under <code>destination_dir: coverage</code>. Dispatched by <code>ci.yml</code>, or
+manually. Takes no inputs.</li>
+<li><strong><code>architecture-docs.yml</code></strong> — applies doc templates, pre-renders Mermaid,
+and publishes the staged <code>docs/</code> tree to <code>gh-pages</code>. Self-triggers on
+<code>docs/**</code> or <code>scripts/docs/**</code> pushes; it is <strong>not</strong> dispatched by <code>ci.yml</code>.</li>
+</ul>
+<p><strong>Two scope flags.</strong> <code>resolveScope</code> (in <code>scripts/ci/detectPipelineScope.js</code>)
+maps a push&#39;s changed paths to <code>{ coverage, deploy }</code>:</p>
+<ul>
+<li><code>deploy</code> is true unless every changed path is under <code>docs/**</code> or
+<code>scripts/docs/**</code> — a docs-only push builds no bundle, so it deploys
+nothing.</li>
+<li><code>coverage</code> is true when any <code>src/**</code> path changed.</li>
+</ul>
+<p><code>ci.yml</code> gates each dispatch on its flag: <code>deploy.yml</code> fires only when
+<code>deploy</code> is true, <code>coverage.yml</code> only when <code>coverage</code> is true. An earlier
+<code>archDocs</code> flag was removed because no workflow consumed it —
+<code>architecture-docs.yml</code> expresses the docs split through its own <code>paths:</code>
+trigger, not a flag.</p>
+<p><strong>Concurrency.</strong> Each workflow holds its own top-level concurrency group:
+<code>portfolio-pipeline</code> (<code>ci.yml</code>), <code>deploy-pipeline</code> (<code>deploy.yml</code>),
+<code>coverage-pipeline</code> (<code>coverage.yml</code>), and <code>docs-only</code>
+(<code>architecture-docs.yml</code>). The separation is not cosmetic. <code>ci.yml</code>
+dispatches <code>deploy.yml</code> and <code>coverage.yml</code> back to back while its own run
+still holds <code>portfolio-pipeline</code>; GitHub Actions protects an already
+in-progress run from cancellation under <code>cancel-in-progress: false</code>, but a
+<strong>queued</strong> run is unprotected and is silently cancelled if another run joins
+the same group&#39;s queue first. When all three shared one group, the
+later-queued dispatch cancelled the earlier one on every push and deploys
+silently never went out. Separate groups let the two dispatched workflows run
+in parallel. See <code>.github/workflows/deploy.yml</code>&#39;s header for the full account.</p>
+<p>Separately, <code>coverage.yml</code> and <code>architecture-docs.yml</code> both publish to
+<code>gh-pages</code> from independent triggers and could run at once. Both declare a
+<strong>job-level</strong> <code>gh-pages-deploy</code> concurrency group — matched by name across
+workflows — which serializes only their publish jobs, without touching either
+workflow&#39;s top-level trigger group.</p>
+<p><strong>Pull requests run the full gate, docs-only PRs included.</strong> <code>ci.yml</code>&#39;s
+<code>pull_request</code> trigger has no path filter, so <code>lint-and-test</code> runs on every
+PR. Skipping docs-only PRs would need a <code>paths-ignore</code> here plus a twin no-op
+workflow reporting the same required-check name — branch protection matches
+on the check name, so a genuinely skipped required job stays forever pending.
+The suite is short enough that the extra workflow is not worth the saved
+minute; the simpler topology was chosen deliberately.</p>
+<h2 id="consequences">Consequences</h2>
+<ul>
+<li>A single push to <code>main</code> fans out: build/deploy and coverage publishing run
+in parallel rather than one waiting on the other.</li>
+<li>A docs-only push to <code>main</code> dispatches neither <code>deploy.yml</code> nor
+<code>coverage.yml</code>; <code>architecture-docs.yml</code> still rebuilds the docs site from
+its own trigger.</li>
+<li>Because <code>ci.yml</code> no longer shares a concurrency group with the workflows it
+dispatches, a fresh <code>ci.yml</code> run can begin while a previous <code>deploy.yml</code> is
+still running. That overlap is accepted: <code>deploy.yml</code> self-serializes within
+<code>deploy-pipeline</code> and every dispatch runs <code>--ref main</code>, so the newest run
+always builds the latest <code>main</code> and a superseded intermediate deploy being
+dropped is the correct outcome.</li>
+<li>Four workflow files plus a scope-resolving script are more to onboard than
+ADR-004&#39;s three, but each file has a single clear trigger and
+responsibility.</li>
+<li>The scope logic lives in a unit-tested script
+(<code>scripts/ci/detectPipelineScope.js</code>), so the &quot;what runs when&quot; decision is
+assertable rather than buried in <code>paths:</code> filters.</li>
+</ul>
 <h2 id="references">References</h2>
 <ul>
-<li><a href="../index.html">Architecture index</a></li>
-<li><a href="../../index.html">Documentation root</a></li>
-<li><a href="../../templates/adr-template.html">ADR template</a></li>
+<li><a href="../07-deployment.html">ci-cd-pipeline.md</a> — pipeline diagram, per-step breakdown, and the concurrency-group table</li>
+<li><a href="ADR-004-three-workflow-cicd.html">ADR-004</a> — the superseded three-workflow topology</li>
+<li><a href="ADR-006-build-time-github-data-fetch.html">ADR-006</a> — why the fetch step (and <code>build-and-fetch.yml</code>) went away</li>
+<li><a href="ADR-009-retire-code-reference.html">ADR-009</a> — the code-reference retirement that renamed <code>api-docs.yml</code> to <code>coverage.yml</code></li>
+<li><code>.github/workflows/ci.yml</code>, <code>deploy.yml</code>, <code>coverage.yml</code>, <code>architecture-docs.yml</code></li>
+<li><code>scripts/ci/detectPipelineScope.js</code>, <code>scripts/ci/runPipelineScope.js</code></li>
 </ul>
 
     </article>

@@ -103,7 +103,7 @@
            scripts/docs/lib/renderPages.js) -->
       <h1 id="cicd-pipeline">CI/CD Pipeline</h1>
 <p><a href="index.html">← Architecture index</a></p>
-<p>The portfolio uses four GitHub Actions workflows. <code>ci.yml</code> runs first (lint, test, coverage) and, on a successful push to <code>main</code>, dispatches <code>deploy.yml</code> and <code>coverage.yml</code> in parallel — deploy always runs; coverage only runs when a <code>src/**</code> change could have altered the report. <code>architecture-docs.yml</code> is independent of that chain: it triggers directly on <code>docs/**</code> or <code>scripts/docs/**</code> pushes. Each of the four workflows has its own concurrency group (see <a href="#concurrency-strategy">Concurrency Strategy</a>), so <code>deploy.yml</code> and <code>coverage.yml</code> can genuinely run at the same time instead of queuing behind each other.</p>
+<p>The portfolio uses four GitHub Actions workflows. <code>ci.yml</code> runs first (lint, test, coverage) and, on a successful push to <code>main</code>, dispatches <code>deploy.yml</code> and <code>coverage.yml</code> in parallel — deploy runs unless the push is docs-only; coverage only runs when a <code>src/**</code> change could have altered the report. <code>architecture-docs.yml</code> is independent of that chain: it triggers directly on <code>docs/**</code> or <code>scripts/docs/**</code> pushes. Each of the four workflows has its own concurrency group (see <a href="#concurrency-strategy">Concurrency Strategy</a>), so <code>deploy.yml</code> and <code>coverage.yml</code> can genuinely run at the same time instead of queuing behind each other.</p>
 <p><code>deploy.yml</code> does not fetch project data — the Projects section renders from the static, hand-curated <code>src/data/projects.config.js</code>. The workflow only builds and deploys.</p>
 <h2 id="table-of-contents">Table of Contents</h2>
 <ul>
@@ -150,7 +150,7 @@
     DocsPush[&quot;Push to docs/** or scripts/docs/**&quot;]
 
     Push --&gt; Lint
-    Scope --&gt;|&quot;workflow_dispatch, always&quot;| BuildReact
+    Scope --&gt;|&quot;workflow_dispatch, if deploy&quot;| BuildReact
     Scope --&gt;|&quot;workflow_dispatch, if coverage&quot;| Coverage
     DocsPush --&gt; Templates
 
@@ -170,8 +170,8 @@
 </thead>
 <tbody><tr>
 <td><code>.github/workflows/ci.yml</code></td>
-<td>Push to <code>main</code> (<code>src/**</code>, <code>scripts/**</code>, <code>config/**</code>, <code>package.json</code>, <code>vite.config.js</code>, <code>index.html</code>, <code>.github/workflows/**</code>), PRs to <code>main</code></td>
-<td>Lint, run full test suite, upload coverage artifact; on push, resolve scope and dispatch <code>deploy.yml</code> (always) and <code>coverage.yml</code> (conditionally) in parallel</td>
+<td>Push to <code>main</code> (<code>src/**</code>, <code>scripts/**</code>, <code>config/**</code>, <code>package.json</code>, <code>package-lock.json</code>, <code>vite.config.js</code>, <code>index.html</code>, <code>.github/workflows/**</code>), PRs to <code>main</code></td>
+<td>Lint, run full test suite, upload coverage artifact; on push, resolve scope and dispatch <code>deploy.yml</code> (when the <code>deploy</code> flag is true) and <code>coverage.yml</code> (when the <code>coverage</code> flag is true) in parallel</td>
 </tr>
 <tr>
 <td><code>.github/workflows/deploy.yml</code></td>
@@ -207,8 +207,8 @@
 <p>Job <code>start-deploy-stage</code> (push to <code>main</code> only; skipped on pull requests):</p>
 <ol>
 <li>Checkout with <code>fetch-depth: 0</code> (full history, required to diff <code>before</code>..<code>sha</code>)</li>
-<li>Run <code>scripts/ci/runPipelineScope.js &quot;$before&quot; &quot;$sha&quot;</code> — resolves <code>coverage</code>/<code>archDocs</code>/<code>deploy</code> flags from the changed-file list. If the diff range can&#39;t be resolved (new branch, force-push), every flag defaults to <code>true</code> rather than skipping work.</li>
-<li>Dispatch <code>deploy.yml</code> unconditionally</li>
+<li>Run <code>scripts/ci/runPipelineScope.js &quot;$before&quot; &quot;$sha&quot;</code> — resolves <code>coverage</code>/<code>deploy</code> flags from the changed-file list. If the diff range can&#39;t be resolved (new branch, force-push), every flag defaults to <code>true</code> rather than skipping work.</li>
+<li>Dispatch <code>deploy.yml</code> only when the <code>deploy</code> flag is <code>true</code> — the flag is false exactly when every changed path is under <code>docs/**</code> or <code>scripts/docs/**</code></li>
 <li>Dispatch <code>coverage.yml</code> (no inputs) only when the <code>coverage</code> flag is <code>true</code> — dispatched immediately after step 3, not waiting for <code>deploy.yml</code> to finish, so build/deploy and docs generation run in parallel</li>
 </ol>
 <h3 id="deployyml">deploy.yml</h3>
