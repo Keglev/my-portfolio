@@ -71,9 +71,10 @@ jobs:
         uses: ./.github/actions/node-setup
 
       # ── Coverage ──
-      # If no successful CI run exists (e.g. very first run with no prior
-      # CI history), the download step is skipped and the publish below
-      # leaves gh-pages/coverage/ untouched for this run.
+      # If no successful CI run exists (e.g. the very first run, with no prior
+      # CI history), both the download and the publish below are skipped
+      # (if: steps.ci-run.outputs.run-id != ''), so this run is a clean no-op
+      # that leaves gh-pages/coverage/ untouched.
       - name: Find latest successful CI run
         id: ci-run
         run: |
@@ -89,7 +90,15 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # continue-on-error guards against artifact expiry (retention-days: 7 in ci.yml) or unavailability.
+      # No continue-on-error: a failed download must fail the run. It used to
+      # be tolerated "for artifact expiry or unavailability", but that masked
+      # a real failure in production -- during a GitHub outage the download
+      # errored, the job continued, docs/coverage/ was never created, and the
+      # publish below then crashed on the missing publish_dir (ENOENT -> bogus
+      # orphan-branch attempt -> exit 128). Failing loudly here turns the
+      # outage case into a clean, re-runnable failure instead. The legitimate
+      # no-artifact case (no successful CI run yet) never reaches this step:
+      # the if: below skips it, and the publish is gated on the same condition.
       - name: Download coverage artifact from CI run
         if: steps.ci-run.outputs.run-id != ''
         run: |
@@ -99,7 +108,6 @@ jobs:
             --repo "${{ github.repository }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        continue-on-error: true
 
       # ── Back link ──
       # The coverage report is generator output with its own page shell, so
@@ -108,9 +116,10 @@ jobs:
       # adds one fixed-position link.
       #
       # Runs unconditionally: the script reports a missing file rather than
-      # failing, which is the case that actually happens (the download above
-      # is continue-on-error, and the first ever run has no artifact). It is
-      # also idempotent -- gh-pages is republished rather than rebuilt, so it
+      # failing, which covers the first-ever run where the gated download
+      # above was skipped and no docs/coverage/index.html exists yet (the
+      # publish is skipped too, so this is a harmless no-op). It is also
+      # idempotent -- gh-pages is republished rather than rebuilt, so it
       # routinely sees its own previous output and must not stack a second
       # link onto it.
       - name: Inject the back-to-docs link into the coverage report
@@ -122,6 +131,7 @@ jobs:
       # cleanup (keep_files defaults to false) to coverage/ — nothing else
       # on gh-pages is touched.
       - name: Publish coverage to gh-pages
+        if: steps.ci-run.outputs.run-id != ''
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
