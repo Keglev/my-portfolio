@@ -14,12 +14,13 @@ is the fastest way to understand *why* the project is structured the way it is.
 | [ADR-001](ADR-001-react.md) | React as the Frontend Framework | Accepted |
 | [ADR-002](ADR-002-i18next-internationalization.md) | i18next for Internationalization | Accepted |
 | [ADR-003](ADR-003-styling-approach.md) | Two-Layer Styling Approach (styled-components + plain CSS) | Accepted |
-| [ADR-004](ADR-004-three-workflow-cicd.md) | Three-Workflow CI/CD Architecture | Accepted |
+| [ADR-004](ADR-004-three-workflow-cicd.md) | Three-Workflow CI/CD Architecture | Superseded |
 | [ADR-005](ADR-005-vercel-hosting.md) | Vercel as the Hosting Platform | Accepted |
 | [ADR-006](ADR-006-build-time-github-data-fetch.md) | Build-Time GitHub Data Fetch over Runtime API Calls | Superseded |
 | [ADR-007](ADR-007-vite-migration.md) | Vite as the Build Tool (replacing Create React App) | Accepted |
 | [ADR-008](ADR-008-code-reference.md) | Keep the Generated Reference, Renamed "Code Reference" | Superseded |
 | [ADR-009](ADR-009-retire-code-reference.md) | Retire the Published Code Reference | Accepted |
+| [ADR-010](ADR-010-four-workflow-dispatch-topology.md) | Four-Workflow Dispatch Topology | Accepted |
 
 ## How to read an ADR
 

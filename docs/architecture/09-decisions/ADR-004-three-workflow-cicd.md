@@ -9,6 +9,7 @@
 - [Decision](#decision)
 - [Consequences](#consequences)
 - [Update (2026-07-17)](#update-2026-07-17)
+- [Amendment (2026-08-17)](#amendment-2026-08-17)
 - [References](#references)
 
 ## Status
@@ -102,6 +103,12 @@ for the current four-group topology; the `Decision` and `Consequences`
 sections above describe the original three-workflow shape, including its
 single shared concurrency group, as it was when accepted — not the
 corrected model in effect today.
+
+## Amendment (2026-08-17)
+
+Superseded by [ADR-010](ADR-010-four-workflow-dispatch-topology.md) — the
+topology described here was replaced by a four-workflow dispatch model; this
+record remains as the rationale of its era.
 
 ## References
 
