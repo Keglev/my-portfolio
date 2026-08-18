@@ -93,6 +93,10 @@ export default defineConfig({
         './config/vitest/speedInsightsMock.js',
         import.meta.url,
       ).pathname,
+      '@vercel/analytics/react': new URL(
+        './config/vitest/analyticsMock.js',
+        import.meta.url,
+      ).pathname,
     },
 
     coverage: {
